@@ -259,6 +259,39 @@ def deserialize_nested(base: Any, value: Any, persist_changes: bool) -> Any:
     return base
 
 
+def values_of(value: Any) -> Optional[list[Any]]:
+    """A collection cell as a plain list, in every shape a read or a payload produces.
+
+    A ``$select`` read of an undeclared collection column ingests the JSON
+    ``{"results": [...]}`` as a positional mapping (``{0: 1, 1: 2}``), a declared one
+    as a ``ClientValueCollection``, a payload this client built may hold either the
+    wrapper or a bare list, and a single-valued cell may hold one scalar. A dict that
+    is neither a container nor positional is one value object, not a list of its
+    fields.
+
+    Returns ``None`` for ``None`` so a caller can tell "no value" from "no values".
+    """
+    if value is None:
+        return None
+    items: list[Any]
+    if isinstance(value, dict):
+        if isinstance(value.get("results"), (list, tuple)):
+            items = list(value["results"])
+        elif value and all(isinstance(key, int) for key in value):
+            items = [value[key] for key in sorted(value)]
+        else:
+            items = [value]
+    elif isinstance(value, (str, bytes)):
+        items = [value]
+    elif isinstance(value, (list, tuple, set)):
+        items = list(value)
+    elif hasattr(value, "_data") and isinstance(value._data, list):
+        items = list(value._data)
+    else:
+        items = [value]
+    return items
+
+
 def coerce_value(target_type: Any, value: Any, current: Any, persist_changes: bool) -> Any:
     """Coerce a raw value for storage by its declared type, falling back to the current instance.
 

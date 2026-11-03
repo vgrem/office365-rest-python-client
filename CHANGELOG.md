@@ -185,6 +185,13 @@ introduced.
 - `@odata(..., expandable=False)` marks a navigation `$expand` will not follow
   alone: `Event.expand_all()` no longer names `extensions`, which the service
   refuses without a `$filter`.
+- A collection cell reads back as a plain list: `values_of(cell)`
+  (`office365.runtime.converters.value`) answers the items of a cell in every shape
+  a read or a payload produces — a positional mapping (`{0: 1}`) for an undeclared
+  collection column, `{"results": [...]}`, a bare list, a `ClientValueCollection`, or
+  one scalar — and `ClientValueCollection.values()` is the same list once the model
+  already holds the value. A dict that is neither a container nor positional is one
+  value object, not a list of its fields.
 - `@odata(..., system=True)` records provenance: the metadata declares no such
   name, the service spells it on the item payload. `ListItem.author_id`,
   `editor_id`, `created`, `modified`, `SitePage`'s three item columns and
@@ -913,6 +920,14 @@ introduced.
 
 ### Fixed
 
+- **A multi-value column could be created but not updated.** A bare array is refused
+  on *both* writes — `MERGE` answers `InvalidClientQueryException` ("a `StartArray`
+  was read … when trying to read a value of a property") for Choice, Lookup, User,
+  LookupMulti and UserMulti alike — so `{"results": [...]}` is the column's shape, not
+  a create-time quirk. Only the create path wrapped it, so an upsert of an existing
+  item carrying a multi-value column failed, as did a document library folder's
+  column values (written as an update). One reshape now covers every write, and the
+  wrapper that existed to distinguish the two paths is gone.
 - **A `$select` read narrowed every later read of the object it was made on.**
   `ReadEntityQuery` appended the properties it wanted to the object's own `query_options`,
   so the first `ensure_property(...)` on an object turned that object's projection into the

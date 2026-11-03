@@ -36,6 +36,7 @@ from office365.runtime.converters.scalars import (
     parse_int,
     wall_clock_text,
 )
+from office365.runtime.converters.value import values_of
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
@@ -200,81 +201,24 @@ def _folder_record_values(record: dict) -> dict:
     }
 
 
-def _id_list(value: Any) -> list[Any] | None:
-    """Normalize a multi-value ``...Id`` collection into a plain list of ids.
-
-    A live read returns the collection as a positional mapping (``{0: 1, 1: 2}``);
-    a payload this client built may hold ``{"results": [...]}``. Both reduce to the
-    same list, which is the form the checksum and the remap work with.
-    """
-    if isinstance(value, dict):
-        if "results" in value:
-            value = value["results"]
-        else:
-            try:
-                return [value[i] for i in range(len(value))]
-            except (KeyError, TypeError):
-                return list(value.values())
-    if isinstance(value, (list, tuple)):
-        return list(value)
-    return None
-
-
-def _multi_values(value: Any) -> list[Any] | None:
-    """A multi-value cell as a plain list of its values, or ``None`` when empty.
-
-    Accepts every shape a live read or a built payload produces: a positional
-    mapping (``{0: "red", 1: "green"}``), a ``{"results": [...]}`` wrapper, a bare
-    list, and — because a collection cell may hold exactly one selection — a bare
-    scalar.
-    """
-    if value is None:
-        return None
-    if isinstance(value, (str, int, float, bool)):
-        return [value]
-    return _id_list(value)
-
-
 def _taxonomy_terms(value: Any) -> list[dict[str, str]]:
-    """Normalize a taxonomy value to portable ``{"TermGuid": ...}`` terms.
+    """A taxonomy cell as portable ``{"TermGuid": ...}`` terms.
 
-    A live read shapes a single value as a dict (``{"Label", "TermGuid", "WssId"}``)
-    and a multi-value one as a positional mapping (``{0: {...}, 1: {...}}``); a
-    payload this client built holds a bare list. All reduce to a list of terms.
     Only ``TermGuid`` is carried: a per-site ``WssId`` is meaningless elsewhere and
     ``Label`` is not authoritative (a read may return the WssId string, and the
     server resolves a write by term id regardless of the label).
     """
-    if value is None:
-        return []
-    if isinstance(value, dict):
-        if "TermGuid" in value:
-            items: list[Any] = [value]
-        elif "results" in value and isinstance(value["results"], (list, tuple)):
-            items = list(value["results"])
-        else:
-            try:
-                items = [value[i] for i in range(len(value))]
-            except (KeyError, TypeError):
-                items = list(value.values())
-    elif isinstance(value, (list, tuple)):
-        items = list(value)
-    else:
-        return []
     terms: list[dict[str, str]] = []
-    for item in items:
-        if isinstance(item, dict):
-            guid = item.get("TermGuid")
-        else:
-            guid = getattr(item, "TermGuid", None)
+    for item in values_of(value) or []:
+        guid = item.get("TermGuid") if isinstance(item, dict) else getattr(item, "TermGuid", None)
         if guid:
             terms.append({"TermGuid": str(guid)})
     return terms
 
 
 def _is_taxonomy_value(value: Any) -> bool:
-    """Whether a projected value is a taxonomy term (single dict or multi mapping/list)."""
-    return isinstance(value, (dict, list, tuple)) and bool(_taxonomy_terms(value))
+    """Whether a projected value is a taxonomy term (single value or a collection)."""
+    return bool(_taxonomy_terms(value))
 
 
 def _taxonomy_guids(value: Any) -> list[str]:
@@ -297,16 +241,15 @@ def _canonicalize_taxonomy_record(record: dict) -> dict:
     return canonical
 
 
-def _collection_payload(ids: list) -> dict:
-    """The JSON shape SharePoint accepts when *creating* a multi-value column.
+def _collection_payload(values: list) -> dict:
+    """The JSON shape SharePoint accepts for a multi-value column.
 
-    Live-probed: a bare array is rejected on create
-    (``InvalidClientQueryException``: "a 'PrimitiveValue' or 'StartObject' node was
-    expected") while ``{"results": [...]}`` is accepted. A MERGE *update* is the
-    opposite — it accepts the bare array and rejects ``{"results": [...]}`` — so
-    only the create path goes through this helper.
+    Live-probed on both writes and every multi-value kind (Choice, Lookup, User,
+    LookupMulti, UserMulti): a bare array is refused on create *and* on MERGE
+    (``InvalidClientQueryException``: a ``StartArray`` where a property value was
+    read) while ``{"results": [...]}`` is accepted by both.
     """
-    return {"results": ids}
+    return {"results": values}
 
 
 def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
@@ -465,35 +408,6 @@ def _user_login(web, user_id: Any, cache: dict[int, str | None]) -> str | None:
         login = None
     cache[key] = login
     return login
-
-
-class _MultiValueCreateTarget:
-    """An upsert target that reshapes multi-value columns only when creating.
-
-    A multi-value Lookup/Person column is created with the ``{"results": [...]}``
-    wire shape but updated with a bare array (live-probed), so ``keyed_queue`` needs
-    to reshape the creates and leave the updates alone. Everything else delegates.
-    """
-
-    def __init__(self, target: Any, reshape: Callable[[dict], dict]) -> None:
-        self._target = target
-        self._reshape = reshape
-
-    @property
-    def key_field(self) -> str:
-        return self._target.key_field
-
-    def ensure_key_field(self) -> None:
-        self._target.ensure_key_field()
-
-    def load_keys(self) -> Any:
-        return self._target.load_keys()
-
-    def create_records(self, records: list[dict]) -> None:
-        self._target.create_records([self._reshape(record) for record in records])
-
-    def update_record(self, item_id: Any, record: dict) -> None:
-        self._target.update_record(item_id, record)
 
 
 class _DefaultGroups:
@@ -1153,7 +1067,7 @@ class SharePointListSource:
             for name, field_type in multi.items():
                 record.pop(f"{name}StringId", None)
                 key = f"{name}Id"
-                ids = _id_list(record.get(key))
+                ids = values_of(record.get(key))
                 parsed: list[int] = []
                 for value in ids or []:
                     user_id = parse_int(value)
@@ -1199,7 +1113,7 @@ class SharePointListSource:
             for name in names:
                 if name not in record:
                     continue
-                values = _multi_values(record.get(name))
+                values = values_of(record.get(name))
                 if values:
                     record[name] = values
                 else:
@@ -1526,14 +1440,15 @@ class SharePointListTarget:
             else:
                 mapped.pop("ContentTypeId", None)
         self._remap_typed_values([mapped])
-        return mapped
+        return self._multi_value_payload(mapped)
 
     def _queue(self, records: list[dict]) -> None:
         self._ensure_identity()
         self._remap_typed_values(records)
+        records = [self._multi_value_payload(record) for record in records]
         if not self._key_columns:
             for record in records:
-                self._list.items.queue_records([self._multi_value_create(record)])
+                self._list.items.queue_records([record])
             return
         from office365.runtime.converters.upsert import keyed_queue
         from office365.sharepoint.fields.name import internal_field_name
@@ -1547,7 +1462,7 @@ class SharePointListTarget:
             self._target = target
         key_columns = [internal_field_name(c) for c in self._key_columns]
         keyed_queue(
-            _MultiValueCreateTarget(target, self._multi_value_create),
+            target,
             records,
             key_columns=key_columns,
             existing=self._existing,
@@ -1559,20 +1474,20 @@ class SharePointListTarget:
         names = (*self._multi_lookup_columns(), *self._multi_user_columns())
         return {f"{name}Id" for name in names}
 
-    def _multi_value_create(self, record: dict) -> dict:
-        """Reshape multi-value columns for a *create* (``{"results": [...]}``).
+    def _multi_value_payload(self, record: dict) -> dict:
+        """Reshape multi-value columns for the wire (``{"results": [...]}``).
 
         A bare list is the semantic value the source records and the checksum work
-        with, and it is also what a MERGE update wants; only a create needs the
-        ``{"results": [...]}`` wrapper (live-probed). Lists without multi-value
-        columns are passed through untouched.
+        with; the wire wants every multi-value cell wrapped, on create and on MERGE
+        alike (see :func:`_collection_payload`). A record without multi-value
+        columns is passed through untouched.
         """
         keys = self._multi_id_keys() | self._multi_choice_columns()
         if not keys:
             return record
         wrapped = dict(record)
         for key in keys:
-            values = _multi_values(wrapped.get(key))
+            values = values_of(wrapped.get(key))
             if values is not None:
                 wrapped[key] = _collection_payload(values)
         return wrapped
@@ -1743,7 +1658,7 @@ class SharePointListTarget:
         for record in records:
             for internal_name, target_list_id in columns.items():
                 key = f"{internal_name}Id"
-                source_ids = _id_list(record.get(key))
+                source_ids = values_of(record.get(key))
                 if not source_ids:
                     continue
                 forward, _ = self._lookup_index(target_list_id)
@@ -1880,7 +1795,7 @@ class SharePointListTarget:
                 properties[key] = source_id
         for internal_name, target_list_id in self._multi_lookup_columns().items():
             key = f"{internal_name}Id"
-            target_ids = _id_list(properties.get(key))
+            target_ids = values_of(properties.get(key))
             if not target_ids:
                 continue
             _, backward = self._lookup_index(target_list_id)
@@ -1904,7 +1819,7 @@ class SharePointListTarget:
                 properties[key] = login
         for internal_name in self._multi_user_columns():
             key = f"{internal_name}Id"
-            user_ids = _id_list(properties.get(key))
+            user_ids = values_of(properties.get(key))
             if not user_ids:
                 continue
             mapped_logins: list[Any] = []
@@ -1923,7 +1838,7 @@ class SharePointListTarget:
         for internal_name in self._multi_choice_columns():
             if internal_name not in properties:
                 continue
-            values = _multi_values(properties.get(internal_name))
+            values = values_of(properties.get(internal_name))
             if values:
                 properties[internal_name] = values
             else:

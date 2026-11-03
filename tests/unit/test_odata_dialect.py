@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import unittest
 
+from office365.runtime.converters.value import values_of
 from office365.runtime.odata.dialect import (
     V3_VERBOSE,
     V4,
@@ -80,4 +81,9 @@ class TestTheEnvelopeIsTheSameInBothDirections(unittest.TestCase):
             with self.subTest(level=level.value):
                 fmt = JsonLightFormat(level)
                 payload = fmt.wrap(ClientValueCollection(str, ["a"]), ["a"])
-                self.assertEqual(dict(fmt.iter_payload(payload)), {0: "a"})
+                cell = dict(fmt.iter_payload(payload))
+                self.assertEqual(cell, {0: "a"})
+                # The ingest answers a collection cell as a positional mapping, so
+                # the reader that turns it back into a list is the other half of the
+                # same round trip.
+                self.assertEqual(values_of(cell), ["a"])

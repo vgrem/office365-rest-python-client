@@ -110,6 +110,14 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
         """Concatenate two collections into a plain list."""
         return list(self._data) + list(other._data)
 
+    def values(self) -> list[ValueT]:
+        """The items as a plain list.
+
+        A collection is a model object; a caller that has to compare, sort, checksum
+        or reserialize the items needs them as data, without the wrapping type.
+        """
+        return list(self._data)
+
     def clear(self) -> None:
         """Remove all items from the collection."""
         self._data.clear()
