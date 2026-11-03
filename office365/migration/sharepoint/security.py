@@ -32,6 +32,7 @@ from typing import Any, Optional
 from office365.migration.base import PermissionEntry
 from office365.migration.sharepoint.adapters import (
     _DefaultGroups,
+    _has_unique_role_assignments,
     _read_role_assignments,
     _TargetPrincipals,
 )
@@ -328,13 +329,10 @@ def _normalize(securable):
 def capture_list_security(securable) -> Optional[list[PermissionEntry]]:
     """A list's own role assignments, or ``None`` when it simply inherits the web's.
 
-    ``HasUniqueRoleAssignments`` is not part of a plain list read, so it costs one
-    extra GET — issued only inside a ``preserve_permissions`` pass. The same shape
-    works for any securable object, which is what makes the source and target sides
-    of the list diff compare like with like.
+    The same shape works for any securable object, which is what makes the source and
+    target sides of the list diff compare like with like.
     """
-    properties = securable.ensure_properties(["HasUniqueRoleAssignments"]).execute_query().properties
-    if not properties.get("HasUniqueRoleAssignments"):
+    if not _has_unique_role_assignments(securable):
         return None
     return _read_role_assignments(securable, normalize=_normalize(securable))
 

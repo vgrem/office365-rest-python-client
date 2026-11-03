@@ -30,12 +30,23 @@ class ReadEntityQuery(ClientQuery[ReturnT]):
         return self._query_options
 
     def _build_query_options(self) -> "QueryOptions":
-        """Resolve query options for the return object, expanding the requested properties."""
+        """Resolve the query options this read asks for, expanding the requested properties.
+
+        Built on a copy: the request asks for the properties it needs and the object's own
+        projection stays what its caller made it. A projection written back onto the object
+        would narrow every later read of it to the one property this read fetched.
+        """
         from office365.runtime.client_object import ClientObject
         from office365.runtime.client_object_collection import ClientObjectCollection
 
         client_object = cast(ClientObject, self._return_type)
-        query_options = client_object.query_options
+        declared = client_object.query_options
+        query_options = replace(
+            declared,
+            select=list(declared.select),
+            expand=list(declared.expand),
+            custom=dict(declared.custom),
+        )
         for name in self._properties_to_include or []:
             if name in query_options.select:
                 continue

@@ -815,6 +815,15 @@ introduced.
   request-issuing operations under `office365/sharepoint` names the grant it needs. Twenty-three
   commits from the first `SiteLevel` to the last dot-notation read, and the two offline
   permission tests now guard the whole surface instead of a shrinking remainder.
+- **A securable object's ACL is read through the type, not through a spelled-out `$expand`.**
+  `SecurableObject.load_role_assignments()` expands what `RoleAssignment.expand_all()`
+  declares — `Member`, `RoleDefinitionBindings` — and queues the read like every other
+  builder: run `execute_query()` and read the collection it returns. The migration layer
+  and two examples had each spelled that navigation pair, one of them in a helper that
+  also had to know that a `$select` on the parent narrows *later* reads of it.
+  `ensure_properties(names, refresh=True)` is the other half: a value held from an earlier
+  read is a snapshot, and whether an object has its own ACL decides whether an ACL is
+  replayed or compared at all, so the flag is re-read instead of trusted.
 
 
 
@@ -904,6 +913,13 @@ introduced.
 
 ### Fixed
 
+- **A `$select` read narrowed every later read of the object it was made on.**
+  `ReadEntityQuery` appended the properties it wanted to the object's own `query_options`,
+  so the first `ensure_property(...)` on an object turned that object's projection into the
+  one property for the rest of its life — a `SecurableObject` asked once for
+  `HasUniqueRoleAssignments` answered `None` for its title afterwards. The query now builds
+  its options on a copy (`replace` with fresh `list`/`dict`), so a read asks for what it
+  needs and leaves the object's declaration as its caller made it.
 - **A team site was returned before it existed, and at a url the alias does not spell.**
   `create_team_site` answered `Provisioning` with `SiteUrl = None` on this tenant, and the
   library filled the gap with `{base}/teams/{alias}` — a guess: the tenant served the site at

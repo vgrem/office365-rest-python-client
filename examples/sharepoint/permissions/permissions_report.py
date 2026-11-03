@@ -16,7 +16,9 @@ from __future__ import annotations
 
 import argparse
 
+from office365.runtime.types.odata_property import PERMISSIONS
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.principal import Principal
 from office365.sharepoint.principal.type import PrincipalType
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
@@ -37,8 +39,9 @@ def _role_rows(role_assignments) -> list[str]:
 
 
 def _print_securable(label: str, securable) -> None:
-    securable.context.load(securable, ["HasUniqueRoleAssignments"])
-    assignments = securable.role_assignments.expand(["Member", "RoleDefinitionBindings"]).get().execute_query()
+    assignments = securable.load_role_assignments()
+    securable.ensure_properties(SecurableObject.select_facet(PERMISSIONS))
+    securable.context.execute_query()  # the flag and the assignments in one batch
     unique = "unique" if securable.has_unique_role_assignments else "inherited"
     rows = _role_rows(assignments)
     print(f"{label}  ({len(assignments)} assignment(s), {unique}):")

@@ -25,7 +25,7 @@ def main():
         perms = ", ".join(rd.base_permissions.permission_levels)
         print(f"  {rd.name:30s} perms=[{perms}]")
 
-    assignments = ctx.web.role_assignments.expand(["Member", "RoleDefinitionBindings"]).get().execute_query()
+    assignments = ctx.web.load_role_assignments().execute_query()
     print(f"\nRole assignments ({len(assignments)}):")
     full_control_holders = 0
     for ra in sorted(assignments, key=lambda a: a.member.title or ""):

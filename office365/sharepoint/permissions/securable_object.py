@@ -230,6 +230,17 @@ class SecurableObject(Entity):
             RoleAssignmentCollection(self.context, ResourcePath("RoleAssignments", self.resource_path)),
         )
 
+    @site_access(SiteLevel.READ)
+    def load_role_assignments(self) -> RoleAssignmentCollection:
+        """Queue a read of this object's role assignments, each with its member and its role definitions.
+
+        The navigations a reader needs are expanded by the declaration instead of by the
+        caller, and the request is queued like any other: run ``execute_query()`` and read the
+        collection this returns. A securable object that inherits returns its *parent's*
+        assignments, so ask :attr:`has_unique_role_assignments` first when that matters.
+        """
+        return self.role_assignments.expand(RoleAssignment.expand_all()).get()
+
     @odata(name="ShieldAddRoleAssignmentPushdown", readonly=True)
     @property
     def shield_add_role_assignment_pushdown(self) -> Optional[bool]:

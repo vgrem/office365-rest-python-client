@@ -45,6 +45,7 @@ from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.permissions import SiteLevel, site_access
+from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.type import PrincipalType
 
 if TYPE_CHECKING:
@@ -377,36 +378,33 @@ def _principal_kind(member: Any) -> str | None:
     return None
 
 
+#: The flag that says whether a securable object owns its ACL, spelled by its declaration.
+_UNIQUE_PERMISSIONS = SecurableObject.odata_name("has_unique_role_assignments")
+
+
 def _has_unique_role_assignments(securable, *, refresh: bool = False) -> bool:
     """Whether a securable has unique (broken-inheritance) role assignments.
 
-    SharePoint REST returns *inherited* role assignments too, so reading them
-    verbatim would break inheritance on every item and replicate the parent ACL.
-    Only items with unique assignments are read/applied (and compared by the
-    verifier); inherited items stay inherited on the target.
+    SharePoint REST returns *inherited* role assignments too, so reading them verbatim
+    would break inheritance on every item and replicate the parent ACL. Only items with
+    unique assignments are read/applied (and compared by the verifier); inherited items
+    stay inherited on the target.
 
-    A plain entity read does not return the flag, so an object loaded *before* its
-    ACL changed keeps a stale value. The target side passes ``refresh=True``: this
-    value decides whether an ACL is applied or compared at all, so a stale
-    ``False`` would break inheritance on an item that is already unique (wiping the
-    assignments it was supposed to keep) and a stale ``False`` read back after a
-    write would report a permission mismatch for an ACL that did land.
+    A plain entity read does not return the flag, so an object loaded *before* its ACL
+    changed keeps a stale value. The target side passes ``refresh=True``: this value
+    decides whether an ACL is applied or compared at all, so a stale ``False`` would
+    break inheritance on an item that is already unique (wiping the assignments it was
+    supposed to keep) and a stale ``False`` read back after a write would report a
+    permission mismatch for an ACL that did land.
     """
     unique = getattr(securable, "has_unique_role_assignments", None)
     if unique is not None and not refresh:
         return bool(unique)
-    options = getattr(securable, "query_options", None)
-    previous = list(getattr(options, "select", None) or [])
     try:
-        securable.select(type(securable).select_facet(PERMISSIONS)).get().execute_query()
-    except Exception:  # noqa: BLE001 — an unreadable flag is treated as "not unique"
+        securable.ensure_properties([_UNIQUE_PERMISSIONS], refresh=refresh).execute_query()
+    except Exception:  # an unreadable flag is treated as "not unique"
         return False
-    finally:
-        if options is not None:
-            # The projection lives on the object's query options: leaving it on
-            # would narrow every later read of the same item.
-            options.select = previous
-    return bool(securable.properties.get("HasUniqueRoleAssignments"))
+    return bool(securable.properties.get(_UNIQUE_PERMISSIONS))
 
 
 def _replay_role_assignments(
@@ -705,7 +703,7 @@ def _read_role_assignments(
     keeps its **title** in ``display_name`` (the normalized name would not match on
     the target).
     """
-    assignments = securable.role_assignments.expand(["Member", "RoleDefinitionBindings"]).get().execute_query()
+    assignments = securable.load_role_assignments().execute_query()
     result: list[PermissionEntry] = []
     for assignment in assignments:
         member = assignment.member

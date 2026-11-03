@@ -548,12 +548,18 @@ class ClientObject:
         """Ensures a property is loaded before executing an action."""
         return self.ensure_properties([name])
 
-    def ensure_properties(self, names: List[str]) -> Self:
-        """Ensures multiple properties are loaded before executing an action."""
+    def ensure_properties(self, names: List[str], *, refresh: bool = False) -> Self:
+        """Ensures multiple properties are loaded before executing an action.
+
+        Args:
+            names: The properties to load.
+            refresh: Load them again when this object already carries a value; a value read
+                earlier is a snapshot, not a reason to trust it for a decision made now.
+        """
         if self.property_ref_name is not None and self.property_ref_name not in names:
             names.append(self.property_ref_name)
 
-        names_to_include = [n for n in names if not self.is_property_available(n)]
+        names_to_include = list(names) if refresh else [n for n in names if not self.is_property_available(n)]
         if names_to_include:
             from office365.runtime.queries.read_entity import ReadEntityQuery
 
