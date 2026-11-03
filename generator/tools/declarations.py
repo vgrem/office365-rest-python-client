@@ -19,17 +19,19 @@ SERVED = "packages served"
 WITNESS = "a declaration names a name its getter reads"
 TYPED = "every projected column declares a type"
 NAVIGATION = "a client object member is a navigation"
+FACET = "a facet keyword names one of the declared roles"
 
-RULES = (SERVED, WITNESS, TYPED, NAVIGATION)
+RULES = (SERVED, WITNESS, TYPED, NAVIGATION, FACET)
 
 #: A rule whose subjects stop resolving reports "ok" while checking nothing.
 MIN_SERVED = 20
 MIN_PROJECTED = 11_000
 MIN_NAVIGATIONS = 800
+MIN_FACETED = 4
 
 _SHOWN = 20
 
-_UNITS = {SERVED: "packages", WITNESS: "members", TYPED: "columns", NAVIGATION: "members"}
+_UNITS = {SERVED: "packages", WITNESS: "members", TYPED: "columns", NAVIGATION: "members", FACET: "members"}
 
 
 @dataclass
@@ -154,15 +156,31 @@ def navigation_disagreements(package: Path) -> Tuple[List[str], int]:
     return findings, checked
 
 
+def facet_disagreements(package: Path) -> Tuple[List[str], int]:
+    """A ``facet=`` keyword is spelled with one of the role constants, not a string."""
+    roles = _facet_roles()
+    findings: List[str] = []
+    checked = 0
+    for path in _sources(model_roots(package)):
+        for cls in _classes(path.read_text(encoding="utf-8")):
+            for getter in _getters(cls):
+                for spelling in _facet_spellings(getter):
+                    checked += 1
+                    if spelling not in roles:
+                        findings.append(f"{path.relative_to(package)} {cls.name}.{getter.name} facet={spelling}")
+    return findings, checked
+
+
 def declaration_report(package: Optional[Path] = None) -> DeclarationReport:
     package = Path(package) if package is not None else model_package()
     report = DeclarationReport(package=package, roots=tuple(model_roots(package)))
-    floors = {SERVED: MIN_SERVED, TYPED: MIN_PROJECTED, NAVIGATION: MIN_NAVIGATIONS}
+    floors = {SERVED: MIN_SERVED, TYPED: MIN_PROJECTED, NAVIGATION: MIN_NAVIGATIONS, FACET: MIN_FACETED}
     for rule, run in (
         (SERVED, served_packages),
         (WITNESS, witness_disagreements),
         (TYPED, untyped_columns),
         (NAVIGATION, navigation_disagreements),
+        (FACET, facet_disagreements),
     ):
         findings, checked = run(package)
         floor = floors.get(rule)
@@ -191,6 +209,29 @@ def _getters(cls: ast.ClassDef) -> Iterator[ast.FunctionDef]:
         markers = [marker for marker in node.decorator_list if not isinstance(marker, ast.Call)]
         if any(getattr(marker, "id", "") == "property" for marker in markers):
             yield node
+
+
+def _facet_roles() -> Dict[str, str]:
+    """The names a facet may be spelled with, and the role each one declares."""
+    from office365.runtime.types import odata_property
+
+    roles = odata_property.FACETS
+    return {name: value for name, value in vars(odata_property).items() if isinstance(value, str) and value in roles}
+
+
+def _facet_spellings(getter: ast.FunctionDef) -> Iterator[str]:
+    """The ``facet=`` values of a getter's ``@odata`` call, spelled as the source spells them."""
+    for decorator in getter.decorator_list:
+        if not isinstance(decorator, ast.Call) or getattr(decorator.func, "id", "") != "odata":
+            continue
+        for keyword in decorator.keywords:
+            value = keyword.value
+            if keyword.arg != "facet":
+                continue
+            if isinstance(value, ast.Name):
+                yield value.id
+            elif isinstance(value, ast.Constant) and isinstance(value.value, str):
+                yield value.value
 
 
 def _declared_name(getter: ast.FunctionDef) -> Optional[str]:

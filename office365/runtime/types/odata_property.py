@@ -16,6 +16,16 @@ both service roots declare and one only the preview one does, and ``@version(PRE
 -- written as ``@version("beta")`` -- is the same difference for a whole type.
 """
 
+#: The roles a member can play, spelled here because they are what a caller asks for
+#: rather than what a service calls anything. ``authorship`` is who wrote an item -- the
+#: ids it is restored from and the payload members that carry them; ``permissions`` is
+#: its own access control; ``moderation`` is its approval state. A list item's author is
+#: not a column of the CSDL schema, so the roles only exist where the model declares them.
+AUTHORSHIP = "authorship"
+PERMISSIONS = "permissions"
+MODERATION = "moderation"
+FACETS = frozenset({AUTHORSHIP, MODERATION, PERMISSIONS})
+
 _FIELD_DECLARATIONS: Dict[type, Dict[str, "ODataPropertyMeta"]] = {}
 
 
@@ -135,6 +145,14 @@ class ODataPropertyMeta:
     #: stable spelling) and translates at the two edges, which is why a generated getter
     #: reads a name that is the same under either client.
     beta: Optional[Union[bool, str]] = None
+    #: The named group the member answers to, when a caller asks by role rather than by
+    #: name. A facet is not a projection: it holds columns and navigations alike, and a
+    #: name plays one role (``TypeSchema.of_facet``).
+    facet: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        if self.facet is not None and self.facet not in FACETS:
+            raise ValueError(f"unknown facet {self.facet!r}; known: {', '.join(sorted(FACETS))}")
 
 
 class odata(dict):
@@ -170,10 +188,20 @@ class odata(dict):
     the service does. Everything a list item carries beyond ``Id`` is such a name, so a
     reader who sees one knows the CSDL is silent about it and the wire is not -- and
     ``tests/unit/test_odata_metadata.py`` keeps the flag equal to that fact.
-    ``beta=`` records what the preview root does with the member -- declares it the same,
-    declares it under another name, declares it alone, or dropped it -- because one model
-    tree serves both roots and that is the whole difference (see also :func:`key`, which
-    states the same kind of fact about a type rather than about one of its attributes)::
+    ``facet=`` names the role a member plays, for a caller that asks by role: the
+    author/editor ids an item is restored from are ``facet="authorship"``, its own
+    access-control flag is ``facet="permissions"``, its approval state is
+    ``facet="moderation"``::
+
+        @odata(name="AuthorId", system=True, readonly=True, facet=AUTHORSHIP)
+        def author_id(self): ...
+
+    The keywords left are the two that describe one member's place in a *version* of the
+    service. ``beta=`` records what the preview root does with the member -- declares it the
+    same, declares it under another name, declares it alone, or dropped it -- because one
+    model tree serves both roots and that is the whole difference (see also :func:`key`,
+    which states the same kind of fact about a type rather than about one of its
+    attributes)::
 
         @odata(name="catalog", beta="accessPackageCatalog")  # both roots, renamed in preview
         def catalog(self): ...

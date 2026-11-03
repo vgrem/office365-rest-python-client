@@ -133,6 +133,16 @@ class ClientObject:
         ]
 
     @classmethod
+    def select_facet(cls, facet: str) -> List[str]:
+        """The declared columns that play ``facet``, as ``select_all()`` lists every one.
+
+        A caller that needs the names an item carries about who wrote it, or about its own
+        access control, asks for the role instead of spelling the columns: the spellings
+        stay in the declarations, where the getters that read them are.
+        """
+        return list(cls._schema.columns_of_facet(facet))
+
+    @classmethod
     def odata_name(cls, attr: str) -> str:
         """The OData name of a declared getter, given its Python attribute name.
 

@@ -17,7 +17,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, odata
 from office365.sharepoint.attachments.collection import AttachmentCollection
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
@@ -747,7 +747,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("ID", None)
 
-    @odata(name="AuthorId", system=True, readonly=True)
+    @odata(name="AuthorId", system=True, readonly=True, facet=AUTHORSHIP)
     @property
     def author_id(self) -> Optional[int]:
         """The site user id of the item's creator.
@@ -756,7 +756,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("AuthorId", None)
 
-    @odata(name="EditorId", system=True, readonly=True)
+    @odata(name="EditorId", system=True, readonly=True, facet=AUTHORSHIP)
     @property
     def editor_id(self) -> Optional[int]:
         """The site user id of whoever last edited the item.
@@ -1457,13 +1457,13 @@ class ListItem(SecurableObject):
         """Gets the OData__CopySource property"""
         return self.properties.get("OData__CopySource", None)
 
-    @odata(name="OData__ModerationStatus", system=True, readonly=True)
+    @odata(name="OData__ModerationStatus", system=True, readonly=True, facet=MODERATION)
     @property
     def moderation_status(self) -> Optional[int]:
         """Gets the OData__ModerationStatus property"""
         return self.properties.get("OData__ModerationStatus", None)
 
-    @odata(name="OData__ModerationComments", system=True)
+    @odata(name="OData__ModerationComments", system=True, facet=MODERATION)
     @property
     def moderation_comments(self) -> Optional[str]:
         """Gets the OData__ModerationComments property"""

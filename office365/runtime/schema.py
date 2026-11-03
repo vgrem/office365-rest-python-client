@@ -108,12 +108,22 @@ class TypeSchema:
     beta_only: frozenset[str] = frozenset()
     #: Names only the stable root declares: a preview client cannot name them either.
     stable_only: frozenset[str] = frozenset()
+    #: Facet name -> the declared columns that play it, in declaration order. A facet is
+    #: a role a caller asks for without spelling the names (an item's authorship, its own
+    #: access control, its approval state), and it is taken from :attr:`columns`, so a
+    #: faceted name the type makes unselectable is not offered through it either.
+    facets: Mapping[str, Tuple[str, ...]] = field(default_factory=_empty_map)
 
     @classmethod
     def build(cls, model: type) -> TypeSchema:
         """Read the declarations of ``model``, inheriting its base class's."""
         properties = _collect_properties(model)
         member_limits = MappingProxyType(collect_limit_meta(model))
+        columns = tuple(
+            name
+            for name, declared in properties.items()
+            if not declared.navigation and name not in getattr(model, "_unselectable", ())
+        )
         by_attr: Dict[str, str] = {}
         for name, declared in properties.items():
             if declared.attr:
@@ -122,11 +132,7 @@ class TypeSchema:
                 by_attr.setdefault(declared.attr, name)
         return cls(
             properties=MappingProxyType(properties),
-            columns=tuple(
-                name
-                for name, declared in properties.items()
-                if not declared.navigation and name not in getattr(model, "_unselectable", ())
-            ),
+            columns=columns,
             navigations=tuple(name for name, declared in properties.items() if declared.navigation),
             by_attr=MappingProxyType(by_attr),
             readonly=frozenset(name for name, declared in properties.items() if declared.readonly),
@@ -142,7 +148,17 @@ class TypeSchema:
             stable_only=frozenset(name for name, declared in properties.items() if declared.beta is False),
             class_limits=collect_class_limits(model),
             member_limits=member_limits,
+            facets=MappingProxyType(
+                {
+                    facet: tuple(name for name in columns if properties[name].facet == facet)
+                    for facet in sorted({declared.facet for declared in properties.values() if declared.facet})
+                }
+            ),
         )
+
+    def columns_of_facet(self, facet: str) -> Tuple[str, ...]:
+        """The declared columns that play ``facet``: the names a ``$select`` may carry."""
+        return self.facets.get(facet, ())
 
     def canonical(self, name: str) -> str:
         """The name the model holds for ``name``, whichever root spelled it.

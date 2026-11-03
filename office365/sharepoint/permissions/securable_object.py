@@ -7,7 +7,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import PERMISSIONS, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
@@ -197,7 +197,7 @@ class SecurableObject(Entity):
             _get_user_effective_permissions(user)
         return return_type
 
-    @odata(name="HasUniqueRoleAssignments", readonly=True)
+    @odata(name="HasUniqueRoleAssignments", readonly=True, facet=PERMISSIONS)
     @property
     def has_unique_role_assignments(self) -> Optional[bool]:
         """Specifies whether the role assignments are uniquely defined for this securable object or inherited from a

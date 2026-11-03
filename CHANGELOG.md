@@ -789,6 +789,15 @@ introduced.
 
 ### Changed
 
+- **A caller asks for a role, not for a name.** A member can now declare the role it
+  plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
+  `select_facet(AUTHORSHIP)` answers the columns of that role the way `select_all()`
+  answers every column. The migration layer reads its "always projected system
+  metadata", its author/editor exclusion set and its moderation columns off the model
+  instead of spelling them, and drops a non-scalar key silently only when the item's own
+  declarations say it is a navigation. The vocabulary is closed: an unknown `facet=` is
+  a `ValueError`, and `generator verify` reports one that is not spelled with a role
+  constant.
 - **A declaration carries no fact nobody reads.** `ODataPropertyMeta` and
   `@odata(...)` accepted `filterable`, `sortable`, `searchable`, `nullable` and
   `description`; of the 4,883 declarations in the tree, not one set any of them, and
