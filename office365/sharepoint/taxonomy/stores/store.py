@@ -80,7 +80,7 @@ class TermStore(TaxonomyItem):
         """Gets an integer collection of LCIDs."""
         return self.properties.get("languageTags", StringCollection())
 
-    @odata(name="termGroups")
+    @odata(name="termGroups", navigation=True)
     @property
     def term_groups(self) -> TermGroupCollection:
         """Gets a collection of the child Group objects"""

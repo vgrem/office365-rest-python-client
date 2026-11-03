@@ -1,40 +1,27 @@
-"""Generated getters declare their own OData metadata (name, navigation).
+"""What the OData declarations feed at run time: ``select_all()``, ``_schema``, navigations.
 
-The OData name is a fact about the CSDL, not something derivable from the attribute
-name: ``iCalUId`` and ``icalUid`` both round-trip through a snake-case guess, and only
-one of them is a real column. The generator writes the declaration from the metadata
-when it renders a member, so completeness is its job -- ``tests/tooling/test_generator_e2e.py``
-pins that a generated getter carries one, and a test here could only re-spell that rule.
-
-What is left for this module is the other half: a declaration that already exists must
-name a wire name its getter actually reads, and the facts it feeds -- ``select_all()``,
-``_schema``, navigations, nested fields -- must behave the way the declarations say.
+The declarations themselves are the generator's job -- completeness is pinned in
+``tests/tooling/test_generator_e2e.py``, and consistency between a declaration and the
+getter it describes by ``generator/tools/declarations.py`` (``python -m generator verify``).
+What is left here is the half a tenant call reaches: a declaration that exists must
+answer the way a reader asks, and the projections must be the ones the service accepts.
 """
 
 from __future__ import annotations
 
-import ast
-import importlib
-import pathlib
-import pkgutil
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, get_origin, get_type_hints
 
 import pytest
-from office365.communications.onlinemeetings.online_meeting_info import OnlineMeetingInfo
 from office365.directory.identity_set import IdentitySet
 from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
-from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.calendar.events.event import Event
 from office365.outlook.contacts.contact import Contact
 from office365.outlook.mail.messages.message import Message
 from office365.planner.assignment import PlannerAssignment
 from office365.runtime.client_object import ClientObject
-from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_value import ClientValue
-from office365.runtime.converters.value import declared_type
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.odata_property import _ODATA_MARKER, ODataPropertyMeta, field_declarations, odata
 from office365.sharepoint.client_context import ClientContext
@@ -44,100 +31,6 @@ from office365.sharepoint.navigation.navigation import Navigation
 from office365.sharepoint.navigation.nodes.node import NavigationNode
 from office365.sharepoint.publishing.pages.page import SitePage
 from office365.sharepoint.webs.web import Web
-
-_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-
-
-def _service_roots() -> list[tuple[str, str]]:
-    """Every package the model is generated for, with the document that declares it.
-
-    Derived from the tree rather than listed, so a package added tomorrow is covered by
-    the ratchet the day it lands -- a list is a thing to forget to add to, which is the
-    failure mode a ratchet exists to prevent. ``office365/sharepoint`` is the one tree
-    the Graph document does not describe; ``__pycache__`` is a cache, not a package.
-    """
-    graph = [
-        f"office365/{entry.name}"
-        for entry in sorted((_REPO_ROOT / "office365").iterdir())
-        if entry.is_dir() and entry.name not in {"__pycache__", "sharepoint"}
-    ]
-    return [("graph", root) for root in graph] + [("sharepoint", "office365/sharepoint")]
-
-
-_SERVICE_ROOTS = _service_roots()
-
-
-def test_the_ratchet_covers_every_package_under_office365() -> None:
-    """Only the byte-code cache is outside it; the v3 tree is in it as its own service."""
-    covered = {root for _, root in _SERVICE_ROOTS}
-    packages = {f"office365/{entry.name}" for entry in (_REPO_ROOT / "office365").iterdir() if entry.is_dir()}
-    assert packages - covered == {"office365/__pycache__"}
-
-
-def _getters(cls: ast.ClassDef) -> list[ast.FunctionDef]:
-    """The class's own property getters; a method's declaration names a function import."""
-    return [
-        node
-        for node in cls.body
-        if isinstance(node, ast.FunctionDef)
-        and any(
-            getattr(marker, "id", "") == "property" for marker in node.decorator_list if not isinstance(marker, ast.Call)
-        )
-    ]
-
-
-def _declared_name(getter: ast.FunctionDef) -> str | None:
-    for decorator in getter.decorator_list:
-        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", "") == "odata":
-            for keyword in decorator.keywords:
-                if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
-                    return str(keyword.value.value)
-    return None
-
-
-def _spelled_names(getter: ast.FunctionDef) -> set[str]:
-    """Every wire name the body reads off ``self.properties``."""
-    names: set[str] = set()
-    for node in ast.walk(getter):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "get":
-            owner = node.func.value
-            literal = node.args[0] if node.args else None
-            if isinstance(owner, ast.Attribute) and owner.attr == "properties" and isinstance(literal, ast.Constant):
-                if isinstance(literal.value, str):
-                    names.add(literal.value)
-        elif (
-            isinstance(node, ast.Subscript) and isinstance(node.value, ast.Attribute) and node.value.attr == "properties"
-        ):
-            if isinstance(node.slice, ast.Constant) and isinstance(node.slice.value, str):
-                names.add(node.slice.value)
-    return names
-
-
-@pytest.mark.parametrize(("_service", "root"), _SERVICE_ROOTS)
-def test_a_declaration_names_a_wire_name_its_getter_reads(_service: str, root: str) -> None:
-    """A declaration is a claim about one getter, and the getter's body is the witness.
-
-    The back-fill that put these declarations on files the generator will not re-render
-    has been retired -- it converged, and it could not see this: ``ListItemVersion.created_by``
-    carried ``FileVersion``, copied from the getter below it, so nothing mapped
-    ``CreatedBy`` while the body kept answering and every other gate stayed green. A
-    tree-wide test can still check that much without a copy of the CSDL and without
-    re-spelling the back-fill's rule, because the witness is the line the declaration sits on.
-    """
-    wrong = []
-    for path in sorted((_REPO_ROOT / root).rglob("*.py")):
-        source = path.read_text(encoding="utf-8")
-        if "@odata(" not in source:
-            continue
-        for cls in [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.ClassDef)]:
-            for getter in _getters(cls):
-                declared, spelled = _declared_name(getter), _spelled_names(getter)
-                if declared is not None and spelled and declared not in spelled:
-                    wrong.append(
-                        f"{path.relative_to(_REPO_ROOT)} {cls.name}.{getter.name} declares {declared!r},"
-                        f" reads {sorted(spelled)}"
-                    )
-    assert wrong == []
 
 
 def test_an_item_row_column_declares_that_the_metadata_is_silent():
@@ -182,45 +75,6 @@ def test_expand_all_is_the_complement_of_select_all():
     assert "instances" in expand_all
     assert "iCalUId" not in expand_all
     assert not set(expand_all) & set(Event.select_all())
-
-
-def _declared_kind(cls: type, name: str) -> Optional[str]:
-    """``"object"`` or ``"value"`` from a getter's annotation, ``None`` when unresolvable."""
-    prop = getattr(cls, name, None)
-    if not isinstance(prop, property) or prop.fget is None:
-        return None
-    try:
-        hint = get_type_hints(prop.fget).get("return")
-    except Exception:  # a TYPE_CHECKING-only import cannot be resolved at runtime
-        return None
-    target = get_origin(hint) or hint
-    if not isinstance(target, type):
-        return None
-    return "object" if issubclass(target, (ClientObject, ClientObjectCollection)) else "value"
-
-
-def test_a_declared_member_is_a_navigation_exactly_when_its_type_is_a_client_object():
-    """A link and a value are already separated by their base type.
-
-    So ``navigation`` is not a second fact to maintain: it is that separation spelled
-    where the class body can read it, and the CSDL agrees with the annotation by
-    construction. Where the annotation does not resolve (a ``TYPE_CHECKING``-only
-    import) there is nothing to compare, so the member is skipped — but every listed type
-    must still resolve enough to be checked, so the rule cannot quietly stop applying.
-    """
-    checked_types = (Event, Message, Contact, ListItem, Navigation, NavigationNode)
-    disagreements, covered = [], set()
-    for cls in checked_types:
-        for attr, name in cls._schema.by_attr.items():
-            kind = _declared_kind(cls, attr)
-            if kind is None:
-                continue
-            covered.add(cls)
-            declared = cls._schema.properties[name]
-            if (kind == "object") != bool(declared.navigation):
-                disagreements.append(f"{cls.__name__}.{attr}: {kind}, navigation={declared.navigation}")
-    assert disagreements == []
-    assert covered == set(checked_types)
 
 
 def test_a_column_the_service_refuses_is_declared_but_not_offered():
@@ -301,39 +155,6 @@ def test_odata_name_answers_for_an_attribute_and_refuses_an_unknown_one():
     # A naming inverse would happily answer i_cal_u_id here; the declaration knows better.
     with pytest.raises(AttributeError, match="not a declared property"):
         Event.odata_name("i_cal_u_id")
-
-
-def test_no_package_has_a_column_without_a_declared_type():
-    # A $select answers only the columns it names, so a column whose type does not
-    # resolve hydrates a bare dict where the model promises a value object. This used to
-    # be served for ``office365/outlook`` alone, because that was the only tree that
-    # passed; every package does now, so the allow-list is gone and the next regression
-    # lands on the package that caused it instead of on a list nobody extended.
-    untyped = []
-    for _, root in _SERVICE_ROOTS:
-        package = root.replace("/", ".")
-        for info in pkgutil.walk_packages([str(_REPO_ROOT / root)], prefix=f"{package}."):
-            module = importlib.import_module(info.name)
-            for cls in _entity_types(module):
-                for name in cls.select_all():
-                    if declared_type(cls, name) is None:
-                        untyped.append(f"{cls.__module__}.{cls.__name__}.{name}")
-    assert untyped == []
-
-
-def _entity_types(module):
-    for member in vars(module).values():
-        if isinstance(member, type) and issubclass(member, ClientObject) and member.__module__ == module.__name__:
-            yield member
-
-
-def test_a_nested_column_declares_the_type_its_getter_returns():
-    # These getters construct the type at runtime but used to leave the return
-    # annotation off, so a declared column resolved to None.
-    assert declared_type(Event, "start") is DateTimeTimeZone
-    assert declared_type(Event, "end") is DateTimeTimeZone
-    assert declared_type(Event, "onlineMeeting") is OnlineMeetingInfo
-    assert declared_type(Event, "attendees") is not None
 
 
 def test_one_declaration_serves_a_property_and_a_dataclass_field():

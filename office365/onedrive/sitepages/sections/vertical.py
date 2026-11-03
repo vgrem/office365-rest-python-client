@@ -9,7 +9,7 @@ from office365.runtime.types.odata_property import odata
 class VerticalSection(Entity):
     """Represents the vertical section in a given SharePoint page."""
 
-    @odata(name="webParts")
+    @odata(name="webParts", navigation=True)
     @property
     def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this vertical section."""

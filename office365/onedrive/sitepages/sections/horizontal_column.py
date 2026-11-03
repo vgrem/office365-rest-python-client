@@ -10,7 +10,7 @@ from office365.runtime.types.odata_property import odata
 class HorizontalSectionColumn(Entity):
     """Represents a vertical column in a given horizontal section."""
 
-    @odata(name="webParts")
+    @odata(name="webParts", navigation=True)
     @property
     def web_parts(self) -> EntityCollection[WebPart]:
         """The set of web parts in this section."""

@@ -223,21 +223,13 @@ def _marker_report_path(report_path: str) -> str:
     return str(path.with_name("beta_markers" + path.suffix))
 
 
-def report_duplicates(service: str) -> None:
-    """Print OData names claimed by more than one module (one shadows another)."""
-    options = GeneratorOptions.load(service, GENERATOR_DIR)
-    registry = TypeRegistry(options.modules.split(","), namespace=options.namespace)
-    duplicates = registry.duplicate_types()
-    if not duplicates:
-        print("No duplicate OData names found.")
-        return
-    print(f"{len(duplicates)} duplicate OData name(s):")
-    for name, modules in sorted(duplicates.items()):
-        chosen = registry.strict_module_for(name) or registry.module_for(name)
-        print(f"  {name}")
-        for module in modules:
-            marker = "  <- used" if module == chosen else ""
-            print(f"    {module}{marker}")
+def verify_model(package: Optional[str] = None) -> int:
+    """Check the rendered model against its declarations; exit 1 on any disagreement."""
+    from generator.tools.declarations import declaration_report
+
+    report = declaration_report(Path(package) if package else None)
+    print(report.render())
+    return 0 if report.ok else 1
 
 
 def fetch_services() -> None:
@@ -278,9 +270,6 @@ def _run_standalone_command(args) -> Optional[int]:
     if args.suggest_routing:
         suggest_routing(args.service)
         return 0
-    if args.report_duplicates:
-        report_duplicates(args.service)
-        return 0
     return None
 
 
@@ -290,8 +279,8 @@ SUBCOMMANDS: dict[str, Optional[str]] = {
     "fetch": "--fetch",
     "routing": "--suggest-routing",
     "services": "--fetch-services",
-    "duplicates": "--report-duplicates",
     "keys": "--plan-keys",
+    "verify": "--verify",
 }
 
 
@@ -363,9 +352,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="fetch the Graph docs service taxonomy (for --suggest-routing) and exit",
     )
     parser.add_argument(
-        "--report-duplicates",
-        action="store_true",
-        help="print OData names claimed by more than one module and exit",
+        "--verify",
+        nargs="?",
+        const="",
+        metavar="PACKAGE",
+        help="check the rendered model's declarations and exit (default: office365)",
     )
     parser.add_argument(
         "--diff-metadata",
@@ -425,6 +416,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
             log.info(f"Wrote {fetch(args.service, args.graph_version, args.fetch or None)}")
             return 0
+        if args.verify is not None:
+            return verify_model(args.verify or None)
         handled = _run_standalone_command(args)
         if handled is not None:
             return handled

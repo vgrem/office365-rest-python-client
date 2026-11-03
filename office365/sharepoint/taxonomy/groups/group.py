@@ -33,7 +33,7 @@ class TermGroup(TaxonomyItem):
         self.ensure_property("id").after_execute(lambda _: _group_resolved())
         return return_type
 
-    @odata(name="termSets")
+    @odata(name="termSets", navigation=True)
     @property
     def term_sets(self) -> TaxonomyItemCollection[TermSet]:
         """

@@ -61,8 +61,7 @@ into it with the prefix stripped —
 Placement names a file after the **class**, so two CSDL types that differ only by
 namespace resolve to one module — `microsoft.graph.Alert` and
 `microsoft.graph.security.Alert` both land in `office365/security/alerts/alert.py`.
-The v1.0 snapshot has 12 such modules. Nothing freezes that count:
-`python -m generator --report-duplicates` prints it on demand.
+The v1.0 snapshot has 12 such modules.
 
 The file holds one class, and `entity_type_name` is written once (a later run never
 overwrites it), so the class can answer for a member set it does not belong to.
