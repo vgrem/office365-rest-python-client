@@ -132,6 +132,16 @@ class SPFieldValidationException(SharePointException):
     _HRESULTS = ("-2146232832",)
     _TYPE_NAMES = ("SPFieldValidationException",)
 
+    @property
+    def is_missing_term(self) -> bool:
+        """Whether the rejection names a term store lookup, i.e. a Managed Metadata column
+        references a term set or term the store does not have.
+
+        Decided on the message: the HRESULT is the same as for every other field validation
+        failure, and the message is English-only.
+        """
+        return "term store" in self.message.lower()
+
 
 class SPFieldValueException(SharePointException):
     """Raised when a field value is malformed or otherwise invalid."""

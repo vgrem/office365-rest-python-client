@@ -27,13 +27,13 @@ from office365.migration.assessment.issue import AssessmentIssue
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.runner import ScanRunner
 from office365.migration.assessment.scanners import AssessmentOptions
-from office365.migration.sharepoint.adapters import is_taxonomy_validation
 from office365.migration.sharepoint.options import SharePointAssessmentOptions
 from office365.migration.sharepoint.registry import sharepoint_scan_pairs
 from office365.migration.sharepoint.scanners.summary import SiteScanSummary
 from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import emit_progress
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.exceptions import SPFieldValidationException
 
 if TYPE_CHECKING:
     from office365.runtime.operations import Progress
@@ -249,7 +249,7 @@ class MigrationAssessor(Entity):
             report.webs_skipped = True
         elif location.endswith("web/lists"):
             report.lists_skipped = True
-        if is_taxonomy_validation(error):
+        if isinstance(error, SPFieldValidationException) and error.is_missing_term:
             report.issues.append(
                 AssessmentIssue(
                     "warning",

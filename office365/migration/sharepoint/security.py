@@ -32,7 +32,6 @@ from typing import Any, Optional
 from office365.migration.base import PermissionEntry
 from office365.migration.sharepoint.adapters import (
     _DefaultGroups,
-    _perm_mask,
     _read_role_assignments,
     _TargetPrincipals,
 )
@@ -123,7 +122,7 @@ def capture_permission_levels(web) -> list[PermissionLevel]:
                 name=name,
                 description=role_definition.description,
                 order=role_definition.order,
-                mask=_perm_mask(role_definition) or "0",
+                mask=role_definition.perm_mask or "0",
                 kind=role_definition.role_type_kind,
             )
         )
@@ -152,7 +151,7 @@ def _apply_permission_levels(levels: list[PermissionLevel], target_web, warnings
     for level in levels:
         target = _match_level(level, by_name, by_kind)
         if target is not None:
-            target_mask = _perm_mask(target)
+            target_mask = target.perm_mask
             if target_mask is not None and target_mask != level.mask:
                 warnings.append(
                     f"permission level {level.name!r} exists on the target with a different permission set "
@@ -468,7 +467,7 @@ def _level_gaps(source_web, target_web) -> list[str]:
         if target is None:
             issues.append(f"permission level {level.name!r} was not created on the target")
             continue
-        target_mask = _perm_mask(target)
+        target_mask = target.perm_mask
         if target_mask is not None and target_mask != level.mask:
             issues.append(
                 f"permission level {level.name!r} exists on the target with a different permission set "

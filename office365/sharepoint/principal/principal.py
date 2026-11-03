@@ -40,6 +40,14 @@ class Principal(Entity):
 
     @odata(name="IsHiddenInUI")
     @property
+    def is_service_account(self) -> bool:
+        """Whether the login is the service rather than a person: the tenant's app principal
+        (``app@sharepoint``) or the system account (``SHAREPOINT\\system``)."""
+        login = (self.login_name or "").lower()
+        return "app@sharepoint" in login or "sharepoint\\system" in login
+
+    @odata(name="IsHiddenInUI")
+    @property
     def is_hidden_in_ui(self) -> Optional[bool]:
         """Gets the login name of the principal."""
         return self.properties.get("IsHiddenInUI", None)

@@ -24,6 +24,12 @@ class RoleDefinition(Entity):
         """
         return self.properties.get("BasePermissions", BasePermissions())
 
+    @property
+    def perm_mask(self) -> Optional[str]:
+        """The rights it grants as the single decimal ``PermMask`` a manifest spells."""
+        base = self.properties.get("BasePermissions")
+        return str(base.value) if isinstance(base, BasePermissions) else None
+
     @odata(name="Id")
     @property
     def id(self) -> Optional[int]:

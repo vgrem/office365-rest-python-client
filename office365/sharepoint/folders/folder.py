@@ -52,11 +52,20 @@ _DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload thresho
 class Folder(Entity):
     """Represents a folder in a SharePoint Website."""
 
+    #: Library-relative entries SharePoint owns and recreates on a copy: the forms folder
+    #: every library carries and the file that renders a folder.
+    SYSTEM_PATHS = ("Forms", "desktop.ini")
+
     def __str__(self):
         return self.name or self.entity_type_name
 
     def __repr__(self):
         return self.server_relative_url or self.unique_id or self.entity_type_name
+
+    @classmethod
+    def is_system_path(cls, rel: str, extra: Iterable[str] = ()) -> bool:
+        """Whether a library-relative path is one SharePoint owns rather than user content."""
+        return any(rel == entry or rel.startswith(entry + "/") for entry in (*cls.SYSTEM_PATHS, *extra))
 
     @staticmethod
     def from_url(abs_url: str):

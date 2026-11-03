@@ -11,7 +11,7 @@ Lazy imports keep the migration core client-agnostic.
 from __future__ import annotations
 
 import io
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
@@ -39,6 +39,7 @@ from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
 from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMISSIONS
+from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
@@ -342,11 +343,6 @@ def _moderation_state(properties: dict) -> dict:
     return state
 
 
-#: Library-relative paths SharePoint owns and recreates on the target (its forms
-#: folder and the folder rendering file). Migrating them collides server-side and
-#: clobbers system pages client-side, so the source adapter skips them.
-_LIBRARY_SYSTEM_PATHS = ("Forms", "desktop.ini")
-
 #: SiteAssets is the one library that also holds per-site infrastructure — the
 #: site icon and the auto-provisioned OneNote folder.
 _SITE_ASSETS_URL_SUFFIX = "/SiteAssets"
@@ -355,10 +351,8 @@ _SITE_ASSETS_URL_SUFFIX = "/SiteAssets"
 def _site_assets_scaffolding(folder) -> tuple[str, ...]:
     """SiteAssets-only SharePoint-owned entries for this web (empty otherwise).
 
-    Every modern site provisions ``SiteAssets/<web title> Notebook``; migrating
-    it (or reporting it) yields a phantom missing/extra pair because the target's
-    folder carries the *target* web's name. The site icon is site branding whose
-    bytes are meaningless on another site. Both are skipped on each side.
+    The notebook carries the *web's* title and the site icon is site branding, so both
+    differ on the target; each side skips its own.
     """
     url = (folder.server_relative_url or "").rstrip("/")
     if not url.endswith(_SITE_ASSETS_URL_SUFFIX):
@@ -373,82 +367,21 @@ def _site_assets_scaffolding(folder) -> tuple[str, ...]:
     return tuple(names)
 
 
-def _is_system_path(rel: str, extra: tuple[str, ...] = ()) -> bool:
-    """Whether a library-relative path is SharePoint-owned scaffolding, not user content."""
-    entries = (*_LIBRARY_SYSTEM_PATHS, *extra)
-    return any(rel == entry or rel.startswith(entry + "/") for entry in entries)
-
-
-def is_taxonomy_validation(exc: Exception) -> bool:
-    """True when a request failed because a Managed Metadata (taxonomy) column
-    references a term set / term that no longer exists.
-
-    SharePoint raises ``SPFieldValidationException`` ("the given guid does not
-    exist in the term store") while composing the item payload — the exact case
-    that makes a plain list-items read fail.
-    """
-    text = f"{getattr(exc, 'code', '') or ''} {getattr(exc, 'message', '') or ''} {exc}".lower()
-    return "spfieldvalidationexception" in text and "term store" in text
-
-
-def taxonomy_internal_names(fields: Iterable[Field]) -> list[str]:
-    """Internal names of Managed Metadata columns in a loaded field set."""
-    return list(dict.fromkeys(field.internal_name for field in fields if field.internal_name and field.is_taxonomy))
-
-
-def _perm_mask(role_definition: Any) -> str | None:
-    """The decimal ``PermMask`` a role definition grants (``None`` when it grants none)."""
-    base = getattr(role_definition, "base_permissions", None)
-    if base is None:
-        return None
-    try:
-        return str(base.value)
-    except (TypeError, ValueError):
-        return None
-
-
 # How far a group's owner chain is followed (a group owned by a group owned by a
 # user is the normal depth for the default site groups).
 _MAX_GROUP_OWNER_DEPTH = 4
 
 
 def _principal_kind(member: Any) -> str | None:
-    """Classify a role-assignment member for the server-side package target.
-
-    The question is narrower than "what is this principal?": can ``UserGroup.xml``
-    express it at all? A user can (by PUID) and a **site group** can (by title,
-    which works because site groups are site-scoped), so those are ``"user"`` and
-    ``"group"``; a distribution list, a security group and any principal whose
-    ``PrincipalType`` was not projected stay ``None``. Only the package target
-    consults this — the REST replay resolves a principal by its name shape and
-    grants a DL/security group normally, which is why this is not a property of
-    ``Principal`` in the library.
-
-    ``member`` may be ``None`` (an owner that could not be read), and
-    ``principal_type`` is ``None`` for a value the enum does not know —
-    ``parse_enum`` yields ``None`` rather than raising (verified), so both are
-    treated as unclassifiable instead of guessed at.
-    """
+    """What ``UserGroup.xml`` can express for this role-assignment member: a user by PUID
+    (``"user"``) or a site group by title (``"group"``); a distribution or security group
+    and an unprojected ``PrincipalType`` are ``None``."""
     ptype = getattr(member, "principal_type", None)
     if ptype == PrincipalType.User:
         return "user"
     if ptype == PrincipalType.SharePointGroup:
         return "group"
     return None
-
-
-def _is_system_principal(user: Any) -> bool:
-    """Whether a resolved user is a tenant system/app account.
-
-    The Migration API cannot set ``Author``/``Editor`` to a system account, and a
-    ``ValidateUpdateListItem`` batch containing one is rejected wholesale — which
-    would silently discard the ``Created``/``Modified`` restoration we send in the
-    same call. Items created by the migration app itself are authored by such an
-    account, so setting it is a no-op anyway; skipping it keeps the timestamp write
-    intact.
-    """
-    login = (getattr(user, "login_name", None) or "").lower()
-    return "app@sharepoint" in login or "sharepoint\\system" in login
 
 
 def _has_unique_role_assignments(securable, *, refresh: bool = False) -> bool:
@@ -792,7 +725,7 @@ def _read_role_assignments(
             if not role.name:
                 continue
             roles.append(role.name)
-            mask = _perm_mask(role)
+            mask = role.perm_mask
             if mask is not None:
                 role_masks[role.name] = mask
         entry = PermissionEntry(
@@ -854,11 +787,11 @@ class SharePointListSource:
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
         try:
             loaded = self._load_items(self._select)
-        except Exception as e:  # noqa: BLE001 — see the taxonomy fallback below
-            # A full read of a list with an orphaned Managed Metadata column
-            # fails server-side; re-enumerate excluding those columns instead
-            # of aborting the export. An explicit --select is honored as-is.
-            if not is_taxonomy_validation(e) or self._select:
+        except SPFieldValidationException as e:
+            # A full read of a list with an orphaned Managed Metadata column fails
+            # server-side; re-enumerate without those columns. An explicit --select
+            # is honored as-is.
+            if not e.is_missing_term or self._select:
                 raise
             self.warnings.append(
                 "Full item read failed — a Managed Metadata column references a missing term set; "
@@ -905,7 +838,7 @@ class SharePointListSource:
         stays on the list's user columns only.
         """
         fields = self._list.fields.get().execute_query()
-        taxonomy = taxonomy_internal_names(fields)
+        taxonomy = list(dict.fromkeys(f.internal_name for f in fields if f.internal_name and f.is_taxonomy))
         self.warnings.append(f"excluded Managed Metadata column(s): {', '.join(sorted(taxonomy)) or 'none'}")
         columns = ["Id"]
         for field in fields:
@@ -2241,9 +2174,9 @@ class SharePointListTarget:
             return
         author = self._principals().user(item.author.login_name if item.author else None)
         editor = self._principals().user(item.editor.login_name if item.editor else None)
-        if author is not None and _is_system_principal(author):
+        if author is not None and author.is_service_account:
             author = None
-        if editor is not None and _is_system_principal(editor):
+        if editor is not None and editor.is_service_account:
             editor = None
         if author is None and editor is None and not self._pending_approval.get(item.dest_path):
             return
@@ -2418,7 +2351,7 @@ class SharePointLibrarySource:
         for folder in loaded_folders:
             url = folder.server_relative_url or ""
             rel = _rel(url)
-            if not rel or rel in seen or _is_system_path(rel, extra):
+            if not rel or rel in seen or self._folder.is_system_path(rel, extra):
                 continue
             seen.add(rel)
             self._folders[rel] = folder
@@ -2437,7 +2370,7 @@ class SharePointLibrarySource:
         for file in loaded:
             url = file.server_relative_url or ""
             rel = _rel(url)
-            if _is_system_path(rel, extra):
+            if self._folder.is_system_path(rel, extra):
                 continue
             self._files[rel] = file
             author_id = parse_int(file.author.id)
@@ -3033,7 +2966,7 @@ class SharePointLibraryTarget:
         # notebook) is recreated server-side, never migrated, so it must not be
         # reported as target-only content during verification. Source folder paths
         # carry a trailing slash; target folder paths mirror that.
-        return [p for p in paths if p != "/" and not _is_system_path(p, extra)]
+        return [p for p in paths if p != "/" and not self._folder.is_system_path(p, extra)]
 
     @site_access(SiteLevel.READ)
     def read(self, item: MigrationItem) -> bytes:
@@ -3115,9 +3048,9 @@ class SharePointLibraryTarget:
             return
         author = self._principals().user(item.author.login_name if item.author else None)
         editor = self._principals().user(item.editor.login_name if item.editor else None)
-        if author is not None and _is_system_principal(author):
+        if author is not None and author.is_service_account:
             author = None
-        if editor is not None and _is_system_principal(editor):
+        if editor is not None and editor.is_service_account:
             editor = None
         if author is None and editor is None:
             return
