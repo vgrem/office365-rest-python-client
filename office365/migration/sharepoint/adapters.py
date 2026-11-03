@@ -635,7 +635,7 @@ def _read_role_assignments(
     keeps its **title** in ``display_name`` (the normalized name would not match on
     the target).
     """
-    assignments = securable.load_role_assignments().execute_query()
+    assignments = securable.get_role_assignments().execute_query()
     result: list[PermissionEntry] = []
     for assignment in assignments:
         member = assignment.member

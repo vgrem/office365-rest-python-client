@@ -840,7 +840,7 @@ introduced.
   commits from the first `SiteLevel` to the last dot-notation read, and the two offline
   permission tests now guard the whole surface instead of a shrinking remainder.
 - **A securable object's ACL is read through the type, not through a spelled-out `$expand`.**
-  `SecurableObject.load_role_assignments()` expands what `RoleAssignment.expand_all()`
+  `SecurableObject.get_role_assignments()` expands what `RoleAssignment.expand_all()`
   declares — `Member`, `RoleDefinitionBindings` — and queues the read like every other
   builder: run `execute_query()` and read the collection it returns. The migration layer
   and two examples had each spelled that navigation pair, one of them in a helper that

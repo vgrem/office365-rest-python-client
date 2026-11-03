@@ -231,7 +231,7 @@ class SecurableObject(Entity):
         )
 
     @site_access(SiteLevel.READ)
-    def load_role_assignments(self) -> RoleAssignmentCollection:
+    def get_role_assignments(self) -> RoleAssignmentCollection:
         """Queue a read of this object's role assignments, each with its member and its role definitions.
 
         The navigations a reader needs are expanded by the declaration instead of by the

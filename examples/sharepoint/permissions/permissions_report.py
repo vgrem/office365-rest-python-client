@@ -39,7 +39,7 @@ def _role_rows(role_assignments) -> list[str]:
 
 
 def _print_securable(label: str, securable) -> None:
-    assignments = securable.load_role_assignments()
+    assignments = securable.get_role_assignments()
     securable.ensure_properties(SecurableObject.select_facet(PERMISSIONS))
     securable.context.execute_query()  # the flag and the assignments in one batch
     unique = "unique" if securable.has_unique_role_assignments else "inherited"
