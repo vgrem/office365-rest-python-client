@@ -194,6 +194,18 @@ introduced.
   writes, and a mode the metadata cannot be trusted for (`keys_authoritative=False`,
   SharePoint states 613 keys, 284 of which name a member no class has) refuses to write at all.
 
+**SharePoint items**
+
+- `ListItem.set_system_metadata(values, new_document_update=False)` writes the system
+  fields of a list item in one `ValidateUpdateListItem` request: a `datetime` travels
+  as `...Z` UTC (what `datesInUTC` requires), a `User` as its login, a string as given,
+  and an `OData_`-escaped name — `OData__ModerationStatus` — under the internal name the
+  write takes. Every value shares one request because a system update re-approves the
+  item, so a second write would discard the approval state the first one set;
+  `new_document_update=True` takes the CSOM `UpdateOverwriteVersion` path, so a document
+  keeps its version count. A field the service refuses comes back on the result
+  (`ListItemFormUpdateValue.HasException` / `ErrorMessage`) instead of being dropped.
+
 **Outlook mail**
 
 - `MessageCollection.add_from_mime(data)` creates a draft from RFC 822 bytes —

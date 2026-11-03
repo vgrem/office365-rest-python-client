@@ -75,6 +75,34 @@ if TYPE_CHECKING:
     )
 
 
+def _system_field_name(name: str) -> str:
+    """The name ``ValidateUpdateListItem`` takes for a field this model declares.
+
+    The moderation columns are declared under their escaped wire name
+    (``OData__ModerationStatus``) and written without the prefix.
+    """
+    return name[len("OData_") :] if name.startswith("OData_") else name
+
+
+def _system_field_value(value: Any) -> Any:
+    """A form value in the shape ``ValidateUpdateListItem`` takes it.
+
+    ``datesInUTC`` reads a date as a ``...Z`` UTC string, a user is its lookup value,
+    and a string is already whatever the caller meant it to be.
+    """
+    from office365.sharepoint.fields.lookup_value import FieldLookupValue
+    from office365.sharepoint.fields.user_value import FieldUserValue
+    from office365.sharepoint.principal.users.user import User
+
+    if isinstance(value, datetime.datetime):
+        return iso_z(value)
+    if isinstance(value, User):
+        return FieldUserValue(value.id, value.login_name)
+    if isinstance(value, FieldLookupValue):
+        return value
+    return str(value)
+
+
 #: What one row may hold. The 300 reserved bytes the published ceiling accounts for are why
 #: this is a boundary on the item, not on a column.
 @limit(Limits.LIST_ROW_BYTES)
@@ -427,6 +455,28 @@ class ListItem(SecurableObject):
 
         self.ensure_properties(["Id", "ParentList"]).after_execute(lambda _: _item_resolved())
         return return_type
+
+    @site_access(SiteLevel.WRITE)
+    def set_system_metadata(
+        self, values: Dict[str, Any], new_document_update: bool = False
+    ) -> ClientResult[ClientValueCollection[ListItemFormUpdateValue]]:
+        """Write system fields of the item in one request.
+
+        ``values`` is keyed by a field name as this model declares it — a ``datetime`` is
+        written as ``...Z`` UTC, a :class:`~office365.sharepoint.principal.users.user.User` as
+        its lookup value, a string as given (a caller holding a local wall-clock value
+        converts it itself). An ``OData_``-escaped name is written without the prefix.
+
+        Every value rides in one request because a system update re-approves the item: a
+        second write would discard the approval state the first one set. ``new_document_update``
+        (the CSOM ``UpdateOverwriteVersion`` path) keeps a document's version count.
+        """
+        form_values = {
+            _system_field_name(name): _system_field_value(value) for name, value in values.items() if value is not None
+        }
+        if not form_values:
+            return ClientResult(self.context, ClientValueCollection(ListItemFormUpdateValue))
+        return self.validate_update_list_item(form_values, new_document_update=new_document_update, dates_in_utc=True)
 
     @site_access(SiteLevel.WRITE)
     def validate_update_list_item(

@@ -41,7 +41,6 @@ from office365.runtime.operations import emit_progress
 from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMISSIONS
 from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
-from office365.sharepoint.fields.user_value import FieldUserValue
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.type import PrincipalType
@@ -100,19 +99,17 @@ _PERSON_EXCLUDED = frozenset(name[: -len("Id")] for name in ListItem.select_face
 
 #: Moderation columns of a list item. They only exist on a list whose
 #: ``EnableModeration`` is on, so selecting them unconditionally fails outright.
+#: They are ordinary record content, yet the system update that restores timestamps
+#: re-approves an item, so captured state rides in that same write (live-probed: both
+#: fields are accepted there, and no version is created).
 _MODERATION_FIELDS = ListItem.select_facet(MODERATION)
 
-#: Content-approval state: record key (OData escaped form) -> ``ValidateUpdateListItem``
-#: field name, which is the internal name the escaping was applied to. It is ordinary
-#: record content, but a *system update* re-approves the item, so every metadata write
-#: that restores timestamps/authorship would silently discard it; the captured state is
-#: therefore folded into that same write (live-probed: both fields are accepted, and no
-#: version is created).
-_APPROVAL_FIELDS = {name: name[len("OData_") :] for name in _MODERATION_FIELDS}
+#: The moderation column carrying the approval status; its sibling carries the comment.
+_MODERATION_STATUS = ListItem.odata_name("moderation_status")
 
 #: Approval status of an approved item (0 = draft/pending, 1 = rejected, 2 = approved).
 #: A freshly uploaded document is approved, so only the other states are worth writing.
-_APPROVED_STATUS = "2"
+_APPROVED_STATUS = 2
 
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
@@ -328,19 +325,8 @@ def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
 
 
 def _moderation_state(properties: dict) -> dict:
-    """The approval fields of a list item, in ``ValidateUpdateListItem`` form.
-
-    Only present ones are returned: an empty ``_ModerationComments`` normalizes to
-    ``None`` server-side, so a blank comment is not carried.
-    """
-    status = properties.get("OData__ModerationStatus")
-    state: dict = {}
-    if status is not None:
-        state["_ModerationStatus"] = str(status)
-    comments = properties.get("OData__ModerationComments")
-    if comments:
-        state["_ModerationComments"] = str(comments)
-    return state
+    """The approval fields a list item carries; a blank comment is not one of them."""
+    return {name: properties[name] for name in _MODERATION_FIELDS if properties.get(name) not in (None, "")}
 
 
 #: SiteAssets is the one library that also holds per-site infrastructure — the
@@ -1346,9 +1332,9 @@ class SharePointListTarget:
     # values by login (see ``_remap_typed_values``).
     supports_typed_values = True
 
-    # Marks this target as replaying a list item's approval state (``_ModerationStatus``
-    # and its comments) in the metadata write, which a system update would otherwise
-    # reset. Check-out and draft-version state are still not carried.
+    # Marks this target as replaying a list item's approval state (its moderation status
+    # and comment) in the metadata write, which a system update would otherwise reset.
+    # Check-out and draft-version state are still not carried.
     supports_item_state = True
 
     #: The single-item :meth:`write` only queues a create; a chunk must be flushed
@@ -1525,11 +1511,7 @@ class SharePointListTarget:
             record["ContentTypeId"] = self._content_type_map.resolve(content_type_id)
         if self._identity_field:
             record[self._identity_field] = item.dest_path
-        approval = {
-            field_name: str(record[record_key])
-            for record_key, field_name in _APPROVAL_FIELDS.items()
-            if record.get(record_key) is not None
-        }
+        approval = {name: record[name] for name in _MODERATION_FIELDS if record.get(name) is not None}
         if approval:
             self._pending_approval[item.dest_path] = approval
         return record
@@ -2130,32 +2112,22 @@ class SharePointListTarget:
     def apply_timestamps(self, item: MigrationItem) -> None:
         """Best-effort: restore ``Created``/``Modified`` on the written item.
 
-        Uses ``ValidateUpdateListItem`` with ``bNewDocumentUpdate=True`` -- a
-        system update (the CSOM ``UpdateOverwriteVersion`` path), so the metadata
-        lands **without** creating a new version and a migrated record keeps its
-        original version instead of accumulating one version per fidelity write.
-        ``datesInUTC=True`` requires the ``...Z`` UTC form. Authorship values
-        resolved for the same item are folded into this final write so both land
-        atomically, in one system update.
+        Authorship and approval state resolved for the same item are folded in, so all of
+        them land atomically in one system update.
         """
         target_item = self._target_item(item)
         if target_item is None:
             return
-        form_values: dict = {}
-        created = iso_z(item.created)
-        modified = iso_z(item.modified)
-        if created:
-            form_values["Created"] = created
-        if modified:
-            form_values["Modified"] = modified
-        form_values.update(self._pending_authorship.pop(item.dest_path, {}))
-        form_values.update(self._pending_approval.pop(item.dest_path, {}))
-        if form_values:
-            self._fresh_reads.pop(str(item.dest_path), None)
-            result = target_item.validate_update_list_item(
-                form_values, dates_in_utc=True, new_document_update=True
-            ).execute_query()
-            _report_rejected_fields(result, self.warnings, f"timestamps {item.dest_path}")
+        pending = dict(self._pending_authorship.pop(item.dest_path, {}))
+        pending.update(self._pending_approval.pop(item.dest_path, {}))
+        if not (item.created or item.modified or pending):
+            return
+        self._fresh_reads.pop(str(item.dest_path), None)
+        result = target_item.set_system_metadata(
+            {"Created": iso_z(item.created), "Modified": iso_z(item.modified), **pending},
+            new_document_update=True,
+        ).execute_query()
+        _report_rejected_fields(result, self.warnings, f"timestamps {item.dest_path}")
 
     def apply_authorship(self, item: MigrationItem) -> None:
         """Best-effort: resolve ``Author``/``Editor`` and cache them for one write.
@@ -2163,11 +2135,11 @@ class SharePointListTarget:
         A principal is applied only when its login name resolves to a target user
         (``EnsureUser``); unresolved principals are skipped (same-tenant only).
 
-        Nothing is sent here. ``ValidateUpdateListItem`` is one request per call, so
-        writing the resolved principals immediately and then again with the
-        timestamps cost every preserved item two system updates. The values are
-        cached and folded into the timestamps write, or written by
-        :meth:`finalize_fidelity` when timestamps are not preserved.
+        Nothing is sent here. ``ValidateUpdateListItem`` is one request per call, so a
+        separate authorship write followed by the timestamps write would cost every
+        preserved item two system updates. The resolved principals are cached and
+        written by :meth:`apply_timestamps`, or by :meth:`finalize_fidelity` when
+        timestamps are not preserved.
         """
         target_item = self._target_item(item)
         if target_item is None:
@@ -2182,9 +2154,9 @@ class SharePointListTarget:
             return
         form_values: dict = {}
         if author is not None:
-            form_values["Author"] = FieldUserValue(author.id, author.login_name)
+            form_values["Author"] = author
         if editor is not None:
-            form_values["Editor"] = FieldUserValue(editor.id, editor.login_name)
+            form_values["Editor"] = editor
         # Replay the approval state here too: this write is itself a system update, so
         # on a run that restores authorship without timestamps it is the last one.
         form_values.update(self._pending_approval.get(item.dest_path, {}))
@@ -2206,9 +2178,7 @@ class SharePointListTarget:
         target_item = self._target_item(item)
         if target_item is None:
             return
-        result = target_item.validate_update_list_item(
-            form_values, dates_in_utc=True, new_document_update=True
-        ).execute_query()
+        result = target_item.set_system_metadata(form_values, new_document_update=True).execute_query()
         _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
 
     @site_access(SiteLevel.MANAGE)
@@ -2565,7 +2535,8 @@ class SharePointLibrarySource:
         self._file_authors()
         state = (self._item_moderation or {}).get(item.source_path)
         if state:
-            metadata["moderation_status"] = state.get("_ModerationStatus")
+            status = state.get(_MODERATION_STATUS)
+            metadata["moderation_status"] = None if status is None else str(status)
         return metadata
 
     def read_authorship(self, item: MigrationItem) -> tuple[str | None, str | None]:
@@ -2683,7 +2654,7 @@ class SharePointLibrarySource:
         state = (self._item_moderation or {}).get(item.source_path)
         if not state:
             return None
-        status = state.get("_ModerationStatus")
+        status = state.get(_MODERATION_STATUS)
         if status is None or status == _APPROVED_STATUS:
             return None
         return state
@@ -2780,8 +2751,8 @@ class SharePointLibraryTarget:
             if utc is None:
                 continue
             if not utc.endswith("Z"):
-                # Unparseable value: pass it through unchanged so a rejection is
-                # surfaced by ``_report_rejected_fields`` rather than silently lost.
+                # Unparseable value: pass it through unchanged so the service names the
+                # value instead of this layer having dropped it.
                 outputs[index] = str(value)
                 continue
             cached = self._local_cache.get(utc)
@@ -3025,10 +2996,8 @@ class SharePointLibraryTarget:
         securable = self._securable(item)
         if securable is None:
             return
-        result = securable.validate_update_list_item(
-            form_values,
-            dates_in_utc=True,
-            new_document_update=item.item_type != "folder",
+        result = securable.set_system_metadata(
+            form_values, new_document_update=item.item_type != "folder"
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"timestamps {item.dest_path}")
 
@@ -3054,11 +3023,11 @@ class SharePointLibraryTarget:
             editor = None
         if author is None and editor is None:
             return
-        form_values: dict[str, FieldUserValue] = {}
+        form_values: dict[str, object] = {}
         if author is not None:
-            form_values["Author"] = FieldUserValue(author.id, author.login_name)
+            form_values["Author"] = author
         if editor is not None:
-            form_values["Editor"] = FieldUserValue(editor.id, editor.login_name)
+            form_values["Editor"] = editor
         self._pending_authorship[item.dest_path] = dict(form_values)
 
     @site_access(SiteLevel.WRITE)
@@ -3076,10 +3045,8 @@ class SharePointLibraryTarget:
         securable = self._securable(item)
         if securable is None:
             return
-        result = securable.validate_update_list_item(
-            form_values,
-            dates_in_utc=True,
-            new_document_update=item.item_type != "folder",
+        result = securable.set_system_metadata(
+            form_values, new_document_update=item.item_type != "folder"
         ).execute_query()
         _report_rejected_fields(result, self.warnings, f"authorship {item.dest_path}")
 
@@ -3115,11 +3082,7 @@ class SharePointLibraryTarget:
         if securable is None:
             return
         try:
-            result = securable.validate_update_list_item(
-                dict(state),
-                dates_in_utc=True,
-                new_document_update=True,
-            ).execute_query()
+            result = securable.set_system_metadata(dict(state), new_document_update=True).execute_query()
         except Exception as e:  # noqa: BLE001 — approval state is best-effort
             self.warnings.append(f"approval state for {item.dest_path!r} could not be restored: {e}")
             return
@@ -3157,7 +3120,7 @@ class SharePointLibraryTarget:
         if securable is None:
             return None
         try:
-            securable.select(["OData__ModerationStatus"]).get().execute_query()
+            securable.select([_MODERATION_STATUS]).get().execute_query()
         except Exception:  # noqa: BLE001 — a library without moderation has no such column
             return None
         status = securable.moderation_status
