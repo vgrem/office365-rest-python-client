@@ -74,14 +74,12 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["is_document_library", "is_migratable_list", "resolve_site_task", "resolve_task"]
 
-#: SharePoint's own infrastructure templates (user information, catalogs,
-#: workflow/translation plumbing) plus the Site Pages library, which needs
-#: page-aware handling the generic adapters do not provide yet.
-_SYSTEM_BASE_TEMPLATES = frozenset({112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 125, 126, 127, 130})
-
 #: ``SPBaseType.DocumentLibrary`` — libraries hold files; everything else is a
 #: record list.
 _DOCUMENT_LIBRARY = BaseType.DocumentLibrary.value
+
+#: ``SPListTemplateType.WebPageLibrary`` — the modern pages library.
+_WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
 
 
 def is_document_library(sp_list: SPList) -> bool:
@@ -92,19 +90,22 @@ def is_document_library(sp_list: SPList) -> bool:
 def is_migratable_list(sp_list: SPList) -> bool:
     """Whether a list/library takes part in a whole-site migration.
 
-    Skips hidden lists, SharePoint infrastructure templates, and system lists
-    that cannot be deleted (e.g. ``User Information``). A business-data (BCS)
-    external list is skipped too: it is a view over a BDC model that a copy
-    cannot provision, so :func:`~office365.migration.sharepoint.handoff.detect_handoff`
-    reports it instead of the structure replay creating a hollow list.
+    Skips hidden lists and the ones the service refuses to delete: that is how SharePoint
+    marks the lists it provisions for itself (user information, the galleries, the
+    taxonomy list), whatever template each came from. The Site Pages library is skipped by
+    name — a page row copied as a list item carries no canvas, so pages travel through
+    :func:`~office365.migration.sharepoint.pages.copy_site_pages` instead. A business-data
+    (BCS) external list is skipped too: it is a view over a BDC model that a copy cannot
+    provision, so :func:`~office365.migration.sharepoint.handoff.detect_handoff` reports it
+    instead of the structure replay creating a hollow list.
     """
     if sp_list.hidden:
         return False
     if sp_list.allow_deletion is False:
         return False
-    if sp_list.base_template == EXTERNAL_LIST_TEMPLATE:
+    if sp_list.base_template in (EXTERNAL_LIST_TEMPLATE, _WEB_PAGE_LIBRARY):
         return False
-    return sp_list.base_template not in _SYSTEM_BASE_TEMPLATES
+    return True
 
 
 def resolve_task(
