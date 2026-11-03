@@ -158,17 +158,13 @@ def _folder_value_columns(fields: list[Any]) -> set[str]:
     }
 
 
-#: Folder (document library) record columns that never travel to the target, beyond
-#: what the model declares server-assigned: the name a copy states by uploading the
-#: file rather than by writing a column, and three library-only bookkeeping columns
-#: that no model type declares. A ``ContentTypeId`` is kept — a document set's content
-#: type is part of what makes the folder what it is.
-_FOLDER_RECORD_EXCLUDED = (_CONTENT_EXCLUDED - {"ContentTypeId"}) | {
-    "FileLeafRef",
-    "SortBehavior",
-    "SMTotalFileStreamSize",
-    "SMTotalFileCount",
-}
+#: What a folder record never travels to the target with, or never compares by: the
+#: columns the model declares server-assigned or as navigations -- minus the content
+#: type, because a document set's content type is part of what makes the folder what it
+#: is. A library's sort/stream bookkeeping columns are hidden read-only ones the field
+#: scan already skips, and ``FileLeafRef`` is a ``FieldType.File`` column the type
+#: declares server-assigned, so neither needs naming here.
+_FOLDER_RECORD_EXCLUDED = _CONTENT_EXCLUDED - {"ContentTypeId"}
 
 
 def _content_checksum(record: dict, extra_excluded: "frozenset[str]" = frozenset()) -> str:
