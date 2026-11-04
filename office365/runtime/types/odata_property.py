@@ -254,6 +254,10 @@ def version(service_root: str, *others: str) -> Callable[[_Cls], _Cls]:
 
     def decorate(cls: _Cls) -> _Cls:
         cls._versions = declared
+        # The class is already read: ``__init_subclass__`` runs before this decorator.
+        from office365.runtime.schema import TypeSchema
+
+        TypeSchema.rebuild(cls)
         return cls
 
     return decorate
@@ -294,6 +298,10 @@ def key(*names: str) -> Callable[[_Cls], _Cls]:
                 "an entity is addressed by exactly one property"
             )
         cls._key = names
+        # The class is already read: ``__init_subclass__`` runs before this decorator.
+        from office365.runtime.schema import TypeSchema
+
+        TypeSchema.rebuild(cls)
         return cls
 
     return decorate

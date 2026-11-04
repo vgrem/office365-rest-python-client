@@ -81,7 +81,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         # A collection is how a stable client reaches a preview-only type: the item type
         # is named here, before any page is asked for, so the refusal lands on
         # ``message.mentions`` rather than on a 404 from the stable root.
-        require_declared_version(item_type.__name__, getattr(item_type, "_versions", ()), context)
+        require_declared_version(item_type.__name__, item_type._schema.versions, context)
         self._data: list[ClientObjectT] = []
         self._item_type: Type[ClientObjectT] = item_type
         self._page_loaded: EventHandler = EventHandler(False)

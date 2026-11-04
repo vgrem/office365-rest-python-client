@@ -29,7 +29,7 @@ def _beta() -> GraphClient:
 
 def test_a_type_both_roots_declare_carries_no_gate():
     """``Message`` is v1.0's; only some of its members are the preview root's."""
-    assert Message._versions == ()
+    assert Message._schema.versions == frozenset()
 
 
 def test_a_stable_client_refuses_to_build_a_preview_only_type():

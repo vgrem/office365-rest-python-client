@@ -309,10 +309,9 @@ def limit(
             from office365.runtime.schema import TypeSchema
 
             _stamp(func, decls)
-            # ``__init_subclass__`` ran before this decorator, so the schema was built
-            # without this declaration. Rebuild it — idempotent, the getters still carry
-            # their own markers — rather than patch one field of a frozen object.
-            func._schema = TypeSchema.build(func)
+            # ``__init_subclass__`` ran before this decorator: the class-level fact this
+            # just stated is not in the schema yet.
+            TypeSchema.rebuild(func)
             register_catalog(func)
             return func
         if isinstance(func, property):

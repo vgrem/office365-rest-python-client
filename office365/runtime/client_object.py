@@ -84,16 +84,18 @@ class ClientObject:
     _odata_type_name: ClassVar[Optional[str]] = None
 
     #: The service roots whose metadata declares this type, declared by
-    #: ``@version(...)`` on the class. Empty -- every hand-written class, and every type
-    #: both roots declare -- means all of them. The generator states ``@version("beta")``
-    #: on a type only the preview root declares, so an attempt to build one on a stable
-    #: client fails here, before it becomes a 404.
+    #: ``@version(...)`` on the class. This is the *declaration*; it is read through
+    #: :attr:`_schema` (``versions``), which is what a client asks. Empty -- every
+    #: hand-written class, and every type both roots declare -- means all of them. The
+    #: generator states ``@version("beta")`` on a type only the preview root declares, so
+    #: an attempt to build one on a stable client fails here, before it becomes a 404.
     _versions: ClassVar[Collection[str]] = ()
 
     #: The property that spells this type's identity, declared by ``@key(...)`` on the
-    #: class. Empty -- every type whose key is its family's default -- leaves
-    #: :attr:`property_ref_name` answering the base class's own spelling, so a class that
-    #: states nothing behaves exactly as it did before the declaration existed.
+    #: class. This is the *declaration*; it is read through :attr:`_schema` (``key``),
+    #: which is what :attr:`property_ref_name` answers. Empty -- every type whose key is
+    #: its family's default -- leaves the base class's own spelling to answer, so a class
+    #: that states nothing behaves exactly as it did before the declaration existed.
     _key: ClassVar[Sequence[str]] = ()
 
     def __init_subclass__(cls, **kwargs: object) -> None:
@@ -167,7 +169,7 @@ class ClientObject:
         """
         self._properties: dict[str, Any] = {}
         self._changes: set[str] = set(type(self)._schema.persistable)
-        require_declared_version(type(self).__name__, type(self)._versions, context)
+        require_declared_version(type(self).__name__, type(self)._schema.versions, context)
         self._query_options = QueryOptions()
         self._parent_collection = parent_collection
         self._context = context

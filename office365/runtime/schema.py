@@ -114,6 +114,14 @@ class TypeSchema:
     #: access control, its approval state), and it is taken from :attr:`columns`, so a
     #: faceted name the type declares unselectable is not offered through it either.
     facets: Mapping[str, Tuple[str, ...]] = field(default_factory=_empty_map)
+    #: The property that spells the type's identity, from ``@key(...)`` on the class --
+    #: inherited, so a derived type is addressed the way its base is. Empty means the
+    #: family's reader answers its own default (``id``, ``Id``).
+    key: Tuple[str, ...] = ()
+    #: The service roots whose metadata declares the type, from ``@version(...)`` on the
+    #: class. Empty means every root: a type that states nothing is served everywhere it
+    #: is reachable from.
+    versions: frozenset[str] = frozenset()
 
     @classmethod
     def build(cls, model: type) -> TypeSchema:
@@ -151,7 +159,21 @@ class TypeSchema:
                     for facet in sorted({declared.facet for declared in properties.values() if declared.facet})
                 }
             ),
+            key=tuple(getattr(model, "_key", ())),
+            versions=frozenset(getattr(model, "_versions", ())),
         )
+
+    @classmethod
+    def rebuild(cls, model: type) -> None:
+        """Rebuild the schema a decorator has just made stale.
+
+        ``__init_subclass__`` reads a class once, when the class body has run and before
+        any decorator above it has. A decorator that states a class-level fact -- a
+        ``@limit``, a ``@key``, a ``@version`` -- is therefore read by nothing, so it
+        writes its fact and asks for this rebuild. Every such decorator asks the same
+        way, which is why there is one of these and not a line in each.
+        """
+        model._schema = cls.build(model)
 
     def columns_of_facet(self, facet: str) -> Tuple[str, ...]:
         """The declared columns that play ``facet``: the names a ``$select`` may carry."""

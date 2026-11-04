@@ -256,7 +256,7 @@ class Entity(ClientObject):
         (``Alert`` is keyed by ``AlertFrequency``), so the declaration is still written
         by hand after review -- the runtime only has to honour it.
         """
-        return type(self)._key[0] if type(self)._key else "Id"
+        return type(self)._schema.key[0] if type(self)._schema.key else "Id"
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """

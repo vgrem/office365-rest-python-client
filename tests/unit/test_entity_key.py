@@ -45,7 +45,7 @@ def test_a_type_with_no_declaration_answers_its_family_default():
         def entity_type_name(self) -> str:
             return "microsoft.graph.Plain"
 
-    assert _Plain._key == ()
+    assert _Plain._schema.key == ()
     assert _Plain(GraphClient()).property_ref_name == "id"
 
 
@@ -55,17 +55,18 @@ def test_sharepoint_keeps_its_own_default():
         def entity_type_name(self) -> str:
             return "SP.PlainItem"
 
-    assert _PlainItem._key == ()
+    assert _PlainItem._schema.key == ()
     assert _PlainItem(GraphClient()).property_ref_name == "Id"
 
 
 def test_a_declared_key_reaches_the_reader():
-    assert _Partner._key == ("tenantId",)
+    """The decorator sits above a class whose schema was built already, so it rebuilds it."""
+    assert _Partner._schema.key == ("tenantId",)
     assert _Partner(GraphClient()).property_ref_name == "tenantId"
 
 
 def test_a_declared_key_is_inherited():
-    assert _Inheriting._key == ("tenantId",)
+    assert _Inheriting._schema.key == ("tenantId",)
     assert _Inheriting(GraphClient()).property_ref_name == "tenantId"
 
 

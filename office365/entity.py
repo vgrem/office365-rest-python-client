@@ -160,7 +160,7 @@ class Entity(ClientObject):
         Returns:
             str: The property name used as entity key (default: "id")
         """
-        return type(self)._key[0] if type(self)._key else "id"
+        return type(self)._schema.key[0] if type(self)._schema.key else "id"
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """Sets a property value and updates the resource path if needed.

@@ -158,6 +158,12 @@ introduced.
 
 **Model metadata**
 
+- A type's schema carries its identity and its roots beside its properties: `_schema.key`
+  and `_schema.versions`, from `@key(...)` and `@version(...)` on the class. Both readers
+  (`property_ref_name` and the version gate) ask the schema rather than the class
+  attribute the decorator wrote, and the decorators rebuild it through one helper,
+  `TypeSchema.rebuild` — the one place that records why a decorator above a class has to:
+  `__init_subclass__` read that class before anything above it ran.
 - A field can declare what the service treats as the same value:
   `@odata(name="birthday", compare=Compare(format="date"))`
   (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`,
