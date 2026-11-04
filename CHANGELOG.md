@@ -346,6 +346,15 @@ introduced.
   two writable content properties, with the page predicates (`is_modern`,
   `is_classic`, `body`, `body_field`) and the write (`apply_page_payload`) on the
   type.
+- A declared value is held under the attribute its declaration names: `UserIdInfo`
+  declares `NameId` and holds it in `name_id`, and `ClientValue.set_property` /
+  `get_property` resolve a wire spelling through the schema, the way `to_json` already
+  did in the other direction — before this a value could be serialized but never
+  filled, which is why every value declaring anything so far spelled its attribute
+  exactly like the wire. A name with no declaration is still held under its own
+  spelling, which is how the values that declare nothing work at all. The SharePoint
+  readers behind item authorship take the model's fields (`user.email`,
+  `user.user_id.name_id`) through one `_principal_of` instead of two copied blocks.
 - A schema's projections are held to what they claim by a walk over the whole package
   (`tests/unit/test_declaration_ratchets.py`): `$select` and `$expand` never offer the
   same name, `expansions` stays inside `navigations`, a facet offers only names `$select`

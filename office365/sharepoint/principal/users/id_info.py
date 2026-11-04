@@ -1,7 +1,8 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.odata_property import odata
 
 
 @dataclass
@@ -13,5 +14,5 @@ class UserIdInfo(ClientValue):
         name_id_issuer (str): Specifies the identity provider's display name as registered in a farm.
     """
 
-    NameId: Optional[str] = None
-    NameIdIssuer: Optional[str] = None
+    name_id: Optional[str] = field(default=None, metadata=odata(name="NameId"))
+    name_id_issuer: Optional[str] = field(default=None, metadata=odata(name="NameIdIssuer"))

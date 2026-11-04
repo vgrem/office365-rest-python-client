@@ -63,14 +63,26 @@ class ClientValue:
         return self
 
     def set_property(self, name: str | int, value: Any, persist_changes: bool = True) -> Self:
-        key = str(name)
+        spelled = str(name)
+        key = self._storage_key(spelled)
         if value is None:
             setattr(self, key, None)
             return self
-        setattr(
-            self, key, coerce_value(declared_type(type(self), key), value, getattr(self, key, None), persist_changes)
-        )
+        declared = declared_type(type(self), spelled)
+        setattr(self, key, coerce_value(declared, value, getattr(self, key, None), persist_changes))
         return self
+
+    def _storage_key(self, name: str) -> str:
+        """The attribute that holds ``name``, which a declaration may rename.
+
+        A value keeps its fields as attributes, while a payload spells them the OData
+        way, so the two sides meet at the declaration: ``UserIdInfo`` holds ``NameId``
+        in ``name_id``. ``to_json`` already reads the attribute and writes the declared
+        name; this is the same rule in the other direction. An undeclared name is held
+        under its own spelling, which is what makes an undeclared value work at all.
+        """
+        declared = TypeSchema.of(type(self)).properties.get(name)
+        return declared.attr if declared is not None else name
 
     def get_property(self, name: str, default_value: Any = None) -> Any:
         """Gets a property value, or ``default_value`` when the property is unset.
@@ -82,7 +94,7 @@ class ClientValue:
             name: Name of the property to retrieve
             default_value: Value to return when the property is missing
         """
-        return getattr(self, name, default_value)
+        return getattr(self, self._storage_key(name), default_value)
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
         for n, v in vars(self).items():

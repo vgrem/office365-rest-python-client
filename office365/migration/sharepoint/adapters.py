@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
+    from office365.sharepoint.principal.users.user import User
     from office365.sharepoint.webs.web import Web
 
 _LIST_ITEM = TypeSchema.of(ListItem)
@@ -358,6 +359,21 @@ def _principal_kind(member: Any) -> str | None:
 
 #: The flag that says whether a securable object owns its ACL, spelled by its declaration.
 _UNIQUE_PERMISSIONS = _SECURABLE.name_of("has_unique_role_assignments")
+
+
+def _principal_of(user: "User", key: int) -> Principal:
+    """A site user as the plan spells a principal, read from the model's own fields.
+
+    The PUID is ``UserInfo.UserId.NameId`` — one member of one nested value — so the
+    model answers it (`UserIdInfo.name_id`), not a wire name spelled here.
+    """
+    return Principal(
+        login_name=user.login_name or "",
+        system_id=normalize_puid(user.user_id.name_id),
+        display_name=user.title,
+        email=user.email,
+        user_id=key,
+    )
 
 
 def _has_unique_role_assignments(securable, *, refresh: bool = False) -> bool:
@@ -1220,15 +1236,7 @@ class SharePointListSource:
         principal: "Principal | None" = None
         try:
             user = self._list.context.web.site_users.get_by_id(cast("str", key)).get().execute_query()
-            user_id_info = user.properties.get("UserId")
-            system_id = normalize_puid(getattr(user_id_info, "NameId", None))
-            principal = Principal(
-                login_name=user.login_name or "",
-                system_id=system_id,
-                display_name=user.title,
-                email=user.properties.get("Email"),
-                user_id=key,
-            )
+            principal = _principal_of(user, key)
         except Exception as e:  # noqa: BLE001 — a missing user degrades to no authorship
             self.warnings.append(f"user {key} could not be resolved: {e}")
         self._users[key] = principal
@@ -2507,23 +2515,14 @@ class SharePointLibrarySource:
         principal: "Principal | None" = None
         try:
             user = self._folder.context.web.site_users.get_by_id(cast("str", key)).get().execute_query()
-            user_id_info = user.properties.get("UserId")
-            raw_id = getattr(user_id_info, "NameId", None)
-            system_id = normalize_puid(raw_id)
-            if raw_id and system_id is None:
+            principal = _principal_of(user, key)
+            if user.user_id.name_id and principal.system_id is None:
                 # e.g. the app principal, whose ``UserId.NameId`` is not a PUID.
                 # Emitting it would fail the whole ingestion job, so drop it.
                 self.warnings.append(
-                    f"user {key} ({user.login_name!r}) has no usable PUID ({raw_id!r}); "
+                    f"user {key} ({user.login_name!r}) has no usable PUID ({user.user_id.name_id!r}); "
                     "it is omitted from the server-side user map"
                 )
-            principal = Principal(
-                login_name=user.login_name or "",
-                system_id=system_id,
-                display_name=user.title,
-                email=user.properties.get("Email"),
-                user_id=key,
-            )
         except Exception as e:  # noqa: BLE001 — a missing user degrades to no authorship
             self.warnings.append(f"user {key} could not be resolved: {e}")
         self._users[key] = principal
