@@ -10,7 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.building_map import BuildingMap
+    from office365.booking.building_map import BuildingMap
 
 
 class Building(Entity):
@@ -30,7 +30,7 @@ class Building(Entity):
     @property
     def map(self) -> BuildingMap:
         """Gets the map property"""
-        from office365.common.building_map import BuildingMap
+        from office365.booking.building_map import BuildingMap
 
         return self.properties.get("map", BuildingMap(self.context, ResourcePath("map", self.resource_path)))
 
