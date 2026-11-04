@@ -241,12 +241,6 @@ class SecurableObject(Entity):
         """
         return self.role_assignments.expand(RoleAssignment.expand_all()).get()
 
-    @odata(name="ShieldAddRoleAssignmentPushdown", readonly=True)
-    @property
-    def shield_add_role_assignment_pushdown(self) -> Optional[bool]:
-        """Gets the ShieldAddRoleAssignmentPushdown property"""
-        return self.properties.get("ShieldAddRoleAssignmentPushdown", None)
-
     @odata(name="EffectiveBasePermissions", system=True)
     @property
     def effective_base_permissions(self) -> BasePermissions:

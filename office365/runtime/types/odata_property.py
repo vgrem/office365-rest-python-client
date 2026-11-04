@@ -125,6 +125,10 @@ class ODataPropertyMeta:
     #: says a member is a link; it does not say the service will follow it, so a link
     #: that needs a ``$filter`` says so here.
     expandable: bool = True
+    #: Whether ``$select`` accepts this name. A declaration says the type has a column;
+    #: it does not say the type's own resource answers it, so a name the service refuses
+    #: to project says so here and stays declared for hydration and comparison.
+    selectable: bool = True
     #: The CSDL this client is generated from does not declare the name: the service
     #: spells it on the *item* payload, which the metadata never describes. A list item
     #: answers ``AuthorId``, ``EditorId``, ``Created`` and ``Modified``; a page adds
@@ -184,6 +188,9 @@ class odata(dict):
     declares it: it is reached with ``$expand`` and cannot appear in ``$select``.
     ``expandable=False`` narrows that to the links ``$expand`` will not follow on its own
     -- the CSDL knows the member is a link, only the service knows it demands an argument.
+    ``selectable=False`` narrows a column the same way: the type declares the OData name
+    and its own resource refuses to project it, so the getter keeps the declaration and
+    ``select_all()`` leaves the name out.
     ``system=True`` records where the name comes from: the metadata does not declare it,
     the service does. Everything a list item carries beyond ``Id`` is such a name, so a
     reader who sees one knows the CSDL is silent about it and the wire is not -- and

@@ -39,13 +39,6 @@ from office365.sharepoint.translation.status_collection import TranslationStatus
 class SitePage(SitePageMetadata):
     """Represents a Site Page."""
 
-    # Probed live: naming ``TemplateScope`` in ``$select`` is answered 400 NotSupported
-    # ("part of an experimental feature that is not supported in the current
-    # environment"), while the same projection without it answers the 11 pages. So the
-    # entity declares the column -- an item row still carries it -- and leaves it out of
-    # the projection.
-    _unselectable = ("TemplateScope",)
-
     @site_access(SiteLevel.WRITE)
     def checkout_page(self) -> Self:
         """Checks out the current Site Page if it is available to be checked out."""
@@ -420,7 +413,12 @@ class SitePage(SitePageMetadata):
         """Gets the SourceDynamicSectionId property"""
         return self.properties.get("SourceDynamicSectionId", None)
 
-    @odata(name="TemplateScope", beta=True)
+    # Probed live: naming it in ``$select`` is answered 400 NotSupported
+    # ("part of an experimental feature that is not supported in the current
+    # environment"), while the same projection without it answers the 11 pages. So the
+    # entity declares the column -- an item row still carries it -- and leaves it out of
+    # the projection.
+    @odata(name="TemplateScope", beta=True, selectable=False)
     @property
     def template_scope(self) -> Optional[int]:
         """Gets the TemplateScope property"""

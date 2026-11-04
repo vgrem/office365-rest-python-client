@@ -55,6 +55,12 @@ introduced.
   on `ListItem` (which leaves 7 writable columns out of 62), 13 on `Folder`, 17 on
   `Field`, 6 on `ContentType`. `to_json(profile)` drops them, so a request that used
   to echo a server-owned value back no longer does.
+- A column the service refuses is declared by the getter that reads it:
+  `@odata(..., selectable=False)` replaces `ClientObject._unselectable`, a type-level name
+  list `TypeSchema` read and then forgot. Six names moved onto the member that declares
+  them, and `ShieldAddRoleAssignmentPushdown` moved from `SecurableObject` to `ListItem`,
+  the one subclass a `$select` serves it for. Projections are unchanged, except that
+  `SecurableObject` no longer declares a column every list and web refuses.
 - A folder's content type order is the collection the CSDL declares, not one id:
   `Folder.content_type_order` and `Folder.unique_content_type_order` answer a
   `ClientValueCollection[ContentTypeId]`, so a caller reads `StringValue` off each

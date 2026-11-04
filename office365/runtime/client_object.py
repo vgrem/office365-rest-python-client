@@ -83,12 +83,6 @@ class ClientObject:
     #: instance; see :func:`office365.runtime.odata.edm.edm_type_name`.
     _odata_type_name: ClassVar[Optional[str]] = None
 
-    #: Declared OData names this type's own service refuses to project. The fact is per
-    #: type, not per property -- ``ShieldAddRoleAssignmentPushdown`` is answered on a
-    #: ``ListItem`` and refused on a ``Web`` -- so it is stated by the type that saw the
-    #: refusal, and the declaration stays intact for hydration and comparison.
-    _unselectable: ClassVar[Tuple[str, ...]] = ()
-
     #: The service roots whose metadata declares this type, declared by
     #: ``@version(...)`` on the class. Empty -- every hand-written class, and every type
     #: both roots declare -- means all of them. The generator states ``@version("beta")``
@@ -112,10 +106,10 @@ class ClientObject:
 
         A navigation property is left out: the service reaches it through the path,
         not through a projection, and naming one in ``$select`` is an error. So is a
-        name the type lists in :attr:`_unselectable`, which is how a type says its
-        service answers 400 for a column it nevertheless declares. The names come from
-        the same declarations the getters read, so a projection built here cannot spell
-        a column differently from the code that consumes it.
+        column whose declaration says ``selectable=False``, which is how a member says
+        its own resource refuses to project it. The names come from the same
+        declarations the getters read, so a projection built here cannot spell a column
+        differently from the code that consumes it.
         """
         return list(cls._schema.columns)
 

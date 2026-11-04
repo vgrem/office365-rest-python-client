@@ -174,10 +174,6 @@ class List(SecurableObject):
     composed of one or more fields.
     """
 
-    # Probed live: ``$select`` answers this one with "Non-SPListItem objects are not
-    # supported", while a ``ListItem`` serves it -- so the refusal belongs to the type.
-    _unselectable = ("ShieldAddRoleAssignmentPushdown",)
-
     def __repr__(self):
         return self.title or self.entity_type_name
 

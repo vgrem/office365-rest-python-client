@@ -173,11 +173,6 @@ class Web(SecurableObject):
     Also referred to as web site.
     """
 
-    # Probed live against ``/sites/project``: ``$select`` answers 400 for these --
-    # the two translated-resource collections with "Specified method is not supported",
-    # the Shield flag with "Non-SPListItem objects are not supported".
-    _unselectable = ("DescriptionTranslations", "TitleTranslations", "ShieldAddRoleAssignmentPushdown")
-
     def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None):
         """ """
         if resource_path is None:
@@ -2170,7 +2165,7 @@ class Web(SecurableObject):
     def custom_site_actions_disabled(self) -> Optional[bool]:
         return self.properties.get("CustomSiteActionsDisabled", None)
 
-    @odata(name="DescriptionTranslations")
+    @odata(name="DescriptionTranslations", selectable=False)
     @property
     def description_translations(self) -> ClientValueCollection[SPResourceEntry]:
         """Gets the DescriptionTranslations property"""
@@ -3273,7 +3268,9 @@ class Web(SecurableObject):
         """Gets the TitleForExistingLanguage property"""
         return self.properties.get("TitleForExistingLanguage", None)
 
-    @odata(name="TitleTranslations")
+    # Probed live: both translated-resource collections answer 400 "Specified method is
+    # not supported" to ``$select``.
+    @odata(name="TitleTranslations", selectable=False)
     @property
     def title_translations(self) -> ClientValueCollection[SPResourceEntry]:
         """Gets the TitleTranslations property"""

@@ -81,7 +81,8 @@ class TypeSchema:
 
     #: OData name -> declaration, in declaration order (base class first).
     properties: Mapping[str, ODataPropertyMeta] = field(default_factory=_empty_map)
-    #: The OData names ``$select`` accepts: declarations that are not navigations.
+    #: The OData names ``$select`` accepts: declarations that are columns and that the
+    #: type's own resource projects.
     columns: Tuple[str, ...] = ()
     #: The OData names ``$expand`` can reach.
     navigations: Tuple[str, ...] = ()
@@ -111,7 +112,7 @@ class TypeSchema:
     #: Facet name -> the declared columns that play it, in declaration order. A facet is
     #: a role a caller asks for without spelling the names (an item's authorship, its own
     #: access control, its approval state), and it is taken from :attr:`columns`, so a
-    #: faceted name the type makes unselectable is not offered through it either.
+    #: faceted name the type declares unselectable is not offered through it either.
     facets: Mapping[str, Tuple[str, ...]] = field(default_factory=_empty_map)
 
     @classmethod
@@ -119,11 +120,7 @@ class TypeSchema:
         """Read the declarations of ``model``, inheriting its base class's."""
         properties = _collect_properties(model)
         member_limits = MappingProxyType(collect_limit_meta(model))
-        columns = tuple(
-            name
-            for name, declared in properties.items()
-            if not declared.navigation and name not in getattr(model, "_unselectable", ())
-        )
+        columns = tuple(name for name, declared in properties.items() if not declared.navigation and declared.selectable)
         by_attr: Dict[str, str] = {}
         for name, declared in properties.items():
             if declared.attr:

@@ -65,23 +65,29 @@ def test_expand_all_is_the_complement_of_select_all():
 
 
 def test_a_column_the_service_refuses_is_declared_but_not_offered():
-    """Probed live: ``$select`` answers 400 for these names, and only on these types.
+    """Probed live: ``$select`` answers 400 for these names, on these types.
 
     The declaration stays — hydration and comparison still know the OData name — while the
     projection leaves it out, so ``select_all()`` is a request the service accepts rather
-    than a list that happens to contain everything. The refusal is a type's fact: the
-    Shield flag is answered for a ``ListItem`` and refused for a ``Web``, and
-    ``TemplateScope`` is refused on the page entity that declares it.
+    than a list that happens to contain everything. The refusal is declared by the getter
+    that reads the name, so it travels with the declaration: ``TemplateScope`` and the
+    item's ``DisplayName`` are refused by the type that declares them, while the Shield
+    flag is answered for a ``ListItem`` and refused for a list or a web.
     """
-    for cls in (Web, List, ListItem, SitePage):
-        assert cls._unselectable  # the type states what it saw refused
-        assert set(cls._unselectable) <= set(cls._schema.properties)  # about names it declares
-        assert not set(cls._schema.columns) & set(cls._unselectable)
-    assert "ShieldAddRoleAssignmentPushdown" in Web._unselectable
+    for cls, name in (
+        (SitePage, "TemplateScope"),
+        (ListItem, "Client_Title"),
+        (ListItem, "DisplayName"),
+        (Web, "DescriptionTranslations"),
+        (Web, "TitleTranslations"),
+    ):
+        assert cls._schema.properties[name].selectable is False
+        assert name not in cls.select_all()
     assert "ShieldAddRoleAssignmentPushdown" in ListItem.select_all()
-    assert "TemplateScope" in SitePage._unselectable
-    assert "TemplateScope" not in SitePage.select_all()
-    # The getter that reads it keeps its declaration: a page row still carries the column.
+    assert "ShieldAddRoleAssignmentPushdown" not in Web.select_all()
+    assert "ShieldAddRoleAssignmentPushdown" not in List.select_all()
+    # The getter that reads a refused name keeps its declaration: a page row still carries
+    # the column.
     assert SitePage.odata_name("template_scope") == "TemplateScope"
 
 

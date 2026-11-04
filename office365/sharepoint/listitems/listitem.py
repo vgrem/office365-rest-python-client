@@ -115,10 +115,6 @@ class ListItem(SecurableObject):
     """An individual entry within a SharePoint list. Each list item has a schema that maps to fields in the list
     that contains the item, depending on the content type of the item."""
 
-    # Probed live: these three are declared by the CSDL yet ``$select`` answers "Value does
-    # not fall within the expected range" / "Invalid field name" -- they are not fields.
-    _unselectable = ("Client_Title", "DisplayName", "IconOverlay")
-
     def __init__(self, context, resource_path=None, parent_list=None):
         """Args:
         context (office365.sharepoint.client_context.ClientContext):
@@ -694,7 +690,9 @@ class ListItem(SecurableObject):
         self.context.add_query(qry)
         return self
 
-    @odata(name="DisplayName")
+    # Probed live: the CSDL declares these three, yet ``$select`` answers "Value does not
+    # fall within the expected range" / "Invalid field name" -- they are not fields.
+    @odata(name="DisplayName", selectable=False)
     @property
     def display_name(self) -> Optional[str]:
         """Specifies the display name of the list item."""
@@ -824,7 +822,7 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("FileLeafRef", None)
 
-    @odata(name="IconOverlay")
+    @odata(name="IconOverlay", selectable=False)
     @property
     def icon_overlay(self) -> Optional[str]:
         """This is an overlay icon for the item. If the parent list of the item does not already have the IconOverlay
@@ -898,7 +896,16 @@ class ListItem(SecurableObject):
         """
         return self.properties.get("ServerRedirectedEmbedUrl", None)
 
-    @odata(name="Client_Title")
+    # Probed live: a ``ListItem`` serves this column while ``$select`` on a list or a web
+    # answers 400 "Non-SPListItem objects are not supported", so the declaration lives
+    # here rather than on :class:`SecurableObject`.
+    @odata(name="ShieldAddRoleAssignmentPushdown", readonly=True)
+    @property
+    def shield_add_role_assignment_pushdown(self) -> Optional[bool]:
+        """Gets the ShieldAddRoleAssignmentPushdown property"""
+        return self.properties.get("ShieldAddRoleAssignmentPushdown", None)
+
+    @odata(name="Client_Title", selectable=False)
     @property
     def client_title(self) -> Optional[str]:
         """ """
