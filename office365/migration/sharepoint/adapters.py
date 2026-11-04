@@ -40,6 +40,7 @@ from office365.runtime.converters.value import values_of
 from office365.runtime.limits import DEFAULT_BATCH_SIZE
 from office365.runtime.odata.comparable import digest
 from office365.runtime.operations import emit_progress
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMISSIONS
 from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
@@ -59,6 +60,9 @@ if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
     from office365.sharepoint.webs.web import Web
+
+_LIST_ITEM = TypeSchema.of(ListItem)
+_SECURABLE = TypeSchema.of(SecurableObject)
 
 
 def _cloned_context(obj):
@@ -94,7 +98,7 @@ _TypedColumns: TypeAlias = (
 
 #: Always-projected system metadata: the author/editor ids an item is restored from and
 #: the unique-ACL flag. ``*`` omits them, so they are asked for by the role they play.
-_METADATA_SELECT = [*ListItem.select_facet(AUTHORSHIP), *ListItem.select_facet(PERMISSIONS)]
+_METADATA_SELECT = [*_LIST_ITEM.columns_of_facet(AUTHORSHIP), *_LIST_ITEM.columns_of_facet(PERMISSIONS)]
 
 #: Marker column added to a migrated list recording each item's source id. It makes
 #: a re-run idempotent and lets post-run verification pair source and target items.
@@ -102,17 +106,19 @@ DEFAULT_LIST_IDENTITY_FIELD = "MigrationSourceId"
 # Authorship has its own fidelity path (``apply_authorship``); the ``Author``/``Editor``
 # columns are the payload companions of the authorship ids, so they are neither content
 # nor Person values to remap.
-_PERSON_EXCLUDED = frozenset(name[: -len("Id")] for name in ListItem.select_facet(AUTHORSHIP) if name.endswith("Id"))
+_PERSON_EXCLUDED = frozenset(
+    name[: -len("Id")] for name in _LIST_ITEM.columns_of_facet(AUTHORSHIP) if name.endswith("Id")
+)
 
 #: Moderation columns of a list item. They only exist on a list whose
 #: ``EnableModeration`` is on, so selecting them unconditionally fails outright.
 #: They are ordinary record content: a list item takes a moderation change in the same
 #: system update as its timestamps (a document refuses it — see ``apply_item_state``),
 #: so captured state rides in that one write and no version is created.
-_MODERATION_FIELDS = ListItem.select_facet(MODERATION)
+_MODERATION_FIELDS = _LIST_ITEM.columns_of_facet(MODERATION)
 
 #: The moderation column carrying the approval status; its sibling carries the comment.
-_MODERATION_STATUS = ListItem.odata_name("moderation_status")
+_MODERATION_STATUS = _LIST_ITEM.name_of("moderation_status")
 
 #: How many paths a per-run warning names before it summarizes the rest.
 _WARNING_SAMPLE = 5
@@ -351,7 +357,7 @@ def _principal_kind(member: Any) -> str | None:
 
 
 #: The flag that says whether a securable object owns its ACL, spelled by its declaration.
-_UNIQUE_PERMISSIONS = SecurableObject.odata_name("has_unique_role_assignments")
+_UNIQUE_PERMISSIONS = _SECURABLE.name_of("has_unique_role_assignments")
 
 
 def _has_unique_role_assignments(securable, *, refresh: bool = False) -> bool:
@@ -1918,7 +1924,7 @@ class SharePointListTarget:
         # A read query would implicitly flush any queued writes on this context;
         # flush them explicitly first so the cached index stays consistent.
         self._flush_pending()
-        columns = ["Id", self._identity_field, "Created", "Modified", *ListItem.select_facet(AUTHORSHIP)]
+        columns = ["Id", self._identity_field, "Created", "Modified", *_LIST_ITEM.columns_of_facet(AUTHORSHIP)]
         query = self._list.items.select(columns)
         if filter_expr:
             query = query.filter(filter_expr)

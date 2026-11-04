@@ -992,7 +992,7 @@ class ListItem(SecurableObject):
 
         Live-verified: a User and a UserMulti column report one, a Lookup column and the
         built-in ``Author``/``Editor`` do not, and only an *unfiltered* read returns it
-        (a ``$select`` narrows it away, ``select_all()`` included). Nothing writes it.
+        (a ``$select`` narrows it away, ``TypeSchema.columns`` included). Nothing writes it.
         """
         return f"{name}StringId"
 

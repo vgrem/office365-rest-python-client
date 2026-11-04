@@ -254,8 +254,9 @@ class ScopedProfile(JsonProfile):
         super().__init__(base.metadata_level)
         self._base = base
         self._model = model
-        self._only = None if only is None else frozenset(model.odata_name(attr) for attr in only)
-        self._without = frozenset(model.odata_name(attr) for attr in without)
+        schema = TypeSchema.of(model)
+        self._only = None if only is None else frozenset(schema.name_of(attr) for attr in only)
+        self._without = frozenset(schema.name_of(attr) for attr in without)
         # ``refine`` is not told which type it is refining, so the narrowing is applied to
         # the one call that was handed exactly this model's own declarations. That is what
         # keeps a nested value sharing an OData name untouched.

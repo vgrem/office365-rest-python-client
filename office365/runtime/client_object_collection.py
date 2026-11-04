@@ -11,6 +11,7 @@ from typing import (
     Iterator,
     List,
     Optional,
+    Sequence,
     Type,
     cast,
 )
@@ -404,13 +405,13 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         if values:
             add_prefer(request, *values)
 
-    def select(self, names: List[str]) -> Self:
+    def select(self, names: Sequence[str]) -> Self:
         """Include specific properties in the query (``$select``)."""
         if self._ensure_query_option("select"):
             super().select(names)
         return self
 
-    def expand(self, names: List[str]) -> Self:
+    def expand(self, names: Sequence[str]) -> Self:
         """Include related resources in the query (``$expand``)."""
         if self._ensure_query_option("expand"):
             super().expand(names)

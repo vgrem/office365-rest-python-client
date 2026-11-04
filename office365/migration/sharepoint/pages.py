@@ -54,6 +54,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Iterable, Optional
 
 from office365.migration.offline import offline_context
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.permissions import SiteLevel, site_access
@@ -64,6 +65,8 @@ if TYPE_CHECKING:
     from office365.sharepoint.listitems.listitem import ListItem
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.webs.web import Web
+
+_SITE_PAGE = TypeSchema.of(SitePage)
 
 #: Duplicate handling for a page whose name already exists on the target. The
 #: values are the SPMT ``DuplicatePageBehavior`` vocabulary.
@@ -85,8 +88,8 @@ _MAX_NAMES_IN_NOTE = 5
 
 #: Detection needs a page's name, its content type and its body — not its metadata.
 _DETECT_FIELDS = (
-    SitePage.odata_name("file_leaf_ref"),
-    SitePage.odata_name("content_type_id"),
+    _SITE_PAGE.name_of("file_leaf_ref"),
+    _SITE_PAGE.name_of("content_type_id"),
     *BODY_FIELDS,
 )
 
@@ -257,7 +260,7 @@ def apply_page_payload(item: "ListItem", page: SitePage) -> None:
         value = getattr(page, attr)
         if value is None or (attr in _BLANK_IS_NOTHING and not value):
             continue
-        item.set_property(SitePage.odata_name(attr), value)
+        item.set_property(_SITE_PAGE.name_of(attr), value)
     item.update()
 
 
@@ -354,15 +357,15 @@ def _copy_wiki_page(
         raise ValueError(f"classic page {target_name!r} carries no wiki body")
     if item_id is None:
         created = target_list.create_wiki_page(target_name, body).execute_query()
-        fields = created.list_item_all_fields.select([SitePage.odata_name("id")]).get().execute_query()
-        item_id = fields.properties.get(SitePage.odata_name("id"))
+        fields = created.list_item_all_fields.select([_SITE_PAGE.name_of("id")]).get().execute_query()
+        item_id = fields.properties.get(_SITE_PAGE.name_of("id"))
         if item_id is None:
             raise ValueError(f"the target did not return an id for the created page {target_name!r}")
     item = target_list.get_item_by_id(item_id)
     for attr in ("wiki", "title", "description"):
         value = getattr(page, attr)
         if value is not None:
-            item.set_property(SitePage.odata_name(attr), value)
+            item.set_property(_SITE_PAGE.name_of(attr), value)
     item.update()
     target_web.context.execute_query()
     if _publishes(page):
@@ -383,7 +386,7 @@ def _copy_page(
     if item_id is None:
         created = target_web.add_site_page(target_name, title=page.title)
         target_web.context.execute_query()
-        item_id = created.properties.get(SitePage.odata_name("id"))
+        item_id = created.properties.get(_SITE_PAGE.name_of("id"))
         if item_id is None:
             raise ValueError(f"the target did not return an id for the created page {target_name!r}")
     item = target_list.get_item_by_id(item_id)
@@ -397,7 +400,7 @@ def _verify(report: "PageCopyReport", target_list: "SPList", written: dict) -> N
     """Read the copied pages back once and compare the field that carries their body."""
     if not written:
         return
-    items = target_list.items.select([SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]).get().execute_query()
+    items = target_list.items.select([_SITE_PAGE.name_of("file_leaf_ref"), *BODY_FIELDS]).get().execute_query()
     written_back = {}
     for item in items:
         page = _page(item.properties)
@@ -415,7 +418,7 @@ def _copy_library(
     existing: dict = {}
     bodies: dict = {}
     names: dict = {}
-    select = [SitePage.odata_name("id"), SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]
+    select = [_SITE_PAGE.name_of("id"), _SITE_PAGE.name_of("file_leaf_ref"), *BODY_FIELDS]
     for item in target_list.items.select(select).get().execute_query():
         page = _page(item.properties)
         name = (page.file_leaf_ref or "").casefold()
@@ -647,7 +650,7 @@ def verify_page_copy(source_web: "Web", target_web: "Web") -> list[str]:
         return []
     target_bodies: dict = {}
     for sp_list in _page_libraries(target_web.lists.get().execute_query()):
-        select = [SitePage.odata_name("file_leaf_ref"), *BODY_FIELDS]
+        select = [_SITE_PAGE.name_of("file_leaf_ref"), *BODY_FIELDS]
         for item in sp_list.items.select(select).get().execute_query():
             page = _page(item.properties)
             target_bodies[(page.file_leaf_ref or "").casefold()] = page.body or ""

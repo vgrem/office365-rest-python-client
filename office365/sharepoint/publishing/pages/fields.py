@@ -14,23 +14,26 @@ from __future__ import annotations
 
 from typing import Tuple
 
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.publishing.pages.page import SitePage
 
+_SITE_PAGE = TypeSchema.of(SitePage)
+
 #: The fields that may carry a page body, modern first.
-BODY_FIELDS: Tuple[str, ...] = (SitePage.odata_name("canvas_content"), SitePage.odata_name("wiki"))
+BODY_FIELDS: Tuple[str, ...] = (_SITE_PAGE.name_of("canvas_content"), _SITE_PAGE.name_of("wiki"))
 
 #: What a page copy projects: identity, both bodies, the layout, and the
 #: metadata a Site Pages library keeps as list item properties.
 PAGE_FIELDS: Tuple[str, ...] = (
-    SitePage.odata_name("id"),
-    SitePage.odata_name("file_leaf_ref"),
-    SitePage.odata_name("title"),
-    SitePage.odata_name("description"),
-    SitePage.odata_name("content_type_id"),
-    SitePage.odata_name("canvas_content"),
-    SitePage.odata_name("layout_web_parts_content"),
-    SitePage.odata_name("wiki"),
-    SitePage.odata_name("promoted_state"),
-    SitePage.odata_name("banner_image_url"),
-    SitePage.odata_name("moderation_status"),
+    _SITE_PAGE.name_of("id"),
+    _SITE_PAGE.name_of("file_leaf_ref"),
+    _SITE_PAGE.name_of("title"),
+    _SITE_PAGE.name_of("description"),
+    _SITE_PAGE.name_of("content_type_id"),
+    _SITE_PAGE.name_of("canvas_content"),
+    _SITE_PAGE.name_of("layout_web_parts_content"),
+    _SITE_PAGE.name_of("wiki"),
+    _SITE_PAGE.name_of("promoted_state"),
+    _SITE_PAGE.name_of("banner_image_url"),
+    _SITE_PAGE.name_of("moderation_status"),
 )

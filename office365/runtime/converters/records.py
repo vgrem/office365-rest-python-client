@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any, Dict, List
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters.value import serialize_value
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
@@ -53,7 +54,7 @@ def declared_columns(items: List["ClientObject"]) -> List[str]:
     The response used to answer this question — the keys one page happened to carry,
     sorted — which made the column set and its order a property of the *page*: an
     item carrying an extra field reordered every header, and a declared column the
-    service left out of a page vanished instead of arriving empty. ``select_all()``
+    service left out of a page vanished instead of arriving empty. ``TypeSchema.columns``
     is that question answered by the model, spelled as the client's own service root
     spells it (a stable client exports no preview column), so those names come first,
     in declaration order.
@@ -65,7 +66,7 @@ def declared_columns(items: List["ClientObject"]) -> List[str]:
     not declare is dropped whether the model declares it or the page merely carried it.
     """
     model = type(items[0])
-    declared = model.select_all()
+    declared = TypeSchema.of(model).columns
     carried = {key for item in items for key in item.properties.keys()}
     return model._schema.projection(
         [*declared, *sorted(carried.difference(declared))], request_version(items[0].context)

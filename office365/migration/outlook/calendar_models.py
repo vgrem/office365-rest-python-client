@@ -39,13 +39,17 @@ from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.calendar.events.event import Event
 from office365.runtime.odata.comparable import COMPARABLE
 from office365.runtime.odata.v4.json_format import V4JsonFormat
+from office365.runtime.schema import TypeSchema
+
+_EVENT = TypeSchema.of(Event)
+
 
 #: Graph event properties an export reads: every column the model declares.
 #: Derived rather than listed, so a $select cannot disagree with the getters that
 #: consume it — the class of bug that produced ``iCalUid`` (one capital short of
 #: the real ``iCalUId``, silently ``None``) is now unrepresentable. Navigation
 #: properties are excluded by construction: ``$select`` rejects them.
-EVENT_COLUMNS = Event.select_all()
+EVENT_COLUMNS = _EVENT.columns
 
 #: Keys a sidecar written before the envelope became the model's own JSON carries. Their
 #: presence means the tree was exported by a version that spelled its own vocabulary
@@ -114,7 +118,7 @@ _VERIFIED = (
     "attendees",
     "categories",
 )
-assert all(Event.odata_name(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
+assert all(_EVENT.name_of(attr) for attr in _VERIFIED)  # a misspelt name fails here, not at the first digest
 
 
 class EventRecord(SidecarRecord):

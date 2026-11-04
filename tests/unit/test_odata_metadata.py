@@ -1,4 +1,4 @@
-"""What the OData declarations feed at run time: ``select_all()``, ``_schema``, navigations.
+"""What the OData declarations feed at run time: ``TypeSchema``, ``_schema``, navigations.
 
 The declarations themselves are the generator's job -- completeness is pinned in
 ``tests/tooling/test_generator_e2e.py``, and consistency between a declaration and the
@@ -46,8 +46,8 @@ def test_a_row_says_whether_it_is_a_file_or_a_folder():
     assert not row(None).is_file and not row(None).is_folder  # absent is neither
 
 
-def test_select_all_is_the_projection_the_declarations_describe():
-    columns = Event.select_all()
+def test_columns_is_the_projection_the_declarations_describe():
+    columns = TypeSchema.of(Event).columns
 
     assert "iCalUId" in columns  # a column whose name a snake-case guess gets wrong
     assert "id" in columns  # inherited from Entity, so the base carries a declaration too
@@ -56,21 +56,21 @@ def test_select_all_is_the_projection_the_declarations_describe():
     assert len(columns) == len(set(columns))
 
 
-def test_expand_all_is_the_complement_of_select_all():
-    expand_all = Event.expand_all()
+def test_expansions_is_the_complement_of_columns():
+    expansions = TypeSchema.of(Event).expansions
 
-    assert "singleValueExtendedProperties" in expand_all
-    assert "instances" in expand_all
-    assert "iCalUId" not in expand_all
-    assert not set(expand_all) & set(Event.select_all())
+    assert "singleValueExtendedProperties" in expansions
+    assert "instances" in expansions
+    assert "iCalUId" not in expansions
+    assert not set(expansions) & set(TypeSchema.of(Event).columns)
 
 
 def test_a_column_the_service_refuses_is_declared_but_not_offered():
     """Probed live: ``$select`` answers 400 for these names, on these types.
 
     The declaration stays — hydration and comparison still know the OData name — while the
-    projection leaves it out, so ``select_all()`` is a request the service accepts rather
-    than a list that happens to contain everything. The refusal is declared by the getter
+    projection leaves it out, so ``TypeSchema.columns`` is a request the service accepts
+    rather than a list that happens to contain everything. The refusal is declared by the getter
     that reads the name, so it travels with the declaration: ``TemplateScope`` and the
     item's ``DisplayName`` are refused by the type that declares them, while the Shield
     flag is answered for a ``ListItem`` and refused for a list or a web.
@@ -83,13 +83,13 @@ def test_a_column_the_service_refuses_is_declared_but_not_offered():
         (Web, "TitleTranslations"),
     ):
         assert cls._schema.properties[name].selectable is False
-        assert name not in cls.select_all()
-    assert "ShieldAddRoleAssignmentPushdown" in ListItem.select_all()
-    assert "ShieldAddRoleAssignmentPushdown" not in Web.select_all()
-    assert "ShieldAddRoleAssignmentPushdown" not in List.select_all()
+        assert name not in TypeSchema.of(cls).columns
+    assert "ShieldAddRoleAssignmentPushdown" in TypeSchema.of(ListItem).columns
+    assert "ShieldAddRoleAssignmentPushdown" not in TypeSchema.of(Web).columns
+    assert "ShieldAddRoleAssignmentPushdown" not in TypeSchema.of(List).columns
     # The getter that reads a refused name keeps its declaration: a page row still carries
     # the column.
-    assert SitePage.odata_name("template_scope") == "TemplateScope"
+    assert TypeSchema.of(SitePage).name_of("template_scope") == "TemplateScope"
 
 
 def test_a_securable_projects_its_flag_and_expands_its_role_assignments():
@@ -100,10 +100,10 @@ def test_a_securable_projects_its_flag_and_expands_its_role_assignments():
     assignments), so the flag is the column that matters — and it is the one the service
     assigns, which is why it comes back on a response and never on a request.
     """
-    assert "HasUniqueRoleAssignments" in ListItem.select_all()
-    assert "RoleAssignments" in ListItem.expand_all()
-    assert "RoleAssignments" not in ListItem.select_all()
-    assert ListItem.odata_name("has_unique_role_assignments") == "HasUniqueRoleAssignments"
+    assert "HasUniqueRoleAssignments" in TypeSchema.of(ListItem).columns
+    assert "RoleAssignments" in TypeSchema.of(ListItem).expansions
+    assert "RoleAssignments" not in TypeSchema.of(ListItem).columns
+    assert TypeSchema.of(ListItem).name_of("has_unique_role_assignments") == "HasUniqueRoleAssignments"
 
 
 def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
@@ -114,8 +114,8 @@ def test_a_link_the_service_will_not_follow_on_its_own_is_not_expandable():
     filtered spelling stays reachable through a raw path.
     """
     assert "extensions" in Event._schema.navigations
-    assert "extensions" not in Event.expand_all()
-    assert "attachments" in Event.expand_all()
+    assert "extensions" not in TypeSchema.of(Event).expansions
+    assert "attachments" in TypeSchema.of(Event).expansions
 
 
 def test_a_read_only_column_never_travels_back():
@@ -126,15 +126,15 @@ def test_a_read_only_column_never_travels_back():
 
     assert item.to_json(V4JsonFormat("none")) == {}
     assert set(item.to_json()) == set(ListItem._schema.readonly)
-    assert set(ListItem._schema.readonly) <= set(ListItem.select_all())
+    assert set(ListItem._schema.readonly) <= set(TypeSchema.of(ListItem).columns)
 
 
-def test_odata_name_answers_for_an_attribute_and_refuses_an_unknown_one():
-    assert Event.odata_name("ical_uid") == "iCalUId"
-    assert Message.odata_name("from_") == "from"  # a reserved word, renamed by the generator
+def test_name_of_answers_for_an_attribute_and_refuses_an_unknown_one():
+    assert TypeSchema.of(Event).name_of("ical_uid") == "iCalUId"
+    assert TypeSchema.of(Message).name_of("from_") == "from"  # a reserved word, renamed by the generator
     # A naming inverse would happily answer i_cal_u_id here; the declaration knows better.
     with pytest.raises(AttributeError, match="not a declared property"):
-        Event.odata_name("i_cal_u_id")
+        TypeSchema.of(Event).name_of("i_cal_u_id")
 
 
 def test_a_nested_field_declares_who_owns_its_value():
@@ -171,7 +171,7 @@ def test_a_subclass_answers_with_its_own_declarations():
     assert Probe._schema.properties["probeFlag"].attr == "probe_flag"
     assert Probe._schema.by_attr["probe_flag"] == "probeFlag"
     assert "probeFlag" not in Event._schema.properties  # the base class is untouched
-    assert "probeFlag" in Probe.select_all()
+    assert "probeFlag" in TypeSchema.of(Probe).columns
     assert Event._schema.readonly < Probe._schema.readonly
 
 
@@ -194,19 +194,19 @@ def test_a_navigation_declares_one_column_and_reaches_its_bars():
     """Both bars were declared as columns, so the projection named two navigations.
 
     ``$select=QuickLaunch,TopNavigationBar`` answers nothing for either while
-    ``$expand`` returns both, so a projection built from ``select_all()`` read one
+    ``$expand`` returns both, so a projection built from ``TypeSchema.columns`` read one
     name and promised three.
     """
-    assert Navigation.select_all() == ["UseShared"]
-    assert Navigation.expand_all() == ["QuickLaunch", "TopNavigationBar"]
-    assert Navigation.odata_name("use_shared") == "UseShared"
+    assert TypeSchema.of(Navigation).columns == ("UseShared",)
+    assert TypeSchema.of(Navigation).expansions == ("QuickLaunch", "TopNavigationBar")
+    assert TypeSchema.of(Navigation).name_of("use_shared") == "UseShared"
 
 
 def test_a_navigation_node_projects_the_columns_a_read_returns():
     # The projection is the payload a read comes back with, name for name: nine keys,
     # and `Children`/`TitleResource` are navigations the same read expands instead.
-    assert set(NavigationNode.select_all()) == set(_NODE_PAYLOAD)
-    assert NavigationNode.expand_all() == ["Children", "TitleResource"]
+    assert set(TypeSchema.of(NavigationNode).columns) == set(_NODE_PAYLOAD)
+    assert TypeSchema.of(NavigationNode).expansions == ("Children", "TitleResource")
     # IsVisible and IsExternal are read-only because the service owns them: probed live,
     # neither a create body nor a merge at QuickLaunch(<id>) changes either flag.
     assert {"IsVisible", "IsExternal"} <= set(NavigationNode._schema.readonly)
@@ -223,7 +223,7 @@ def test_a_navigation_node_reads_the_flags_the_service_spells():
 
     assert node.is_external is True
     assert node.is_visible is False
-    assert node.odata_name("is_external") == "IsExternal"
+    assert TypeSchema.of(node).name_of("is_external") == "IsExternal"
     # A request may not send the names the service assigns -- the two flags included:
     # a merge that asks for IsVisible=False reads back True, so asking is pointless.
     assert node.to_json(V4JsonFormat("none")) == {

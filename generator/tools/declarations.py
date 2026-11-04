@@ -117,12 +117,13 @@ def untyped_columns(package: Path) -> Tuple[List[str], int]:
     """Every projected column must resolve to the type its getter returns."""
     from office365.runtime.client_object import ClientObject
     from office365.runtime.converters.value import declared_type
+    from office365.runtime.schema import TypeSchema
 
     findings: List[str] = []
     checked = 0
     for module in _modules(package):
         for cls in _declared_types(module, ClientObject):
-            for name in cls.select_all():
+            for name in TypeSchema.of(cls).columns:
                 checked += 1
                 if declared_type(cls, name) is None:
                     findings.append(f"{cls.__module__}.{cls.__name__}.{name}")

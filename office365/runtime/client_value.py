@@ -134,26 +134,6 @@ class ClientValue:
             return result
         return profile.wrap(self, profile.refine(result, schema.properties.values()))
 
-    @classmethod
-    def odata_name(cls, attr: str) -> str:
-        """The OData name of a declared field, given its Python attribute name.
-
-        The mirror of :meth:`ClientObject.odata_name`, so a profile that narrows a type can
-        resolve a name without knowing which of the two kinds of model it was handed.
-
-        Raises:
-            AttributeError: when the attribute carries no declaration, naming the
-                declared attributes so a typo fails here rather than as ``None``
-                further down the read path.
-        """
-        declared = TypeSchema.of(cls)
-        meta = declared.declared(attr)
-        if meta is not None:
-            return meta.name
-        raise AttributeError(
-            f"{cls.__name__}.{attr} is not a declared property; declared: {', '.join(sorted(declared.by_attr))}"
-        )
-
     @property
     def entity_type_name(self) -> Optional[str]:
         """The server-side type name for this client value.

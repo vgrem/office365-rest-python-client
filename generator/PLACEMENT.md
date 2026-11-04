@@ -104,7 +104,7 @@ taking the name from the metadata and never from the attribute -- `iCalUId` and
 `icalUid` both survive a snake-case round trip and only one of them is a real column.
 `tests/unit/test_odata_metadata.py` holds the other direction: a declaration must
 name a wire name its getter actually reads, so a copy-pasted `@odata` cannot silently
-take a column out of `select_all()`.
+take a column out of `TypeSchema.columns`.
 
 For preview-only members and preview types the generator can still rewrite existing
 files, because those facts come from a metadata diff and not from a template:

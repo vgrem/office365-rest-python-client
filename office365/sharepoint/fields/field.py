@@ -9,6 +9,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.type import FieldType
@@ -143,15 +144,16 @@ class Field(Entity):
         """Every column a read of a mixed collection must project.
 
         A collection answers each column with the class its ``FieldTypeKind`` names, so a
-        projection built from ``select_all()`` alone drops the members only a typed column
-        carries. Two of them decide how a column is written: a lookup or person column whose
-        schema says ``Mult="TRUE"`` reports the single-value spelling and stores the truth in
-        ``AllowMultipleValues``, and a managed-metadata column names the note that carries its
-        payload in ``TextField``. Asking for a name no column of that type has is accepted.
+        projection built from ``TypeSchema.columns`` alone drops the members only a typed
+        column carries. Two of them decide how a column is written: a lookup or person
+        column whose schema says ``Mult="TRUE"`` reports the single-value spelling and
+        stores the truth in ``AllowMultipleValues``, and a managed-metadata column names
+        the note that carries its payload in ``TextField``. Asking for a name no column of
+        that type has is accepted.
         """
-        names = set(cls.select_all())
+        names = set(TypeSchema.of(cls).columns)
         for typed in _field_variants():
-            names |= set(typed.select_all())
+            names |= set(TypeSchema.of(typed).columns)
         return sorted(names)
 
     @property

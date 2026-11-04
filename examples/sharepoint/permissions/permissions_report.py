@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import PERMISSIONS
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.permissions.securable_object import SecurableObject
@@ -40,7 +41,7 @@ def _role_rows(role_assignments) -> list[str]:
 
 def _print_securable(label: str, securable) -> None:
     assignments = securable.get_role_assignments()
-    securable.ensure_properties(SecurableObject.select_facet(PERMISSIONS))
+    securable.ensure_properties(TypeSchema.of(SecurableObject).columns_of_facet(PERMISSIONS))
     securable.context.execute_query()  # the flag and the assignments in one batch
     unique = "unique" if securable.has_unique_role_assignments else "inherited"
     rows = _role_rows(assignments)

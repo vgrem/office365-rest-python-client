@@ -79,8 +79,8 @@ class ReadEntityQuery(ClientQuery[ReturnT]):
     def _wire_projection(self) -> "QueryOptions":
         """The query options as the request's service root can honour them.
 
-        A projection is built from the model, not from a client: ``Event.select_all()``
-        is one list of names whichever root the request goes to, and a manifest names
+        A projection is built from the model, not from a client:
+        ``TypeSchema.of(Event).columns`` is one list of names whichever root the request goes to, and a manifest names
         columns read from some snapshot. So the names this root does not declare are
         dropped here -- at the single edge where a projection becomes a URL.
         """

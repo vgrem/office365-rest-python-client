@@ -38,8 +38,8 @@ df = lst.to_dataframe().execute_query().value
 ## Columns
 
 An export is a projection of the **type**, not of the response: the columns are the
-type's declared ones (`select_all()`), in declaration order, spelled the way the
-client's service root spells them — so a stable client exports no preview column, and
+type's declared ones (`TypeSchema.of(T).columns`), in declaration order, spelled the
+way the client's service root spells them — so a stable client exports no preview column, and
 every format, every page and every run answer the same headers. A name only the page
 carries (a SharePoint list item's site columns, which no CSDL describes) follows,
 sorted. `.select(...)` replaces that with exactly the names you gave.

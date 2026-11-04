@@ -41,6 +41,7 @@ from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_object import ClientObject
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.comparable import COMPARABLE, digest
+from office365.runtime.schema import TypeSchema
 
 #: A record of a specific family, so ``EventRecord.from_json(...)`` answers an ``EventRecord``.
 _Record = TypeVar("_Record", bound="SidecarRecord")
@@ -276,7 +277,7 @@ class SidecarRecord:
         Read off the envelope rather than the model so a stamp keeps the offset the
         service sent (``…Z``) instead of being re-rendered here.
         """
-        return self._first(self.envelope, attrs, key=self.model.odata_name)
+        return self._first(self.envelope, attrs, key=TypeSchema.of(self.model).name_of)
 
     @staticmethod
     def _first(source: Any, attrs: Iterable[str], key: Any = None) -> Any:

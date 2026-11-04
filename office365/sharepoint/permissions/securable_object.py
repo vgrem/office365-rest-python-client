@@ -7,6 +7,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import PERMISSIONS, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
@@ -239,7 +240,7 @@ class SecurableObject(Entity):
         collection this returns. A securable object that inherits returns its *parent's*
         assignments, so ask :attr:`has_unique_role_assignments` first when that matters.
         """
-        return self.role_assignments.expand(RoleAssignment.expand_all()).get()
+        return self.role_assignments.expand(TypeSchema.of(RoleAssignment).expansions).get()
 
     @odata(name="EffectiveBasePermissions", system=True)
     @property

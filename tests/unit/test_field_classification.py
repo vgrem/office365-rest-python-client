@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import pytest
 from office365.migration.offline import offline_context
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.fields.field import Field, is_taxonomy_column, schema_property
 from office365.sharepoint.fields.lookup import FieldLookup
 from office365.sharepoint.fields.user import FieldUser
@@ -79,13 +80,13 @@ def test_a_lookups_list_and_target_column_belong_to_the_lookup_type():
     reads them out of the row. Declaring them on ``Field`` would say every column has a
     lookup list: ``SP.Field`` carries none of them, and ``SP.FieldLookup`` all three.
     """
-    assert FieldLookup.odata_name("lookup_list") == "LookupList"
-    assert FieldLookup.odata_name("lookup_field") == "LookupField"
-    assert FieldLookup.odata_name("allow_multiple_values") == "AllowMultipleValues"
-    assert TaxonomyField.odata_name("text_field_id") == "TextField"
+    assert TypeSchema.of(FieldLookup).name_of("lookup_list") == "LookupList"
+    assert TypeSchema.of(FieldLookup).name_of("lookup_field") == "LookupField"
+    assert TypeSchema.of(FieldLookup).name_of("allow_multiple_values") == "AllowMultipleValues"
+    assert TypeSchema.of(TaxonomyField).name_of("text_field_id") == "TextField"
     # Inherited, not re-spelled: SP.FieldUser and SP.Taxonomy.TaxonomyField are lookups.
-    assert FieldUser.odata_name("lookup_list") == "LookupList"
-    assert TaxonomyField.odata_name("allow_multiple_values") == "AllowMultipleValues"
+    assert TypeSchema.of(FieldUser).name_of("lookup_list") == "LookupList"
+    assert TypeSchema.of(TaxonomyField).name_of("allow_multiple_values") == "AllowMultipleValues"
     # ...and a base column declares none of them.
     assert not {"lookup_list", "lookup_field", "text_field_id"} & set(Field._schema.by_attr)
 

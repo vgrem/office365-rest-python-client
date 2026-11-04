@@ -11,6 +11,7 @@ from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.documents.coauthconfiguration import CoAuthConfiguration
@@ -339,7 +340,8 @@ class SitePage(SitePageMetadata):
     @property
     def body_field(self) -> str:
         """The name of the field :attr:`body` reads: ``WikiField`` or ``CanvasContent1``."""
-        return self.odata_name("wiki") if self.is_classic else self.odata_name("canvas_content")
+        schema = TypeSchema.of(self)
+        return schema.name_of("wiki") if self.is_classic else schema.name_of("canvas_content")
 
     @odata(name="CheckIn", beta=True)
     @property

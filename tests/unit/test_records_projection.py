@@ -15,6 +15,7 @@ from office365.directory.users.user import User
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters.records import declared_columns, iter_records
+from office365.runtime.schema import TypeSchema
 
 
 class _Client:
@@ -31,17 +32,17 @@ def _collection(properties: List[dict], item_type: type = User, context: Any = N
 
 
 def test_headers_are_the_declared_columns_even_when_the_page_omits_them() -> None:
-    columns = User.select_all()
+    columns = TypeSchema.of(User).columns
     record = iter_records(_collection([{columns[0]: "a value"}]))[0]
 
-    assert list(record) == columns, "declaration order, and every column present"
+    assert list(record) == list(columns), "declaration order, and every column present"
     assert record[columns[0]] == "a value"
     assert record[columns[1]] is None, "a column the page omitted is empty, not missing"
 
 
 def test_a_name_the_metadata_does_not_describe_still_follows() -> None:
     """A list item's site columns exist on the wire and not in the CSDL."""
-    columns = User.select_all()
+    columns = TypeSchema.of(User).columns
     record = iter_records(_collection([{columns[0]: "a value", "siteColumn": "kept"}]))[0]
 
     assert list(record) == [*columns, "siteColumn"]
@@ -49,12 +50,12 @@ def test_a_name_the_metadata_does_not_describe_still_follows() -> None:
 
 def test_an_extra_field_appends_without_reordering_the_declared_ones() -> None:
     """The whole defect: one page's extra column used to move every header."""
-    columns = User.select_all()
+    columns = TypeSchema.of(User).columns
     page = _collection([{columns[0]: "a"}, {columns[0]: "b", "extra": 1}])
     records = iter_records(page)
 
     for record in records:
-        assert list(record)[: len(columns)] == columns
+        assert list(record)[: len(columns)] == list(columns)
     assert list(records[0]) == [*columns, "extra"]
 
 
@@ -73,7 +74,7 @@ def test_the_projection_speaks_the_clients_version() -> None:
 
     assert beta_columns, "the fixture must carry preview-only members to prove anything"
     assert not beta_columns & set(stable)
-    assert list(stable) == [name for name in Message.select_all() if name not in beta_columns]
+    assert list(stable) == [name for name in TypeSchema.of(Message).columns if name not in beta_columns]
 
 
 def test_the_columns_are_the_ones_the_projection_reports() -> None:

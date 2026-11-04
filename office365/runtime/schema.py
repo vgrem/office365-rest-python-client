@@ -29,8 +29,9 @@ so the first instance-level question is already answerable.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, fields, is_dataclass
+from functools import cached_property
 from types import MappingProxyType
-from typing import Dict, Iterable, List, Mapping, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 from weakref import WeakKeyDictionary
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
@@ -110,41 +111,17 @@ class TypeSchema:
     class body that declared them (a getter carries its own row).
     """
 
-    #: OData name -> declaration, in declaration order (base class first).
+    #: OData name -> declaration, in declaration order (base class first). The only table
+    #: a schema states: every projection below is read from it, on first ask, so a class
+    #: fact cannot drift from the declarations that state it.
     properties: Mapping[str, ODataPropertyMeta] = field(default_factory=_empty_map)
-    #: The OData names ``$select`` accepts: declarations that are columns and that the
-    #: type's own resource projects.
-    columns: Tuple[str, ...] = ()
-    #: The OData names ``$expand`` can reach.
-    navigations: Tuple[str, ...] = ()
-    #: Python attribute name -> OData name, for the declared getters.
-    by_attr: Mapping[str, str] = field(default_factory=_empty_map)
-    #: OData names the service assigns: a response carries them, a request may not.
-    readonly: frozenset[str] = frozenset()
-    #: OData names a request always sends, even when nobody set them.
-    persistable: frozenset[str] = frozenset()
-    #: OData names the metadata does not declare: the service spells them on the item
-    #: payload (``system=True`` on the declaration).
-    system: frozenset[str] = frozenset()
+    #: The class name, for the one error a schema raises by itself.
+    name: str = ""
     #: The ``@limit`` declarations on the type itself, accumulated up the hierarchy: a
     #: subclass is subject to its base class's limits and its own.
     class_limits: Tuple[LimitDecl, ...] = ()
     #: Member name -> the ``@limit`` declarations carried by that method or property.
     member_limits: Mapping[str, Tuple[LimitDecl, ...]] = field(default_factory=_empty_map)
-    #: OData name -> the name the preview service root spells it with, where they differ.
-    #: Beta renames in place, so one member can have two wire names; the model holds one.
-    beta_names: Mapping[str, str] = field(default_factory=_empty_map)
-    #: The reverse of :attr:`beta_names`: a preview name -> the name the model holds.
-    canonical_names: Mapping[str, str] = field(default_factory=_empty_map)
-    #: Names only the preview service root declares: a stable client cannot name them.
-    beta_only: frozenset[str] = frozenset()
-    #: Names only the stable root declares: a preview client cannot name them either.
-    stable_only: frozenset[str] = frozenset()
-    #: Facet name -> the declared columns that play it, in declaration order. A facet is
-    #: a role a caller asks for without spelling the names (an item's authorship, its own
-    #: access control, its approval state), and it is taken from :attr:`columns`, so a
-    #: faceted name the type declares unselectable is not offered through it either.
-    facets: Mapping[str, Tuple[str, ...]] = field(default_factory=_empty_map)
     #: The property that spells the type's identity, from ``@key(...)`` on the class --
     #: inherited, so a derived type is addressed the way its base is. Empty means the
     #: family's reader answers its own default (``id``, ``Id``).
@@ -155,8 +132,11 @@ class TypeSchema:
     versions: frozenset[str] = frozenset()
 
     @classmethod
-    def of(cls, model: type) -> TypeSchema:
+    def of(cls, model: Any) -> TypeSchema:
         """The schema of ``model``, built on first ask and cached per class.
+
+        ``model`` is a class or an instance of one: the question is about the type, and
+        a getter asking which name it declares is asking for its own type's schema.
 
         An object's schema is already on the class (``ClientObject.__init_subclass__``
         builds it when the body is complete), so this is an attribute read. A value's
@@ -171,6 +151,7 @@ class TypeSchema:
         Asked by class, never inherited: ``vars()`` is what is read, and the cache is
         keyed by the class, so a subclass with its own declarations gets its own schema.
         """
+        model = model if isinstance(model, type) else type(model)
         own = vars(model).get("_schema")
         if own is not None:
             return own
@@ -182,40 +163,18 @@ class TypeSchema:
 
     @classmethod
     def build(cls, model: type) -> TypeSchema:
-        """Read the declarations of ``model``, inheriting its base class's."""
-        properties = _collect_properties(model)
-        member_limits = MappingProxyType(collect_limit_meta(model))
-        columns = tuple(name for name, declared in properties.items() if not declared.navigation and declared.selectable)
-        by_attr: Dict[str, str] = {}
-        for name, declared in properties.items():
-            if declared.attr:
-                # First declaration wins, as the scan this replaces did: one getter can
-                # be declared under more than one OData name.
-                by_attr.setdefault(declared.attr, name)
+        """Read the declarations of ``model``, inheriting its base class's.
+
+        Only what the class states is read here: the properties, the ``@limit`` rows and
+        the two class-level decorators. Every projection below is derived from
+        :attr:`properties` on first ask, so a class that declares two members is built as
+        cheaply as one that declares two hundred.
+        """
         return cls(
-            properties=MappingProxyType(properties),
-            columns=columns,
-            navigations=tuple(name for name, declared in properties.items() if declared.navigation),
-            by_attr=MappingProxyType(by_attr),
-            readonly=frozenset(name for name, declared in properties.items() if declared.readonly),
-            persistable=frozenset(name for name, declared in properties.items() if declared.persist),
-            system=frozenset(name for name, declared in properties.items() if declared.system),
-            beta_names=MappingProxyType(
-                {name: declared.beta for name, declared in properties.items() if isinstance(declared.beta, str)}
-            ),
-            canonical_names=MappingProxyType(
-                {declared.beta: name for name, declared in properties.items() if isinstance(declared.beta, str)}
-            ),
-            beta_only=frozenset(name for name, declared in properties.items() if declared.beta is True),
-            stable_only=frozenset(name for name, declared in properties.items() if declared.beta is False),
+            properties=MappingProxyType(_collect_properties(model)),
+            name=model.__name__,
             class_limits=collect_class_limits(model),
-            member_limits=member_limits,
-            facets=MappingProxyType(
-                {
-                    facet: tuple(name for name in columns if properties[name].facet == facet)
-                    for facet in sorted({declared.facet for declared in properties.values() if declared.facet})
-                }
-            ),
+            member_limits=MappingProxyType(collect_limit_meta(model)),
             key=tuple(getattr(model, "_key", ())),
             versions=frozenset(getattr(model, "_versions", ())),
         )
@@ -232,10 +191,115 @@ class TypeSchema:
         """
         model._schema = cls.build(model)
 
+    @cached_property
+    def by_attr(self) -> Mapping[str, str]:
+        """Python attribute name -> OData name, for the declarations a getter carries."""
+        by_attr: Dict[str, str] = {}
+        for name, declared in self.properties.items():
+            if declared.attr:
+                # First declaration wins, as the scan this replaces did: one getter can be
+                # declared under more than one OData name.
+                by_attr.setdefault(declared.attr, name)
+        return MappingProxyType(by_attr)
+
+    @cached_property
+    def columns(self) -> Tuple[str, ...]:
+        """The OData names ``$select`` accepts: the columns the type's own resource projects.
+
+        A navigation property is left out -- the service reaches it through the path, not
+        through a projection -- and so is a column declared ``selectable=False``, which is
+        how a member says its own resource refuses to project it.
+        """
+        return tuple(
+            name for name, declared in self.properties.items() if not declared.navigation and declared.selectable
+        )
+
+    @cached_property
+    def navigations(self) -> Tuple[str, ...]:
+        """The OData names that are links: what a path may walk through."""
+        return tuple(name for name, declared in self.properties.items() if declared.navigation)
+
+    @cached_property
+    def expansions(self) -> Tuple[str, ...]:
+        """The OData names ``$expand`` can reach, a subset of :attr:`navigations`.
+
+        A link is not a promise: ``$expand`` on ``Event.extensions`` is refused unless a
+        ``$filter`` is supplied, so a declaration may say ``expandable=False`` and keep
+        the name out of here while the link itself stays a navigation.
+        """
+        return tuple(name for name, declared in self.properties.items() if declared.navigation and declared.expandable)
+
+    @cached_property
+    def readonly(self) -> frozenset[str]:
+        """OData names the service assigns: a response carries them, a request may not."""
+        return frozenset(name for name, declared in self.properties.items() if declared.readonly)
+
+    @cached_property
+    def persistable(self) -> frozenset[str]:
+        """OData names a request always sends, even when nobody set them."""
+        return frozenset(name for name, declared in self.properties.items() if declared.persist)
+
+    @cached_property
+    def system(self) -> frozenset[str]:
+        """OData names the metadata does not declare: the service spells them on the payload."""
+        return frozenset(name for name, declared in self.properties.items() if declared.system)
+
+    @cached_property
+    def beta_names(self) -> Mapping[str, str]:
+        """OData name -> the name the preview root spells it with, where they differ."""
+        return MappingProxyType(
+            {name: declared.beta for name, declared in self.properties.items() if isinstance(declared.beta, str)}
+        )
+
+    @cached_property
+    def canonical_names(self) -> Mapping[str, str]:
+        """The reverse of :attr:`beta_names`: a preview name -> the name the model holds."""
+        return MappingProxyType({preview: name for name, preview in self.beta_names.items()})
+
+    @cached_property
+    def beta_only(self) -> frozenset[str]:
+        """Names only the preview root declares: a stable client cannot name them."""
+        return frozenset(name for name, declared in self.properties.items() if declared.beta is True)
+
+    @cached_property
+    def stable_only(self) -> frozenset[str]:
+        """Names only the stable root declares: a preview client cannot name them either."""
+        return frozenset(name for name, declared in self.properties.items() if declared.beta is False)
+
+    @cached_property
+    def facets(self) -> Mapping[str, Tuple[str, ...]]:
+        """Facet name -> the declared columns that play it, in declaration order.
+
+        A facet is a role a caller asks for without spelling the names (an item's
+        authorship, its own access control, its approval state), and it is taken from
+        :attr:`columns`, so a faceted name the type declares unselectable is not offered
+        through it either.
+        """
+        return MappingProxyType(
+            {
+                facet: tuple(name for name in self.columns if self.properties[name].facet == facet)
+                for facet in sorted({declared.facet for declared in self.properties.values() if declared.facet})
+            }
+        )
+
     def declared(self, attr: str) -> Optional[ODataPropertyMeta]:
         """The declaration the Python attribute ``attr`` carries, if any."""
         name = self.by_attr.get(attr)
         return self.properties.get(name) if name is not None else None
+
+    def name_of(self, attr: str) -> str:
+        """The OData name the Python attribute ``attr`` declares.
+
+        Raises:
+            AttributeError: when the attribute carries no declaration, naming the
+                declared attributes so a typo fails here rather than as ``None``
+                further down the read path.
+        """
+        name = self.by_attr.get(attr)
+        if name is not None:
+            return name
+        declared = ", ".join(sorted(self.by_attr))
+        raise AttributeError(f"{self.name}.{attr} is not a declared property; declared: {declared}")
 
     def columns_of_facet(self, facet: str) -> Tuple[str, ...]:
         """The declared columns that play ``facet``: the names a ``$select`` may carry."""
@@ -278,7 +342,7 @@ class TypeSchema:
     def projection(self, names: Iterable[str], version: Optional[str]) -> List[str]:
         """The names of ``names`` that ``version`` declares, spelled as it spells them.
 
-        A projection is bulk by nature -- ``select_all()`` is a class-level list of
+        A projection is bulk by nature -- :attr:`columns` is a class-level list of
         names, and a manifest carries names read from another snapshot -- so a name the
         root does not declare is *dropped* here rather than raising. Refusing stays
         where one member is written (:meth:`wire_name`, and through it ``to_json``):

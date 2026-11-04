@@ -30,13 +30,13 @@ introduced.
   provenance keys a model cannot know. A tree written by a pre-release build is
   refused by name (`refuse_legacy_sidecar`) instead of importing as empty fields.
 - SharePoint getters declare the OData names they read (4,013 declarations,
-  back-filled from the CSDL). `Web.select_all()` goes 39 → 118 columns and
-  2 → 50 navigations, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a
+  back-filled from the CSDL). `TypeSchema.of(Web).columns` goes 39 → 118 names and
+  `.navigations` 2 → 50, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a
   projection built from the old lists asked for navigation properties, which
   `$select` drops silently. Request bodies are unchanged — a declaration says what
   a *response* may carry, never what a request must.
 - Graph getters declare the OData names they read: 6,911 declarations in 1,057
-  modules, back-filled from `Graph.xml` and its preview snapshot. `select_all()` is
+  modules, back-filled from `Graph.xml` and its preview snapshot. a type's columns are
   derived from the declarations, so projections grow: `User` 21 → 81 columns,
   `Group` 13 → 53, `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13,
   `AccessPackage` 6 → 11. 175 members that were declared as columns are now declared
@@ -47,7 +47,7 @@ introduced.
   tree it no longer changes: a dry run over every package under both services planned
   nothing, and what guards them now is a test that reads each declaration against the
   getter it sits above — one `created_by` in the SharePoint half carried its
-  neighbour's name, so `CreatedBy` was unmapped and `expand_all()` never asked for it.
+  neighbour's name, so `CreatedBy` was unmapped and `expansions` never asked for it.
 - A write payload no longer carries a value the service assigns: 117 SharePoint
   columns are declared `readonly` from a live probe that wrote each one and read it
   back. That is all 37 `File` columns — the service refuses every `MERGE` on
@@ -143,6 +143,15 @@ introduced.
   literal reads false now, and the one the migration layer made against `2` for
   "approved" was backwards. `SitePage.moderation_status` is `readonly` as well: the
   column states `ReadOnly="TRUE"`.
+- The metadata doors on the model types are gone; the type's schema answers instead:
+  `Event.select_all()` is `TypeSchema.of(Event).columns`, `expand_all()` is
+  `.expansions`, `select_facet(f)` is `.columns_of_facet(f)` and `odata_name(a)` is
+  `.name_of(a)` — on a `ClientValue` too, which had its own `odata_name`. A schema is
+  asked by type, so the answer cannot depend on which instance you hold or which
+  client you hold it from. `select()`, `expand()` and `ensure_properties()` take any
+  `Sequence[str]`, so a projection feeds them directly:
+  `event.select(TypeSchema.of(Event).columns)`. All four were added after `3.3.0`, so
+  nothing shipped changes.
 
 ### Added
 
@@ -174,6 +183,13 @@ introduced.
   pinned for the run. `declared_type` stopped guessing `to_snake_case(name)` as well: it
   resolves the declaration's `attr`, so a value field declared under a different OData name
   answers its type instead of silently answering `None`.
+- A schema derives its projections from that one index, on the first ask: `columns`,
+  `navigations`, `expansions`, `readonly`, `persistable`, `system`, `beta_names`,
+  `canonical_names`, `beta_only`, `stable_only` and `facets` are computed from
+  `properties` and stored nowhere else, so `build()` reads the declarations and nothing
+  more and a class that declares two members is built as cheaply as one that declares
+  two hundred. `expansions` is the `$expand` half of `navigations`, and
+  `TypeSchema.of()` accepts a class or an instance of one.
 - A field can declare what the service treats as the same value:
   `@odata(name="birthday", compare=Compare(format="date"))`
   (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`,
@@ -187,8 +203,8 @@ introduced.
   `ClientObject`, `ClientValue` and `ClientResult`, answers `self` so it chains,
   and `profile=None` reads what `to_json()` writes with no profile.
   `JsonProfile.scoped(Model, only=..., without=...)` narrows any profile to some
-  properties of one model, and `ClientValue.odata_name` mirrors
-  `ClientObject.odata_name` so a scope narrows a value too.
+  properties of one model, and a scope narrows a `ClientValue` the same way: one
+  `TypeSchema.of()` answers for both carriers.
 - `JsonProfile` keeps only what it uses: four accessors that re-exported a dialect
   field (`metadata_type`, `collection`, `collection_next`, `etag`) are gone.
 - One serialization contract (`office365.runtime.serialization`:
@@ -196,17 +212,17 @@ introduced.
   value, persist_changes)`), structural, nothing inherits from it.
 - Getters declare their OData name in place, so nothing spells a name twice:
   `declared_type(Event, "iCalUId")` now answers `str`, `@odata(navigation=True)`
-  marks an `$expand`-only member, and `Event.select_all()` returns the 41 names
-  `$select` accepts, `expand_all()` the 7 `$expand`-only ones,
-  `odata_name("ical_uid")` the wire spelling. An enum-typed property reads back as
+  marks an `$expand`-only member, and `TypeSchema.of(Event).columns` returns the 41
+  names `$select` accepts, `.expansions` the 7 `$expand`-only ones, `.name_of("ical_uid")`
+  the wire spelling. An enum-typed property reads back as
   the generated enum member.
 - Every `$select` column of a served package resolves a declared type, including
   the twelve value-object getters that carried no annotation, or one naming a type
   imported only under `TYPE_CHECKING` — either way hydration read a bare dict where
   the model promises a value object.
 - `@odata(..., expandable=False)` marks a navigation `$expand` will not follow
-  alone: `Event.expand_all()` no longer names `extensions`, which the service
-  refuses without a `$filter`.
+  alone: `TypeSchema.of(Event).expansions` no longer names `extensions`, which the
+  service refuses without a `$filter`.
 - A collection cell reads back as a plain list: `values_of(cell)`
   (`office365.runtime.converters.value`) answers the items of a cell in every shape
   a read or a payload produces — a positional mapping (`{0: 1}`) for an undeclared
@@ -223,10 +239,6 @@ introduced.
   `editor_id`, `created`, `modified`, `SitePage`'s three item columns and
   `Tenant.displayName`/`id`/`serviceInfo` say so — the flag is derived by the
   codemod (absent from the CSDL ⇒ `system`) and answered by `TypeSchema.system`.
-- `ClientObject._unselectable` states the columns a type's own service refuses to
-  project (`Web` answers 400 for `DescriptionTranslations`; a `ListItem` refuses
-  `Client_Title`, `DisplayName`, `IconOverlay`). The declaration survives for
-  hydration and comparison, and `select_all()` leaves the name out.
 - `@key("tenantId")` declares which property spells a *type's* identity, above the
   class next to `@version`: what re-anchors an entity's path when the value is set,
   and what a read forces into `$select`. No declaration means the family default
@@ -862,8 +874,8 @@ introduced.
   commits from the first `SiteLevel` to the last dot-notation read, and the two offline
   permission tests now guard the whole surface instead of a shrinking remainder.
 - **A securable object's ACL is read through the type, not through a spelled-out `$expand`.**
-  `SecurableObject.get_role_assignments()` expands what `RoleAssignment.expand_all()`
-  declares — `Member`, `RoleDefinitionBindings` — and queues the read like every other
+  `SecurableObject.get_role_assignments()` expands what
+  `TypeSchema.of(RoleAssignment).expansions` declares — `Member`, `RoleDefinitionBindings` — and queues the read like every other
   builder: run `execute_query()` and read the collection it returns. The migration layer
   and two examples had each spelled that navigation pair, one of them in a helper that
   also had to know that a `$select` on the parent narrows *later* reads of it.
@@ -877,8 +889,8 @@ introduced.
 
 - **A caller asks for a role, not for a name.** A member can now declare the role it
   plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
-  `select_facet(AUTHORSHIP)` answers the columns of that role the way `select_all()`
-  answers every column. The migration layer reads its "always projected system
+  `TypeSchema.columns_of_facet(AUTHORSHIP)` answers the columns of that role the way
+  `.columns` answers every column. The migration layer reads its "always projected system
   metadata", its author/editor exclusion set and its moderation columns off the model
   instead of spelling them, and drops a non-scalar key silently only when the item's own
   declarations say it is a navigation. The vocabulary is closed: an unknown `facet=` is
@@ -921,7 +933,7 @@ introduced.
 - **A securable declares the ACL flag it has always read.**
   `has_unique_role_assignments` is `readonly=True`, so a response reports it and a
   request never carries it; `FirstUniqueAncestorSecurableObject` and
-  `RoleAssignments` are navigations, so they leave `select_all()`.
+  `RoleAssignments` are navigations, so they leave `TypeSchema.columns`.
 - **`Field` answers what a column holds**, so a reader need not parse its schema:
   `is_taxonomy`, `is_lookup`, `is_person`, `is_multi_valued`, `is_multi_choice`,
   `is_value_object`, over the two named facts `schema_property(schema_xml, name)`
@@ -1098,8 +1110,8 @@ introduced.
   `Collection(graph.callRoute)` → `ClientValueCollection[CallRoute]`) and checked
   against the default the getter builds. `Call.call_routes` is a
   `ClientValueCollection[CallRoute]` and `Field.indexed` a `bool` rather than the
-  service's own text. Every one of the 13,205 columns `select_all()` returns now
-  declares a type, and the next test pins it by name: the first getter that states
+  service's own text. Every one of the 13,205 columns `TypeSchema.columns` returns
+  now declares a type, and the next test pins it by name: the first getter that states
   none fails `test_every_column_states_the_type_it_holds`.
 - **`SharingInformation.domain_restriction_settings` read the anonymous-link
   expiry.** The getter spelled `anonymousLinkExpirationRestrictionDays` — the name its
@@ -1176,14 +1188,14 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 - **`Utility.resolve_principal_in_current_context` accepts its flags as enums:**
   `scopes` and `sources` are `Edm.Int32` bit flags, and the call sent the enum's
   repr, so every input came back `null`.
-- **`SitePage.select_all()` is a projection the service accepts:** `TemplateScope`
-  answers `400 NotSupported`, and a `$select` is all-or-nothing, so the type states
-  the refusal in `_unselectable`.
+- **A `SitePage` projection is one the service accepts:** `TemplateScope`
+  answers `400 NotSupported`, and a `$select` is all-or-nothing, so the getter that
+  declares the name declares the refusal too (`@odata(..., selectable=False)`).
 - **A page's canvas is one property, not two.** `SitePage` declared
   `canvas_content` twice — a read-only twin shadowed the writable one, so
-  `select_all()` could not name it and `odata_name("canvas_content")` raised. The
-  duplicate is deleted, and a differential over `select_all()` names,
-  `expand_all()` and a hydrated `to_json()` is byte-identical.
+  a projection could not name it and `TypeSchema.name_of("canvas_content")` raised.
+  The duplicate is deleted, and a differential over the columns, the expansions and a
+  hydrated `to_json()` is byte-identical.
 - **A copy job addresses its objects by absolute URL, and reports progress only for a real
   job.** `create_copy_jobs` wrapped `exportObjectUris` in the `{"results": [...]}` envelope
   the collection types serialize to, which the service rejects, and typed
@@ -1254,7 +1266,8 @@ dataclass under `office365.runtime` defaults to an unhashable instance.
 **Migration (Outlook)**
 
 - **Calendar and contact exports derive their projection from the model**
-  (`Event.select_all()` / `Contact.select_all()`). The hand-kept list omitted
+  (`TypeSchema.of(Event).columns` / `TypeSchema.of(Contact).columns`). The hand-kept
+  list omitted
   `isCancelled`, which the export filters on — and `$select` answers only the names
   it lists — so a cancelled event was exported with `is_cancelled: false`.
 - **`iCalUId` is read as the service spells it.** The envelope asked

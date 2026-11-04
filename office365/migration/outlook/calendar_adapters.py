@@ -78,12 +78,16 @@ from office365.runtime.http.prefer import prefer_outlook_timezone
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.operations import emit_progress
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.schema import TypeSchema
+
+_EVENT = TypeSchema.of(Event)
+
 
 #: The narrow read an import uses to recognise its own work: identity, name, and the
 #: wall clock the key is built from. Spelled through the model, so a rename cannot
 #: leave it stale — and deliberately narrower than ``EventRecord.columns``, because this
 #: one runs per item during a dedupe pass.
-_EXISTING_COLUMNS = [Event.odata_name(attr) for attr in ("id", "subject", "start", "ical_uid")]
+_EXISTING_COLUMNS = [_EVENT.name_of(attr) for attr in ("id", "subject", "start", "ical_uid")]
 
 #: Graph's error code for a reused ``transactionId`` (a concurrent run got there first).
 _DUPLICATE_TRANSACTION = "ErrorDuplicateTransactionId"

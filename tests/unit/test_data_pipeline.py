@@ -21,6 +21,7 @@ from office365.runtime.converters.dataframe import (
 from office365.runtime.converters.excel import read_excel, write_excel
 from office365.runtime.operations import query_progress_hook
 from office365.runtime.record_collection import RecordCollection
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.fields.collection import field_type_from_kind
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.listitems.collection import ListItemCollection
@@ -187,7 +188,7 @@ def test_to_dataframe_returns_dataframe_result():
     # carried: a row is a row of the model, not of the response. ``displayName`` is a
     # column of the model now, so the page-only name has to be one the model cannot
     # spell.
-    assert list(result.value.columns) == [*User.select_all(), "contosoExtension"]
+    assert list(result.value.columns) == [*TypeSchema.of(User).columns, "contosoExtension"]
     assert result.value["displayName"].tolist() == ["John Doe"]
 
 

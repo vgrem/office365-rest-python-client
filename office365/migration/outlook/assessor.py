@@ -21,13 +21,14 @@ from office365.migration.outlook.scanner import MailFolderData, OutlookOptions
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.permissions import require_permission
 from office365.runtime.converters.scalars import parse_int
+from office365.runtime.schema import TypeSchema
 
 #: What the walker selects: the folder type's own declarations, never a list kept beside
 #: it. It reads four names the walker uses (``displayName``, ``totalItemCount``,
 #: ``unreadItemCount``, ``childFolderCount``) and four it does not -- a mailbox has a few
 #: hundred folders, so the difference is free, and a folder column the model gains cannot
 #: go missing from the walk.
-_FOLDER_COLUMNS = MailFolder.select_all()
+_FOLDER_COLUMNS = TypeSchema.of(MailFolder).columns
 
 
 class MailboxAssessor:

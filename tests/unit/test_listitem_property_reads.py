@@ -9,6 +9,7 @@ a navigation is the exception, since asking for one is what materializes it.
 from __future__ import annotations
 
 from office365.migration.offline import offline_context
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 
@@ -31,7 +32,7 @@ def test_reading_every_selectable_column_leaves_the_record_alone() -> None:
     row = {"UniqueId": "8f2b1c9d-0000-0000-0000-000000000000", "File_x0020_Type": "txt", "ID": 7}
     item = _item(**row)
 
-    for name in ListItem.select_all():
+    for name in TypeSchema.of(ListItem).columns:
         item.get_property(name)
 
     assert sorted(item.properties) == sorted(row), "a column getter memoized into the record"

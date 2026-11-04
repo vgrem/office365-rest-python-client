@@ -8,7 +8,6 @@ from typing import (
     ClassVar,
     Collection,
     Dict,
-    List,
     Optional,
     Sequence,
     Tuple,
@@ -101,57 +100,6 @@ class ClientObject:
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         cls._schema = TypeSchema.build(cls)
-
-    @classmethod
-    def select_all(cls) -> List[str]:
-        """The declared columns of this type: every OData name ``$select`` accepts here.
-
-        A navigation property is left out: the service reaches it through the path,
-        not through a projection, and naming one in ``$select`` is an error. So is a
-        column whose declaration says ``selectable=False``, which is how a member says
-        its own resource refuses to project it. The names come from the same
-        declarations the getters read, so a projection built here cannot spell a column
-        differently from the code that consumes it.
-        """
-        return list(cls._schema.columns)
-
-    @classmethod
-    def expand_all(cls) -> List[str]:
-        """The declared navigation properties ``$expand`` can reach, as ``select_all()``
-        lists the ones ``$select`` accepts.
-
-        A link is not a promise: ``$expand`` on ``Event.extensions`` is refused unless a
-        ``$filter`` is supplied, so a declaration may say so and keep the name out of
-        here while the link itself stays a navigation.
-        """
-        return [
-            declared.name for declared in cls._schema.properties.values() if declared.navigation and declared.expandable
-        ]
-
-    @classmethod
-    def select_facet(cls, facet: str) -> List[str]:
-        """The declared columns that play ``facet``, as ``select_all()`` lists every one.
-
-        A caller that needs the names an item carries about who wrote it, or about its own
-        access control, asks for the role instead of spelling the columns: the spellings
-        stay in the declarations, where the getters that read them are.
-        """
-        return list(cls._schema.columns_of_facet(facet))
-
-    @classmethod
-    def odata_name(cls, attr: str) -> str:
-        """The OData name of a declared getter, given its Python attribute name.
-
-        Raises:
-            AttributeError: when the attribute carries no declaration, naming the
-                declared attributes so a typo fails here rather than as ``None``
-                further down the read path.
-        """
-        name = cls._schema.by_attr.get(attr)
-        if name is not None:
-            return name
-        declared = ", ".join(sorted(cls._schema.by_attr))
-        raise AttributeError(f"{cls.__name__}.{attr} is not a declared property; declared: {declared}")
 
     def __init__(
         self,
@@ -457,30 +405,32 @@ class ClientObject:
             return True
         return False
 
-    def expand(self, names: List[str]) -> Self:
+    def expand(self, names: Sequence[str]) -> Self:
         """
         Specifies related resources to include in the response.
 
         Args:
-            names: List of related resource names to expand
+            names: Related resource names to expand, as a list or a schema's
+                :attr:`~office365.runtime.schema.TypeSchema.expansions`
 
         Returns:
             The current instance for method chaining
         """
-        self.query_options.expand = names
+        self.query_options.expand = list(names)
         return self
 
-    def select(self, names: List[str]) -> Self:
+    def select(self, names: Sequence[str]) -> Self:
         """
         Specifies which properties to include in the response.
 
         Args:
-            names: List of property names to select
+            names: Property names to select, as a list or a schema's
+                :attr:`~office365.runtime.schema.TypeSchema.columns`
 
         Returns:
             The current instance for method chaining
         """
-        self.query_options.select = names
+        self.query_options.select = list(names)
         return self
 
     def get_property(self, name: str, default_value: Any = None) -> Any:
@@ -544,14 +494,16 @@ class ClientObject:
         """Ensures a property is loaded before executing an action."""
         return self.ensure_properties([name])
 
-    def ensure_properties(self, names: List[str], *, refresh: bool = False) -> Self:
+    def ensure_properties(self, names: Sequence[str], *, refresh: bool = False) -> Self:
         """Ensures multiple properties are loaded before executing an action.
 
         Args:
-            names: The properties to load.
+            names: The properties to load, as a list or a schema's
+                :attr:`~office365.runtime.schema.TypeSchema.columns`.
             refresh: Load them again when this object already carries a value; a value read
                 earlier is a snapshot, not a reason to trust it for a decision made now.
         """
+        names = list(names)
         if self.property_ref_name is not None and self.property_ref_name not in names:
             names.append(self.property_ref_name)
 

@@ -15,6 +15,7 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.read_entity import ReadEntityQuery
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, odata
 
 TENANT = "contoso.onmicrosoft.com"
@@ -127,9 +128,9 @@ def test_a_projection_keeps_the_names_the_root_declares_and_spells_them_its_way(
     assert schema.projection(["catalog"], PREVIEW) == ["accessPackageCatalog"]
 
 
-def test_select_all_is_narrowed_to_what_the_root_can_honour():
-    """``select_all()`` is one class-level list; the URL carries what the root has."""
-    columns = list(AccessPackage.select_all())
+def test_columns_is_narrowed_to_what_the_root_can_honour():
+    """``TypeSchema.columns`` is one class-level list; the URL carries what the root has."""
+    columns = list(TypeSchema.of(AccessPackage).columns)
     beta_only = AccessPackage._schema.beta_only
     stable_columns = [name for name in columns if name not in beta_only]
     # The class declares more than the preview subset -- the members its getters spell --
@@ -150,9 +151,9 @@ def test_select_all_is_narrowed_to_what_the_root_can_honour():
 def test_the_narrowing_does_not_rewrite_the_projection_the_caller_built():
     """The gate answers for one request; the object keeps the list it was given."""
     stable = AccessPackage(_client(), ResourcePath("accessPackages"))
-    stable.query_options.select = list(AccessPackage.select_all())
+    stable.query_options.select = list(TypeSchema.of(AccessPackage).columns)
 
     url = ReadEntityQuery(stable).url
 
     assert "uniqueName" not in url
-    assert stable.query_options.select == list(AccessPackage.select_all())
+    assert stable.query_options.select == list(TypeSchema.of(AccessPackage).columns)

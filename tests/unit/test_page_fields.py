@@ -3,6 +3,7 @@
 import unittest
 
 from office365.migration.offline import offline_context
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
@@ -40,8 +41,8 @@ class TestPageFields(unittest.TestCase):
 
     def test_the_page_type_spells_the_file_name_differently(self):
         # Why the projection reads the item column: the entity's own spelling is not it.
-        self.assertEqual(SitePage.odata_name("file_name"), "FileName")
-        self.assertNotEqual(SitePage.odata_name("file_name"), SPBuiltInFieldName.FileLeafRef)
+        self.assertEqual(TypeSchema.of(SitePage).name_of("file_name"), "FileName")
+        self.assertNotEqual(TypeSchema.of(SitePage).name_of("file_name"), SPBuiltInFieldName.FileLeafRef)
 
 
 class TestIsModernPage(unittest.TestCase):
@@ -58,9 +59,9 @@ class TestIsModernPage(unittest.TestCase):
         self.assertFalse(page.is_modern)
         self.assertTrue(page.is_classic)
         self.assertEqual(page.body, "<p>wiki</p>")
-        self.assertEqual(page.body_field, SitePage.odata_name("wiki"))
+        self.assertEqual(page.body_field, TypeSchema.of(SitePage).name_of("wiki"))
 
     def test_a_modern_page_bodies_through_its_canvas(self):
         page = _page({"ContentTypeId": DERIVED_SITE_PAGE, "CanvasContent1": "<div/>"})
         self.assertEqual(page.body, "<div/>")
-        self.assertEqual(page.body_field, SitePage.odata_name("canvas_content"))
+        self.assertEqual(page.body_field, TypeSchema.of(SitePage).name_of("canvas_content"))

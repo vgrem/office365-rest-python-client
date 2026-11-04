@@ -47,12 +47,16 @@ from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
 from office365.runtime.odata.comparable import FORMATS
+from office365.runtime.schema import TypeSchema
+
+_CONTACT = TypeSchema.of(Contact)
+
 
 #: Graph contact properties an export reads: every column the model declares. Derived
 #: rather than listed, for the reason the calendar projection is: a hand-kept list drifts
 #: from the getters that consume it, and a ``$select`` that omits a column is
 #: indistinguishable from a contact that has no value for it.
-CONTACT_COLUMNS = Contact.select_all()
+CONTACT_COLUMNS = _CONTACT.columns
 
 #: What an import may replay: everything the model declares that the service does not own.
 #: The ownership is the model's own statement (``@odata(readonly=True)``: the id, the folder
@@ -153,7 +157,7 @@ class ContactRecord(SidecarRecord):
         dedupe index rather than by the service.
         """
         options = self.options_class() if options is None else options
-        left_out = {Contact.odata_name(attr) for attr in withheld(options)}
+        left_out = {_CONTACT.name_of(attr) for attr in withheld(options)}
         body = {key: value for key, value in self.restored().items() if value and key not in left_out}
         display_name = str(body.get("displayName") or "").strip()
         if not display_name:

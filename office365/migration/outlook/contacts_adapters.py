@@ -70,12 +70,16 @@ from office365.outlook.contacts.folders.folder import ContactFolder
 from office365.permissions import require_permission
 from office365.runtime.operations import emit_progress
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.runtime.schema import TypeSchema
+
+_CONTACT = TypeSchema.of(Contact)
+
 
 #: The properties an import reads back to recognise a contact it already created.
 #: Identity and the two fields a dedupe checks; narrower than ``CONTACT_COLUMNS``
 #: on purpose — it runs per item. Spelled through the model so a rename cannot
 #: leave it stale.
-_EXISTING_COLUMNS = [Contact.odata_name(attr) for attr in ("id", "display_name", "email_addresses")]
+_EXISTING_COLUMNS = [_CONTACT.name_of(attr) for attr in ("id", "display_name", "email_addresses")]
 
 
 class ContactSource(ServiceSource[Contact]):

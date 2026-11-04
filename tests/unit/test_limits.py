@@ -17,6 +17,7 @@ from office365.runtime.limits import (
     verify_limits,
     warn_if_exceeds,
 )
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits
@@ -282,8 +283,8 @@ def test_a_member_is_a_navigation_and_a_budgeted_call_at_once(model):
     declared = model._schema.properties["channels"]
     assert declared.navigation is True
     assert "channels" not in model._schema.columns
-    assert model.select_all() == []
-    assert model.expand_all() == ["channels"]
+    assert TypeSchema.of(model).columns == ()
+    assert TypeSchema.of(model).expansions == ("channels",)
     assert [decl.limit for decl in limits_of(model)] == list(_STACK_ROWS)
     # The section is written on the getter. In one order ``property`` copies that doc, in
     # the other it has already copied it -- so read the declaration, not the copy.

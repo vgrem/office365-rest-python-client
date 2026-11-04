@@ -149,7 +149,7 @@ class ODataPropertyMeta:
     beta: Optional[Union[bool, str]] = None
     #: The named group the member answers to, when a caller asks by role rather than by
     #: name. A facet is not a projection: it holds columns and navigations alike, and a
-    #: name plays one role (``TypeSchema.of_facet``).
+    #: name plays one role (``TypeSchema.columns_of_facet``).
     facet: Optional[str] = None
 
     def __post_init__(self) -> None:
@@ -188,7 +188,7 @@ class odata(dict):
     -- the CSDL knows the member is a link, only the service knows it demands an argument.
     ``selectable=False`` narrows a column the same way: the type declares the OData name
     and its own resource refuses to project it, so the getter keeps the declaration and
-    ``select_all()`` leaves the name out.
+    ``TypeSchema.columns`` leaves the name out.
     ``system=True`` records where the name comes from: the metadata does not declare it,
     the service does. Everything a list item carries beyond ``Id`` is such a name, so a
     reader who sees one knows the CSDL is silent about it and the wire is not -- and
