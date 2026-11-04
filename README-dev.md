@@ -76,6 +76,18 @@ uv run pre-commit run --hook-stage pre-push --all-files
 The hooks invoke the tools from the locked environment, and CI installs the same
 lockfile, so the versions you run locally match the ones that gate the build.
 
+One more gate runs on every pull request, and nothing commits it for you:
+
+```bash
+uv run python -m generator verify
+```
+
+It reads the rendered model source rather than the metadata, and checks that a served
+package declares its members, that every declaration names a name its getter reads,
+that every projected column declares a type, that a client object member is a
+navigation, and that a facet names one of the declared roles. Run it after touching
+`@odata` decorators, `_schema`-adjacent code or the generator's templates.
+
 ---
 
 ## Set up live authentication

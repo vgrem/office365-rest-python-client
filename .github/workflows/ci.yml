@@ -50,11 +50,29 @@ jobs:
       - name: Run pyright
         run: uv run pyright
 
+  generator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Install Requirements
+        run: uv sync --frozen --all-extras
+      - name: Verify model declarations
+        run: uv run python -m generator verify
+
   pytest:
     runs-on: ubuntu-latest
     needs:
       - ruff
       - pyright
+      - generator
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +99,7 @@ jobs:
     needs:
       - ruff
       - pyright
+      - generator
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python ${{ env.DEFAULT_PYTHON }}
