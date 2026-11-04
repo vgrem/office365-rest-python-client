@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.json_format import JsonProfile, as_held
-from office365.runtime.schema import TypeSchema
+from office365.runtime.schema import EMPTY, TypeSchema
 
 
 def _render(self: "ClientValue") -> str:
@@ -24,24 +24,22 @@ class ClientValue:
     """
 
     _is_client_value: bool = True
+    #: What this value declares, built when the class is created (see ``ClientObject``).
+    _schema: ClassVar[TypeSchema] = EMPTY
     #: The OData name this value declares (``"microsoft.graph.DateTimeTimeZone"``).
     _odata_type_name: ClassVar[Optional[str]] = None
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        # ``@dataclass`` generates a ``__repr__`` unless one is already present
-        # in the class ``__dict__``, which would shadow the bounded rendering
-        # inherited from the nearest ancestor — ``_render`` for a plain value,
-        # the list/table preview for a collection subclass. Subclasses run
-        # ``__init_subclass__`` before the decorator is applied, so seeding the
-        # nearest ancestor's method here keeps dataclass-backed values
-        # consistent with every other ClientValue (and with domain overrides
-        # that define their own ``__repr__``).
+        # ``@dataclass`` runs after this hook and keeps a ``__repr__`` only if the class
+        # already has one in its own ``dict``; pin the bounded rendering this class
+        # inherits (``_render``, or a collection's preview) or the decorator's recursive
+        # one replaces it. A class that states its own is left alone.
         if "__repr__" not in cls.__dict__:
-            for klass in cls.__mro__[1:]:
-                if "__repr__" in klass.__dict__:
-                    cls.__repr__ = klass.__dict__["__repr__"]
-                    break
+            cls.__repr__ = next(b.__dict__["__repr__"] for b in cls.__mro__[1:] if "__repr__" in b.__dict__)
+        # The declarations are in the class body too -- a field is the ``Field`` object
+        # ``@dataclass`` has not consumed yet -- so read them now, once, as an object does.
+        cls._schema = TypeSchema.build(cls)
 
     def __str__(self) -> str:
         return _render(self)

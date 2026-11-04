@@ -18,21 +18,21 @@ A declaration rides one of two carriers: a getter in the class body, which is wh
 states because a plain field has nowhere else to say it. Both are read by the same
 builder, so which carrier a type chose is invisible to anyone asking the schema.
 
-Only the *moment* it can be built differs. A class body is complete by the time
-``ClientObject.__init_subclass__`` runs, so an object's schema is eager there. A value's
-is not: ``field(metadata=...)`` reaches the class only when ``@dataclass`` is applied,
-which is after ``__init_subclass__``. :meth:`TypeSchema.of` therefore builds on first
-ask and caches per class -- and an instance cannot exist before its class is decorated,
-so the first instance-level question is already answerable.
+Both carriers are in the class ``__dict__`` the moment the class is created: a getter is
+an attribute of the body, and ``field(metadata=odata(...))`` is a ``Field`` object that
+``@dataclass`` has not consumed yet. So the schema is built in ``__init_subclass__``,
+eagerly, for an object and a value alike, and :meth:`TypeSchema.of` is an attribute read.
+What ``@dataclass`` adds afterwards -- ``Field.name``, ``Field.type``,
+``__dataclass_fields__`` -- is nothing this scan needs: the attribute name is the dict
+key, and the type is never read.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, fields, is_dataclass
+from dataclasses import Field, dataclass, field, replace
 from functools import cached_property
 from types import MappingProxyType
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
-from weakref import WeakKeyDictionary
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
@@ -57,12 +57,6 @@ def _empty_map() -> Mapping:
     return _EMPTY_MAP
 
 
-#: Schema cache for the types that cannot build one when they are created (values).
-#: Keyed by the class, holding it weakly: a schema belongs to the class that declared
-#: it, so a subclass must not be handed its base's through attribute lookup.
-_SCHEMAS: WeakKeyDictionary[type, TypeSchema] = WeakKeyDictionary()
-
-
 def _inherited_properties(model: type) -> Mapping[str, ODataPropertyMeta]:
     """The declarations ``model`` inherits from the nearest base that declares any."""
     for base in model.__mro__[1:]:
@@ -78,28 +72,34 @@ def _collect_properties(model: type) -> Dict[str, ODataPropertyMeta]:
     Returns a fresh dict: a subclass inherits its base class's declarations but must
     never be able to add one to them.
 
-    Both carriers are read here: a getter carries the declaration as an attribute on the
-    function, a dataclass field carries it as ``field(metadata=odata(...))`` yet-to-be
-    transformed away by ``@dataclass``. Either way the declaration knows no attribute
-    name until this scan tells it which one reads it.
+    Both carriers are read from the class body, which is the only moment both exist: a
+    getter carries the declaration as an attribute on the function, and a dataclass field
+    carries it in ``field(metadata=odata(...))`` -- the ``Field`` object that
+    ``@dataclass`` consumes afterwards. Neither knows an attribute name until this scan
+    tells it the dict key it was declared under.
     """
     properties: Dict[str, ODataPropertyMeta] = dict(_inherited_properties(model))
     for attr_name, attr in model.__dict__.items():
-        target = attr.fget if isinstance(attr, property) else attr
-        declared: Optional[ODataPropertyMeta] = getattr(target, _ODATA_MARKER, None)
+        carrier = attr.fget if isinstance(attr, property) else attr
+        if isinstance(carrier, Field):
+            declared = carrier.metadata.get(_ODATA_MARKER)
+        else:
+            declared = getattr(carrier, _ODATA_MARKER, None)
         if declared is not None:
-            # The getter is the carrier of the declaration, so it is also the only
-            # place that knows which attribute reads it.
+            # The carrier is the only place that knows which attribute reads it.
             declared.attr = attr_name
             properties[declared.name] = declared
-    if is_dataclass(model):
-        for declared_field in fields(model):
-            declared = declared_field.metadata.get(_ODATA_MARKER)
-            if declared is not None:
-                # Same contract as the getter branch above: the field is the carrier.
-                declared.attr = declared_field.name
-                properties[declared.name] = declared
     return properties
+
+
+def _class_facts(model: type) -> Dict[str, Any]:
+    """What a class states about itself rather than about one of its members."""
+    return {
+        "class_limits": collect_class_limits(model),
+        "member_limits": MappingProxyType(collect_limit_meta(model)),
+        "key": tuple(getattr(model, "_key", ())),
+        "versions": frozenset(getattr(model, "_versions", ())),
+    }
 
 
 @dataclass(frozen=True)
@@ -131,35 +131,18 @@ class TypeSchema:
     #: is reachable from.
     versions: frozenset[str] = frozenset()
 
-    @classmethod
-    def of(cls, model: Any) -> TypeSchema:
-        """The schema of ``model``, built on first ask and cached per class.
+    @staticmethod
+    def of(model: Any) -> TypeSchema:
+        """The schema of ``model``, which its class built when it was created.
 
-        ``model`` is a class or an instance of one: the question is about the type, and
-        a getter asking which name it declares is asking for its own type's schema.
+        ``model`` is a class or an instance of one: the question is about the type, and a
+        getter asking which name it declares is asking for its own type's schema.
 
-        An object's schema is already on the class (``ClientObject.__init_subclass__``
-        builds it when the body is complete), so this is an attribute read. A value's
-        cannot be built there: ``@dataclass`` adds ``field(metadata=...)`` to the class
-        after ``__init_subclass__`` has run, so it is built the first time something asks
-        -- the first instance that is serialized or compared -- and remembered.
-
-        Lazy is not a fallback but the earliest correct moment: no instance exists before
-        its class is decorated, so any instance-level question is answerable. Two threads
-        may answer the same question twice; the result is frozen, so they agree.
-
-        Asked by class, never inherited: ``vars()`` is what is read, and the cache is
-        keyed by the class, so a subclass with its own declarations gets its own schema.
+        Read from the class itself, never inherited: ``vars()`` is what is read, so a
+        subclass that declares nothing answers its own empty schema rather than its
+        base's. A class that states no declarations at all answers the empty schema.
         """
-        model = model if isinstance(model, type) else type(model)
-        own = vars(model).get("_schema")
-        if own is not None:
-            return own
-        cached = _SCHEMAS.get(model)
-        if cached is None:
-            cached = cls.build(model)
-            _SCHEMAS[model] = cached
-        return cached
+        return vars(model if isinstance(model, type) else type(model)).get("_schema", EMPTY)
 
     @classmethod
     def build(cls, model: type) -> TypeSchema:
@@ -173,23 +156,21 @@ class TypeSchema:
         return cls(
             properties=MappingProxyType(_collect_properties(model)),
             name=model.__name__,
-            class_limits=collect_class_limits(model),
-            member_limits=MappingProxyType(collect_limit_meta(model)),
-            key=tuple(getattr(model, "_key", ())),
-            versions=frozenset(getattr(model, "_versions", ())),
+            **_class_facts(model),
         )
 
     @classmethod
     def rebuild(cls, model: type) -> None:
-        """Rebuild the schema a decorator has just made stale.
+        """Restate the class-level facts a decorator has just written.
 
-        ``__init_subclass__`` reads a class once, when the class body has run and before
-        any decorator above it has. A decorator that states a class-level fact -- a
-        ``@limit``, a ``@key``, a ``@version`` -- is therefore read by nothing, so it
-        writes its fact and asks for this rebuild. Every such decorator asks the same
-        way, which is why there is one of these and not a line in each.
+        ``__init_subclass__`` reads a class once, before any decorator above it has run,
+        so a ``@limit``, a ``@key`` or a ``@version`` is read by nothing until it asks for
+        this. Only those facts are restated, because they are the only ones a decorator
+        states, and so the declarations are reused instead of scanned again -- which is
+        also what makes this answerable for a value: by the time a decorator runs,
+        ``@dataclass`` has already consumed the ``Field`` objects the scan reads.
         """
-        model._schema = cls.build(model)
+        model._schema = replace(model._schema, **_class_facts(model))
 
     @cached_property
     def by_attr(self) -> Mapping[str, str]:
