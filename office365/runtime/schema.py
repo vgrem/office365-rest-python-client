@@ -13,20 +13,25 @@ created::
     Event._schema.by_attr  # python attribute -> OData name
     Event._schema.declared_limits()  # the @limit declarations of the type and its members
 
-The build is eager because a class body is complete by the time
-``ClientObject.__init_subclass__`` runs. The other half of the model cannot be: a
-``ClientValue`` declares its metadata in ``field(metadata=...)``, which only exists
-after ``@dataclass`` has been applied, so
-:func:`office365.runtime.types.odata_property.field_declarations` stays lazy. One
-:class:`~office365.runtime.types.odata_property.ODataPropertyMeta`, two moments at
-which it becomes readable — and the reason the two halves do not share a builder.
+A declaration rides one of two carriers: a getter in the class body, which is what a
+``ClientObject`` states, or a dataclass field's metadata, which is what a ``ClientValue``
+states because a plain field has nowhere else to say it. Both are read by the same
+builder, so which carrier a type chose is invisible to anyone asking the schema.
+
+Only the *moment* it can be built differs. A class body is complete by the time
+``ClientObject.__init_subclass__`` runs, so an object's schema is eager there. A value's
+is not: ``field(metadata=...)`` reaches the class only when ``@dataclass`` is applied,
+which is after ``__init_subclass__``. :meth:`TypeSchema.of` therefore builds on first
+ask and caches per class -- and an instance cannot exist before its class is decorated,
+so the first instance-level question is already answerable.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields, is_dataclass
 from types import MappingProxyType
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple
+from weakref import WeakKeyDictionary
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
@@ -51,14 +56,33 @@ def _empty_map() -> Mapping:
     return _EMPTY_MAP
 
 
+#: Schema cache for the types that cannot build one when they are created (values).
+#: Keyed by the class, holding it weakly: a schema belongs to the class that declared
+#: it, so a subclass must not be handed its base's through attribute lookup.
+_SCHEMAS: WeakKeyDictionary[type, TypeSchema] = WeakKeyDictionary()
+
+
+def _inherited_properties(model: type) -> Mapping[str, ODataPropertyMeta]:
+    """The declarations ``model`` inherits from the nearest base that declares any."""
+    for base in model.__mro__[1:]:
+        inherited = TypeSchema.of(base)
+        if inherited.properties:
+            return inherited.properties
+    return _EMPTY_MAP
+
+
 def _collect_properties(model: type) -> Dict[str, ODataPropertyMeta]:
     """The ``@odata`` declarations of ``model``, its base class's first.
 
     Returns a fresh dict: a subclass inherits its base class's declarations but must
     never be able to add one to them.
+
+    Both carriers are read here: a getter carries the declaration as an attribute on the
+    function, a dataclass field carries it as ``field(metadata=odata(...))`` yet-to-be
+    transformed away by ``@dataclass``. Either way the declaration knows no attribute
+    name until this scan tells it which one reads it.
     """
-    inherited = getattr(model, "_schema", None)
-    properties: Dict[str, ODataPropertyMeta] = dict(inherited.properties) if inherited is not None else {}
+    properties: Dict[str, ODataPropertyMeta] = dict(_inherited_properties(model))
     for attr_name, attr in model.__dict__.items():
         target = attr.fget if isinstance(attr, property) else attr
         declared: Optional[ODataPropertyMeta] = getattr(target, _ODATA_MARKER, None)
@@ -67,6 +91,13 @@ def _collect_properties(model: type) -> Dict[str, ODataPropertyMeta]:
             # place that knows which attribute reads it.
             declared.attr = attr_name
             properties[declared.name] = declared
+    if is_dataclass(model):
+        for declared_field in fields(model):
+            declared = declared_field.metadata.get(_ODATA_MARKER)
+            if declared is not None:
+                # Same contract as the getter branch above: the field is the carrier.
+                declared.attr = declared_field.name
+                properties[declared.name] = declared
     return properties
 
 
@@ -124,6 +155,32 @@ class TypeSchema:
     versions: frozenset[str] = frozenset()
 
     @classmethod
+    def of(cls, model: type) -> TypeSchema:
+        """The schema of ``model``, built on first ask and cached per class.
+
+        An object's schema is already on the class (``ClientObject.__init_subclass__``
+        builds it when the body is complete), so this is an attribute read. A value's
+        cannot be built there: ``@dataclass`` adds ``field(metadata=...)`` to the class
+        after ``__init_subclass__`` has run, so it is built the first time something asks
+        -- the first instance that is serialized or compared -- and remembered.
+
+        Lazy is not a fallback but the earliest correct moment: no instance exists before
+        its class is decorated, so any instance-level question is answerable. Two threads
+        may answer the same question twice; the result is frozen, so they agree.
+
+        Asked by class, never inherited: ``vars()`` is what is read, and the cache is
+        keyed by the class, so a subclass with its own declarations gets its own schema.
+        """
+        own = vars(model).get("_schema")
+        if own is not None:
+            return own
+        cached = _SCHEMAS.get(model)
+        if cached is None:
+            cached = cls.build(model)
+            _SCHEMAS[model] = cached
+        return cached
+
+    @classmethod
     def build(cls, model: type) -> TypeSchema:
         """Read the declarations of ``model``, inheriting its base class's."""
         properties = _collect_properties(model)
@@ -174,6 +231,11 @@ class TypeSchema:
         way, which is why there is one of these and not a line in each.
         """
         model._schema = cls.build(model)
+
+    def declared(self, attr: str) -> Optional[ODataPropertyMeta]:
+        """The declaration the Python attribute ``attr`` carries, if any."""
+        name = self.by_attr.get(attr)
+        return self.properties.get(name) if name is not None else None
 
     def columns_of_facet(self, facet: str) -> Tuple[str, ...]:
         """The declared columns that play ``facet``: the names a ``$select`` may carry."""

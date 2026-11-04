@@ -21,7 +21,8 @@ from office365.outlook.mail.messages.message import Message
 from office365.planner.assignment import PlannerAssignment
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import field_declarations, odata
+from office365.runtime.schema import TypeSchema
+from office365.runtime.types.odata_property import odata
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.navigation.navigation import Navigation
@@ -150,11 +151,11 @@ def test_a_nested_field_declares_who_owns_its_value():
 
 
 def test_declaring_a_nested_field_is_opt_in():
-    declared = field_declarations(PlannerAssignment)
+    declared = TypeSchema.of(PlannerAssignment).properties
     assert declared["assignedBy"].readonly is True
     assert declared["assignedBy"].name == "assignedBy"
     assert "orderHint" not in declared  # undeclared fields keep their own name
-    assert field_declarations(IdentitySet) == {}  # 2,887 nested types are untouched
+    assert TypeSchema.of(IdentitySet).properties == {}  # 2,887 nested types are untouched
 
 
 def test_a_subclass_answers_with_its_own_declarations():

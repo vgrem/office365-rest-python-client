@@ -164,6 +164,16 @@ introduced.
   attribute the decorator wrote, and the decorators rebuild it through one helper,
   `TypeSchema.rebuild` — the one place that records why a decorator above a class has to:
   `__init_subclass__` read that class before anything above it ran.
+- One index answers for both carriers: `TypeSchema.of(Model)` builds a type's schema on the
+  first ask and caches it against the class, so a `ClientValue` answers the questions a
+  `ClientObject` does even though its declarations reach the class only when `@dataclass`
+  runs — after `__init_subclass__`. The second index, a module-level
+  `field_declarations()` dict filled by walking `dataclasses.fields()` at each call site, is
+  gone: `ScopedProfile`, `compare_check`, the record importer and `ClientValue.to_json` ask
+  the schema instead, and the cache is keyed weakly, so a class defined in a test is not
+  pinned for the run. `declared_type` stopped guessing `to_snake_case(name)` as well: it
+  resolves the declaration's `attr`, so a value field declared under a different OData name
+  answers its type instead of silently answering `None`.
 - A field can declare what the service treats as the same value:
   `@odata(name="birthday", compare=Compare(format="date"))`
   (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`,

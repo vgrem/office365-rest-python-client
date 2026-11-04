@@ -28,7 +28,7 @@ from office365.runtime.converters.scalars import (
     try_float,
     try_int,
 )
-from office365.runtime.schema import EMPTY
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.duration import Duration
 
 if TYPE_CHECKING:
@@ -165,7 +165,7 @@ def _imported_names(func: Any) -> Dict[str, Any]:
 
 
 def _resolve_declared_type(cls: type, name: str) -> Any:
-    meta = getattr(cls, "_schema", EMPTY).properties.get(name)
+    meta = TypeSchema.of(cls).properties.get(name)
     if meta is not None:
         attrs = (meta.attr,)
     else:

@@ -14,7 +14,8 @@ from typing import Any, Iterator, List, Optional, Set, Tuple, get_args, get_orig
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.value import declared_type, is_client_value_type
-from office365.runtime.types.odata_property import Compare, ODataPropertyMeta, field_declarations
+from office365.runtime.schema import TypeSchema
+from office365.runtime.types.odata_property import Compare, ODataPropertyMeta
 
 _COLLECTION = (ClientValueCollection, list, tuple, set)
 #: What each named format can be applied to.
@@ -37,14 +38,9 @@ def _item_type(declared: Any) -> Any:
 
 def _fields(model: type) -> Iterator[Tuple[str, ODataPropertyMeta, Any]]:
     """``(label, declaration, resolved type)`` for every declared field of ``model``."""
-    schema = getattr(model, "_schema", None)
-    if schema is not None and schema.properties:
-        for name, meta in schema.properties.items():
-            if not meta.navigation:
-                yield name, meta, declared_type(model, name)
-        return
-    for attr, meta in field_declarations(model).items():
-        yield attr, meta, declared_type(model, attr)
+    for name, meta in TypeSchema.of(model).properties.items():
+        if not meta.navigation:
+            yield name, meta, declared_type(model, name)
 
 
 def _check(model: type, label: str, rule: Compare, declared: Any, siblings: Set[str]) -> List[str]:

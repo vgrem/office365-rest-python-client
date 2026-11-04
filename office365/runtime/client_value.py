@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.json_format import JsonProfile, as_held
-from office365.runtime.types.odata_property import field_declarations
+from office365.runtime.schema import TypeSchema
 
 
 def _render(self: "ClientValue") -> str:
@@ -118,10 +118,10 @@ class ClientValue:
         # ``__``-prefixed names are response bookkeeping, not fields of the value.
         # A declared field may also rename itself and declare who owns its value; a
         # read-only field is what a response carries and a request must not.
-        by_attr = field_declarations(type(self))
+        schema = TypeSchema.of(type(self))
         result: Dict[str, Any] = {}
         for attr, value in self:
-            meta = by_attr.get(attr)
+            meta = schema.declared(attr)
             if attr.startswith("__") or not _is_valid_value(value):
                 continue
             spelled = meta.name if meta is not None else attr
@@ -132,7 +132,7 @@ class ClientValue:
             result[spelled] = serialize_value(value, profile)
         if profile is None:
             return result
-        return profile.wrap(self, profile.refine(result, by_attr.values()))
+        return profile.wrap(self, profile.refine(result, schema.properties.values()))
 
     @classmethod
     def odata_name(cls, attr: str) -> str:
@@ -146,12 +146,12 @@ class ClientValue:
                 declared attributes so a typo fails here rather than as ``None``
                 further down the read path.
         """
-        declared = field_declarations(cls)
-        meta = declared.get(attr)
+        declared = TypeSchema.of(cls)
+        meta = declared.declared(attr)
         if meta is not None:
             return meta.name
         raise AttributeError(
-            f"{cls.__name__}.{attr} is not a declared property; declared: {', '.join(sorted(declared))}"
+            f"{cls.__name__}.{attr} is not a declared property; declared: {', '.join(sorted(declared.by_attr))}"
         )
 
     @property

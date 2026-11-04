@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, is_dataclass
-from typing import Any, Callable, Dict, Optional, TypeVar, Union
+from dataclasses import dataclass
+from typing import Any, Callable, Optional, TypeVar, Union
 
 _ODATA_MARKER = "__odata__"
 _T = TypeVar("_T")
@@ -25,8 +25,6 @@ AUTHORSHIP = "authorship"
 PERMISSIONS = "permissions"
 MODERATION = "moderation"
 FACETS = frozenset({AUTHORSHIP, MODERATION, PERMISSIONS})
-
-_FIELD_DECLARATIONS: Dict[type, Dict[str, "ODataPropertyMeta"]] = {}
 
 
 def request_version(context: Any) -> Optional[str]:
@@ -305,21 +303,3 @@ def key(*names: str) -> Callable[[_Cls], _Cls]:
         return cls
 
     return decorate
-
-
-def field_declarations(cls: type) -> Dict[str, ODataPropertyMeta]:
-    """The declared fields of a dataclass, by attribute name.
-
-    Empty for anything that declares nothing -- a plain dataclass, a hand-written
-    value, a ``ClientObject``. Declaring is opt-in, so the 2,887 nested types keep
-    their attribute names until one of them has a fact to state.
-    """
-    cached = _FIELD_DECLARATIONS.get(cls)
-    if cached is None:
-        cached = (
-            {f.name: f.metadata[_ODATA_MARKER] for f in fields(cls) if _ODATA_MARKER in f.metadata}
-            if is_dataclass(cls)
-            else {}
-        )
-        _FIELD_DECLARATIONS[cls] = cached
-    return cached

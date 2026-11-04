@@ -18,8 +18,9 @@ from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, Iterator, Optio
 
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.dialect import BY_LEVEL, JsonDialect
+from office365.runtime.schema import TypeSchema
 from office365.runtime.serialization import PropertyReceiver
-from office365.runtime.types.odata_property import ODataPropertyMeta, field_declarations
+from office365.runtime.types.odata_property import ODataPropertyMeta
 
 if TYPE_CHECKING:
     from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
@@ -240,9 +241,8 @@ class JsonProfile:
 
 
 def _declared_fields(model: Any) -> Iterable[ODataPropertyMeta]:
-    """The declarations of a model type: an object's schema, or a value's dataclass fields."""
-    schema = getattr(model, "_schema", None)
-    return schema.properties.values() if schema is not None else field_declarations(model).values()
+    """The declarations of a model type, whichever carrier it stated them on."""
+    return TypeSchema.of(model).properties.values()
 
 
 class ScopedProfile(JsonProfile):
