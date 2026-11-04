@@ -137,8 +137,9 @@ class ProgressTracker:
         self._emit(done_value, items)
 
     def _emit(self, done: int, items) -> None:
-        if callable(self._callback):
-            self._callback(Progress(done=done, total=self._total, stage=self._stage, items=items))
+        callback = self._callback
+        if callable(callback):
+            callback(Progress(done, self._total, self._stage, items))
 
 
 def query_progress_hook(total: int, progress: ProgressCallback, stage: str = "") -> Callable[[Any], None]:
