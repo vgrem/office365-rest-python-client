@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.communications.callrecords.user_agent import UserAgent
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class Endpoint(ClientValue):
     """Represents an endpoint in a call. The endpoint could be a user's device, a meeting, an application/bot, etc.
     The participantEndpoint and serviceEndpoint types inherit from this type."""

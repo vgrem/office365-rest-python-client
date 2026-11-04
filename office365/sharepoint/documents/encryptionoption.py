@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class EncryptionOption(ClientValue):
     AES256CBCKey: bytes | None = None

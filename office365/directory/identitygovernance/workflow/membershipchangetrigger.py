@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.identitygovernance.workflow.membershiptype import MembershipChangeType
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MembershipChangeTrigger(ClientValue):
     changeType: MembershipChangeType | None = None
 

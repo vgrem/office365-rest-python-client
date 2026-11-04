@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.intune.devices.configurations.windows.statemanagementsetting import (
     StateManagementSetting,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class WindowsFirewallNetworkProfile(ClientValue):
     authorizedApplicationRulesFromGroupPolicyMerged: bool | None = None
     connectionSecurityRulesFromGroupPolicyMerged: bool | None = None

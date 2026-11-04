@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.search.altered_query_token import AlteredQueryToken
 
 
-@dataclass
+@value
 class SearchAlteration(ClientValue):
     alteredHighlightedQueryString: str | None = None
     alteredQueryString: str | None = None

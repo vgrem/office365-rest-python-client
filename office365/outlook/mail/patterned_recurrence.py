@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.mail.recurrence_pattern import RecurrencePattern
 from office365.outlook.mail.recurrence_range import RecurrenceRange
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class PatternedRecurrence(ClientValue):
     """
     The recurrence pattern and range. This shared object is used to define the recurrence of the following objects:

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.subjectset import SubjectSet
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AttributeRuleMembers(SubjectSet):
     description: str | None = None
     membershipRule: str | None = None

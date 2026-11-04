@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.eventdata import EventData
 from office365.sharepoint.tenant.administration.modified_property import (
     ModifiedProperty,
@@ -13,7 +14,7 @@ from office365.sharepoint.tenant.administration.parameter import Parameter
 from office365.sharepoint.tenant.administration.target_property import TargetProperty
 
 
-@dataclass
+@value
 class AuditData(ClientValue):
     ClientIP: str | None = None
     CorrelationId: str | None = None

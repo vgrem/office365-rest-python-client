@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Iterator, Tuple
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.listitems.collection_position import (
     ListItemCollectionPosition,
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 _FIELD_REF_RE = re.compile(r"<FieldRef\s+Name=['\"]([^'\"]+)['\"]", re.IGNORECASE)
 
 
-@dataclass
+@value
 class CamlQuery(ClientValue):
     """Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
 
@@ -52,9 +52,9 @@ class CamlQuery(ClientValue):
 
     def __iter__(self) -> Iterator[Tuple[str, Any]]:
         """Yield serializable properties (skips private attrs such as the AST)."""
-        for name, value in vars(self).items():
+        for name, attribute in vars(self).items():
             if not name.startswith("_"):
-                yield name, value
+                yield name, attribute
 
     @staticmethod
     def parse(query_expr: str, scope: ViewScope = ViewScope.DefaultValue) -> CamlQuery:

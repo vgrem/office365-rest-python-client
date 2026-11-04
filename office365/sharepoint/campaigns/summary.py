@@ -1,13 +1,14 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.campaigns.userinfo import CampaignUserInfo
 
 
-@dataclass
+@value
 class CampaignSummary(ClientValue):
     campaignId: Optional[str] = None
     endDate: Optional[datetime] = None

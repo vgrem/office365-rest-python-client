@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.communications.callrecords.device_info import DeviceInfo
 from office365.communications.callrecords.media_stream import MediaStream
 from office365.communications.callrecords.network_info import NetworkInfo
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class Media(ClientValue):
     calleeDevice: DeviceInfo = field(default_factory=DeviceInfo)
     calleeNetwork: NetworkInfo = field(default_factory=NetworkInfo)

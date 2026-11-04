@@ -18,21 +18,19 @@ A declaration rides one of two carriers: a getter in the class body, which is wh
 states because a plain field has nowhere else to say it. Both are read by the same
 builder, so which carrier a type chose is invisible to anyone asking the schema.
 
-Both carriers are in the class ``__dict__`` the moment the class is created: a getter is
-an attribute of the body, and ``field(metadata=odata(...))`` is a ``Field`` object that
-``@dataclass`` has not consumed yet. So the schema is built in ``__init_subclass__``,
-eagerly, for an object and a value alike, and :meth:`TypeSchema.of` is an attribute read.
-What ``@dataclass`` adds afterwards -- ``Field.name``, ``Field.type``,
-``__dataclass_fields__`` -- is nothing this scan needs: the attribute name is the dict
-key, and the type is never read.
+Both carriers are named by the finished class: a getter by the class body that states it,
+a field by the decorator that gives it the name it is read as. So the schema is read once
+the class is complete -- ``@value`` does it for a value, ``__init_subclass__`` for an
+object, which has no decorator to wait for -- and :meth:`TypeSchema.of` is an attribute
+read.
 """
 
 from __future__ import annotations
 
-from dataclasses import Field, dataclass, field, replace
+from dataclasses import dataclass, field, fields, is_dataclass, replace
 from functools import cached_property
 from types import MappingProxyType
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Tuple
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
@@ -71,25 +69,32 @@ def _collect_properties(model: type) -> Dict[str, ODataPropertyMeta]:
 
     Returns a fresh dict: a subclass inherits its base class's declarations but must
     never be able to add one to them.
-
-    Both carriers are read from the class body, which is the only moment both exist: a
-    getter carries the declaration as an attribute on the function, and a dataclass field
-    carries it in ``field(metadata=odata(...))`` -- the ``Field`` object that
-    ``@dataclass`` consumes afterwards. Neither knows an attribute name until this scan
-    tells it the dict key it was declared under.
     """
     properties: Dict[str, ODataPropertyMeta] = dict(_inherited_properties(model))
-    for attr_name, attr in model.__dict__.items():
-        carrier = attr.fget if isinstance(attr, property) else attr
-        if isinstance(carrier, Field):
-            declared = carrier.metadata.get(_ODATA_MARKER)
-        else:
-            declared = getattr(carrier, _ODATA_MARKER, None)
-        if declared is not None:
-            # The carrier is the only place that knows which attribute reads it.
-            declared.attr = attr_name
-            properties[declared.name] = declared
+    for attr_name, declared in _declarations(model):
+        # The carrier is the only place that knows which attribute reads it.
+        declared.attr = attr_name
+        properties[declared.name] = declared
     return properties
+
+
+def _declarations(model: type) -> Iterator[Tuple[str, ODataPropertyMeta]]:
+    """Every declaration ``model`` states, with the attribute that reads it.
+
+    A field states its declaration in ``field(metadata=odata(...))``, and the decorator
+    that declared the class gave it a name, so fields are taken the way every other
+    dataclass consumer takes them. A getter states it on the function, and the class body
+    names it, which is the one case where the body is the carrier of the name too.
+    """
+    if is_dataclass(model):
+        for declared in fields(model):
+            metadata = declared.metadata.get(_ODATA_MARKER)
+            if metadata is not None:
+                yield declared.name, metadata
+    for attr_name, attr in model.__dict__.items():
+        metadata = getattr(getattr(attr, "fget", attr), _ODATA_MARKER, None)
+        if metadata is not None:
+            yield attr_name, metadata
 
 
 def _class_facts(model: type) -> Dict[str, Any]:
@@ -163,12 +168,11 @@ class TypeSchema:
     def rebuild(cls, model: type) -> None:
         """Restate the class-level facts a decorator has just written.
 
-        ``__init_subclass__`` reads a class once, before any decorator above it has run,
-        so a ``@limit``, a ``@key`` or a ``@version`` is read by nothing until it asks for
-        this. Only those facts are restated, because they are the only ones a decorator
-        states, and so the declarations are reused instead of scanned again -- which is
-        also what makes this answerable for a value: by the time a decorator runs,
-        ``@dataclass`` has already consumed the ``Field`` objects the scan reads.
+        The declarations are read once, when the class is declared, so a ``@limit``, a
+        ``@key`` or a ``@version`` written above that declaration is read by nothing until
+        it asks for this. Only those facts are restated, because they are the only ones a
+        decorator states: the properties cannot have changed, and restating them is what a
+        value could not do anyway, ``@value`` having already read its fields.
         """
         model._schema = replace(model._schema, **_class_facts(model))
 

@@ -1,14 +1,15 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.identity.defaultdocumentlibrary import (
     SPDefaultDocumentLibrary,
 )
 
 
-@dataclass
+@value
 class SPRubySite(ClientValue):
     channelGroupId: Optional[str] = None
     createdDateTime: Optional[datetime] = None

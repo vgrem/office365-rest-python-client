@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.activities.facets.add_to_onedrive import AddToOneDriveFacet
 from office365.sharepoint.activities.facets.archive_facet import ArchiveFacet
 from office365.sharepoint.activities.facets.checkin import CheckinFacet
@@ -27,7 +28,7 @@ from office365.sharepoint.sharing.restorefacet import RestoreFacet
 from office365.sharepoint.sharing.restoreversionfacet import RestoreVersionFacet
 
 
-@dataclass
+@value
 class ActionFacet(ClientValue):
     addToOneDrive: AddToOneDriveFacet = field(default_factory=AddToOneDriveFacet)
     checkin: CheckinFacet = field(default_factory=CheckinFacet)

@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.verdict_category import VerdictCategory
 
 
-@dataclass
+@value
 class CompromiseIndicator(ClientValue):
     value: str | None = None
 

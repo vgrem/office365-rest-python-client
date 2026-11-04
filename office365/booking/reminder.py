@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import timedelta
 
 from office365.booking.reminderrecipients import BookingReminderRecipients
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class BookingReminder(ClientValue):
     message: str | None = None
     offset: timedelta | None = None

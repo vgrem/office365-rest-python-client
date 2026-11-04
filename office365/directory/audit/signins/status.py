@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SignInStatus(ClientValue):
     """Provides the sign-in status (Success or Failure) of the sign-in."""
 

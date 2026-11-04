@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.security.alerts.evidenceremediationstatus import EvidenceRemediationStatus
 from office365.security.alerts.evidencerole import EvidenceRole
 from office365.security.alerts.evidenceverdict import EvidenceVerdict
 
 
-@dataclass
+@value
 class AlertEvidence(ClientValue):
     """The alertEvidence base type and its derived evidence types provide a means to organize and track rich data
     about each artifact involved in an alert."""

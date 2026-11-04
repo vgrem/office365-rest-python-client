@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class StringCollection(ClientValueCollection[str]):
     """A type-safe collection of string values with OData serialization support."""
 
@@ -14,7 +14,7 @@ class StringCollection(ClientValueCollection[str]):
         super().__init__(item_type=str, _data=initial)
 
 
-@dataclass
+@value
 class GuidCollection(ClientValueCollection):
     """A collection of UUID values with proper OData serialization."""
 

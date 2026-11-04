@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.workflow.exceptiondetails import ExceptionDetails
 
 
-@dataclass
+@value
 class LabelAccessControlData(ClientValue):
     ErrorDetails: ExceptionDetails = field(default_factory=ExceptionDetails)
     HasAccessToLabel: bool | None = None

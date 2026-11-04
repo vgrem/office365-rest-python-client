@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.columns.definition import ColumnDefinition
@@ -8,9 +8,10 @@ from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.onedrive.documentsets.content import DocumentSetContent
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DocumentSet(ClientValue):
     """Represents a document set in SharePoint."""
 

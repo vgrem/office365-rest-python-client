@@ -1,11 +1,11 @@
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SitePageBoostProperties(ClientValue):
     BoostOrder: Optional[float] = None
     BoostOrderVersion: Optional[int] = None

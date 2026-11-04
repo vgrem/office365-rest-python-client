@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.principal.source import PrincipalSource
 from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.ui.applicationpages.peoplepicker.query_settings import (
@@ -12,7 +13,7 @@ from office365.sharepoint.ui.applicationpages.peoplepicker.query_settings import
 )
 
 
-@dataclass
+@value
 class ClientPeoplePickerQueryParameters(ClientValue):
     """Specifies the properties of a principal query
 

@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.permissions.identity import Identity
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.onedrive.permissions.sharepoint_identity import SharePointIdentity
 from office365.onedrive.sharepoint.group_identity import SharePointGroupIdentity
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SharePointIdentitySet(IdentitySet):
     """
     Represents a keyed collection of sharePointIdentity resources. This resource extends from the identitySet resource

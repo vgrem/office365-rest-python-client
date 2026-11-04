@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.intune.devices.management.mobileapps.runasaccounttype import (
     RunAsAccountType,
 )
@@ -12,9 +10,10 @@ from office365.intune.devices.management.mobileapps.win32.ruleoperator import (
     Win32LobAppRuleOperator,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class Win32LobAppPowerShellScriptRule(ClientValue):
     comparisonValue: str | None = None
     displayName: str | None = None

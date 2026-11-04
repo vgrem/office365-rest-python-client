@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.public_error import PublicError
+from office365.runtime.types.value import value
 from office365.security.triggers.eventstatustype import EventStatusType
 
 
-@dataclass
+@value
 class RetentionEventStatus(ClientValue):
     status: EventStatusType = EventStatusType.pending
 

@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class PlannerPlanContainer(ClientValue):
     """Represents a container for a plannerPlan. The container is a resource that specifies authorization rules and the
     lifetime of the plan. This means that only the people who are authorized to work with the resource containing

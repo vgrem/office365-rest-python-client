@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.intune.devices.management.mobileapps.mobile_app_identifier import (
     MobileAppIdentifier,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ManagedAppPolicyDeploymentSummaryPerApp(ClientValue):
     configurationAppliedUserCount: int | None = None
     mobileAppIdentifier: MobileAppIdentifier = field(default_factory=MobileAppIdentifier)

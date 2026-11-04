@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.applications.resource_access import ResourceAccess
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class RequiredResourceAccess(ClientValue):
     """Specifies the set of OAuth 2.0 permission scopes and app roles under the specified resource that an
     application requires access to. The application may request the specified OAuth 2.0 permission scopes or app

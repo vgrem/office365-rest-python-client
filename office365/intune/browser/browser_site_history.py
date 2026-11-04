@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
@@ -8,9 +8,10 @@ from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibil
 from office365.intune.browser.sitemergetype import BrowserSiteMergeType
 from office365.intune.browser.sitetargetenvironment import BrowserSiteTargetEnvironment
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class BrowserSiteHistory(ClientValue):
     allowRedirect: bool | None = None
     comment: str | None = None

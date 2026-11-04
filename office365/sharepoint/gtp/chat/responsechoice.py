@@ -1,11 +1,12 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.gtp.message_entry import MessageEntry
 
 
-@dataclass
+@value
 class ChatGptResponseChoice(ClientValue):
     FinishReason: Optional[str] = None
     Index: Optional[int] = None

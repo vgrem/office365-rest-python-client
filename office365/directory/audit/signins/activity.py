@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SignInActivity(ClientValue):
     """Provides the last interactive or non-interactive sign-in time for a specific user. Since signInActivity
     describes a property of the user object, Azure AD stores sign in activity for your users for as long as the

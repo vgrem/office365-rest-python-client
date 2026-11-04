@@ -1,10 +1,10 @@
-from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SPFailToTriggerUninstallAddinJobResponse(ClientValue):
     appInstanceId: Optional[str] = None
     errorMessage: Optional[str] = None

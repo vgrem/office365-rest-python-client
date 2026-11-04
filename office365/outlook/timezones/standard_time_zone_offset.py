@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import time
 
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class StandardTimeZoneOffset(ClientValue):
     dayOccurrence: int | None = None
     dayOfWeek: DayOfWeek = DayOfWeek.sunday

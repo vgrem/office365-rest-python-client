@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.authentication.webauthn_authentication_extensions_client_outputs import (
     WebauthnAuthenticationExtensionsClientOutputs,
@@ -9,9 +9,10 @@ from office365.directory.authentication.webauthn_authenticator_attestation_respo
     WebauthnAuthenticatorAttestationResponse,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class WebauthnPublicKeyCredential(ClientValue):
     clientExtensionResults: WebauthnAuthenticationExtensionsClientOutputs = field(
         default_factory=WebauthnAuthenticationExtensionsClientOutputs

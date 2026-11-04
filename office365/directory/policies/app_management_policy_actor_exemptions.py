@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.applications.custom_security_attribute_exemption import CustomSecurityAttributeExemption
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AppManagementPolicyActorExemptions(ClientValue):
     customSecurityAttributes: ClientValueCollection[CustomSecurityAttributeExemption] = field(
         default_factory=lambda: ClientValueCollection(CustomSecurityAttributeExemption)

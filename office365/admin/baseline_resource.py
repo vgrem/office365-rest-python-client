@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.teams.members.open_complex_dictionary_type import OpenComplexDictionaryType
 
 
-@dataclass
+@value
 class BaselineResource(ClientValue):
     displayName: str | None = None
     properties: OpenComplexDictionaryType = field(default_factory=OpenComplexDictionaryType)

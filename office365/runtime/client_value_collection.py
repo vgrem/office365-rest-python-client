@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import field
 from enum import Enum
 from typing import Any, Generic, Iterator, Optional, TypeVar, cast
 
@@ -12,11 +12,12 @@ from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.edm import collection_type_name
 from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.types.value import value
 
 ValueT = TypeVar("ValueT")
 
 
-@dataclass(init=False)
+@value
 class ClientValueCollection(ClientValue, Generic[ValueT]):
     """A type-safe collection of ClientValue objects or primitives.
 

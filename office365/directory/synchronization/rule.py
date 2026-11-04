@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.container_filter import ContainerFilter
 from office365.security.group_filter import GroupFilter
 from office365.security.object_mapping import ObjectMapping
 from office365.security.string_key_string_value_pair import StringKeyStringValuePair
 
 
-@dataclass
+@value
 class SynchronizationRule(ClientValue):
     containerFilter: ContainerFilter = field(default_factory=ContainerFilter)
     editable: bool | None = None

@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MessageRuleActions(ClientValue):
     """Represents the set of actions that are available to a rule."""
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.mail.automaticreplies.mailtips import AutomaticRepliesMailTips
@@ -9,9 +9,10 @@ from office365.outlook.mail.recipientscopetype import RecipientScopeType
 from office365.outlook.mail.tips.error import MailTipsError
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MailTips(ClientValue):
     """Informative messages about a recipient, displayed to users while they're composing a message.
     For example, an out-of-office message as an automatic reply for a message recipient.

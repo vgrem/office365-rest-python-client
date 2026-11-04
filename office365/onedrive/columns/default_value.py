@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DefaultColumnValue(ClientValue):
     """The defaultColumnValue on a columnDefinition resource specifies the default value for this column.
     The default value can either be specified directly or as a formula."""

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.intune.devices.management.integer_range import IntegerRange
 from office365.intune.print.colormode import PrintColorMode
@@ -14,9 +14,10 @@ from office365.intune.print.scaling import PrintScaling
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class PrinterCapabilities(ClientValue):
     """Represents the capabilities reported by a printer/printerShare."""
 

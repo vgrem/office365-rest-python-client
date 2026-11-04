@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.credential import Credential
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class KeyCredential(Credential):
     """Contains a key credential (certificate) associated with an application.
     The keyCredentials property of the application entity is a collection of keyCredential.

@@ -1,7 +1,8 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.compliance.classification.publishconfig import (
     SPClassificationPublishConfig,
 )
@@ -10,7 +11,7 @@ from office365.sharepoint.contentcenter.machinelearning.extractorpublishconfig i
 )
 
 
-@dataclass
+@value
 class SPModelPublishConfig(ClientValue):
     ClassificationPublishConfigs: ClientValueCollection[SPClassificationPublishConfig] = field(
         default_factory=lambda: ClientValueCollection(SPClassificationPublishConfig)

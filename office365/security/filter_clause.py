@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.filter_operand import FilterOperand
 
 
-@dataclass
+@value
 class FilterClause(ClientValue):
     operatorName: str | None = None
     sourceOperandName: str | None = None

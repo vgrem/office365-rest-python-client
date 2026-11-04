@@ -1,10 +1,10 @@
-from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DlpClassificationResult(ClientValue):
     ClassificationId: Optional[str] = None
     Confidence: Optional[int] = None

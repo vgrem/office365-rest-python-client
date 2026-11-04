@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.externalconnectors.url_match_info import UrlMatchInfo
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ItemIdResolver(ClientValue):
     itemId: str | None = None
     urlMatchInfo: UrlMatchInfo = field(default_factory=UrlMatchInfo)

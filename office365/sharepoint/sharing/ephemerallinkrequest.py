@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.sharing.links.share_settings import ShareLinkSettings
 
 
-@dataclass
+@value
 class EphemeralLinkRequest(ClientValue):
     meetingId: str | None = None
     peoplePickerInput: str | None = None

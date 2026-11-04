@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.identities.authentication_flow import AuthenticationFlow
 from office365.directory.policies.conditionalaccess.clientapp import ConditionalAccessClientApp
@@ -9,9 +9,10 @@ from office365.directory.policies.conditionalaccess.deviceplatform import Condit
 from office365.directory.policies.insiderrisklevel import InsiderRiskLevel
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SignInConditions(ClientValue):
     authenticationFlow: AuthenticationFlow = field(default_factory=AuthenticationFlow)
     clientAppType: ConditionalAccessClientApp = ConditionalAccessClientApp.all

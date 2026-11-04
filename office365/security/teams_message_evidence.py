@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.security.alerts.antispamteamsdirection import (
     AntispamTeamsDirection,
 )
@@ -18,7 +19,7 @@ from office365.security.teams_message_delivery_action import (
 from office365.security.url_evidence import UrlEvidence
 
 
-@dataclass
+@value
 class TeamsMessageEvidence(ClientValue):
     campaignId: str | None = None
     channelId: str | None = None

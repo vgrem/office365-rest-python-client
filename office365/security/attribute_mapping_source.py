@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from office365.directory.synchronization.attributemappingsourcetype import AttributeMappingSourceType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.security.string_key_attribute_mapping_source_value_pair import (
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     )
 
 
-@dataclass
+@value
 class AttributeMappingSource(ClientValue):
     expression: str | None = None
     name: str | None = None

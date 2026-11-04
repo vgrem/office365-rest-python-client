@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from office365.runtime.types.value import value
 from office365.security.labels.retention.duration import RetentionDuration
 
 
-@dataclass
+@value
 class RetentionDurationInDays(RetentionDuration):
     """"""
 

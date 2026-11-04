@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AuthenticationStrengthUsage(ClientValue):
     """
     An object containing two collections of Conditional Access policies that reference the specified authentication

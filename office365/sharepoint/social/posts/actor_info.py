@@ -1,11 +1,12 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SocialPostActorInfo(ClientValue):
     """The SocialPostActorInfo class specifies a set of users, documents, sites, and tags by an index into the
     SocialThread Actors array (see section 3.1.5.42.1.1.1).

@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class RecurrencePattern(ClientValue):
     """Describes the frequency by which a recurring event repeats."""
 

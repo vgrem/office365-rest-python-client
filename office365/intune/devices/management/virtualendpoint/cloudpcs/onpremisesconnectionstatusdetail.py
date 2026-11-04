@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionhealthcheck import (
@@ -8,9 +8,10 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class CloudPcOnPremisesConnectionStatusDetail(ClientValue):
     endDateTime: datetime | None = None
     healthChecks: ClientValueCollection[CloudPcOnPremisesConnectionHealthCheck] = field(

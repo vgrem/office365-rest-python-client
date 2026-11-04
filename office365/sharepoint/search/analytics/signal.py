@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.search.analytics.action import AnalyticsAction
 from office365.sharepoint.search.analytics.actor import AnalyticsActor
 from office365.sharepoint.search.analytics.analyticsitem import AnalyticsItem
 
 
-@dataclass
+@value
 class AnalyticsSignal(ClientValue):
     """Contains data about an action performed by an actor on an item."""
 

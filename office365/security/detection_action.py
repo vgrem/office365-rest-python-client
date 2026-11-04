@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.alerts.template import AlertTemplate
 from office365.security.automated_action_set import AutomatedActionSet
 from office365.security.organizational_scope import OrganizationalScope
 
 
-@dataclass
+@value
 class DetectionAction(ClientValue):
     alertTemplate: AlertTemplate = field(default_factory=AlertTemplate)
     automatedActions: AutomatedActionSet = field(default_factory=AutomatedActionSet)

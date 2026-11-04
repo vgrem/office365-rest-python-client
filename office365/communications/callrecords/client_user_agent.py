@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.communications.callrecords.clientplatform import ClientPlatform
 from office365.communications.callrecords.product_family import ProductFamily
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ClientUserAgent(ClientValue):
     azureADAppId: str | None = None
     communicationServiceId: str | None = None

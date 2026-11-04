@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.security.end_user_notification import EndUserNotification
 
 
-@dataclass
+@value
 class BaseEndUserNotification(ClientValue):
     defaultLanguage: str | None = None
 

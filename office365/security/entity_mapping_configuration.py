@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.account_entity_mapping import AccountEntityMapping
 from office365.security.amazon_resource_entity_mapping import AmazonResourceEntityMapping
 from office365.security.azure_resource_entity_mapping import AzureResourceEntityMapping
@@ -23,7 +24,7 @@ from office365.security.registry_value_entity_mapping import RegistryValueEntity
 from office365.security.url_entity_mapping import UrlEntityMapping
 
 
-@dataclass
+@value
 class EntityMappingConfiguration(ClientValue):
     accounts: ClientValueCollection[AccountEntityMapping] = field(
         default_factory=lambda: ClientValueCollection(AccountEntityMapping)

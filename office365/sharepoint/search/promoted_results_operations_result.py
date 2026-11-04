@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.search.object_owner_result import SearchObjectOwnerResult
 from office365.sharepoint.search.promoted_result_query_rule import (
     PromotedResultQueryRule,
 )
 
 
-@dataclass
+@value
 class PromotedResultsOperationsResult(ClientValue):
     """This object contains properties that describes the result of the REST call get promoted results"""
 

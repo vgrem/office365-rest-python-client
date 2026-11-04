@@ -1,9 +1,10 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 
-@dataclass
+@value
 class DashboardItem(ClientValue):
     WebAbsolutePath: SPResPath = field(default_factory=SPResPath)

@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.externalconnectors.itemcontenttype import (
     ExternalItemContentType,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ExternalItemContent(ClientValue):
     value: str | None = None
 

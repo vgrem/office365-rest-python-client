@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AccessRequestSettings(ClientValue):
     """
     This class returns the access request settings. It's an optional property that can be retrieved in

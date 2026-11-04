@@ -1,8 +1,9 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.marketplace.corporatecuratedgallery.spsitecollectionscopedpermissioninfo import (
     SPSiteCollectionScopedPermissionInfo,
 )
@@ -11,7 +12,7 @@ from office365.sharepoint.marketplace.corporatecuratedgallery.tenantscopedpermis
 )
 
 
-@dataclass
+@value
 class SPAddinPermissionInfo(ClientValue):
     absoluteUrl: Optional[str] = None
     allowAppOnly: Optional[bool] = None

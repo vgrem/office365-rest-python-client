@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.identitygovernance.entitlementmanagement.identity_source import IdentitySource
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DomainIdentitySource(IdentitySource):
     displayName: str | None = None
     domainName: str | None = None

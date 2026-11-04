@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.identitygovernance.content_base import ContentBase
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class TextContent(ContentBase):
     data: str | None = None
 

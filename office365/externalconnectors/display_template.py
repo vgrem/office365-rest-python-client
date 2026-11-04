@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.externalconnectors.property_rule import PropertyRule
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.json import Json
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DisplayTemplate(ClientValue):
     id: str | None = None
     layout: Json = field(default_factory=Json)

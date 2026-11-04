@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import timedelta
 
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.approver_information_visibility import (
@@ -9,9 +9,10 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.directory.subjectset import SubjectSet
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AccessPackageApprovalStage(ClientValue):
     approverInformationVisibility: ApproverInformationVisibility = ApproverInformationVisibility.default
     durationBeforeAutomaticDenial: timedelta | None = None

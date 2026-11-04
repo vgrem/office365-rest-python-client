@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.policies.conditionalaccess.guestorexternalusertypes import (
     ConditionalAccessGuestOrExternalUserTypes,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class UserSignIn(ClientValue):
     externalTenantId: str | None = None
     externalUserType: ConditionalAccessGuestOrExternalUserTypes = ConditionalAccessGuestOrExternalUserTypes.none

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.expiration_pattern import (
@@ -8,9 +8,10 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class RequestSchedule(ClientValue):
     expiration: ExpirationPattern = field(default_factory=ExpirationPattern)
     recurrence: PatternedRecurrence = field(default_factory=PatternedRecurrence)

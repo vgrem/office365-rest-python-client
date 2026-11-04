@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.publishing.sharepointids import SharePointIds
 from office365.sharepoint.sites.template import SiteTemplate
 from office365.sharepoint.viva.resourcevisualization import ResourceVisualization
 
 
-@dataclass
+@value
 class SPAgreementsSite(ClientValue):
     CreatedDateTime: datetime = datetime.min
     Description: Optional[str] = None

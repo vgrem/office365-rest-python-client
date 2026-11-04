@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime, timedelta
 
 from office365.directory.policies.app_management_policy_actor_exemptions import AppManagementPolicyActorExemptions
 from office365.directory.policies.appkeycredentialrestrictiontype import AppKeyCredentialRestrictionType
 from office365.directory.policies.appmanagementrestrictionstate import AppManagementRestrictionState
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class KeyCredentialConfiguration(ClientValue):
     excludeActors: AppManagementPolicyActorExemptions = field(default_factory=AppManagementPolicyActorExemptions)
     maxLifetime: timedelta | None = None

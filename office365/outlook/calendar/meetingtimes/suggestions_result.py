@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.calendar.meetingtimes.suggestion import MeetingTimeSuggestion
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MeetingTimeSuggestionsResult(ClientValue):
     """
     A collection of meeting suggestions if there is any, or the reason if there isn't.

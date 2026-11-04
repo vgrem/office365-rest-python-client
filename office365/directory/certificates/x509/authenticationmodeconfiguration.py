@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.certificates.x509.affinitylevel import X509CertificateAffinityLevel
 from office365.directory.certificates.x509.authenticationmode import X509CertificateAuthenticationMode
 from office365.directory.certificates.x509.rule import X509CertificateRule
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class X509CertificateAuthenticationModeConfiguration(ClientValue):
     rules: ClientValueCollection[X509CertificateRule] = field(
         default_factory=lambda: ClientValueCollection(X509CertificateRule)

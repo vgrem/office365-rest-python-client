@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.directory.users.identity import UserIdentity
 from office365.intune.print.jobprocessingstate import PrintJobProcessingState
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ArchivedPrintJob(ClientValue):
     acquiredByPrinter: bool | None = None
     acquiredDateTime: datetime | None = None

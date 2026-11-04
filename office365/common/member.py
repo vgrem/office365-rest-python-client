@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.recipient_type import RecipientType
 
 
-@dataclass
+@value
 class Member(ClientValue):
     displayName: str | None = None
     key: str | None = None

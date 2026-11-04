@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DeviceManagementSettings(ClientValue):
     """intuneBrand contains data which is used in customizing the appearance of the Company Portal applications as
     well as the end user web portal.

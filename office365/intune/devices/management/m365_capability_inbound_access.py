@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.intune.devices.management.m365_capability_resource_scopes import (
     M365CapabilityResourceScopes,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class M365CapabilityInboundAccess(ClientValue):
     isAllowed: bool | None = None
     resourceScopes: M365CapabilityResourceScopes = field(default_factory=M365CapabilityResourceScopes)

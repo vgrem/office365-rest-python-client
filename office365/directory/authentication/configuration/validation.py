@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.authentication.generic_error import GenericError
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AuthenticationConfigurationValidation(ClientValue):
     errors: ClientValueCollection[GenericError] = field(default_factory=lambda: ClientValueCollection(GenericError))
     warnings: ClientValueCollection[GenericError] = field(default_factory=lambda: ClientValueCollection(GenericError))

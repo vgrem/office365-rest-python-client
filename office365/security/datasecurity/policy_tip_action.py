@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
+from office365.runtime.types.value import value
 from office365.security.datasecurity.dlp_action_info import DlpActionInfo
 
 
-@dataclass
+@value
 class PolicyTipAction(DlpActionInfo):
     complianceUrl: str | None = None
     matchedConditionsDescription: str | None = None

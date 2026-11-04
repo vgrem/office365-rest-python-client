@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.teams.schedule.time_card_event import TimeCardEvent
 
 
-@dataclass
+@value
 class TimeCardBreak(ClientValue):
     breakId: str | None = None
     end: TimeCardEvent = field(default_factory=TimeCardEvent)

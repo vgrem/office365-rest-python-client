@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class TelecomProviderSettings(ClientValue):
     appId: UUID | None = None
     isEvaluationModeEnabled: bool | None = None

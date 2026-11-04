@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -12,12 +11,13 @@ from office365.communications.callrecords.modality import Modality
 from office365.communications.callrecords.video_codec import VideoCodec
 from office365.communications.calls.mediadirection import MediaDirection
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
 
-@dataclass
+@value
 class MediaStream(ClientValue):
     audioCodec: AudioCodec = AudioCodec.unknown
     averageAudioDegradation: float | None = None

@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.copilot.adaptive_card_config import (
     AdaptiveCardConfig,
 )
 
 
-@dataclass
+@value
 class TranspilerResponse(ClientValue):
     config: AdaptiveCardConfig = field(default_factory=AdaptiveCardConfig)
     schemaVersion: str | None = None

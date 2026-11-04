@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.files.versions.policyselectionparameters import VersionPolicySelectionParameters
 
 
-@dataclass
+@value
 class FileVersionBatchDeleteParameters(ClientValue):
     batch_delete_mode: int | None = None
     delete_older_than_days: int | None = None

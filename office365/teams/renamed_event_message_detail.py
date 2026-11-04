@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class TeamRenamedEventMessageDetail(ClientValue):
     initiator: IdentitySet = field(default_factory=IdentitySet)
     teamDisplayName: str | None = None

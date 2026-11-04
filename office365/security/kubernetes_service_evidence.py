@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.alerts.kubernetesservicetype import KubernetesServiceType
 from office365.security.dictionary import Dictionary
 from office365.security.ip_evidence import IpEvidence
@@ -11,7 +12,7 @@ from office365.security.kubernetes_namespace_evidence import KubernetesNamespace
 from office365.security.kubernetes_service_port import KubernetesServicePort
 
 
-@dataclass
+@value
 class KubernetesServiceEvidence(ClientValue):
     clusterIP: IpEvidence = field(default_factory=IpEvidence)
     externalIPs: ClientValueCollection[IpEvidence] = field(default_factory=lambda: ClientValueCollection(IpEvidence))

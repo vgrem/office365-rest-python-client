@@ -1,12 +1,13 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.sitedesigns.choice import Choice
 
 
-@dataclass
+@value
 class MessageCardInput(ClientValue):
     choices: ClientValueCollection[Choice] = field(default_factory=lambda: ClientValueCollection(Choice))
     id: Optional[str] = None

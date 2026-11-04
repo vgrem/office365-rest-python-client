@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import unittest
 import uuid
-from dataclasses import dataclass
 from typing import Any, Optional
 
 from office365.directory.users.user import User
@@ -14,26 +13,27 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.display import MAX_ITEMS
 from office365.runtime.types.collections import GuidCollection, StringCollection
+from office365.runtime.types.value import value
 
 
 def _user_collection() -> ClientObjectCollection[User]:
     return ClientObjectCollection(offline_context(), User, None)
 
 
-@dataclass
+@value
 class _Node(ClientValue):
     name: Optional[str] = None
     child: Any = None
 
 
-@dataclass
+@value
 class _Address(ClientValue):
     city: Optional[str] = None
 
 
 class TestClientValueRendering(unittest.TestCase):
     def test_dataclass_repr_is_bounded(self):
-        # ``@dataclass`` must not shadow the bounded rendering.
+        # Declaring a value must not shadow the bounded rendering.
         rendered = repr(_Node(name="root"))
         self.assertTrue(rendered.startswith("_Node("))
         self.assertIn("name=root", rendered)

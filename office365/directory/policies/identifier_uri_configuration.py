@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.applications.identifier_uri_restriction import IdentifierUriRestriction
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class IdentifierUriConfiguration(ClientValue):
     nonDefaultUriAddition: IdentifierUriRestriction = field(default_factory=IdentifierUriRestriction)
     uriAdditionWithoutUniqueTenantIdentifier: IdentifierUriRestriction = field(default_factory=IdentifierUriRestriction)

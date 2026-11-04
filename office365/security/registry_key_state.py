@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.alerts.registryhive import RegistryHive
 from office365.security.alerts.registryoperation import RegistryOperation
 from office365.security.alerts.registryvaluetype import RegistryValueType
 
 
-@dataclass
+@value
 class RegistryKeyState(ClientValue):
     hive: RegistryHive = RegistryHive.unknown
     key: str | None = None

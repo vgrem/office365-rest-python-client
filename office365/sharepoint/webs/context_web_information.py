@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 # Conservative fallback when the server omits FormDigestTimeoutSeconds, and a
 # safety margin so a digest is refreshed before it can expire mid-flight.
@@ -13,7 +14,7 @@ _DEFAULT_TIMEOUT_SECONDS = 1800
 _REFRESH_MARGIN_SECONDS = 60
 
 
-@dataclass
+@value
 class ContextWebInformation(ClientValue):
     """Specifies metadata about a site."""
 

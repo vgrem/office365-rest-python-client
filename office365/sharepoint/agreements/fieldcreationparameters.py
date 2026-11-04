@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class FieldCreationParameters(ClientValue):
     DataSource: Optional[str] = None
     DataType: Optional[str] = None

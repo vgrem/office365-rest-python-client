@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from dataclasses import field as field_
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.search.bucket_aggregation_definition import BucketAggregationDefinition
 
 
-@dataclass
+@value
 class AggregationOption(ClientValue):
     """Specifies which aggregations should be returned alongside the search results.
     The maximum returned value is 100 buckets."""

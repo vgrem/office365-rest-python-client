@@ -24,22 +24,10 @@ class ClientValue:
     """
 
     _is_client_value: bool = True
-    #: What this value declares, built when the class is created (see ``ClientObject``).
+    #: What this value declares, built by ``@value`` when the class is declared.
     _schema: ClassVar[TypeSchema] = EMPTY
     #: The OData name this value declares (``"microsoft.graph.DateTimeTimeZone"``).
     _odata_type_name: ClassVar[Optional[str]] = None
-
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        super().__init_subclass__(**kwargs)
-        # ``@dataclass`` runs after this hook and keeps a ``__repr__`` only if the class
-        # already has one in its own ``dict``; pin the bounded rendering this class
-        # inherits (``_render``, or a collection's preview) or the decorator's recursive
-        # one replaces it. A class that states its own is left alone.
-        if "__repr__" not in cls.__dict__:
-            cls.__repr__ = next(b.__dict__["__repr__"] for b in cls.__mro__[1:] if "__repr__" in b.__dict__)
-        # The declarations are in the class body too -- a field is the ``Field`` object
-        # ``@dataclass`` has not consumed yet -- so read them now, once, as an object does.
-        cls._schema = TypeSchema.build(cls)
 
     def __str__(self) -> str:
         return _render(self)

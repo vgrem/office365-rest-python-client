@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class TeamFunSettings(ClientValue):
     """Settings to configure use of Giphy, memes, and stickers in the team.
 

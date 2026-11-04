@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.intune.devices.management.process_integrity_level import ProcessIntegrityLevel
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.file_hash import FileHash
 
 
-@dataclass
+@value
 class Process(ClientValue):
     accountName: str | None = None
     commandLine: str | None = None

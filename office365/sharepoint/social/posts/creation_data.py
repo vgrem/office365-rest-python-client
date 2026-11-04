@@ -1,16 +1,17 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.social.attachment import SocialAttachment
 from office365.sharepoint.social.dataitem import SocialDataItem
 from office365.sharepoint.social.link import SocialLink
 from office365.sharepoint.social.posts.definition_data import SocialPostDefinitionData
 
 
-@dataclass
+@value
 class SocialPostCreationData(ClientValue):
     """The SocialPostCreationData object specifies the content of a post in the SocialFeedManager.CreatePost method
     (see section 3.1.5.19.2.1.1). The post consists of a text message, which can optionally include social tags,

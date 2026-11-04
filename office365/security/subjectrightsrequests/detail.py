@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.key_value_pair import KeyValuePair
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SubjectRightsRequestDetail(ClientValue):
     excludedItemCount: int | None = None
     insightCounts: ClientValueCollection[KeyValuePair] = field(

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.onenote.pages.preview_links import OnenotePagePreviewLinks
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class OnenotePagePreview(ClientValue):
     links: OnenotePagePreviewLinks = field(default_factory=OnenotePagePreviewLinks)
     previewText: str | None = None

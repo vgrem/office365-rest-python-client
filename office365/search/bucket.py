@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SearchBucket(ClientValue):
     """Represents a container for one or more search results that share the same value for the entity field
     that aggregates them.

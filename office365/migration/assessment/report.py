@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, cast
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.issue import AssessmentIssue
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.migration.assessment.scanners.base import BaseScanner
@@ -58,7 +59,7 @@ class ScanReport(Generic[RecordT]):
         return buffer.getvalue()
 
 
-@dataclass
+@value
 class AssessmentReport(ClientValue):
     """Result of a pre-migration assessment."""
 

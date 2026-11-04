@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ChatMessageBody(ClientValue):
     """The plain-text or rich-text content of a chat/channel message.
 

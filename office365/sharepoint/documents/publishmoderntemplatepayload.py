@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.documents.location import DocumentLocation
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 from office365.sharepoint.documents.snippet import Snippet
 
 
-@dataclass
+@value
 class PublishModernTemplatePayload(ClientValue):
     DisableSearchAndApprovals: Optional[bool] = None
     Placeholders: ClientValueCollection[PlaceholderV2] = field(

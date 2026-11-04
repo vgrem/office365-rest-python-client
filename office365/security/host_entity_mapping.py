@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class HostEntityMapping(ClientValue):
     deviceIdColumn: str | None = None
     dnsDomainColumn: str | None = None

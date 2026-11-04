@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ReportTopQueriesData(ClientValue):
     QueryPercentage: float | None = None
     QueryText: str | None = None

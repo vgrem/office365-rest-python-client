@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.outlook.locale_info import LocaleInfo
@@ -8,9 +8,10 @@ from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSett
 from office365.outlook.mail.delegatemeetingmessagedeliveryoptions import DelegateMeetingMessageDeliveryOptions
 from office365.outlook.mail.userpurpose import UserPurpose
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MailboxSettings(ClientValue):
     """Settings for the primary mailbox of a user."""
 

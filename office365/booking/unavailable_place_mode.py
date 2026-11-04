@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.booking.place_mode import PlaceMode
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class UnavailablePlaceMode(PlaceMode):
     reason: str | None = None
 

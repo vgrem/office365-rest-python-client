@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.reports.userregistration.method_count import UserRegistrationMethodCount
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class UserRegistrationMethodSummary(ClientValue):
     """Represents the summary of number of users registered for each authentication method."""
 

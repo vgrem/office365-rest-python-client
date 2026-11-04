@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.identitygovernance.accessreview.reviewer_scope_type import (
     AccessReviewReviewerScopeType,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AccessReviewReviewerScope(ClientValue):
     query: str | None = None
     queryRoot: str | None = None

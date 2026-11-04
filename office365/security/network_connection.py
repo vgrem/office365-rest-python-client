@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.alerts.connection_direction import ConnectionDirection
 from office365.security.alerts.connectionstatus import ConnectionStatus
 from office365.security.alerts.securitynetworkprotocol import (
@@ -11,7 +11,7 @@ from office365.security.alerts.securitynetworkprotocol import (
 )
 
 
-@dataclass
+@value
 class NetworkConnection(ClientValue):
     applicationName: str | None = None
     destinationAddress: str | None = None

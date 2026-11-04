@@ -1,11 +1,12 @@
-"""Three ratchets that walk the whole package and fail on *this* tree.
+"""Four ratchets that walk the whole package and fail on *this* tree.
 
 The first is ``Compare`` rules: each must say something its field's type can bear
 (see ``runtime/compare_check.py``). The second is a dataclass field default: it
 must be hashable on whichever interpreter runs the suite. The third is the set of
 projections ``TypeSchema`` derives: a caller that asks the model instead of keeping
 its own name list is only served if the projections stay a partition of what the
-declarations say.
+declarations say. The fourth is the schema a model stores: it is only an answer if
+it is the one its declarations describe.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from __future__ import annotations
 import dataclasses
 import importlib
 import pkgutil
-from dataclasses import dataclass, field
+from dataclasses import field, replace
 from datetime import datetime
 from typing import Dict, Iterator, List, Optional
 
@@ -24,6 +25,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
+from office365.runtime.types.value import value
 
 
 def _package_models() -> list:
@@ -45,7 +47,7 @@ def test_every_compare_rule_in_the_package_fits_its_field():
 
 
 def _problems(**declared) -> list:
-    @dataclass
+    @value
     class Sample(ClientValue):
         text: Optional[str] = field(default=None, metadata=odata("text", compare=declared.get("text")))
         when: Optional[datetime] = field(default=None, metadata=odata("when", compare=declared.get("when")))
@@ -59,9 +61,9 @@ def _dataclasses_under(package: object) -> Iterator[type]:
     """Every dataclass defined by ``package`` and its submodules."""
     for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):  # type: ignore[attr-defined]
         module = importlib.import_module(module_info.name)
-        for value in vars(module).values():
-            if isinstance(value, type) and dataclasses.is_dataclass(value):
-                yield value
+        for member in vars(module).values():
+            if isinstance(member, type) and dataclasses.is_dataclass(member):
+                yield member
 
 
 def _unhashable_defaults(model: type) -> List[str]:
@@ -117,6 +119,20 @@ def test_the_walk_reaches_models_with_both_kinds_of_member() -> None:
     # the projections mean nothing unless they are populated: one test states both facts.
     projecting = {m.__name__ for m in _package_models() if TypeSchema.of(m).columns and TypeSchema.of(m).navigations}
     assert {"ListItem", "Web", "Event"} <= projecting
+
+
+def test_every_model_stores_the_schema_its_declarations_describe() -> None:
+    # ``TypeSchema.of`` answers from the schema the class stored, never by scanning it
+    # again, so a class that declares something and stores nothing answers every
+    # question about itself with the empty schema -- silently, and in the direction of
+    # asking for less than the model can carry. That is what a bare ``@dataclass``, or a
+    # subclass that declares nothing of its own, would do, so the walk is the gate.
+    stale = [
+        f"{model.__module__}.{model.__qualname__}"
+        for model in _package_models()
+        if replace(TypeSchema.of(model), name=model.__name__) != TypeSchema.build(model)
+    ]
+    assert stale == []
 
 
 def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:

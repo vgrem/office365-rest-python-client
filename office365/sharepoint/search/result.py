@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.keyvalue import parse_key_value_collection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.simple_data_row import SimpleDataRow
 
 
-@dataclass
+@value
 class SearchResult(ClientValue):
     """
     The SearchResult structure resembles the ResultTableCollection structure

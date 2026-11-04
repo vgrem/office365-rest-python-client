@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionhealthcheckerrortype import (
@@ -10,9 +9,10 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
     CloudPcOnPremisesConnectionStatus,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class CloudPcOnPremisesConnectionHealthCheck(ClientValue):
     additionalDetail: str | None = None
     correlationId: str | None = None

@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 
 
-@dataclass
+@value
 class InactiveSitePolicyResourceStorage(ClientValue):
     createdOn: datetime | None = None
     lastScopedOn: datetime | None = None

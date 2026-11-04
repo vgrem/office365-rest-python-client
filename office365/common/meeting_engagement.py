@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.common.meeting_engagement_type import MeetingEngagementType
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MeetingEngagement(ClientValue):
     dateTime: datetime | None = None
     engagementSubType: str | None = None

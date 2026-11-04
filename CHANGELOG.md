@@ -172,17 +172,28 @@ introduced.
   (`property_ref_name` and the version gate) ask the schema rather than the class
   attribute the decorator wrote, and the decorators rebuild it through one helper,
   `TypeSchema.rebuild` — the one place that records why a decorator above a class has to:
-  `__init_subclass__` read that class before anything above it ran.
-- One index answers for both carriers: `TypeSchema.of(Model)` builds a type's schema on the
-  first ask and caches it against the class, so a `ClientValue` answers the questions a
-  `ClientObject` does even though its declarations reach the class only when `@dataclass`
-  runs — after `__init_subclass__`. The second index, a module-level
+  the schema was read when the class was created, before anything above it ran.
+- One index answers for both carriers, and the class states it once: a `ClientObject`'s schema
+  is built when the class body has been read, a value's by `@value`, the decorator that
+  declares it. `TypeSchema.of(Model)` is then an attribute read — nothing is scanned twice and
+  nothing is built lazily, so no cache has to be keyed weakly. The second index, a module-level
   `field_declarations()` dict filled by walking `dataclasses.fields()` at each call site, is
   gone: `ScopedProfile`, `compare_check`, the record importer and `ClientValue.to_json` ask
-  the schema instead, and the cache is keyed weakly, so a class defined in a test is not
-  pinned for the run. `declared_type` stopped guessing `to_snake_case(name)` as well: it
+  the schema instead. `declared_type` stopped guessing `to_snake_case(name)` as well: it
   resolves the declaration's `attr`, so a value field declared under a different OData name
   answers its type instead of silently answering `None`.
+- A value is declared with `@value` (`office365.runtime.types.value`), not a bare `@dataclass`:
+  one decorator installs the fields and states the two facts that belong to the class as a
+  whole — `@dataclass(repr=False)`, the documented way to say "generate no `__repr__`", so
+  every value keeps the bounded rendering it inherits and a collection keeps its preview, and
+  the schema, read while the class is being declared. It is a `@dataclass_transform`, so a type
+  checker still sees the `__init__` it generates. What it replaces was the hook:
+  `__init_subclass__` pinned the inherited `__repr__` into each subclass's `dict` so that
+  `@dataclass`, running later, would leave it alone, and read the declarations out of the
+  `Field` objects `@dataclass` had not consumed yet. A value that skips the decorator — or a
+  subclass that declares nothing of its own — answers `TypeSchema.of()` with the empty schema,
+  which is why `test_every_model_stores_the_schema_its_declarations_describe` walks the package
+  and names it.
 - A schema derives its projections from that one index, on the first ask: `columns`,
   `navigations`, `expansions`, `readonly`, `persistable`, `system`, `beta_names`,
   `canonical_names`, `beta_only`, `stable_only` and `facets` are computed from

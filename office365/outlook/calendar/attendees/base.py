@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.types.odata_property import Compare, odata
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AttendeeBase(Recipient):
     """The type of attendees."""
 

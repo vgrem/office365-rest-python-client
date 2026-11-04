@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.tenantinformation.multitenantorganizationmemberprocessingstatus import (
     MultiTenantOrganizationMemberProcessingStatus,
 )
 from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MultiTenantOrganizationJoinRequestTransitionDetails(ClientValue):
     desiredMemberState: MultiTenantOrganizationMemberState = MultiTenantOrganizationMemberState.pending
     details: str | None = None

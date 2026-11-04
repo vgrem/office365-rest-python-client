@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
@@ -10,9 +9,10 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_value import ClientValue
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ChatInfo(ClientValue):
     messageId: str | None = None
 

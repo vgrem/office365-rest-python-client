@@ -138,7 +138,7 @@ class SourceEditor:
         members: list[ast.stmt],
         imports: list[ast.stmt],
         *,
-        add_dataclass: bool = False,
+        add_value: bool = False,
         extra_bases: Optional[list[str]] = None,
         renamed_lines: Optional[dict[int, str]] = None,
     ) -> str:
@@ -154,7 +154,7 @@ class SourceEditor:
         members, imports = self._qualify(members, imports, tree)
         runtime_lines, type_checking_lines = self._split_imports(imports)
         return self._assemble(
-            tree, members, runtime_lines, type_checking_lines, add_dataclass, extra_bases or [], renamed_lines or {}
+            tree, members, runtime_lines, type_checking_lines, add_value, extra_bases or [], renamed_lines or {}
         )
 
     @staticmethod
@@ -190,7 +190,7 @@ class SourceEditor:
         members: list[ast.stmt],
         runtime_lines: list[str],
         type_checking_lines: list[str],
-        add_dataclass: bool,
+        add_value: bool,
         extra_bases: list[str],
         renamed_lines: dict[int, str],
     ) -> str:
@@ -211,10 +211,10 @@ class SourceEditor:
                 del lines[pass_line - 1]
                 class_end -= 1
             self._insert_members(lines, tree, members, class_end)
-            if add_dataclass and not self._has_dataclass_decorator(tree):
+            if add_value and not self._has_value_decorator(tree):
                 class_line = self._class_line(tree)
                 if class_line is not None:
-                    lines.insert(class_line, "@dataclass")
+                    lines.insert(class_line, "@value")
 
         if type_checking_lines:
             if tc_block is not None and tc_block.end_lineno is not None:
@@ -322,10 +322,10 @@ class SourceEditor:
                 lines[node.lineno - 1] = f"class {self.class_name}({', '.join(new_bases)}):"
             return
 
-    def _has_dataclass_decorator(self, tree: ast.Module) -> bool:
+    def _has_value_decorator(self, tree: ast.Module) -> bool:
         for node in tree.body:
             if isinstance(node, ast.ClassDef) and node.name == self.class_name:
-                return any(isinstance(d, ast.Name) and d.id == "dataclass" for d in node.decorator_list)
+                return any(isinstance(d, ast.Name) and d.id == "value" for d in node.decorator_list)
         return False
 
     def _sole_pass_line(self, tree: ast.Module) -> Optional[int]:

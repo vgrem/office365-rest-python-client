@@ -1,11 +1,12 @@
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.userprofiles.followed_item import FollowedItem
 
 
-@dataclass
+@value
 class FollowResult(ClientValue):
     """The FollowResult class returns information about a request to follow an item.
 

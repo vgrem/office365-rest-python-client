@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.activities.facets.comment import CommentFacet
 from office365.sharepoint.activities.facets.mention import MentionFacet
 from office365.sharepoint.activities.facets.revision_set import RevisionSetFacet
 
 
-@dataclass
+@value
 class ActivityClientRequest(ClientValue):
     revisionSet: RevisionSetFacet = field(default_factory=RevisionSetFacet)
     comment: CommentFacet = field(default_factory=CommentFacet)

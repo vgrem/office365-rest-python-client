@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 from office365.sharepoint.sharing.linkexpirationabilitystatus import (
     SharingLinkExpirationAbilityStatus,
@@ -12,7 +13,7 @@ from office365.sharepoint.sharing.linkpasswordabilitystatus import (
 )
 
 
-@dataclass
+@value
 class SharingLinkAbilities(ClientValue):
     """
     Represents the set of capabilities for specific configurations of tokenized sharing link for the current user

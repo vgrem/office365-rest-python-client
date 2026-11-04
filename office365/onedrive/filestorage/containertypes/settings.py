@@ -7,14 +7,14 @@ https://learn.microsoft.com/en-us/graph/api/resources/filestoragecontainertypese
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Optional
 
 from office365.admin.sharepoint.sharingcapabilities import SharingCapabilities
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class FileStorageContainerTypeSettings(ClientValue):
     """Configuration options for a container type.
 

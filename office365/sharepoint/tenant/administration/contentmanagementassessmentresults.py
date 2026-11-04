@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.contentmanagementassessmentpolicyreportdetails import (
     ContentManagementAssessmentPolicyReportDetails as CMAPolicyDetails,
 )
 from office365.sharepoint.tenant.administration.reports.sitepermissionsdetails import SitePermissionsReportDetails
 
 
-@dataclass
+@value
 class ContentManagementAssessmentResults(ClientValue):
     lastUpdatedTime: datetime | None = None
     requestedTime: datetime | None = None

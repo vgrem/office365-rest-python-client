@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.lists.batch_convert_asset_result import (
     BatchConvertAssetResult,
 )
 from office365.sharepoint.lists.conversion_loss_report import ConversionLossReport
 
 
-@dataclass
+@value
 class BatchConvertItemResult(ClientValue):
     errorCode: str | None = None
     errorMessage: str | None = None

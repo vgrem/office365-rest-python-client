@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.applications.data_retention_level import DataRetentionLevel
 from office365.directory.applications.riskfactors.legal_info_gdpr import ApplicationRiskFactorLegalInfoGdpr
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ApplicationRiskFactorLegalInfo(ClientValue):
     dataRetention: DataRetentionLevel = DataRetentionLevel.none
     hasDataOwnership: bool | None = None

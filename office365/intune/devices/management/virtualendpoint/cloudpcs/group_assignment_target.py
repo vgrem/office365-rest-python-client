@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.intune.devices.management.virtualendpoint.cloudpcs.managementassignmenttarget import (
     CloudPcManagementAssignmentTarget,
 )
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class GroupAssignmentTarget(CloudPcManagementAssignmentTarget):
     groupId: str | None = None
 

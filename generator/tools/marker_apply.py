@@ -517,7 +517,7 @@ def _drop_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines:
 
 def _is_addressed(class_node: ast.ClassDef) -> bool:
     """Whether a request can name the type -- which is the only thing a gate can refuse."""
-    if any(getattr(node, "id", None) == "dataclass" for node in class_node.decorator_list):
+    if any(getattr(node, "id", None) in {"value", "dataclass"} for node in class_node.decorator_list):
         return False
     return "Enum" not in {getattr(base, "id", None) or getattr(base, "attr", None) for base in class_node.bases}
 

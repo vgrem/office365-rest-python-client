@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.cloud_flare_rule_model import CloudFlareRuleModel
 from office365.security.cloud_flare_ruleset_model import (
     CloudFlareRulesetModel,
 )
 
 
-@dataclass
+@value
 class CloudFlareVerifiedDetailsModel(ClientValue):
     enabledCustomRules: ClientValueCollection[CloudFlareRuleModel] = field(
         default_factory=lambda: ClientValueCollection(CloudFlareRuleModel)

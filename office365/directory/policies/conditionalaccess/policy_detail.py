@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.policies.conditionalaccess.condition_set import ConditionalAccessConditionSet
 from office365.directory.policies.conditionalaccess.grant_controls import ConditionalAccessGrantControls
 from office365.directory.policies.conditionalaccess.session_controls import ConditionalAccessSessionControls
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ConditionalAccessPolicyDetail(ClientValue):
     conditions: ConditionalAccessConditionSet = field(default_factory=ConditionalAccessConditionSet)
     grantControls: ConditionalAccessGrantControls = field(default_factory=ConditionalAccessGrantControls)

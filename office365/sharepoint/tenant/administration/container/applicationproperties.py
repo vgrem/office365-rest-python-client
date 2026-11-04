@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SPContainerApplicationProperties(ClientValue):
     ContainerTypeId: UUID | None = None
     IsGovernableByAdmin: bool | None = None

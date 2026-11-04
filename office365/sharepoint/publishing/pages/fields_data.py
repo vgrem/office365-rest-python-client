@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.publishing.pages.boostproperties import SitePageBoostProperties
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.collaborator import SitePageCollaborator
 from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAuthoringMetadata
 
 
-@dataclass
+@value
 class SitePageFieldsData(ClientValue):
     """Represents Site Page metadata for use in page authoring operations.
 

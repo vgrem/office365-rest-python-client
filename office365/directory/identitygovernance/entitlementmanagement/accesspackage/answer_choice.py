@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.localized_text import (
     AccessPackageLocalizedText,
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AccessPackageAnswerChoice(ClientValue):
     actualValue: str | None = None
     text: str | None = None

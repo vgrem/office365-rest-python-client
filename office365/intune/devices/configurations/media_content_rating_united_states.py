@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.intune.devices.configurations.ios.ratingunitedstatesmoviestype import (
     RatingUnitedStatesMoviesType,
 )
@@ -9,9 +7,10 @@ from office365.intune.devices.configurations.ios.ratingunitedstatestelevisiontyp
     RatingUnitedStatesTelevisionType,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class MediaContentRatingUnitedStates(ClientValue):
     movieRating: RatingUnitedStatesMoviesType = RatingUnitedStatesMoviesType.allAllowed
     tvRating: RatingUnitedStatesTelevisionType = RatingUnitedStatesTelevisionType.allAllowed

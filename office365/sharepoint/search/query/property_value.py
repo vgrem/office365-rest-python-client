@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class QueryPropertyValue(ClientValue):
     """This object is used to store values of predefined types. The object MUST have a value set for only
     one of the property."""

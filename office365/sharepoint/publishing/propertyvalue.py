@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class PropertyValue(ClientValue):
     TermId: Optional[str] = None
     Value: Optional[str] = None

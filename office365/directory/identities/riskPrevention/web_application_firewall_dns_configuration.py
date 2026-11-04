@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.identities.riskPrevention.web_application_firewall_dns_record_type import (
     WebApplicationFirewallDnsRecordType,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class WebApplicationFirewallDnsConfiguration(ClientValue):
     isDomainVerified: bool | None = None
     isProxied: bool | None = None

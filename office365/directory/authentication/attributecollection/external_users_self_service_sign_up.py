@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.authentication.attributecollection.page import AuthenticationAttributeCollectionPage
 from office365.directory.identities.userflows.attribute import IdentityUserFlowAttribute
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class OnAttributeCollectionExternalUsersSelfServiceSignUp(ClientValue):
     attributeCollectionPage: AuthenticationAttributeCollectionPage = field(
         default_factory=AuthenticationAttributeCollectionPage

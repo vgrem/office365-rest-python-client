@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.authentication.attributecollection.page_view_configuration import (
     AuthenticationAttributeCollectionPageViewConfiguration,
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AuthenticationAttributeCollectionPage(ClientValue):
     views: ClientValueCollection[AuthenticationAttributeCollectionPageViewConfiguration] = field(
         default_factory=lambda: ClientValueCollection(AuthenticationAttributeCollectionPageViewConfiguration)

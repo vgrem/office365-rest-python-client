@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.audit.provisioning.detailsinfo import DetailsInfo
 from office365.directory.audit.provisioning.result import ProvisioningResult
 from office365.directory.audit.provisioning.steptype import ProvisioningStepType
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ProvisioningStep(ClientValue):
     description: str | None = None
     details: DetailsInfo = field(default_factory=DetailsInfo)

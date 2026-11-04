@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any, List, Optional
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValue
 
 
-@dataclass(init=False)
+@value
 class TaxonomyFieldValueCollection(ClientValueCollection[TaxonomyFieldValue]):
     """Represents the multi-value object for the taxonomy column."""
 

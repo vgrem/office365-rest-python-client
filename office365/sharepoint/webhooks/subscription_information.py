@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 from typing import Dict, Optional, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class SubscriptionInformation(ClientValue):
     """Parameter class for webhook Update and Create REST operations."""
 

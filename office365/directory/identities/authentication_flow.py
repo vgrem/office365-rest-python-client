@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.policies.conditionalaccess.transfermethods import ConditionalAccessTransferMethods
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class AuthenticationFlow(ClientValue):
     transferMethod: ConditionalAccessTransferMethods = ConditionalAccessTransferMethods.none
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_autopilot_devices_summary import (  # noqa: E501
     UserExperienceAnalyticsAutopilotDevicesSummary,
@@ -15,9 +15,10 @@ from office365.intune.devices.management.userexperienceanalytics.user_experience
     UserExperienceAnalyticsWindows10DevicesSummary,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class UserExperienceAnalyticsWorkFromAnywhereDevicesSummary(ClientValue):
     autopilotDevicesSummary: UserExperienceAnalyticsAutopilotDevicesSummary = field(
         default_factory=UserExperienceAnalyticsAutopilotDevicesSummary

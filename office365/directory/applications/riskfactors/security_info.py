@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import date
 
 from office365.directory.applications.password_policy import PasswordPolicy
@@ -9,9 +9,10 @@ from office365.directory.applications.riskfactors.certificate_info import Applic
 from office365.directory.applications.ssl_version import SslVersion
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ApplicationRiskFactorSecurityInfo(ClientValue):
     certificate: ApplicationRiskFactorCertificateInfo = field(default_factory=ApplicationRiskFactorCertificateInfo)
     domainToCheck: str | None = None

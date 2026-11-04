@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.directory.applications.csa_star_level import CsaStarLevel
 from office365.directory.applications.fed_ramp_level import FedRampLevel
 from office365.directory.applications.pci_version import PciVersion
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ApplicationSecurityCompliance(ClientValue):
     cobit: bool | None = None
     coppa: bool | None = None

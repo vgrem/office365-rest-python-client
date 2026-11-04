@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.intune.devices.imported_windows_autopilot_device_identity_import_status import (
     ImportedWindowsAutopilotDeviceIdentityImportStatus,
 )
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ImportedWindowsAutopilotDeviceIdentityState(ClientValue):
     deviceErrorCode: int | None = None
     deviceErrorName: str | None = None

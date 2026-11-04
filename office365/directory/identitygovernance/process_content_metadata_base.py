@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.directory.identitygovernance.content_base import ContentBase
 from office365.directory.identitygovernance.content_category import ContentCategory
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.datasecurity.current_label import CurrentLabel
 
 
-@dataclass
+@value
 class ProcessContentMetadataBase(ClientValue):
     content: ContentBase = field(default_factory=ContentBase)
     contentCategory: ContentCategory = ContentCategory.none

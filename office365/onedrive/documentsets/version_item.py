@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class DocumentSetVersionItem(ClientValue):
     """
     Represents an item that is a part of a captured documentSetVersion.

@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.policies.conditionalaccess.guests_or_external_users import (
     ConditionalAccessGuestsOrExternalUsers,
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ConditionalAccessUsers(ClientValue):
     excludeGroups: StringCollection = field(default_factory=StringCollection)
     excludeGuestsOrExternalUsers: ConditionalAccessGuestsOrExternalUsers = field(

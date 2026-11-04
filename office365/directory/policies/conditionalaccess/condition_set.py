@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 
 from office365.directory.policies.conditionalaccess.applications import ConditionalAccessApplications
 from office365.directory.policies.conditionalaccess.authentication_flows import ConditionalAccessAuthenticationFlows
@@ -14,9 +14,10 @@ from office365.directory.policies.conditionalaccess.users import ConditionalAcce
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class ConditionalAccessConditionSet(ClientValue):
     insiderRiskLevels: ConditionalAccessInsiderRiskLevels = ConditionalAccessInsiderRiskLevels.minor
     servicePrincipalRiskLevels: ClientValueCollection[RiskLevel] = field(

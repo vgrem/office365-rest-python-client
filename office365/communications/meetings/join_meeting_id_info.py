@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 from office365.communications.meetings.info import MeetingInfo
+from office365.runtime.types.value import value
 
 
-@dataclass
+@value
 class JoinMeetingIdMeetingInfo(MeetingInfo):
     """Contains information that allows you to join an existing meeting with a joinMeetingId and a passcode
     (if required). You can retrieve these properties from the Get onlineMeeting API."""

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
+from office365.runtime.types.value import value
 from office365.security.attacksimulations.trainingstatus import TrainingStatus
 
 
-@dataclass
+@value
 class UserTrainingStatusInfo(ClientValue):
     assignedDateTime: datetime | None = None
     completionDateTime: datetime | None = None

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.types.value import value
 from office365.security.attacksimulations.user import AttackSimulationUser
 from office365.security.user_simulation_event_info import (
     UserSimulationEventInfo,
@@ -12,7 +13,7 @@ from office365.security.user_simulation_event_info import (
 from office365.security.user_training_event_info import UserTrainingEventInfo
 
 
-@dataclass
+@value
 class UserSimulationDetails(ClientValue):
     """Represents a user of a tenant and their online actions in an attack simulation and training campaign.
 
