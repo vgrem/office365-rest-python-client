@@ -346,6 +346,13 @@ introduced.
   two writable content properties, with the page predicates (`is_modern`,
   `is_classic`, `body`, `body_field`) and the write (`apply_page_payload`) on the
   type.
+- A schema's projections are held to what they claim by a walk over the whole package
+  (`tests/unit/test_declaration_ratchets.py`): `$select` and `$expand` never offer the
+  same name, `expansions` stays inside `navigations`, a facet offers only names `$select`
+  can carry, no member is `readonly` and `persistable` at once, and the attribute index
+  answers the declaration it was built from. A caller that drops its own name list for a
+  projection is relying on exactly those, so they are stated where a break shows up as a
+  failing test over every model rather than as a `$select` the service trims.
 
 **Long-running operations**
 

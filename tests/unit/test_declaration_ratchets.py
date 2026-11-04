@@ -1,8 +1,11 @@
-"""Two ratchets that walk the whole package and fail on *this* tree.
+"""Three ratchets that walk the whole package and fail on *this* tree.
 
 The first is ``Compare`` rules: each must say something its field's type can bear
 (see ``runtime/compare_check.py``). The second is a dataclass field default: it
-must be hashable on whichever interpreter runs the suite.
+must be hashable on whichever interpreter runs the suite. The third is the set of
+projections ``TypeSchema`` derives: a caller that asks the model instead of keeping
+its own name list is only served if the projections stay a partition of what the
+declarations say.
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ import office365.runtime as runtime_package
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 
 
@@ -71,6 +75,48 @@ def _unhashable_defaults(model: type) -> List[str]:
         except TypeError:
             offenders.append(declared.name)
     return offenders
+
+
+def _projection_problems(model: type) -> List[str]:
+    """Every way the schema of ``model`` contradicts its own declarations.
+
+    Each projection is one filtered line over ``properties``, so the checks below are
+    the properties that filtering assumes: a member is projected one way or the other,
+    a flag narrows a projection instead of widening it, and the index answers with the
+    declaration it was built from.
+    """
+    schema = TypeSchema.of(model)
+    columns, navigations = set(schema.columns), set(schema.navigations)
+    readonly, persistable = set(schema.readonly), set(schema.persistable)
+    problems: List[str] = []
+    if columns & navigations:
+        problems.append(f"$select and $expand both offer {sorted(columns & navigations)}")
+    if not set(schema.expansions) <= navigations:
+        problems.append(f"expandable but not a navigation: {sorted(set(schema.expansions) - navigations)}")
+    if readonly & persistable:
+        problems.append(f"read-only and persistable at once: {sorted(readonly & persistable)}")
+    for facet, names in schema.facets.items():
+        if not set(names) <= columns:
+            problems.append(f"facet {facet} offers {sorted(set(names) - columns)}, which $select cannot name")
+    for attr, name in schema.by_attr.items():
+        if schema.properties.get(name) is None or schema.properties[name].attr != attr:
+            problems.append(f"{attr} is indexed as {name}, which no declaration owns")
+    return problems
+
+
+def test_every_model_keeps_its_projections_coherent() -> None:
+    # The migration layer reads these instead of keeping name lists of its own, so a
+    # name offered twice (or a flag with no member to narrow) has to fail here rather
+    # than at the `$select` the caller builds from it.
+    problems = [f"{model.__name__}: {problem}" for model in _package_models() for problem in _projection_problems(model)]
+    assert problems == []
+
+
+def test_the_walk_reaches_models_with_both_kinds_of_member() -> None:
+    # The rule above proves nothing unless the walk reaches models that project both, and
+    # the projections mean nothing unless they are populated: one test states both facts.
+    projecting = {m.__name__ for m in _package_models() if TypeSchema.of(m).columns and TypeSchema.of(m).navigations}
+    assert {"ListItem", "Web", "Event"} <= projecting
 
 
 def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:
