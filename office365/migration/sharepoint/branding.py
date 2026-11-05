@@ -30,6 +30,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Dict, List, Optional
 from urllib.parse import urlsplit
 
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -74,7 +75,7 @@ def _web_url(web: "Web") -> str:
     A projected read replaces the loaded properties with the ones it asked for, so
     ``Url`` may be gone by the time a note needs it.
     """
-    for name in ("Url", "ServerRelativeUrl"):
+    for name in TypeSchema.of(web).identities:
         value = web.get_property(name)
         if value:
             return str(value)

@@ -34,6 +34,7 @@ from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Tuple
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
     _ODATA_MARKER,
+    IDENTITIES,
     PREVIEW,
     NotSupportedInVersion,
     ODataPropertyMeta,
@@ -265,6 +266,19 @@ class TypeSchema:
                 for facet in sorted({declared.facet for declared in self.properties.values() if declared.facet})
             }
         )
+
+    @cached_property
+    def identities(self) -> Tuple[str, ...]:
+        """The OData names that say what the object is, strongest first.
+
+        Taken from :attr:`columns`, so a name the type's own resource refuses to project
+        is not offered as an identification either. Ordered by the role rather than by the
+        class body: a caller that has to name an object it did not create can use the
+        first spelling wherever it is, the second only inside the site collection.
+        """
+        rank = {identity: index for index, identity in enumerate(IDENTITIES)}
+        named = (name for name in self.columns if self.properties[name].identity in rank)
+        return tuple(sorted(named, key=lambda name: rank[str(self.properties[name].identity)]))
 
     def declared(self, attr: str) -> Optional[ODataPropertyMeta]:
         """The declaration the Python attribute ``attr`` carries, if any."""

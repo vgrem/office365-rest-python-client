@@ -251,3 +251,15 @@ def test_a_navigation_node_serializes_the_tree_it_holds():
     again = NavigationNode(offline_context()).hydrate(document)
     assert again.children[0].url == "/sites/x/Pages/c.aspx"
     assert again.is_visible is False
+
+
+def test_a_web_names_itself_with_the_url_that_travels_first():
+    """One address, two spellings, and the caller picks by reach.
+
+    Three modules in ``migration`` used to loop over the pair ``("Url", "ServerRelativeUrl")``
+    by name, because a caller that has to say *which site* a web is has no other way to
+    learn the two spellings. The order is the declaration's, not the caller's: the address
+    as it stands travels to another site collection, the path inside this one does not.
+    """
+    assert TypeSchema.of(Web).identities == ("Url", "ServerRelativeUrl")
+    assert TypeSchema.of(ListItem).identities == ()  # an item is identified by its key, not a column

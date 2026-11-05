@@ -38,6 +38,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from office365.runtime.schema import TypeSchema
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -148,7 +149,7 @@ def _web_url(web: "Web") -> str:
     loaded properties with the ones it asked for, so ``Url`` may be gone by the
     time a note needs it — the context still knows which site the web belongs to.
     """
-    for name in ("Url", "ServerRelativeUrl"):
+    for name in TypeSchema.of(web).identities:
         value = web.get_property(name)
         if value:
             return str(value)

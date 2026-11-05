@@ -17,7 +17,7 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import ABSOLUTE_URL, SERVER_RELATIVE_URL, odata
 from office365.sharepoint.activities.entity import SPActivityEntity
 from office365.sharepoint.activities.logger import ActivityLogger
 from office365.sharepoint.alerts.collection import AlertCollection
@@ -2517,7 +2517,7 @@ class Web(SecurableObject):
             ThemeInfo(self.context, ResourcePath("ThemeInfo", self.resource_path)),
         )
 
-    @odata(name="Url")
+    @odata(name="Url", identity=ABSOLUTE_URL)
     @property
     def url(self) -> Optional[str]:
         """Gets the absolute URL for the website."""
@@ -3202,7 +3202,7 @@ class Web(SecurableObject):
         """Gets the SearchScope property"""
         return self.properties.get("SearchScope", None)
 
-    @odata(name="ServerRelativeUrl")
+    @odata(name="ServerRelativeUrl", identity=SERVER_RELATIVE_URL)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""

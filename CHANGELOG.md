@@ -927,6 +927,18 @@ introduced.
   `ensure_properties(names, refresh=True)` is the other half: a value held from an earlier
   read is a snapshot, and whether an object has its own ACL decides whether an ACL is
   replayed or compared at all, so the flag is re-read instead of trusted.
+- **A type can say which of its members name the object.** `@odata(identity=...)` is a
+  second kind of role next to `facet=`: a facet says what a member *means* (authorship,
+  permissions, moderation), an identity says what it *names*. `Web.url` and
+  `Web.server_relative_url` are one address in two spellings — whole, and inside its own
+  site collection — so `TypeSchema.of(web).identities` answers `("Url",
+  "ServerRelativeUrl")`, ranked by reach. Three modules in `migration` had each spelled
+  that pair by hand, twice with a context fallback and once with a typed one, because a
+  caller that has to say *which site* a web is has no other way to learn the two names.
+  The principals keep no role: nothing in `office365/migration` reads a principal property
+  by OData name any more — `LoginName`, `AadObjectId` and `Id` are all reached through
+  typed getters — so the role would have had no reader; the CSV header aliases in
+  `migration.identity` stay ours, as the plan already said.
 
 
 

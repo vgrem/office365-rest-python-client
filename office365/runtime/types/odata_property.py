@@ -26,6 +26,16 @@ PERMISSIONS = "permissions"
 MODERATION = "moderation"
 FACETS = frozenset({AUTHORSHIP, MODERATION, PERMISSIONS})
 
+#: What a member identifies the object by, in the order a reader should try them: the
+#: address as it stands, then the path inside its own site collection. Ordered rather
+#: than a set, because the two spellings of one address are not interchangeable -- a
+#: caller in another site collection can use the first and not the second. A caller that
+#: holds an object whose own name it cannot spell asks the schema for these names instead
+#: of keeping a second list: a projection drops a property, not the fact it declares.
+ABSOLUTE_URL = "absolute-url"
+SERVER_RELATIVE_URL = "server-relative-url"
+IDENTITIES = (ABSOLUTE_URL, SERVER_RELATIVE_URL)
+
 
 def request_version(context: Any) -> Optional[str]:
     """The API version a client addresses, when the client names one at all.
@@ -151,10 +161,17 @@ class ODataPropertyMeta:
     #: name. A facet is not a projection: it holds columns and navigations alike, and a
     #: name plays one role (``TypeSchema.columns_of_facet``).
     facet: Optional[str] = None
+    #: What the member identifies the object by, where it names the object rather than
+    #: describing it: ``Url`` is a web's address, ``ServerRelativeUrl`` the same address
+    #: inside its site collection. One member names one kind of thing, so this is one
+    #: role rather than a set; the roles are ranked in :data:`IDENTITIES`.
+    identity: Optional[str] = None
 
     def __post_init__(self) -> None:
         if self.facet is not None and self.facet not in FACETS:
             raise ValueError(f"unknown facet {self.facet!r}; known: {', '.join(sorted(FACETS))}")
+        if self.identity is not None and self.identity not in IDENTITIES:
+            raise ValueError(f"unknown identity {self.identity!r}; known: {', '.join(IDENTITIES)}")
 
 
 class odata(dict):
@@ -201,12 +218,22 @@ class odata(dict):
         @odata(name="AuthorId", system=True, readonly=True, facet=AUTHORSHIP)
         def author_id(self): ...
 
-    The keywords left are the two that describe one member's place in a *version* of the
-    service. ``beta=`` records what the preview root does with the member -- declares it the
-    same, declares it under another name, declares it alone, or dropped it -- because one
-    model tree serves both roots and that is the whole difference (see also :func:`key`,
-    which states the same kind of fact about a type rather than about one of its
-    attributes)::
+    ``identity=`` states the other kind of role: not what a member *means* but what it
+    *names*. A web says which site it is twice -- ``Url`` and ``ServerRelativeUrl``, the
+    same address whole and inside its site collection -- and a caller that has to
+    identify a web it did not create has no other way to know the two spellings. Declared
+    once, both are read back with ``TypeSchema.of(web).identities``, in the order a reader
+    should try them::
+
+        @odata(name="Url", identity=ABSOLUTE_URL)
+        def url(self): ...
+
+    The keywords left describe one member's place in a *version* of the service, and what
+    the service does with the value it sends. ``beta=`` records what the preview root does
+    with the member -- declares it the same, declares it under another name, declares it
+    alone, or dropped it -- because one model tree serves both roots and that is the whole
+    difference (see also :func:`key`, which states the same kind of fact about a type rather
+    than about one of its attributes)::
 
         @odata(name="catalog", beta="accessPackageCatalog")  # both roots, renamed in preview
         def catalog(self): ...
