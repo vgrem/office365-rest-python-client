@@ -28,6 +28,11 @@ class ResourcePath:
         self._key = segment
         self._parent = parent
 
+    @property
+    def has_key(self) -> bool:
+        """Whether this segment is filled in (an entity addressed by key, a named resource)."""
+        return self._key is not None
+
     def set_segment(self, segment: Union[int, str]) -> Self:
         """
         Updates the path segment key if not already set.

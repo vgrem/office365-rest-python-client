@@ -1007,6 +1007,13 @@ introduced.
 
 ### Fixed
 
+- **A small file was never attached to a message that already exists.** `Message.upload_attachment`
+  sends anything under 3 MB inline, and that path only registered a child on the message's
+  `attachments` collection — a child that rides the *message create*. On a message that already
+  existed nothing was queued, so the attachment was dropped without an error, and the same
+  happened for a message addressed by key (`client.me.messages[id]`), which carries its key in
+  the path and no `id` property to branch on. Both now post to `messages/{id}/attachments`, and
+  a path answers `has_key`, so an entity addressed by key is not mistaken for a draft.
 - **A multi-value column could be created but not updated.** A bare array is refused
   on *both* writes — `MERGE` answers `InvalidClientQueryException` ("a `StartArray`
   was read … when trying to read a value of a property") for Choice, Lookup, User,

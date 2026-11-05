@@ -116,14 +116,16 @@ class Message(OutlookItem):
             raise TypeError("Content is required")
 
         attachment = self.attachments.create_file(name, content, content_type)
-        if self.id is not None:
+        path = self.resource_path
+        # a message addressed by key (``client.me.messages[id]``) never loads ``id``
+        if self.id is not None or (path is not None and path.has_key):
             # existing message: upload via POST /messages/{id}/attachments
             from office365.runtime.queries.create_entity import CreateEntityQuery
 
             qry = CreateEntityQuery(self.attachments, attachment, attachment)
             self.context.add_query(qry)
         else:
-            # new draft (no id yet): register inline so it rides the message create
+            # new draft (no key yet): register inline so it rides the message create
             self.attachments.add_child(attachment)
         return self
 
@@ -149,7 +151,11 @@ class Message(OutlookItem):
         else:
             with open(file_path, "rb") as file_object:
                 content = file_object.read()
-            self.attachments.add_file(os.path.basename(file_object.name), content)
+            # ``attachments.add_file`` only registers an inline child, which rides the
+            # *message create* -- for a message that already exists nothing is queued and
+            # the attachment never reaches the mailbox. ``add_file_attachment`` posts to
+            # the message's ``attachments`` collection instead.
+            self.add_file_attachment(os.path.basename(file_path), content)
         return self
 
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])

@@ -3,12 +3,15 @@
 Tests cover:
   - Creating an upload session for large file attachments
   - Adding file attachments (text + binary) to draft messages
+  - Uploading a file from disk to a message addressed by key
   - Listing attachments on a message
   - Verifying attachment metadata (name, size, contentType)
 """
 
 from __future__ import annotations
 
+import os
+import tempfile
 from typing import ClassVar, Optional
 
 from office365.outlook.mail.attachments.attachment_item import AttachmentItem
@@ -127,3 +130,26 @@ class TestAttachments(GraphDelegatedTestCase):
             self.assertIsNotNone(a.name)
             self.assertIsNotNone(a.size)
             break
+
+    @requires_delegated(
+        "Mail.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_06_upload_attachment_by_path(self):
+        """A small file uploads to a message addressed by key, without its id loaded."""
+        msg = TestAttachments.target_message
+        if not msg or not msg.id:
+            self.skipTest("No target message available")
+
+        addressed = self.client.me.messages[msg.id]
+        self.assertIsNone(addressed.id)
+
+        with tempfile.TemporaryDirectory() as folder:
+            file_path = os.path.join(folder, "small.txt")
+            with open(file_path, "w", encoding="utf-8") as fh:
+                fh.write("small attachment")
+            addressed.upload_attachment(file_path).execute_query()
+
+        attachments = msg.attachments.get().execute_query()
+        matched = [a for a in attachments if a.name == "small.txt"]
+        self.assertGreaterEqual(len(matched), 1)
