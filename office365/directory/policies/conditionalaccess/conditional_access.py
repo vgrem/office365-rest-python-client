@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.policies.conditionalaccess.condition_set import ConditionalAccessConditionSet
 from office365.directory.policies.conditionalaccess.policystate import ConditionalAccessPolicyState
 from office365.directory.policies.conditionalaccess.session_controls import ConditionalAccessSessionControls
+from office365.directory.quotas import IDENTITY_PROTECTION_QUOTAS
 from office365.entity import Entity
+from office365.runtime.limits import limit
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -15,6 +17,7 @@ if TYPE_CHECKING:
     )
 
 
+@limit(*IDENTITY_PROTECTION_QUOTAS)
 class ConditionalAccessPolicy(Entity):
     """
     Represents an Azure Active Directory conditional access policy.

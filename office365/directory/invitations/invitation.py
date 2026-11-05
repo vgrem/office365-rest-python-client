@@ -2,13 +2,16 @@ from typing import Optional
 
 from office365.directory.invitations.message_info import InvitedUserMessageInfo
 from office365.directory.objects.object import DirectoryObject
+from office365.directory.quotas import INVITATION_QUOTAS
 from office365.directory.users.user import User
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*INVITATION_QUOTAS)
 class Invitation(Entity):
     """Represents an invitation that is used to add external users to an organization.
 

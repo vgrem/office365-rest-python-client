@@ -9,9 +9,9 @@ The library declares limits in three layers:
 - **Catalogs**: product vocabularies — ``sharepoint.thresholds.Limits`` (SharePoint
   and CSOM thresholds) and one ``quotas`` module per Graph product (``outlook``,
   ``teams``, ``reports``, ``security``, ``onedrive``, ``onedrive.workbooks``,
-  ``directory``, ``communications``), plus the single Graph-wide row in
-  :mod:`office365.runtime.limits`. A catalog is data: it registers itself at import,
-  and importing this module imports all of them.
+  ``directory``, ``communications``, ``onenote``, ``subscriptions``), plus the single
+  Graph-wide row in :mod:`office365.runtime.limits`. A catalog is data: it registers
+  itself at import, and importing this module imports all of them.
 - **Discovery**: a class carries its limits via ``@limit`` (``declared_limits()``);
   :func:`limits_of` / :func:`verify_limits` inspect them; :func:`catalog`
   aggregates every registered source and :func:`catalog_products` lists the keys
@@ -30,10 +30,12 @@ import office365.communications.quotas  # noqa: F401
 import office365.directory.quotas  # noqa: F401
 import office365.onedrive.quotas  # noqa: F401
 import office365.onedrive.workbooks.quotas  # noqa: F401
+import office365.onenote.quotas  # noqa: F401
 import office365.outlook.quotas  # noqa: F401
 import office365.reports.quotas  # noqa: F401
 import office365.security.quotas  # noqa: F401
 import office365.sharepoint.thresholds  # noqa: F401
+import office365.subscriptions.quotas  # noqa: F401
 import office365.teams.quotas  # noqa: F401
 from office365.runtime.limits import (
     DEFAULT_BATCH_SIZE,

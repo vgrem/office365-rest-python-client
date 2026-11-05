@@ -3,10 +3,13 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
+from office365.onenote.quotas import ONENOTE_QUOTAS
+from office365.runtime.limits import limit
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*ONENOTE_QUOTAS)  # delegated and app-only rows: the token decides which is spent
 class OnenoteEntityBaseModel(Entity):
     """This is the base type for OneNote entities."""
 

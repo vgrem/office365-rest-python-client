@@ -13,12 +13,17 @@ import subprocess
 import sys
 import unittest
 
+from office365.directory.invitations.invitation import Invitation
+from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.onedrive.drives.drive import Drive
 from office365.onedrive.permissions.permission import Permission
+from office365.onenote.pages.page import OnenotePage
 from office365.outlook.calendar.calendar import Calendar
 from office365.outlook.mail.folders.folder import MailFolder
 from office365.runtime.limits import LimitKind, catalog, catalog_products, limits_of
+from office365.subscriptions.collection import SubscriptionCollection
+from office365.subscriptions.subscription import Subscription
 from office365.teams.chats.messages.message import ChatMessage
 
 #: What a row may say about the shape of the request it counts.
@@ -82,6 +87,11 @@ class TestBindings(unittest.TestCase):
         ChatMessage,
         MailFolder,
         Calendar,
+        Subscription,
+        SubscriptionCollection,
+        OnenotePage,
+        Invitation,
+        ConditionalAccessPolicy,
     )
 
     def test_a_p1_type_answers_the_rows_it_spends(self):

@@ -6,11 +6,14 @@ from typing import Optional, Union
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
+from office365.subscriptions.quotas import SUBSCRIPTION_LIST
 from office365.subscriptions.subscription import Subscription
 
 
+@limit(*SUBSCRIPTION_LIST)  # enumerating subscriptions is the narrowest column
 class SubscriptionCollection(EntityCollection[Subscription]):
     """ """
 

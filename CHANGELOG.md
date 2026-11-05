@@ -172,6 +172,15 @@ introduced.
 
 **Model metadata**
 
+- Two catalog modules for the limits a migration meets at scale: `subscriptions/quotas.py`
+  (change, reauthorize, read and list, each in its per-app-for-all-tenants and
+  per-app-per-tenant columns — the second is an order of magnitude smaller, and it is the
+  one a tenant-wide renewal hits) and `onenote/quotas.py` (delegated 120/min, 400/h, five
+  at a time; app-only 240/min, 800/h, twenty at a time — the token decides which column is
+  spent, so the model declares both). `Subscription`, `SubscriptionCollection`,
+  `OnenoteEntityBaseModel`, `Invitation` and `ConditionalAccessPolicy` now answer them;
+  `directory/quotas.py` also gained the tenant-wide invitation row (150 requests / 5 s) and
+  the identity-protection row (one request a second, and no `Retry-After` on a 429).
 - A type's schema carries its identity and its roots beside its properties: `_schema.key`
   and `_schema.versions`, from `@key(...)` and `@version(...)` on the class. Both readers
   (`property_ref_name` and the version gate) ask the schema rather than the class

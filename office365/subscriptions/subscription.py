@@ -6,11 +6,14 @@ from typing import Any, Dict, Optional, Union
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z, parse_datetime
+from office365.runtime.limits import limit
 from office365.runtime.odata.json_format import JsonProfile
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.subscriptions.quotas import SUBSCRIPTION_CHANGES, SUBSCRIPTION_READ, SUBSCRIPTION_REAUTHORIZE
 
 
+@limit(*(SUBSCRIPTION_CHANGES + SUBSCRIPTION_REAUTHORIZE + SUBSCRIPTION_READ))
 class Subscription(Entity):
     """A subscription allows a client app to receive change notifications about changes to data in Microsoft Graph"""
 

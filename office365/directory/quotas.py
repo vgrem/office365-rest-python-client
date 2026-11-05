@@ -34,4 +34,38 @@ IDENTITY_QUOTAS = (
     Limit("identity", 18_000, _SUPPORTED, "requests", "tenant", doc=_DOC, window_seconds=300, request_type="write"),
 )
 
-register_catalog(IDENTITY_QUOTAS, product="directory")
+#: Invitations are counted against the tenant for all apps, not per app: 150 requests
+#: every 5 seconds, whatever the client id. A tenant-wide invitation sweep spends the
+#: same budget the Entra portal does.
+INVITATION_QUOTAS = (
+    Limit(
+        "invitations",
+        150,
+        _SUPPORTED,
+        "requests",
+        "tenant",
+        note="any operation on /invitations, all apps",
+        doc=_DOC,
+        window_seconds=5,
+        request_type="any",
+    ),
+)
+
+#: The identity-protection and conditional-access surface answers one request a second
+#: for the whole tenant, and a 429 comes back with no ``Retry-After``: a caller that
+#: retries on the header alone retries immediately, forever.
+IDENTITY_PROTECTION_QUOTAS = (
+    Limit(
+        "identity protection and conditional access",
+        1,
+        _SUPPORTED,
+        "requests",
+        "tenant",
+        note="riskDetection, namedLocation, conditionalAccessPolicy — no Retry-After on 429",
+        doc=_DOC,
+        window_seconds=1,
+        request_type="any",
+    ),
+)
+
+register_catalog(IDENTITY_QUOTAS, INVITATION_QUOTAS, IDENTITY_PROTECTION_QUOTAS, product="directory")
