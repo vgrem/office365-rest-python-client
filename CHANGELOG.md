@@ -953,6 +953,19 @@ introduced.
   `EnableMinorVersions` only until versioning is, and `ValidationFormula` bounces anything
   that does not parse. Reading the same refusal as "read-only" would have taken a working
   migration setting out of the payload.
+- **A site and a group say which of their columns they do not send either.** The same
+  write-and-read-back probe, run against a throwaway subsite and a scratch cross-site group
+  (both deleted afterwards): `Web` gains 62 read-only declarations (`Id`, `Created`,
+  `WebTemplate`, `Configuration`, `UIVersion`, `LastItemModifiedDate`, the
+  `*ForCurrentUser` permissions and the feature flags behind them) and `Group` gains 5
+  (`ContainsCurrentUser`, the three `CanCurrentUser*` and `OwnerTitle`), leaving 55 and 11
+  columns undecided. Three things the probe could not settle are worth naming, because each
+  one would have become a silent regression: `AlternateCssUrl` was refused only because the
+  stylesheet in the probe did not exist, and `migration.sharepoint.branding` writes it;
+  `AutoAcceptRequestToJoinLeave` was refused only until the group accepted join requests,
+  and `migration.sharepoint.security` carries it; `WelcomePage` is genuinely ignored on the
+  web -- the write that works goes to the root folder, as `apply_home_page` already did.
+  `User` is untouched: there is no scratch account, and a wrong write lands on a real one.
 - **A caller asks for a role, not for a name.** A member can now declare the role it
   plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
   `TypeSchema.columns_of_facet(AUTHORSHIP)` answers the columns of that role the way

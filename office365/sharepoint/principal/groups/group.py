@@ -102,19 +102,19 @@ class Group(Principal):
         """Specifies whether requests to join or leave the group are automatically accepted"""
         return self.properties.get("AutoAcceptRequestToJoinLeave", None)
 
-    @odata(name="CanCurrentUserEditMembership")
+    @odata(name="CanCurrentUserEditMembership", readonly=True)
     @property
     def can_current_user_edit_membership(self) -> Optional[bool]:
         """Specifies whether the current user can add and remove members from the group."""
         return self.properties.get("CanCurrentUserEditMembership", None)
 
-    @odata(name="CanCurrentUserManageGroup")
+    @odata(name="CanCurrentUserManageGroup", readonly=True)
     @property
     def can_current_user_manage_group(self) -> Optional[bool]:
         """Gets a Boolean value that indicates whether the current user can manage the group."""
         return self.properties.get("CanCurrentUserManageGroup", None)
 
-    @odata(name="CanCurrentUserViewMembership")
+    @odata(name="CanCurrentUserViewMembership", readonly=True)
     @property
     def can_current_user_view_membership(self) -> Optional[bool]:
         """Specifies whether the current user can view the membership of the group."""
@@ -126,7 +126,7 @@ class Group(Principal):
         """Specifies whether viewing the membership of the group is restricted to members of the group."""
         return self.properties.get("OnlyAllowMembersViewMembership", None)
 
-    @odata(name="OwnerTitle")
+    @odata(name="OwnerTitle", readonly=True)
     @property
     def owner_title(self) -> Optional[str]:
         """Specifies the name of the owner of the group."""
@@ -155,7 +155,7 @@ class Group(Principal):
             UserCollection(self.context, ResourcePath("Users", self.resource_path)),
         )
 
-    @odata(name="ContainsCurrentUser")
+    @odata(name="ContainsCurrentUser", readonly=True)
     @property
     def contains_current_user(self) -> Optional[bool]:
         """Gets the ContainsCurrentUser property"""

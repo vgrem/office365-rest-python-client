@@ -175,13 +175,17 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: Created types whose write direction is still unconsidered: columns minus read-only
 #: declarations, read off the tree on 2026-11-05. The number may only fall -- a column that
 #: arrives with no direction decided fails here, which is the cheapest place to decide it.
-#: List was probed on a scratch list and a scratch library (write a different value, read it
-#: back, restore) and 41 of its 98 columns refused the write in both; the 57 left are
-#: settings whose refusal depends on the object's state -- ``DraftVersionVisibility`` is
-#: only refused until content approval is on, ``EnableMinorVersions`` until versioning is --
-#: so they stay undecided rather than being declared read-only on the strength of one
-#: template. Web and the principal types have had no probe yet.
-_UNDECLARED = {"List": 57, "Web": 117, "User": 16, "Group": 16}
+#: Each type was settled by writing a different value through a one-property MERGE, reading it
+#: back with `$select`, restoring it if it stuck, and deleting the object afterwards: `List` on
+#: a scratch list and a scratch library, `Web` on a throwaway subsite, `Group` on a scratch
+#: group. The columns that stayed undecided are the ones whose refusal was a precondition, not
+#: a rule -- ``DraftVersionVisibility`` is refused until content approval is on,
+#: ``EnableMinorVersions`` until versioning is, ``AutoAcceptRequestToJoinLeave`` until the
+#: group accepts requests, ``AlternateCssUrl`` until the stylesheet exists -- and the settings
+#: the migration layer carries are exactly that kind. ``User`` has had no probe because it
+#: has no scratch instance: a wrong write lands on a real account, and restoring it needs a
+#: token the write may have broken.
+_UNDECLARED = {"List": 57, "Web": 55, "User": 16, "Group": 11}
 
 
 def _undeclared(model: type) -> int:
