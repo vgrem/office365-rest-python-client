@@ -9,10 +9,8 @@ from office365.directory.authentication.webauthn_authenticator_attestation_respo
     WebauthnAuthenticatorAttestationResponse,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class WebauthnPublicKeyCredential(ClientValue):
     clientExtensionResults: WebauthnAuthenticationExtensionsClientOutputs = field(
         default_factory=WebauthnAuthenticationExtensionsClientOutputs

@@ -3,10 +3,8 @@ from __future__ import annotations
 import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UpgradeInfo(ClientValue):
     """A class containing site collection upgrade information.
 

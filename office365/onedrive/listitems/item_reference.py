@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.onedrive.sharepoint.ids import SharePointIds
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ItemReference(ClientValue):
     """The ItemReference resource provides information necessary to address a DriveItem via the API."""
 

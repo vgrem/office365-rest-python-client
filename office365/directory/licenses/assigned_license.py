@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AssignedLicense(ClientValue):
     """
     Represents a license assigned to a user. The assignedLicenses property of the user entity is a collection

@@ -3,10 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SPDeletedContainerProperties(ClientValue):
     ContainerId: str | None = None
     ContainerName: str | None = None

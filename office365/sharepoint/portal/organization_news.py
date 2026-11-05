@@ -6,7 +6,6 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.value import value
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 
@@ -17,7 +16,6 @@ if TYPE_CHECKING:
     )
 
 
-@value
 class OrganizationNewsSiteReference(ClientValue):
     pass
 

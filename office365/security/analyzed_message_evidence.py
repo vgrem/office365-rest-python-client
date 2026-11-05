@@ -5,11 +5,9 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.security.email_sender import EmailSender
 
 
-@value
 class AnalyzedMessageEvidence(ClientValue):
     antiSpamDirection: str | None = None
     attachmentsCount: int | None = None

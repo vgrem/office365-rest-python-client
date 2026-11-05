@@ -7,10 +7,8 @@ from office365.directory.identitygovernance.entitlementmanagement.schedule impor
 from office365.directory.subjectset import SubjectSet
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AccessPackageAssignmentReviewSettings(ClientValue):
     expirationBehavior: AccessReviewExpirationBehavior = AccessReviewExpirationBehavior.keepAccess
     fallbackReviewers: ClientValueCollection[SubjectSet] = field(

@@ -4,14 +4,12 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.activities.clientidentity import (
     ActivityClientIdentity,
 )
 from office365.sharepoint.activities.revision_info import RevisionInfo
 
 
-@value
 class RevisionSetFacet(ClientValue):
     author: ActivityClientIdentity = field(default_factory=ActivityClientIdentity)
     revisions: ClientValueCollection[RevisionInfo] = field(default_factory=lambda: ClientValueCollection(RevisionInfo))

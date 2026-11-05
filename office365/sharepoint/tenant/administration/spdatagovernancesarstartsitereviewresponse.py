@@ -5,11 +5,9 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.errorfacet import ErrorFacet
 
 
-@value
 class SPDataGovernanceSARStartSiteReviewResponse(ClientValue):
     AdminComment: str | None = None
     Error: ErrorFacet = field(default_factory=ErrorFacet)

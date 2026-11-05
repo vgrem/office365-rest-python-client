@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.permissions.identity import Identity
-from office365.runtime.types.value import value
 
 
-@value
 class SharePointIdentity(Identity):
     """This resource extends from the identity resource to provide the ability to expose SharePoint-specific
     information; for example, loginName or SharePoint IDs."""

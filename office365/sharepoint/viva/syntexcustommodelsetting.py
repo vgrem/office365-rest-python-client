@@ -4,11 +4,9 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.viva.syntexcustommodeldeploymentproperties import SyntexCustomModelDeploymentProperties
 
 
-@value
 class SyntexCustomModelSetting(ClientValue):
     AnalyzerId: str | None = None
     AzureResourceId: str | None = None

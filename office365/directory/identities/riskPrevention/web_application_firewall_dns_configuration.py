@@ -4,10 +4,8 @@ from office365.directory.identities.riskPrevention.web_application_firewall_dns_
     WebApplicationFirewallDnsRecordType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class WebApplicationFirewallDnsConfiguration(ClientValue):
     isDomainVerified: bool | None = None
     isProxied: bool | None = None

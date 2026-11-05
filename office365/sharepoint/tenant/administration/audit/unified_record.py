@@ -5,11 +5,9 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.audit.data import AuditData
 
 
-@value
 class UnifiedAuditRecord(ClientValue):
     AuditData: AuditData = field(default_factory=AuditData)
     RawAuditData: str | None = None

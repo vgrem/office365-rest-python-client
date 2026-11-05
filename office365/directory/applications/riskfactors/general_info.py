@@ -7,10 +7,8 @@ from office365.directory.applications.data_type import ApplicationDataType
 from office365.directory.applications.hold_type import HoldType
 from office365.directory.applications.location import ApplicationLocation
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ApplicationRiskFactorGeneralInfo(ClientValue):
     consumerPopularity: int | None = None
     founded: int | None = None

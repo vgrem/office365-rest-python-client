@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class DriveRecipient(ClientValue):
     """
     The DriveRecipient resource represents a person, group, or other recipient to

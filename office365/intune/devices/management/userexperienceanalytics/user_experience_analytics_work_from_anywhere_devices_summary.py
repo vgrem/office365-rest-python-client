@@ -15,10 +15,8 @@ from office365.intune.devices.management.userexperienceanalytics.user_experience
     UserExperienceAnalyticsWindows10DevicesSummary,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UserExperienceAnalyticsWorkFromAnywhereDevicesSummary(ClientValue):
     autopilotDevicesSummary: UserExperienceAnalyticsAutopilotDevicesSummary = field(
         default_factory=UserExperienceAnalyticsAutopilotDevicesSummary

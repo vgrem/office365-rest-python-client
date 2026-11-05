@@ -5,10 +5,8 @@ from office365.directory.tenantinformation.multitenantorganizationmemberprocessi
 )
 from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class MultiTenantOrganizationJoinRequestTransitionDetails(ClientValue):
     desiredMemberState: MultiTenantOrganizationMemberState = MultiTenantOrganizationMemberState.pending
     details: str | None = None

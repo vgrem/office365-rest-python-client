@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.search.refiner.refiner import Refiner
 
 
-@value
 class RefinementResults(ClientValue):
     """
     The RefinementResults table contains refinement results that apply to the search query.

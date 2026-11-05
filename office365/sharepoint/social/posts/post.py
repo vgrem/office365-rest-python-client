@@ -6,14 +6,12 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.social.attachment import SocialAttachment
 from office365.sharepoint.social.data_overlay import SocialDataOverlay
 from office365.sharepoint.social.link import SocialLink
 from office365.sharepoint.social.posts.actor_info import SocialPostActorInfo
 
 
-@value
 class SocialPost(ClientValue):
     """The SocialPost specifies a post read from the server."""
 

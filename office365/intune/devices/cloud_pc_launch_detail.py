@@ -4,10 +4,8 @@ from office365.intune.devices.management.managed.windows.windows365_switch_compa
     Windows365SwitchCompatibilityFailureReasonType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CloudPcLaunchDetail(ClientValue):
     cloudPcId: str | None = None
     cloudPcLaunchUrl: str | None = None

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Audio(ClientValue):
     """
     The Audio resource groups audio-related properties on an item into a single structure.

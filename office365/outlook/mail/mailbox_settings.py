@@ -8,10 +8,8 @@ from office365.outlook.mail.automaticreplies.setting import AutomaticRepliesSett
 from office365.outlook.mail.delegatemeetingmessagedeliveryoptions import DelegateMeetingMessageDeliveryOptions
 from office365.outlook.mail.userpurpose import UserPurpose
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class MailboxSettings(ClientValue):
     """Settings for the primary mailbox of a user."""
 

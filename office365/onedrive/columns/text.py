@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class TextColumn(ClientValue):
     """The textColumn on a columnDefinition resource indicates that the column's values are text."""
 

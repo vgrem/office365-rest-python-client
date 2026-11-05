@@ -4,10 +4,8 @@ from datetime import datetime
 
 from office365.communications.calls.transcriptionstate import CallTranscriptionState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CallTranscriptionInfo(ClientValue):
     lastModifiedDateTime: datetime | None = None
     state: CallTranscriptionState = CallTranscriptionState.notStarted

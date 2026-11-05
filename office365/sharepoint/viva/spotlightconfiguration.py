@@ -3,12 +3,10 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.viva.newssite import NewsSite
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
 
 
-@value
 class SpotlightConfiguration(ClientValue):
     IsHidden: Optional[bool] = None
     NewsSource: Optional[int] = None

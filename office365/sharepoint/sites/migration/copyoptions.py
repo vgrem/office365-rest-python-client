@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.sites.migration.moveandsharefileinfo import SPMoveAndShareFileInfo
 
 
-@value
 class CopyMigrationOptions(ClientValue):
     AllowSchemaMismatch: bool | None = None
     AllowSmallerVersionLimitOnDestination: bool | None = None

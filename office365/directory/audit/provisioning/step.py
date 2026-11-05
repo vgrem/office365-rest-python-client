@@ -6,10 +6,8 @@ from office365.directory.audit.provisioning.detailsinfo import DetailsInfo
 from office365.directory.audit.provisioning.result import ProvisioningResult
 from office365.directory.audit.provisioning.steptype import ProvisioningStepType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ProvisioningStep(ClientValue):
     description: str | None = None
     details: DetailsInfo = field(default_factory=DetailsInfo)

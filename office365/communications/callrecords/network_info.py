@@ -13,10 +13,8 @@ from office365.communications.callrecords.wifi_band import WifiBand
 from office365.communications.callrecords.wifi_radio_type import WifiRadioType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class NetworkInfo(ClientValue):
     bandwidthLowEventRatio: float | None = None
     basicServiceSetIdentifier: str | None = None

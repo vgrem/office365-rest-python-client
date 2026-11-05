@@ -3,10 +3,8 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class HomeSitesDetails(ClientValue):
     Audiences: StringCollection = field(default_factory=StringCollection)
     IsInDraftMode: Optional[bool] = None

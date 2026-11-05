@@ -5,14 +5,12 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.microfeed.datalinkcollection import (
     MicrofeedDataLinkCollection,
 )
 from office365.sharepoint.microfeed.link import MicrofeedLink
 
 
-@value
 class MicrofeedPostOptions(ClientValue):
     Content: Optional[str] = None
     ContentFormattingOption: Optional[int] = None

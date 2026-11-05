@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
-from office365.runtime.types.value import value
 
 
-@value
 class CopyMigrationInfo(ClientValue):
     """The handle to a queued copy job.
 

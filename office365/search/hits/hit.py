@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.entity import Entity
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SearchHit(ClientValue):
     """
     Represents a single result within the list of search results.

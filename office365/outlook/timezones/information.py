@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class TimeZoneInformation(ClientValue):
     """Represents a time zone. The supported format is Windows, and Internet Assigned Numbers Authority (IANA)
     time zone (also known as Olson time zone) format as well when the current known problem is fixed.

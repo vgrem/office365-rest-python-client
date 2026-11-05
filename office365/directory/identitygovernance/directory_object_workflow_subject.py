@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.objects.object import DirectoryObject
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class DirectoryObjectWorkflowSubject(ClientValue):
     directoryObject: DirectoryObject | None = None
 

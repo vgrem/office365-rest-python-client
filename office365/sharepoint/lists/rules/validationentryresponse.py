@@ -4,12 +4,10 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.lists.rules.definition import RulesDefinition
 from office365.sharepoint.lists.rules.reviewinfo import ReviewerInfo
 
 
-@value
 class RulesValidationEntryResponse(ClientValue):
     Action: int | None = None
     AISuggestionText: str | None = None

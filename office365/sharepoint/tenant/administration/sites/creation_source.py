@@ -5,13 +5,11 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.sites.creation_data import (
     SiteCreationData,
 )
 
 
-@value
 class SiteCreationSource(ClientValue):
     IsSyncThresholdLimitReached: bool | None = None
     LastRefreshTimeStamp: datetime | None = None

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class FileSystemInfo(ClientValue):
     """The FileSystemInfo resource contains properties that are reported by the device's local file system for the
     local version of an item."""

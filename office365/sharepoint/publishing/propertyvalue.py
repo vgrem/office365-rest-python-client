@@ -6,10 +6,8 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
-from office365.runtime.types.value import value
 
 
-@value
 class PropertyValue(ClientValue):
     TermId: Optional[str] = None
     Value: Optional[str] = None

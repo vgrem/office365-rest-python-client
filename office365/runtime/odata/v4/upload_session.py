@@ -5,10 +5,8 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class UploadSession(ClientValue):
     """The UploadSession resource provides information about how to upload large files to OneDrive, OneDrive for
     Business, or SharePoint document libraries."""

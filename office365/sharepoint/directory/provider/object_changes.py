@@ -5,12 +5,10 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.directory.provider.link_change import LinkChange
 from office365.sharepoint.directory.provider.property_change import PropertyChange
 
 
-@value
 class DirectoryObjectChanges(ClientValue):
     DirectoryObjectSubType: Optional[int] = None
     DirectoryObjectType: Optional[int] = None

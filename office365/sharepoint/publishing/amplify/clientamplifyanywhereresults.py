@@ -1,11 +1,9 @@
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.statusresponse import PublishingStatusResponse
 
 
-@value
 class ClientAmplifyAnywhereResults(ClientValue):
     publishingStatusResponse: PublishingStatusResponse = field(default_factory=PublishingStatusResponse)
 

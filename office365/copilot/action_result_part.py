@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.public_error import PublicError
-from office365.runtime.types.value import value
 
 
-@value
 class ActionResultPart(ClientValue):
     @property
     def entity_type_name(self) -> str:

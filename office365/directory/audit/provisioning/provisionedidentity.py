@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.audit.provisioning.detailsinfo import DetailsInfo
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ProvisionedIdentity(ClientValue):
     details: DetailsInfo = field(default_factory=DetailsInfo)
     identityType: str | None = None

@@ -7,10 +7,8 @@ from office365.directory.identitygovernance.entitlementmanagement.custom_extensi
     CustomExtensionBehaviorOnError,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CustomExtensionOverwriteConfiguration(ClientValue):
     behaviorOnError: CustomExtensionBehaviorOnError = field(default_factory=CustomExtensionBehaviorOnError)
     clientConfiguration: CustomExtensionClientConfiguration = field(default_factory=CustomExtensionClientConfiguration)

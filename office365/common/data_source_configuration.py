@@ -6,11 +6,9 @@ from office365.common.sharepoint_embedded_configuration import (
     SharePointEmbeddedConfiguration,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.search.external.item_configuration import ExternalItemConfiguration
 
 
-@value
 class DataSourceConfiguration(ClientValue):
     externalItem: ExternalItemConfiguration = field(default_factory=ExternalItemConfiguration)
     sharePointEmbedded: SharePointEmbeddedConfiguration = field(default_factory=SharePointEmbeddedConfiguration)

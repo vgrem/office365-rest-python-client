@@ -10,13 +10,11 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
 
 
-@value
 class UnifiedRoleManagementPolicyRuleTarget(ClientValue):
     caller: str | None = None
     enforcedSettings: StringCollection = field(default_factory=StringCollection)

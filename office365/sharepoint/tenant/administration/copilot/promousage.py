@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.monthlyusage import MonthlyUsage
 
 
-@value
 class SPOCopilotPromoUsage(ClientValue):
     IsCopilotPromoEligible: bool | None = None
     IsCopilotPromoStatusEnabled: bool | None = None

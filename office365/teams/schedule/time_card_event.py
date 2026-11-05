@@ -5,10 +5,8 @@ from datetime import datetime
 
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class TimeCardEvent(ClientValue):
     dateTime: datetime | None = field(default_factory=lambda: datetime.min)
     isAtApprovedLocation: bool | None = None

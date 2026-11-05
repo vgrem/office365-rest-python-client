@@ -4,10 +4,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
     AccessPackageCustomExtensionStage,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AccessPackageAssignmentRequestCallbackData(ClientValue):
     customExtensionStageInstanceDetail: str | None = None
     customExtensionStageInstanceId: str | None = None

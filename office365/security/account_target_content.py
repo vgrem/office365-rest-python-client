@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.attacksimulations.account_target_content_type import (
     AccountTargetContentType,
 )
 
 
-@value
 class AccountTargetContent(ClientValue):
     type: AccountTargetContentType = AccountTargetContentType.unknown
 

@@ -3,11 +3,9 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.teams.teamwork.user_identity import TeamworkUserIdentity
 
 
-@value
 class TeamworkOnlineMeetingInfo(ClientValue):
     """Represents details about an online meeting in Microsoft Teams.
 

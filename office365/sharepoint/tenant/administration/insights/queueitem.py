@@ -3,10 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class InsightsQueueItem(ClientValue):
     insightsCompletionTime: datetime | None = None
     insightsScenario: int | None = None

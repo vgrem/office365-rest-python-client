@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.directory.linktarget import LinkTarget
 
 
-@value
 class LinkChange(ClientValue):
     Added: ClientValueCollection[LinkTarget] = field(default_factory=lambda: ClientValueCollection(LinkTarget))
     Name: Optional[str] = None

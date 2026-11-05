@@ -6,10 +6,8 @@ from office365.outlook.calendar.attendees.base import AttendeeBase
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 from office365.outlook.calendar.response_status import ResponseStatus
 from office365.runtime.types.odata_property import Compare, odata
-from office365.runtime.types.value import value
 
 
-@value
 class Attendee(AttendeeBase):
     """An event attendees. This can be a person or resource such as a meeting room or equipment,
     that has been set up as a resource on the Exchange server for the tenant."""

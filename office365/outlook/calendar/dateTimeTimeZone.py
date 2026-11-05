@@ -7,7 +7,6 @@ from typing import overload
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import parse_datetime
 from office365.runtime.types.odata_property import Compare, odata
-from office365.runtime.types.value import value
 
 
 def _zone_name(tzinfo: object) -> str | None:
@@ -24,7 +23,6 @@ def _wall_clock(value: datetime) -> str:
     return f"{value:%Y-%m-%dT%H:%M:%S}.{value.microsecond:06d}0"
 
 
-@value
 class DateTimeTimeZone(ClientValue):
     """Describes the date, time, and time zone of a point in time.
 

@@ -5,10 +5,8 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class DeviationAnalysisRule(ClientValue):
     Definition: str | None = None
     FallbackClauses: StringCollection = field(default_factory=StringCollection)

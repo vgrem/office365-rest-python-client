@@ -3,13 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.approvals.spagreementresults import SPAgreementResults
 from office365.sharepoint.compliance.classification.result import ClassificationResult
 from office365.sharepoint.contentcenter.machinelearning.samples.meta import MachineLearningSampleMeta
 
 
-@value
 class MediaServiceUpdateParameters(ClientValue):
     AgreementClauses: str | None = None
     AgreementResults: SPAgreementResults = field(default_factory=SPAgreementResults)

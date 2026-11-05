@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SiteOwnerData(ClientValue):
     department: str | None = None
     jobTitle: str | None = None

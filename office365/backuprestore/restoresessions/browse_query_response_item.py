@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.backuprestore.restoresessions.browse_query_response_item_type import BrowseQueryResponseItemType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BrowseQueryResponseItem(ClientValue):
     itemKey: str | None = None
     itemsCount: int | None = None

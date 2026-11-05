@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.identities.b2bidentityproviderstype import B2bIdentityProvidersType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class InvitationRedemptionIdentityProviderConfiguration(ClientValue):
     fallbackIdentityProvider: B2bIdentityProvidersType = B2bIdentityProvidersType.azureActiveDirectory
     primaryIdentityProviderPrecedenceOrder: ClientValueCollection[B2bIdentityProvidersType] = field(

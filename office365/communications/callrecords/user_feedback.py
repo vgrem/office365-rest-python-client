@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.communications.callrecords.feedback_token_set import FeedbackTokenSet
 from office365.communications.callrecords.user_feedback_rating import UserFeedbackRating
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UserFeedback(ClientValue):
     rating: UserFeedbackRating = UserFeedbackRating.notRated
     text: str | None = None

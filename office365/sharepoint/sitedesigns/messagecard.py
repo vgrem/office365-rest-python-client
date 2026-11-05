@@ -3,14 +3,12 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.sitedesigns.autoinvokeaction import AutoInvokeAction
 from office365.sharepoint.sitedesigns.autoinvokeoptions import AutoInvokeOptions
 from office365.sharepoint.sitedesigns.potentialaction import PotentialAction
 from office365.sharepoint.sitedesigns.section import Section
 
 
-@value
 class MessageCard(ClientValue):
     autoInvokeAction: AutoInvokeAction = field(default_factory=AutoInvokeAction)
     autoInvokeOptions: AutoInvokeOptions = field(default_factory=AutoInvokeOptions)

@@ -13,20 +13,17 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.display import MAX_ITEMS
 from office365.runtime.types.collections import GuidCollection, StringCollection
-from office365.runtime.types.value import value
 
 
 def _user_collection() -> ClientObjectCollection[User]:
     return ClientObjectCollection(offline_context(), User, None)
 
 
-@value
 class _Node(ClientValue):
     name: Optional[str] = None
     child: Any = None
 
 
-@value
 class _Address(ClientValue):
     city: Optional[str] = None
 

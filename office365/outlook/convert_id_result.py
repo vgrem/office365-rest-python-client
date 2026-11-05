@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.authentication.generic_error import GenericError
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ConvertIdResult(ClientValue):
     """The result of an ID format conversion performed by the translateExchangeIds function.
 

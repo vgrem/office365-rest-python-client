@@ -419,7 +419,7 @@ class TypeBuilder(ast.NodeTransformer):
     def _build_imports(self, module: ast.Module) -> None:
         """Insert the imports the added members need (deduplicated)."""
         collector = TypeReferenceCollector(self._resolver)
-        collector.needs_value = self._kind == "ComplexType" and bool(self._added_props)
+        collector.is_complex_type = self._kind == "ComplexType" and bool(self._added_props)
         collector.needs_field = self._uses_field
         collector.field_alias = self._field_alias
 
@@ -427,7 +427,7 @@ class TypeBuilder(ast.NodeTransformer):
             prop_type = prop.client_type_name
             if (
                 prop_type in TypeReferenceCollector.OPTIONAL_TYPES or prop.has_optional_getter()
-            ) and not collector.needs_value:
+            ) and not collector.is_complex_type:
                 # Getters use ``Optional[X]``; dataclass fields use ``X | None``.
                 collector.add("Optional")
             collector.add(prop_type)
@@ -503,10 +503,9 @@ class TypeBuilder(ast.NodeTransformer):
         if not self._properties:
             return
 
-        if not any(isinstance(d, ast.Name) and d.id == "value" for d in class_node.decorator_list):
-            class_node.decorator_list.insert(0, ast.Name(id="value", ctx=ast.Load()))
-
-        # Remove any existing __init__ (the decorator generates it)
+        # Remove any existing __init__: the base class's hook runs ``dataclass`` after this
+        # body is read, and ``dataclass`` leaves a hand-written ``__init__`` alone, so a
+        # stale one would shadow the fields the generator just stated.
         class_node.body = [n for n in class_node.body if not (isinstance(n, ast.FunctionDef) and n.name == "__init__")]
 
         existing_anns = {
@@ -707,12 +706,10 @@ class TypeBuilder(ast.NodeTransformer):
         """Splice the newly built members/imports into the original source text."""
         assert self._original_text is not None
         editor = SourceEditor(self._original_text, self.client_type_name)
-        add_value = self._schema.BaseTypeFullName == "ComplexType"
         extra_bases = ["PollableOperation"] if self._pollable_base_added else None
         return editor.splice(
             self._added_members,
             self._added_imports,
-            add_value=add_value,
             extra_bases=extra_bases,
             renamed_lines=self._renamed_lines,
         )

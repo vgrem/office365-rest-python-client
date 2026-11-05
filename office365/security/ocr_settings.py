@@ -3,10 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OcrSettings(ClientValue):
     isEnabled: bool | None = None
     maxImageSize: int | None = None

@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.search.reports.queryrulesdata import ReportQueryRulesData
 
 
-@value
 class ReportQueryRulesItem(ClientValue):
     Date: str | None = None
     Report: ClientValueCollection[ReportQueryRulesData] = field(

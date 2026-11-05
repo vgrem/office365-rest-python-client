@@ -14,10 +14,8 @@ from office365.directory.policies.conditionalaccess.users import ConditionalAcce
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class ConditionalAccessConditionSet(ClientValue):
     insiderRiskLevels: ConditionalAccessInsiderRiskLevels = ConditionalAccessInsiderRiskLevels.minor
     servicePrincipalRiskLevels: ClientValueCollection[RiskLevel] = field(

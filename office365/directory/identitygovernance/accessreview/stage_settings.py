@@ -9,10 +9,8 @@ from office365.directory.identitygovernance.accessreview.reviewer_scope import A
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AccessReviewStageSettings(ClientValue):
     decisionsThatWillMoveToNextStage: StringCollection = field(default_factory=StringCollection)
     dependsOn: StringCollection = field(default_factory=StringCollection)

@@ -3,13 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.documents.destinationlibraryinfo import DestinationLibraryInfo
 from office365.sharepoint.documents.effectivebasepermissions import EffectiveBasePermissions
 from office365.sharepoint.documents.librarydetails import LibraryDetails
 
 
-@value
 class AgreementsSolutionFileContext(ClientValue):
     CategoryTermSetId: str | None = None
     CheckOutType: int | None = None

@@ -5,10 +5,8 @@ from office365.directory.certificates.x509.crlvalidationconfigurationstate impor
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class X509CertificateCRLValidationConfiguration(ClientValue):
     exemptedCertificateAuthoritiesSubjectKeyIdentifiers: StringCollection | None = None
     state: X509CertificateCRLValidationConfigurationState = X509CertificateCRLValidationConfigurationState.none

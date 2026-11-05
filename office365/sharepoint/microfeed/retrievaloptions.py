@@ -6,10 +6,8 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class MicrofeedRetrievalOptions(ClientValue):
     ContentFormattingOption: Optional[int] = None
     ContentOnly: Optional[bool] = None

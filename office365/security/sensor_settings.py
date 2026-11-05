@@ -5,11 +5,9 @@ from dataclasses import field
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.security.network_adapter import NetworkAdapter
 
 
-@value
 class SensorSettings(ClientValue):
     description: str | None = None
     domainControllerDnsNames: StringCollection = field(default_factory=StringCollection)

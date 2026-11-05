@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.authentication.fraud_protection_configuration import FraudProtectionConfiguration
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnFraudProtectionLoadStartExternalUsersAuthHandler(ClientValue):
     signUp: FraudProtectionConfiguration = field(default_factory=FraudProtectionConfiguration)
 

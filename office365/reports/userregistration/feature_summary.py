@@ -8,10 +8,8 @@ from office365.reports.userregistration.includeduserroles import IncludedUserRol
 from office365.reports.userregistration.includedusertypes import IncludedUserTypes
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class UserRegistrationFeatureSummary(ClientValue):
     """Represents the summary of users capable of multi-factor authentication, self-service password reset,
     and passwordless authentication in an organization.

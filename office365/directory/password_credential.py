@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.directory.credential import Credential
-from office365.runtime.types.value import value
 
 
-@value
 class PasswordCredential(Credential):
     """Represents a password credential (client secret) associated with an
     application or a service principal. The passwordCredentials property of the

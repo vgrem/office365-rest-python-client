@@ -8,10 +8,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class EntitlementManagementSchedule(ClientValue):
     expiration: ExpirationPattern = field(default_factory=ExpirationPattern)
     recurrence: PatternedRecurrence = field(default_factory=PatternedRecurrence)

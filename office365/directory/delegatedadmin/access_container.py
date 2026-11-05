@@ -4,10 +4,8 @@ from office365.directory.delegatedadmin.accesscontainertype import (
     DelegatedAdminAccessContainerType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class DelegatedAdminAccessContainer(ClientValue):
     accessContainerId: str | None = None
     accessContainerType: DelegatedAdminAccessContainerType = DelegatedAdminAccessContainerType.securityGroup

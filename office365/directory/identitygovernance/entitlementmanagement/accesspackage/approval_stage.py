@@ -9,10 +9,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.directory.subjectset import SubjectSet
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AccessPackageApprovalStage(ClientValue):
     approverInformationVisibility: ApproverInformationVisibility = ApproverInformationVisibility.default
     durationBeforeAutomaticDenial: timedelta | None = None

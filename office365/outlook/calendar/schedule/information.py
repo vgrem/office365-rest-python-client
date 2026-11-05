@@ -6,10 +6,8 @@ from office365.outlook.calendar.schedule.item import ScheduleItem
 from office365.outlook.calendar.working_hours import WorkingHours
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class ScheduleInformation(ClientValue):
     """Represents the availability of a user, distribution list, or resource (room or equipment)
     for a specified time period."""

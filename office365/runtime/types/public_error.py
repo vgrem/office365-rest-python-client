@@ -6,10 +6,8 @@ from office365.onedrive.operations.public_error_detail import PublicErrorDetail
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.public_inner_error import PublicInnerError
-from office365.runtime.types.value import value
 
 
-@value
 class PublicError(ClientValue):
     code: str | None = None
     details: ClientValueCollection[PublicErrorDetail] = field(

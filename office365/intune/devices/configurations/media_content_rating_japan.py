@@ -7,10 +7,8 @@ from office365.intune.devices.configurations.ios.ratingjapantelevisiontype impor
     RatingJapanTelevisionType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class MediaContentRatingJapan(ClientValue):
     movieRating: RatingJapanMoviesType = RatingJapanMoviesType.allAllowed
     tvRating: RatingJapanTelevisionType = RatingJapanTelevisionType.allAllowed

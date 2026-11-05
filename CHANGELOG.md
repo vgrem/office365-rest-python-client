@@ -76,6 +76,11 @@ introduced.
   kept as the service sent it instead of being coerced to `None`; a value that differs
   from a member only in case is that member, because one service spells one value set
   two ways (`GET /teams/{id}` says `public`, the group it was listed from says `Public`).
+- A `ClientValue` subclass no longer takes `@dataclass` (`@value` is gone with it): the base
+  class applies `dataclass(cls, repr=False)` in `__init_subclass__`, once per class. A second
+  pass over fields the first already consumed is a different class — fatal when a field uses
+  `field(default_factory=...)`, which the first pass deletes from the class, and silent
+  otherwise, where the generated `__repr__` shadows the bounded one. Drop the decorator.
 - A complex-typed Graph column declares its type as well: 592 `ClientValue` imports
   in 328 modules moved the same way, and 745 more columns answer the type they name
   (1,760 value-typed columns in total). Writes behave as before — a getter that builds
@@ -173,27 +178,31 @@ introduced.
   attribute the decorator wrote, and the decorators rebuild it through one helper,
   `TypeSchema.rebuild` — the one place that records why a decorator above a class has to:
   the schema was read when the class was created, before anything above it ran.
-- One index answers for both carriers, and the class states it once: a `ClientObject`'s schema
-  is built when the class body has been read, a value's by `@value`, the decorator that
-  declares it. `TypeSchema.of(Model)` is then an attribute read — nothing is scanned twice and
+- One index answers for both carriers, and the class states it once, in
+  `__init_subclass__`: a `ClientObject`'s schema and a value's are both built when the class
+  body has been read. `TypeSchema.of(Model)` is then an attribute read — nothing is scanned twice and
   nothing is built lazily, so no cache has to be keyed weakly. The second index, a module-level
   `field_declarations()` dict filled by walking `dataclasses.fields()` at each call site, is
   gone: `ScopedProfile`, `compare_check`, the record importer and `ClientValue.to_json` ask
   the schema instead. `declared_type` stopped guessing `to_snake_case(name)` as well: it
   resolves the declaration's `attr`, so a value field declared under a different OData name
   answers its type instead of silently answering `None`.
-- A value is declared with `@value` (`office365.runtime.types.value`), not a bare `@dataclass`:
-  one decorator installs the fields and states the two facts that belong to the class as a
-  whole — `@dataclass(repr=False)`, the documented way to say "generate no `__repr__`", so
-  every value keeps the bounded rendering it inherits and a collection keeps its preview, and
-  the schema, read while the class is being declared. It is a `@dataclass_transform`, so a type
-  checker still sees the `__init__` it generates. What it replaces was the hook:
-  `__init_subclass__` pinned the inherited `__repr__` into each subclass's `dict` so that
-  `@dataclass`, running later, would leave it alone, and read the declarations out of the
-  `Field` objects `@dataclass` had not consumed yet. A value that skips the decorator — or a
-  subclass that declares nothing of its own — answers `TypeSchema.of()` with the empty schema,
-  which is why `test_every_model_stores_the_schema_its_declarations_describe` walks the package
-  and names it.
+- A value declares itself the way an object already did: `ClientValue.__init_subclass__` runs
+  `dataclass(cls, repr=False)` and then reads the schema from those fields. No decorator says
+  it, so no generated class can forget to. `@dataclass_transform()` on `ClientValue` is what
+  tells a type checker that the hook — not a literal `@dataclass` above each of 2,700 classes —
+  is what gives them their constructors; without it every value reads as a class that takes no
+  arguments. `repr=False` stays the documented way to say "generate no `__repr__`", so every
+  value keeps the bounded rendering it inherits and a collection keeps its preview; the hook
+  pins that rendering in each class besides, because a rendering only survives a later
+  `dataclass` if the class already carries it. `office365.runtime.types.value` is deleted.
+- Four fields defaulted to a value *instance* (`trigger: WorkflowExecutionTrigger =
+  WorkflowExecutionTrigger()`); they now use `field(default_factory=...)`. Sharing one instance
+  across every value ever constructed was the bug the dataclass pass surfaced — the aliasing,
+  not the error message. Six value classes also carried a plain `@dataclass` on top of the one
+  the base now installs; a second pass is not idempotent (`field(default_factory=...)` deletes
+  its class attribute, so the repeat sees a required field after a defaulted one), which is why
+  the two mechanisms could not have coexisted.
 - A schema derives its projections from that one index, on the first ask: `columns`,
   `navigations`, `expansions`, `readonly`, `persistable`, `system`, `beta_names`,
   `canonical_names`, `beta_only`, `stable_only` and `facets` are computed from

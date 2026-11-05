@@ -4,10 +4,8 @@ from office365.intune.devices.configurations.windows.general.edgesearchenginetyp
     EdgeSearchEngineType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class EdgeSearchEngine(ClientValue):
     edgeSearchEngineType: EdgeSearchEngineType = EdgeSearchEngineType.default
 

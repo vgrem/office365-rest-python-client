@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class MacOSMinimumOperatingSystem(ClientValue):
     v10_10: bool | None = None
     v10_11: bool | None = None

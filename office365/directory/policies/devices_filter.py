@@ -4,10 +4,8 @@ from office365.directory.policies.crosstenant.accesspolicytargetconfigurationacc
     CrossTenantAccessPolicyTargetConfigurationAccessType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class DevicesFilter(ClientValue):
     mode: CrossTenantAccessPolicyTargetConfigurationAccessType = (
         CrossTenantAccessPolicyTargetConfigurationAccessType.allowed

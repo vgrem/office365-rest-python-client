@@ -4,13 +4,11 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.social.actor import SocialActor
 from office365.sharepoint.social.posts.post import SocialPost
 from office365.sharepoint.social.posts.reference import SocialPostReference
 
 
-@value
 class SocialThread(ClientValue):
     """The SocialThread property provides the object that contains the thread.
     For details on the SocialThread type, see section 3.1.5.42."""

@@ -9,10 +9,8 @@ from office365.directory.policies.conditionalaccess.deviceplatform import Condit
 from office365.directory.policies.insiderrisklevel import InsiderRiskLevel
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SignInConditions(ClientValue):
     authenticationFlow: AuthenticationFlow = field(default_factory=AuthenticationFlow)
     clientAppType: ConditionalAccessClientApp = ConditionalAccessClientApp.all

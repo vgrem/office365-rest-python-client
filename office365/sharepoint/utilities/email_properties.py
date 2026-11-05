@@ -4,10 +4,8 @@ from typing import Dict, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class EmailProperties(ClientValue):
     """Specifies the definition of the email to send which includes both the message fields and body
 

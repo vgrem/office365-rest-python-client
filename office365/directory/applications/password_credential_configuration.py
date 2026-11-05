@@ -7,10 +7,8 @@ from office365.directory.policies.app_management_policy_actor_exemptions import 
 from office365.directory.policies.appcredentialrestrictiontype import AppCredentialRestrictionType
 from office365.directory.policies.appmanagementrestrictionstate import AppManagementRestrictionState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PasswordCredentialConfiguration(ClientValue):
     excludeActors: AppManagementPolicyActorExemptions = field(default_factory=AppManagementPolicyActorExemptions)
     maxLifetime: timedelta | None = None

@@ -3,10 +3,8 @@ from __future__ import annotations
 import json
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class LocalizedName(ClientValue):
     """
     Represents the localized name used in the term store, which identifies the name in the localized language.

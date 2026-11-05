@@ -4,13 +4,11 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.audit.search_request_status import (
     AuditSearchRequestStatus,
 )
 
 
-@value
 class PageResponse(ClientValue):
     ContinuationToken: str | None = None
     PageNumber: int | None = None

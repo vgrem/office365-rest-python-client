@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.outlook.calendar.timezones.base import TimeZoneBase
 from office365.outlook.calendar.timezones.daylight_time_zone_offset import DaylightTimeZoneOffset
 from office365.outlook.timezones.standard_time_zone_offset import StandardTimeZoneOffset
-from office365.runtime.types.value import value
 
 
-@value
 class CustomTimeZone(TimeZoneBase):
     """
     Represents a time zone where the transition from standard to daylight saving time, or vice versa is not standard.

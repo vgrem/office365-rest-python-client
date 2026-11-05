@@ -2,12 +2,10 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.gtp.chat.responsechoice import ChatGptResponseChoice
 from office365.sharepoint.gtp.responseusage import GptResponseUsage
 
 
-@value
 class ChatGptResponse(ClientValue):
     Choices: ClientValueCollection[ChatGptResponseChoice] = field(
         default_factory=lambda: ClientValueCollection(ChatGptResponseChoice)

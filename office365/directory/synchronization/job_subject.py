@@ -3,13 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.linked_objects import SynchronizationLinkedObjects
 
 
-@value
 class SynchronizationJobSubject(ClientValue):
     links: SynchronizationLinkedObjects | None = None
     objectId: str | None = None

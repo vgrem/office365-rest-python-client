@@ -6,10 +6,8 @@ from office365.directory.cross_tenant_migration_service_status import CrossTenan
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.error import Error
-from office365.runtime.types.value import value
 
 
-@value
 class CrossTenantMigrationServiceStatusDetails(ClientValue):
     errors: ClientValueCollection[Error] = field(default_factory=lambda: ClientValueCollection(Error))
     message: str | None = None

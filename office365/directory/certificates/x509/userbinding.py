@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.certificates.x509.affinitylevel import X509CertificateAffinityLevel
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class X509CertificateUserBinding(ClientValue):
     priority: int | None = None
     trustAffinityLevel: X509CertificateAffinityLevel = X509CertificateAffinityLevel.none

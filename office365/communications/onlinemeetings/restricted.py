@@ -7,10 +7,8 @@ from office365.communications.onlinemeetings.videodisabledreason import (
     OnlineMeetingVideoDisabledReason,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnlineMeetingRestricted(ClientValue):
     """Indicates the reason or reasons media content from a participant is restricted."""
 

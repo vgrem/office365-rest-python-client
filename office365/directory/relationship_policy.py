@@ -10,10 +10,8 @@ from office365.directory.multi_tenant_applications_to_provision_snapshot import 
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class RelationshipPolicy(ClientValue):
     delegatedAdministrationRoleAssignments: ClientValueCollection[DelegatedAdministrationRoleAssignmentSnapshot] = field(
         default_factory=lambda: ClientValueCollection(DelegatedAdministrationRoleAssignmentSnapshot)

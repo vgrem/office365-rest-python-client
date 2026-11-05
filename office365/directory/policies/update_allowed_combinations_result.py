@@ -6,10 +6,8 @@ from office365.directory.authentication.methods.modes import AuthenticationMetho
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class UpdateAllowedCombinationsResult(ClientValue):
     additionalInformation: str | None = None
     conditionalAccessReferences: StringCollection = field(default_factory=StringCollection)

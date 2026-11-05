@@ -3,13 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.onedrives_count_and_size import (
     OneDrivesCountAndSize,
 )
 
 
-@value
 class OwnerNotInEntraOneDrivesSummaryMetrics(ClientValue):
     adminLocked: OneDrivesCountAndSize = field(default_factory=OneDrivesCountAndSize)
     complianceHold: OneDrivesCountAndSize = field(default_factory=OneDrivesCountAndSize)

@@ -6,11 +6,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.viva.dashboard.carddetails import DashboardCardDetails
 
 
-@value
 class DashboardContent(ClientValue):
     DashboardCardDetails: ClientValueCollection[DashboardCardDetails] = field(
         default_factory=lambda: ClientValueCollection(DashboardCardDetails)

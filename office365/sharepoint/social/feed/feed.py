@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.social.thread import SocialThread
 
 
-@value
 class SocialFeed(ClientValue):
     """
     The SocialFeed class specifies a feed, which contains an array of SocialThread (section 3.1.5.42), each of which

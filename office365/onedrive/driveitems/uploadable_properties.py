@@ -7,10 +7,8 @@ from office365.onedrive.files.system_info import FileSystemInfo
 from office365.onedrive.media_source import MediaSource
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.odata_property import odata
-from office365.runtime.types.value import value
 
 
-@value
 class DriveItemUploadableProperties(ClientValue):
     """The driveItemUploadableProperties resource represents an item being uploaded when creating an upload session."""
 

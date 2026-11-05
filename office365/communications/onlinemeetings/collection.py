@@ -9,10 +9,8 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_value import ClientValue
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.value import value
 
 
-@value
 class ChatInfo(ClientValue):
     messageId: str | None = None
 

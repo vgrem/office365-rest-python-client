@@ -2,14 +2,12 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.compliance.retentionlabelconfig import SPRetentionLabelConfig
 from office365.sharepoint.compliance.sensitivitylabels.config import (
     SPSensitivityLabelConfig,
 )
 
 
-@value
 class SPClassificationPublishConfig(ClientValue):
     ClassifierId: Optional[str] = None
     ColumnName: Optional[str] = None

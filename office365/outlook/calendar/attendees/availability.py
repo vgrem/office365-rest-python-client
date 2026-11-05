@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.outlook.calendar.attendees.base import AttendeeBase
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AttendeeAvailability(ClientValue):
     """The availability of an attendees.
 

@@ -7,10 +7,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
     ExpirationPatternType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ExpirationPattern(ClientValue):
     duration: timedelta | None = None
     endDateTime: datetime | None = field(default_factory=lambda: datetime.min)

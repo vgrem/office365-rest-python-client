@@ -7,10 +7,8 @@ from office365.communications.broadcast_meeting_caption_settings import (
 )
 from office365.communications.broadcastmeetingaudience import BroadcastMeetingAudience
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BroadcastMeetingSettings(ClientValue):
     """Represents settings related to a live event in Microsoft Teams.
 

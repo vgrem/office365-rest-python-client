@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.audit.provisioning.errorinfo import ProvisioningErrorInfo
 from office365.directory.audit.provisioning.result import ProvisioningResult
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ProvisioningStatusInfo(ClientValue):
     errorInformation: ProvisioningErrorInfo = field(default_factory=ProvisioningErrorInfo)
     status: ProvisioningResult | None = None

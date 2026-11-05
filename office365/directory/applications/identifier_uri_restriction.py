@@ -6,10 +6,8 @@ from datetime import datetime
 from office365.directory.policies.app_management_policy_actor_exemptions import AppManagementPolicyActorExemptions
 from office365.directory.policies.appmanagementrestrictionstate import AppManagementRestrictionState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class IdentifierUriRestriction(ClientValue):
     excludeActors: AppManagementPolicyActorExemptions = field(default_factory=AppManagementPolicyActorExemptions)
     excludeAppsReceivingV2Tokens: bool | None = None

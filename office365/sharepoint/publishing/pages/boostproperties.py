@@ -2,10 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SitePageBoostProperties(ClientValue):
     BoostOrder: Optional[float] = None
     BoostOrderVersion: Optional[int] = None

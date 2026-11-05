@@ -67,7 +67,7 @@ class TypeReferenceCollector:
         self._resolver = resolver
         self._entries: dict[str, str] = {}
         self._type_checking: dict[str, str] = {}
-        self.needs_value = False
+        self.is_complex_type = False
         self.needs_field = False
         self.field_alias = "field"
 
@@ -121,7 +121,7 @@ class TypeReferenceCollector:
         The referenced entity/item type is imported under ``TYPE_CHECKING`` — the
         getter imports it lazily at runtime to avoid circular imports.
         """
-        if not self.needs_value:
+        if not self.is_complex_type:
             # Getters construct children with a ResourcePath; dataclass fields do not.
             self._entries["ResourcePath"] = self.KNOWN["ResourcePath"]
         prop_type = prop.client_type_name
@@ -188,12 +188,6 @@ class TypeReferenceCollector:
         """Generate sorted, deduplicated import statements (incl. ``TYPE_CHECKING``)."""
         imports: list[ast.stmt] = []
 
-        if self.needs_value:
-            imports.append(
-                ast.ImportFrom(
-                    module="office365.runtime.types.value", names=[ast.alias(name="value", asname=None)], level=0
-                )
-            )
         if self.needs_field:
             asname = None if self.field_alias == "field" else self.field_alias
             imports.append(ast.ImportFrom(module="dataclasses", names=[ast.alias(name="field", asname=asname)], level=0))

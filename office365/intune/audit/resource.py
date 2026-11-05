@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.intune.audit.property import AuditProperty
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AuditResource(ClientValue):
     """A class containing the properties for Audit Resource.
 

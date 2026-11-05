@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.onenote.notebooks.recent_links import RecentNotebookLinks
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class RecentNotebook(ClientValue):
     """A recently accessed OneNote notebook. A recentNotebook is similar to a notebook but has fewer properties.
 

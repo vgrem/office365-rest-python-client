@@ -14,10 +14,8 @@ from office365.directory.policies.conditionalaccess.sign_in_frequency_session_co
     SignInFrequencySessionControl,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ConditionalAccessSessionControls(ClientValue):
     applicationEnforcedRestrictions: ApplicationEnforcedRestrictionsSessionControl = field(
         default_factory=ApplicationEnforcedRestrictionsSessionControl

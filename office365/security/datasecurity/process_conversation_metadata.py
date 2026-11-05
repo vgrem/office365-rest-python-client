@@ -8,10 +8,8 @@ from office365.directory.identitygovernance.resource_access_detail import Resour
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class ProcessConversationMetadata(ClientValue):
     accessedResources: StringCollection = field(default_factory=StringCollection)
     accessedResources_v2: ClientValueCollection[ResourceAccessDetail] = field(

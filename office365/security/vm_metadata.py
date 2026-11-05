@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.vm_cloud_provider import VmCloudProvider
 
 
-@value
 class VmMetadata(ClientValue):
     resourceId: str | None = None
     subscriptionId: str | None = None

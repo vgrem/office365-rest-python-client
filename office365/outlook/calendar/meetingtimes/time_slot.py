@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class TimeSlot(ClientValue):
     """Represents a time slot for a meeting.
 

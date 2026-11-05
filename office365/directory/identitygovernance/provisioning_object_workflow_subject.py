@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.identitygovernance.attribute_set_entry import AttributeSetEntry
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class ProvisioningObjectWorkflowSubject(ClientValue):
     attributeSetEntries: ClientValueCollection[AttributeSetEntry] = field(
         default_factory=lambda: ClientValueCollection(AttributeSetEntry)

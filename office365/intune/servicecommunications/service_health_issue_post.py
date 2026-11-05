@@ -6,10 +6,8 @@ from datetime import datetime
 from office365.intune.servicecommunications.health.posttype import PostType
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ServiceHealthIssuePost(ClientValue):
     createdDateTime: datetime | None = None
     description: ItemBody = field(default_factory=ItemBody)

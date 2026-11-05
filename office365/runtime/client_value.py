@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, ClassVar, Dict, Iterator, Optional, Tuple
 
-from typing_extensions import Self
+from typing_extensions import Self, dataclass_transform
 
 from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
 from office365.runtime.odata.json_format import JsonProfile, as_held
@@ -17,6 +18,7 @@ def _render(self: "ClientValue") -> str:
     return describe(self)
 
 
+@dataclass_transform()
 class ClientValue:
     """Represent complex type.
     Complex types consist of a list of properties with no key, and can therefore only exist as properties of a
@@ -24,10 +26,36 @@ class ClientValue:
     """
 
     _is_client_value: bool = True
-    #: What this value declares, built by ``@value`` when the class is declared.
+    #: What this value declares, read in ``__init_subclass__`` when the class is complete.
     _schema: ClassVar[TypeSchema] = EMPTY
     #: The OData name this value declares (``"microsoft.graph.DateTimeTimeZone"``).
     _odata_type_name: ClassVar[Optional[str]] = None
+
+    def __init_subclass__(cls, **kwargs: object) -> None:
+        """Read the class once it is complete: its fields, then the facts they state.
+
+        The order is the whole point. ``dataclass`` is what gives the class its fields
+        -- their names, their defaults and the ``__init__`` a caller writes keywords
+        against -- and the schema is read from those fields, so it has to run second.
+        Nothing above the class can still add a field by now, which is why this is the
+        first moment the schema can answer for the whole class; a decorator above it
+        (``@key``, ``@version``, ``@limit``) states a class-level fact and rebuilds
+        through ``TypeSchema.rebuild``.
+
+        ``dataclass_transform`` on the class is what tells a type checker that this
+        hook, not a literal ``@dataclass`` above each subclass, is what gives the
+        class its constructor: without it every value looks like a class with no
+        arguments.
+        """
+        super().__init_subclass__(**kwargs)
+        dataclass(cls, repr=False)
+        # ``repr=False`` declines to install a rendering, and a rendering only wins against a
+        # later ``dataclass`` -- a subclass of this one that still applies its own -- if the
+        # class already carries it. Pin the bounded rendering a plain value would inherit
+        # anyway; a class that states (or inherits) another one keeps it.
+        if cls.__dict__.get("__repr__") is None and cls.__repr__ is ClientValue.__repr__:
+            cls.__repr__ = _render
+        cls._schema = TypeSchema.build(cls)
 
     def __str__(self) -> str:
         return _render(self)

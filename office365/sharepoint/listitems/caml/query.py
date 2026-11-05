@@ -4,7 +4,6 @@ import re
 from typing import TYPE_CHECKING, Any, Iterator, Tuple
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.listitems.collection_position import (
     ListItemCollectionPosition,
@@ -18,7 +17,6 @@ if TYPE_CHECKING:
 _FIELD_REF_RE = re.compile(r"<FieldRef\s+Name=['\"]([^'\"]+)['\"]", re.IGNORECASE)
 
 
-@value
 class CamlQuery(ClientValue):
     """Specifies a Collaborative Application Markup Language (CAML) query on a list or joined lists.
 

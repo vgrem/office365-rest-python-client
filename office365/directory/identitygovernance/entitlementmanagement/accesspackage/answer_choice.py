@@ -7,10 +7,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AccessPackageAnswerChoice(ClientValue):
     actualValue: str | None = None
     text: str | None = None

@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.policies.identifier_uri_configuration import IdentifierUriConfiguration
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CustomAppManagementApplicationConfiguration(ClientValue):
     identifierUris: IdentifierUriConfiguration = field(default_factory=IdentifierUriConfiguration)
 

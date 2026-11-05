@@ -9,10 +9,8 @@ from office365.directory.authentication.methods.registrationcampaignincludetarge
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AuthenticationMethodsRegistrationCampaign(ClientValue):
     excludeTargets: ClientValueCollection[ExcludeTarget] = field(
         default_factory=lambda: ClientValueCollection(ExcludeTarget)

@@ -19,10 +19,9 @@ states because a plain field has nowhere else to say it. Both are read by the sa
 builder, so which carrier a type chose is invisible to anyone asking the schema.
 
 Both carriers are named by the finished class: a getter by the class body that states it,
-a field by the decorator that gives it the name it is read as. So the schema is read once
-the class is complete -- ``@value`` does it for a value, ``__init_subclass__`` for an
-object, which has no decorator to wait for -- and :meth:`TypeSchema.of` is an attribute
-read.
+a field by the ``dataclass`` pass that gives it the name it is read as. So the schema is
+read once the class is complete -- in ``__init_subclass__``, after ``dataclass`` has run,
+for a value and for an object alike -- and :meth:`TypeSchema.of` is an attribute read.
 """
 
 from __future__ import annotations
@@ -172,7 +171,7 @@ class TypeSchema:
         ``@key`` or a ``@version`` written above that declaration is read by nothing until
         it asks for this. Only those facts are restated, because they are the only ones a
         decorator states: the properties cannot have changed, and restating them is what a
-        value could not do anyway, ``@value`` having already read its fields.
+        value could not do anyway, ``__init_subclass__`` having already read its fields.
         """
         model._schema = replace(model._schema, **_class_facts(model))
 

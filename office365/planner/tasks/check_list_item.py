@@ -6,10 +6,8 @@ from datetime import datetime
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.odata_property import odata
-from office365.runtime.types.value import value
 
 
-@value
 class PlannerChecklistItem(ClientValue):
     """The plannerChecklistItem resource represents an item in the checklist of a task.
     The checklist on a task is represented by the checklistItems object.

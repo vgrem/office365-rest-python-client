@@ -7,10 +7,8 @@ from office365.directory.authentication.attributecollection.page_view_configurat
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AuthenticationAttributeCollectionPage(ClientValue):
     views: ClientValueCollection[AuthenticationAttributeCollectionPageViewConfiguration] = field(
         default_factory=lambda: ClientValueCollection(AuthenticationAttributeCollectionPageViewConfiguration)

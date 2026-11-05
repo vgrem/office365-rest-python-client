@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class NewsItem(ClientValue):
     backupPictureUrl: Optional[str] = None
     caption: Optional[str] = None

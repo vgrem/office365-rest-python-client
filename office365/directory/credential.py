@@ -6,7 +6,6 @@ from enum import Enum
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import ensure_aware_utc
-from office365.runtime.types.value import value
 
 DEFAULT_WARN_DAYS = 30
 """Default threshold (in days) used by :meth:`Credential.expiry_status`."""
@@ -52,7 +51,6 @@ class CredentialExpiry:
         return format(str(self), format_spec)
 
 
-@value
 class Credential(ClientValue):
     """Base class for application/service-principal credentials.
 

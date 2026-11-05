@@ -4,11 +4,9 @@ from typing import List, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.fields.type import FieldType
 
 
-@value
 class FieldCreationInformation(ClientValue):
     """Represents metadata about fields creation.
 

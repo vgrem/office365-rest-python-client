@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ItemActionStat(ClientValue):
     """The itemActionStat resource provides aggregate details about an action over a period of time."""
 

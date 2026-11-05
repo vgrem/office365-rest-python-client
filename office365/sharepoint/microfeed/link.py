@@ -4,11 +4,9 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.microfeed.linkaction import MicrofeedLinkAction
 
 
-@value
 class MicrofeedLink(ClientValue):
     ClickAction: MicrofeedLinkAction = field(default_factory=MicrofeedLinkAction)
     ContentUri: Optional[str] = None

@@ -8,10 +8,8 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class CloudPcOnPremisesConnectionStatusDetail(ClientValue):
     endDateTime: datetime | None = None
     healthChecks: ClientValueCollection[CloudPcOnPremisesConnectionHealthCheck] = field(

@@ -180,7 +180,7 @@ class TypeFiles:
     def is_addressed(self, type_name: str) -> bool:
         """Whether a request can name the type, which is the only thing a gate can refuse."""
         located = self.class_for(type_name)
-        return located is not None and _is_addressed(located[1])
+        return located is not None and _is_addressed(self, located[1], type_name)
 
     def path_of(self, type_name: str) -> Optional[Path]:
         for candidate in (self._by_odata.get(type_name), self.paths_for_class(_short(type_name))):
@@ -360,7 +360,7 @@ def _queue_version(
         return
     path, class_node = located
     lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
-    if not _is_addressed(class_node):
+    if not _is_addressed(files, class_node, marker.type_name):
         # Nothing would enforce it: a complex value or an enum is never the entity a
         # request names, so a gate there is a comment pretending to be a rule.
         if _version_line(class_node) is not None:
@@ -515,11 +515,27 @@ def _drop_import(ops: List[Tuple[Path, int, int, List[str]]], path: Path, lines:
         return
 
 
-def _is_addressed(class_node: ast.ClassDef) -> bool:
-    """Whether a request can name the type -- which is the only thing a gate can refuse."""
-    if any(getattr(node, "id", None) in {"value", "dataclass"} for node in class_node.decorator_list):
+#: The two bases a value is seeded with: a value is declared last, under a name no
+#: request names, so nothing a gate states about addressing applies to it.
+VALUE_BASES = frozenset({"ClientValue", "ComplexType"})
+
+
+def _declared_bases(node: ast.ClassDef) -> set[str]:
+    """The base names ``node`` states, as written (the import makes them short)."""
+    return {getattr(base, "id", None) or getattr(base, "attr", None) or "" for base in node.bases}
+
+
+def _is_addressed(files: "TypeFiles", class_node: ast.ClassDef, type_name: str) -> bool:
+    """Whether a request can name the type -- which is the only thing a gate can refuse.
+
+    A value is recognised by its base, not by a decorator. It used to carry one, so a
+    source-level decorator was also a fact about the kind; the base class applies
+    ``dataclass`` now, and a value's kind is the base it was seeded with.
+    """
+    declared = _declared_bases(class_node)
+    if "Enum" in declared or declared & VALUE_BASES:
         return False
-    return "Enum" not in {getattr(base, "id", None) or getattr(base, "attr", None) for base in class_node.bases}
+    return not any(node.name in VALUE_BASES for _, node in _bases(files, type_name))
 
 
 def _below_decorators(class_node: ast.ClassDef) -> int:

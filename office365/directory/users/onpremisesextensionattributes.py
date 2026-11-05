@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnPremisesExtensionAttributes(ClientValue):
     extensionAttribute1: str | None = None
     extensionAttribute10: str | None = None

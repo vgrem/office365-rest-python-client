@@ -5,10 +5,8 @@ from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PlannerExternalReference(ClientValue):
     alias: str | None = None
     lastModifiedBy: IdentitySet = field(default_factory=IdentitySet)

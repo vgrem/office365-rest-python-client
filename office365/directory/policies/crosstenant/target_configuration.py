@@ -8,10 +8,8 @@ from office365.directory.policies.crosstenant.accesspolicytargetconfigurationacc
 from office365.directory.policies.crosstenant.target import CrossTenantAccessPolicyTarget
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class CrossTenantAccessPolicyTargetConfiguration(ClientValue):
     accessType: CrossTenantAccessPolicyTargetConfigurationAccessType = (
         CrossTenantAccessPolicyTargetConfigurationAccessType.allowed

@@ -4,13 +4,11 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.diagnostics.page_details import PageDetails as _PageDetails
 from office365.sharepoint.publishing.ruleresult import RuleResult
 from office365.sharepoint.publishing.tooldetails import ToolDetails as _ToolDetails
 
 
-@value
 class PageDiagnosticsResult(ClientValue):
     CreatedDate: Optional[datetime] = None
     PageDetails: _PageDetails = field(default_factory=_PageDetails)

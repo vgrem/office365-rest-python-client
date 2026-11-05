@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.booking.phonetype import PhoneType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Phone(ClientValue):
     language: str | None = None
     number: str | None = None

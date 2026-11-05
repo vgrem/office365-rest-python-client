@@ -4,10 +4,8 @@ from office365.directory.identitygovernance.entitlementmanagement.customextensio
     CustomExtensionCalloutInstanceStatus,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CustomExtensionCalloutInstance(ClientValue):
     customExtensionId: str | None = None
     detail: str | None = None

@@ -2,11 +2,9 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.social.attachment_action import SocialAttachmentAction
 
 
-@value
 class SocialAttachment(ClientValue):
     """The SocialAttachment class represents an image, document preview, or video preview attachment."""
 

@@ -7,10 +7,8 @@ from office365.directory.policies.conditionalaccess.guestorexternalusertypes imp
     ConditionalAccessGuestOrExternalUserTypes,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ConditionalAccessGuestsOrExternalUsers(ClientValue):
     externalTenants: ConditionalAccessExternalTenants = field(default_factory=ConditionalAccessExternalTenants)
     guestOrExternalUserTypes: ConditionalAccessGuestOrExternalUserTypes = ConditionalAccessGuestOrExternalUserTypes.none

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.booking.pageaccesscontrol import BookingPageAccessControl
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BookingPageSettings(ClientValue):
     accessControl: BookingPageAccessControl | None = None
     bookingPageColorCode: str | None = None

@@ -6,10 +6,8 @@ from datetime import datetime
 from office365.directory.insights.identity import InsightIdentity
 from office365.directory.insights.resource_reference import ResourceReference
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SharingDetail(ClientValue):
     """Complex type containing properties of sharedInsight items.
 

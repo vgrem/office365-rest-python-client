@@ -4,12 +4,10 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
 from office365.sharepoint.documents.snippet import Snippet
 
 
-@value
 class PublishTemplateV2Payload(ClientValue):
     DestinationListContentTypeId: str | None = None
     DestinationSiteContentTypeId: str | None = None

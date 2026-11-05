@@ -4,10 +4,8 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PowerAppsEnvironmentContext(ClientValue):
     DataverseInstanceUrl: str | None = None
     DisplayName: str | None = None

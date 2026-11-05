@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.utilities.jsontheme import JsonTheme
 
 
-@value
 class ThemingOptions(ClientValue):
     hideDefaultThemes: Optional[bool] = None
     themePreviews: ClientValueCollection[JsonTheme] = field(default_factory=lambda: ClientValueCollection(JsonTheme))

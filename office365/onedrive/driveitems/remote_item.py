@@ -14,10 +14,8 @@ from office365.onedrive.folders.folder import Folder
 from office365.onedrive.listitems.item_reference import ItemReference
 from office365.onedrive.shares.shared import Shared
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class RemoteItem(ClientValue):
     """
     The remoteItem resource indicates that a driveItem references an item that exists in another drive.

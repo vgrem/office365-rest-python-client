@@ -5,13 +5,11 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.viva.home_title_region import VivaHomeTitleRegion
 from office365.sharepoint.viva.spotlightconfiguration import SpotlightConfiguration
 from office365.sharepoint.viva.spotlightnews import SpotlightNews
 
 
-@value
 class ConnectionsConfigurationAndData(ClientValue):
     IsConfigured: Optional[bool] = None
     SpotlightConfiguration: SpotlightConfiguration = field(default_factory=SpotlightConfiguration)

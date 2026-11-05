@@ -5,12 +5,10 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.documents.contentassemblyformanswer import ContentAssemblyFormAnswer
 from office365.sharepoint.documents.location import DocumentLocation
 
 
-@value
 class DocumentGenerationInfo(ClientValue):
     DocumentLocation: DocumentLocation = field(default_factory=DocumentLocation)
     AllowEncryptedTemplate: bool | None = None

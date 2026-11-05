@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AppliedConditionalAccessPolicy(ClientValue):
     """Indicates the attributes related to applied conditional access policy or policies that are triggered
     by a sign-in activity.

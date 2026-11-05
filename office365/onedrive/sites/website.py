@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.onedrive.sites.website_type import WebsiteType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Website(ClientValue):
     address: str | None = None
     displayName: str | None = None

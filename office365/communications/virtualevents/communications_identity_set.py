@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.communications.endpointtype import EndpointType
 from office365.directory.permissions.identity import Identity
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CommunicationsIdentitySet(ClientValue):
     applicationInstance: Identity = field(default_factory=Identity)
     assertedIdentity: Identity = field(default_factory=Identity)

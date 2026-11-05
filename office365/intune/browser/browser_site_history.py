@@ -8,10 +8,8 @@ from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibil
 from office365.intune.browser.sitemergetype import BrowserSiteMergeType
 from office365.intune.browser.sitetargetenvironment import BrowserSiteTargetEnvironment
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BrowserSiteHistory(ClientValue):
     allowRedirect: bool | None = None
     comment: str | None = None

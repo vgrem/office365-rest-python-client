@@ -3,13 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.copilot.base_raw_data_sources import (
     BaseRawDataSources,
 )
 
 
-@value
 class AdaptiveCardConfig(ClientValue):
     data: BaseRawDataSources = field(default_factory=BaseRawDataSources)
     featureName: str | None = None

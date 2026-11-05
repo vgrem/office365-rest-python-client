@@ -6,10 +6,8 @@ from office365.communications.callrecords.pstn_call_duration_source import (
     PstnCallDurationSource,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PstnCallLogRow(ClientValue):
     callDurationSource: PstnCallDurationSource = PstnCallDurationSource.microsoft
     calleeNumber: str | None = None

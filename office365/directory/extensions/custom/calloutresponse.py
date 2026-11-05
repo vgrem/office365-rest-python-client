@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.extensions.custom.data import CustomExtensionData
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CustomExtensionCalloutResponse(ClientValue):
     data: CustomExtensionData = field(default_factory=CustomExtensionData)
     source: str | None = None

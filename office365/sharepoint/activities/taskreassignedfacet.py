@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.activities.identity import ActivityIdentity
 
 
-@value
 class TaskReassignedFacet(ClientValue):
     assignees: ClientValueCollection[ActivityIdentity] = field(
         default_factory=lambda: ClientValueCollection(ActivityIdentity)

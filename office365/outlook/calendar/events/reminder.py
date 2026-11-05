@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.location import Location
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Reminder(ClientValue):
     """A reminder for an event in a user calendar.
 

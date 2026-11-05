@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ContentTypeCreationInformation(ClientValue):
     """Specifies properties that are used as parameters to initialize a new content type.
 

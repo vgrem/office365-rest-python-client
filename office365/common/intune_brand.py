@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.common.mime_content import MimeContent
 from office365.intune.devices.configurations.rgb_color import RgbColor
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class IntuneBrand(ClientValue):
     contactITEmailAddress: str | None = None
     contactITName: str | None = None

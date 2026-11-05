@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.policies.conditionalaccess.filter import ConditionalAccessFilter
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class ConditionalAccessApplications(ClientValue):
     applicationFilter: ConditionalAccessFilter = field(default_factory=ConditionalAccessFilter)
     excludeApplications: StringCollection = field(default_factory=StringCollection)

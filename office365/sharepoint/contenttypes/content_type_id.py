@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ContentTypeId(ClientValue):
     """
     The ContentTypeId type is the identifier for the specified content type. The identifier is a string of

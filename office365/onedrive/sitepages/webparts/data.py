@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.onedrive.server_processed_content import ServerProcessedContent
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class WebPartData(ClientValue):
     dataVersion: str | None = None
     description: str | None = None

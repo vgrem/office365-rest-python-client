@@ -3,12 +3,10 @@ from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.calltoaction import CallToAction as _CallToAction
 from office365.sharepoint.publishing.icon import Icon as _Icon
 
 
-@value
 class AnnouncementsData(ClientValue):
     CallToAction: _CallToAction = field(default_factory=_CallToAction)
     Dismissable: Optional[bool] = None

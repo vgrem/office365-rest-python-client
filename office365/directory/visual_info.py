@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.common.image_info import ImageInfo
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.json import Json
-from office365.runtime.types.value import value
 
 
-@value
 class VisualInfo(ClientValue):
     attribution: ImageInfo = field(default_factory=ImageInfo)
     backgroundColor: str | None = None

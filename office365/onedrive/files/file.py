@@ -3,10 +3,8 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class File(ClientValue):
     """
     The File resource groups file-related data items into a single structure.

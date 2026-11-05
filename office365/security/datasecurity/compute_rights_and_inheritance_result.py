@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.datasecurity.sensitivity_label import SensitivityLabel
 
 if TYPE_CHECKING:
@@ -13,7 +12,6 @@ if TYPE_CHECKING:
     )
 
 
-@value
 class ComputeRightsAndInheritanceResult(ClientValue):
     inheritedLabel: SensitivityLabel | None = None
     sensitivityLabels: EntityCollection[SensitivityLabel] | None = None

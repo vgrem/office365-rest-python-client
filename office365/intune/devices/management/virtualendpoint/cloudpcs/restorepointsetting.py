@@ -4,10 +4,8 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointfr
     CloudPcRestorePointFrequencyType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CloudPcRestorePointSetting(ClientValue):
     frequencyType: CloudPcRestorePointFrequencyType = CloudPcRestorePointFrequencyType.none
     userRestoreEnabled: bool | None = None

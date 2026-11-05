@@ -4,7 +4,6 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.search.recommended_action import RecommendedAction
 from office365.security.attacksimulations.event import TrainingEventsContent
 from office365.security.simulation_events_content import (
@@ -12,7 +11,6 @@ from office365.security.simulation_events_content import (
 )
 
 
-@value
 class SimulationReportOverview(ClientValue):
     """Represents an overview report of an attack simulation and training campaign."""
 

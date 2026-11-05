@@ -3,13 +3,11 @@ from __future__ import annotations
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.mailbox_configuration_type import (
     MailboxConfigurationType,
 )
 
 
-@value
 class MailboxConfigurationEvidence(ClientValue):
     configurationId: str | None = None
     displayName: str | None = None

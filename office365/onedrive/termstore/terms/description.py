@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class LocalizedDescription(ClientValue):
     """Represents the localized description used to describe a term in the term store."""
 

@@ -6,13 +6,11 @@ from typing import Optional
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.search.query.property import QueryProperty
 from office365.sharepoint.search.query.reordering_rule import ReorderingRule
 from office365.sharepoint.search.query.sort.sort import Sort
 
 
-@value
 class SearchRequest(ClientValue):
     """
     The SearchRequest structure defines the HTTP BODY of the HTTP POST postquery operation as specified

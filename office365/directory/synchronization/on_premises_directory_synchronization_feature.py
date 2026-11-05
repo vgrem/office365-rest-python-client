@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnPremisesDirectorySynchronizationFeature(ClientValue):
     allowOnPremUpdateOfOnPremisesObjectIdentifierEnabled: bool | None = None
     blockCloudObjectTakeoverThroughHardMatchEnabled: bool | None = None

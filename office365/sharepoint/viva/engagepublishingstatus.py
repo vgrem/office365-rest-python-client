@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
 
 
-@value
 class VivaEngagePublishingStatus(ClientValue):
     DestinationId: Optional[str] = None
     ErrorCode: Optional[int] = None

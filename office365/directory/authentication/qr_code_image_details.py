@@ -4,10 +4,8 @@ from office365.directory.authentication.error_correction_level import (
     ErrorCorrectionLevel,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class QrCodeImageDetails(ClientValue):
     binaryValue: bytes | None = None
     rawContent: bytes | None = None

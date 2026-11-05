@@ -3,11 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.attacksimulations.clicksource import ClickSource
 
 
-@value
 class UserSimulationEventInfo(ClientValue):
     browser: str | None = None
     clickSource: ClickSource = ClickSource.unknown

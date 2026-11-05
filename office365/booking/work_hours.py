@@ -6,10 +6,8 @@ from office365.booking.work_time_slot import BookingWorkTimeSlot
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class BookingWorkHours(ClientValue):
     """Represents the set of working hours in a single day of the week, for a bookingBusiness or bookingStaffMember.
 

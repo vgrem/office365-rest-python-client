@@ -4,10 +4,8 @@ from office365.directory.identitygovernance.workflow.customtaskextensionoperatio
     CustomTaskExtensionOperationStatus,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CustomTaskExtensionCallbackData(ClientValue):
     operationStatus: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.unknown
 

@@ -2,12 +2,10 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.person.identity import PersonIdentity
 from office365.sharepoint.publishing.profiledatetime import ProfileDateTime
 
 
-@value
 class ProfileFullProperties(ClientValue):
     AboutMe: Optional[str] = None
     AboutMeTruncated: Optional[str] = None

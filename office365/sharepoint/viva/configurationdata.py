@@ -5,12 +5,10 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.value import value
 from office365.sharepoint.sitedesigns.mobile_settings import MobileSettings
 from office365.sharepoint.sites.home.navconfiguration import HomeSiteNavConfiguration
 
 
-@value
 class ConfigurationData(ClientValue):
     AppSettings: MobileSettings = field(default_factory=MobileSettings)
     BridgeAbsolutePath: ResourcePath = field(default_factory=ResourcePath)

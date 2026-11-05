@@ -5,13 +5,11 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.search.alteration_response import AlterationResponse
 from office365.search.hits.container import SearchHitsContainer
 from office365.search.result_template_dictionary import ResultTemplateDictionary
 
 
-@value
 class SearchResponse(ClientValue):
     """Represents results from a search query, and the terms used for the query."""
 

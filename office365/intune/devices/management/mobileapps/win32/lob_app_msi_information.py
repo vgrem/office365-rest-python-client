@@ -4,10 +4,8 @@ from office365.intune.devices.management.mobileapps.win32.msipackagetype import 
     Win32LobAppMsiPackageType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Win32LobAppMsiInformation(ClientValue):
     packageType: Win32LobAppMsiPackageType = Win32LobAppMsiPackageType.perMachine
     productCode: str | None = None

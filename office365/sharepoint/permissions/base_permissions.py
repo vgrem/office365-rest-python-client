@@ -5,11 +5,9 @@ from typing import Any, Iterator, Union
 from typing_extensions import Self
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.permissions.kind import PermissionKind
 
 
-@value
 class BasePermissions(ClientValue):
     """Specifies a set of built-in permissions."""
 

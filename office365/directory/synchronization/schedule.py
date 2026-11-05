@@ -5,10 +5,8 @@ from datetime import datetime, timedelta
 
 from office365.directory.synchronization.schedulestate import SynchronizationScheduleState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SynchronizationSchedule(ClientValue):
     expiration: datetime | None = field(default_factory=lambda: datetime.min)
     interval: timedelta | None = None

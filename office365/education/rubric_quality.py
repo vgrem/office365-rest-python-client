@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.education.rubric_criterion import RubricCriterion
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class RubricQuality(ClientValue):
     criteria: ClientValueCollection[RubricCriterion] = field(
         default_factory=lambda: ClientValueCollection(RubricCriterion)

@@ -7,10 +7,8 @@ from office365.intune.devices.management.managed.windows.usagetype import (
     WindowsDeviceUsageType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OutOfBoxExperienceSetting(ClientValue):
     deviceUsageType: WindowsDeviceUsageType = WindowsDeviceUsageType.singleUser
     escapeLinkHidden: bool | None = None

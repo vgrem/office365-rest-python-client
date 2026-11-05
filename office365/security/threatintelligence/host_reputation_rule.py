@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.threatintelligence.host_reputation_rule_severity import (
     HostReputationRuleSeverity,
 )
 
 
-@value
 class HostReputationRule(ClientValue):
     description: str | None = None
     name: str | None = None

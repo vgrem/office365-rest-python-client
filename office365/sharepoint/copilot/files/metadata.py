@@ -2,14 +2,12 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.copilot.files.user_relationship import (
     CopilotFileUserRelationship,
 )
 from office365.sharepoint.copilot.useridentity import UserIdentity
 
 
-@value
 class CopilotFileMetadata(ClientValue):
     ContainerUrl: Optional[str] = None
     CreatedBy: UserIdentity = field(default_factory=UserIdentity)

@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.users.password_profile import PasswordProfile
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class UserProfile(ClientValue):
     userPrincipalName: str = ""
     passwordProfile: PasswordProfile = field(default_factory=PasswordProfile)

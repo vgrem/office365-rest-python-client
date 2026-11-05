@@ -3,10 +3,8 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.odata_property import odata
-from office365.runtime.types.value import value
 
 
-@value
 class UserIdInfo(ClientValue):
     """Represents an identity providers unique identifier information
 

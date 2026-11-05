@@ -7,10 +7,8 @@ from office365.directory.identities.riskPrevention.akamai_custom_rule_model impo
 from office365.directory.identities.riskPrevention.akamai_rapid_rules_model import AkamaiRapidRulesModel
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AkamaiVerifiedDetailsModel(ClientValue):
     activeAttackGroups: ClientValueCollection[AkamaiAttackGroupActionModel] = field(
         default_factory=lambda: ClientValueCollection(AkamaiAttackGroupActionModel)

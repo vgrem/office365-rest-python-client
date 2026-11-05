@@ -6,10 +6,8 @@ from office365.directory.synchronization.on_premises_accidental_deletion_prevent
     OnPremisesAccidentalDeletionPrevention,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnPremisesDirectorySynchronizationConfiguration(ClientValue):
     accidentalDeletionPrevention: OnPremisesAccidentalDeletionPrevention = field(
         default_factory=OnPremisesAccidentalDeletionPrevention

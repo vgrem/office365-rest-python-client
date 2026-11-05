@@ -4,11 +4,9 @@ from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.migrationcenter.folderinformation import SPFolderInformation
 
 
-@value
 class SPListInformation(ClientValue):
     AbsoluteUrl: Optional[str] = None
     BaseTemplate: Optional[int] = None

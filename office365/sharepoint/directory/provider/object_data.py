@@ -4,12 +4,10 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.directory.provider.alternate_id_data import AlternateIdData
 from office365.sharepoint.directory.provider.session_data import DirectorySessionData
 
 
-@value
 class DirectoryObjectData(ClientValue):
     AlternateId: AlternateIdData = field(default_factory=AlternateIdData)
     AttributeExpirationTimes: Optional[str] = None

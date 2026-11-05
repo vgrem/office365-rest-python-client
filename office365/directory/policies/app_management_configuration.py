@@ -6,10 +6,8 @@ from office365.directory.applications.key_credential_configuration import KeyCre
 from office365.directory.applications.password_credential_configuration import PasswordCredentialConfiguration
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class AppManagementConfiguration(ClientValue):
     keyCredentials: ClientValueCollection[KeyCredentialConfiguration] = field(
         default_factory=lambda: ClientValueCollection(KeyCredentialConfiguration)

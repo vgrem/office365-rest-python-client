@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.authentication.oidc_address_inbound_claims import OidcAddressInboundClaims
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OidcInboundClaimMappingOverride(ClientValue):
     address: OidcAddressInboundClaims = field(default_factory=OidcAddressInboundClaims)
     email: str | None = None

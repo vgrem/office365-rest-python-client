@@ -4,10 +4,8 @@ from office365.intune.devices.configurations.ios.iosnotificationalerttype import
     IosNotificationAlertType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class IosNotificationSettings(ClientValue):
     alertType: IosNotificationAlertType = IosNotificationAlertType.deviceDefault
     appName: str | None = None

@@ -3,7 +3,6 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.validations.errorcodesforemail import (
     PrePublishValidationsErrorCodesForEmail,
 )
@@ -18,7 +17,6 @@ from office365.sharepoint.publishing.validations.prepublishvalidationserrorcodes
 )
 
 
-@value
 class PrePublishValidationsResponse(ClientValue):
     ErrorCodes: ClientValueCollection[int] = field(default_factory=lambda: ClientValueCollection(int))
     PrePublishValidationsErrorCodesForEmails: ClientValueCollection[PrePublishValidationsErrorCodesForEmail] = field(

@@ -7,10 +7,8 @@ from office365.directory.applications.redirecturisettings import RedirectUriSett
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class WebApplication(ClientValue):
     """Specifies settings for a web application."""
 

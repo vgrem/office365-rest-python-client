@@ -8,10 +8,8 @@ from office365.directory.identitygovernance.workflow.customtaskextensionoperatio
 from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class CustomTaskExtensionResponseData(ClientValue):
     operationStatus: CustomTaskExtensionOperationStatus = CustomTaskExtensionOperationStatus.unknown
     statusReasons: StringCollection = field(default_factory=StringCollection)

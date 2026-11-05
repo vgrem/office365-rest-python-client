@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.search.special_term_result import SpecialTermResult
 
 
-@value
 class SpecialTermResults(ClientValue):
     """The SpecialTermResults table contains best bets that apply to the search query."""
 

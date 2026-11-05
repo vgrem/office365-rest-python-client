@@ -4,11 +4,9 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.types.resource_path import ResourcePath
 
 
-@value
 class OrgAssetsLibrary(ClientValue):
     DisplayName: Optional[str] = None
     FileType: Optional[str] = None

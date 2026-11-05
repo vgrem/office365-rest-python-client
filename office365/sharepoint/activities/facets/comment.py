@@ -5,13 +5,11 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.activities.clientidentity import (
     ActivityClientIdentity,
 )
 
 
-@value
 class CommentFacet(ClientValue):
     commentText: Optional[str] = None
     parentAuthor: ActivityClientIdentity = field(default_factory=ActivityClientIdentity)

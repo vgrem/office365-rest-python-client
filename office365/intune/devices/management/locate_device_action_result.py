@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.intune.devices.management.geo_location import DeviceGeoLocation
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class LocateDeviceActionResult(ClientValue):
     deviceLocation: DeviceGeoLocation = field(default_factory=DeviceGeoLocation)
 

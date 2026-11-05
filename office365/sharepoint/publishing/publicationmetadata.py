@@ -3,12 +3,10 @@ from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.amplify.amplifiedchannels import AmplifiedChannels as _AmplifiedChannels
 from office365.sharepoint.publishing.sharepointids import SharePointIds as _SharePointIds
 
 
-@value
 class PublicationMetadata(ClientValue):
     AmplifiedChannels: _AmplifiedChannels = field(default_factory=_AmplifiedChannels)
     BannerImageUrl: Optional[str] = None

@@ -3,14 +3,12 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.microfeed.datalink import MicrofeedDataLink
 from office365.sharepoint.microfeed.entity import MicroBlogEntity
 from office365.sharepoint.microfeed.posts.collection import MicrofeedPostCollection
 from office365.sharepoint.microfeed.posts.post import MicrofeedPost
 
 
-@value
 class MicrofeedThread(ClientValue):
     CanFollowUp: Optional[bool] = None
     CanHaveAttachments: Optional[bool] = None

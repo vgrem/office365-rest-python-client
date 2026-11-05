@@ -14,10 +14,8 @@ from office365.intune.print.quality import PrintQuality
 from office365.intune.print.scaling import PrintScaling
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class PrintJobConfiguration(ClientValue):
     collate: bool | None = None
     colorMode: PrintColorMode = PrintColorMode.blackAndWhite

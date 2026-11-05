@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.policies.match_confidence_level import MatchConfidenceLevel
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ClaimBinding(ClientValue):
     matchConfidenceLevel: MatchConfidenceLevel = MatchConfidenceLevel.exact
     sourceAttribute: str | None = None

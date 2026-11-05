@@ -4,13 +4,11 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.security.datasecurity.dlp_action_info import DlpActionInfo
 from office365.security.processing_error import ProcessingError
 from office365.security.protectionscopestate import ProtectionScopeState
 
 
-@value
 class ProcessContentResponse(ClientValue):
     policyActions: ClientValueCollection[DlpActionInfo] = field(
         default_factory=lambda: ClientValueCollection(DlpActionInfo)

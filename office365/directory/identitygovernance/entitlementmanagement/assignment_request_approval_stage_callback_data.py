@@ -6,10 +6,8 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
     AccessPackageApprovalStage,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AssignmentRequestApprovalStageCallbackData(ClientValue):
     approvalStage: AccessPackageApprovalStage = field(default_factory=AccessPackageApprovalStage)
 

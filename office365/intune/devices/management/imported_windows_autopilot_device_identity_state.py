@@ -4,10 +4,8 @@ from office365.intune.devices.imported_windows_autopilot_device_identity_import_
     ImportedWindowsAutopilotDeviceIdentityImportStatus,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ImportedWindowsAutopilotDeviceIdentityState(ClientValue):
     deviceErrorCode: int | None = None
     deviceErrorName: str | None = None

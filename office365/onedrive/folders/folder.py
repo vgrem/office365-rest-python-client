@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.onedrive.folders.view import FolderView
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Folder(ClientValue):
     """
     The Folder resource groups folder-related data on an item into a single structure.

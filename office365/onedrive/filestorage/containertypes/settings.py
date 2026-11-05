@@ -11,10 +11,8 @@ from typing import Optional
 
 from office365.admin.sharepoint.sharingcapabilities import SharingCapabilities
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class FileStorageContainerTypeSettings(ClientValue):
     """Configuration options for a container type.
 

@@ -6,10 +6,8 @@ from office365.directory.privacy.subjectrightsrequeststage import SubjectRightsR
 from office365.directory.privacy.subjectrightsrequeststagestatus import SubjectRightsRequestStageStatus
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.public_error import PublicError
-from office365.runtime.types.value import value
 
 
-@value
 class SubjectRightsRequestStageDetail(ClientValue):
     error: PublicError = field(default_factory=PublicError)
     stage: SubjectRightsRequestStage = SubjectRightsRequestStage.contentRetrieval

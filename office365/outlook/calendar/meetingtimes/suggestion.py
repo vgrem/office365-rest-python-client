@@ -8,10 +8,8 @@ from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 from office365.outlook.mail.location import Location
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class MeetingTimeSuggestion(ClientValue):
     """
     A meeting suggestion that includes information like meeting time, attendance likelihood, individual availability,

@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.copilot.ai_interaction_mentioned_identity_set import AiInteractionMentionedIdentitySet
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AiInteractionMention(ClientValue):
     mentioned: AiInteractionMentionedIdentitySet = field(default_factory=AiInteractionMentionedIdentitySet)
     mentionId: int | None = None

@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.datasecurity.application_mode import ApplicationMode
 
 
-@value
 class CurrentLabel(ClientValue):
     applicationMode: ApplicationMode = ApplicationMode.manual
     id: str | None = None

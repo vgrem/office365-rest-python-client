@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.keyvalue import parse_key_value_collection
-from office365.runtime.types.value import value
 
 
-@value
 class SimpleDataRow(ClientValue):
     """Represents a row in a data table"""
 

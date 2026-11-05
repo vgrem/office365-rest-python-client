@@ -4,11 +4,9 @@ from datetime import datetime
 from typing import Dict, cast
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 
 
-@value
 class ListItemFormUpdateValue(ClientValue):
     """Specifies the properties of a list item field and its value.
 

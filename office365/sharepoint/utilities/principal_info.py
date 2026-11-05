@@ -6,14 +6,12 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
 from office365.sharepoint.sharing.inherited_from import InheritedFrom
 from office365.sharepoint.sharing.principal import Principal
 
 
-@value
 class PrincipalInfo(ClientValue):
     """
     Represents principal information.

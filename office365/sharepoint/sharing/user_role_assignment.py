@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.sharing.role import Role
 
 
-@value
 class UserRoleAssignment(ClientValue):
     """
     Specifies a user and a role that is associated with the user.

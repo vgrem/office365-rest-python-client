@@ -5,12 +5,10 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.converters.keyvalue import parse_key_value_collection
-from office365.runtime.types.value import value
 from office365.sharepoint.search.simple_data_row import SimpleDataRow
 from office365.sharepoint.search.simple_data_table import SimpleDataTable
 
 
-@value
 class RelevantResults(ClientValue):
     """
     The RelevantResults table contains the actual query results. It MUST only be present if the ResultTypes element

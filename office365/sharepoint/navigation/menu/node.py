@@ -4,11 +4,9 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
 
-@value
 class MenuNode(ClientValue):
     """
     Represents a navigation node in the navigation hierarchy. A navigation hierarchy is a tree structure of

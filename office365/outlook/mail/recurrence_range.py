@@ -4,10 +4,8 @@ import datetime
 
 from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class RecurrenceRange(ClientValue):
     """
     Describes a date range over which a recurring event. This shared hobject is used to define the recurrence

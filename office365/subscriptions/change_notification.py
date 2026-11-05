@@ -5,13 +5,11 @@ from datetime import datetime
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.subscriptions.encrypted_content import ChangeNotificationEncryptedContent
 from office365.subscriptions.lifecycleeventtype import LifecycleEventType
 from office365.subscriptions.resource_data import ResourceData
 
 
-@value
 class ChangeNotification(ClientValue):
     """Represents the notification sent to the subscriber.
 

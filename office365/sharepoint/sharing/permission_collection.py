@@ -4,13 +4,11 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.sharing.link_info import LinkInfo
 from office365.sharepoint.sharing.mainaccessinformation import MainAccessInformation
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
 
 
-@value
 class PermissionCollection(ClientValue):
     """This class is returned when Microsoft.SharePoint.Client.Sharing.SecurableObjectExtensions.GetSharingInformation
     is called with the optional expand on permissionsInformation property. It contains a collection of LinkInfo and

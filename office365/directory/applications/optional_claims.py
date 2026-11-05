@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.directory.applications.optional_claim import OptionalClaim
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class OptionalClaims(ClientValue):
     """An application can configure optional claims to be returned in each of three types of tokens
     (ID token, access token, SAML 2 token) it can receive from the security token service.

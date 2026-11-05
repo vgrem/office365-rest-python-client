@@ -6,13 +6,11 @@ from office365.directory.synchronization.attributetype import AttributeType
 from office365.directory.synchronization.mutability import Mutability
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.security.attribute_definition_metadata_entry import AttributeDefinitionMetadataEntry
 from office365.security.referenced_object import ReferencedObject
 from office365.security.string_key_string_value_pair import StringKeyStringValuePair
 
 
-@value
 class AttributeDefinition(ClientValue):
     anchor: bool | None = None
     apiExpressions: ClientValueCollection[StringKeyStringValuePair] = field(

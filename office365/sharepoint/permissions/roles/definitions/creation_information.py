@@ -4,11 +4,9 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.permissions.base_permissions import BasePermissions
 
 
-@value
 class RoleDefinitionCreationInformation(ClientValue):
     """Contains properties that are used as parameters to initialize a role definition.
 

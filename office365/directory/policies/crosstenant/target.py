@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.policies.crosstenant.accesspolicytargettype import CrossTenantAccessPolicyTargetType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CrossTenantAccessPolicyTarget(ClientValue):
     target: str | None = None
     targetType: CrossTenantAccessPolicyTargetType = CrossTenantAccessPolicyTargetType.user

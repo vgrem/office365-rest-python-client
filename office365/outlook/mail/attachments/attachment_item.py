@@ -4,10 +4,8 @@ import os
 
 from office365.outlook.mail.attachments.type import AttachmentType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AttachmentItem(ClientValue):
     """Represents attributes of an item to be attached."""
 

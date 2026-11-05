@@ -4,11 +4,9 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.threatintelligence.host_component import HostComponent
 
 
-@value
 class HostPortComponent(ClientValue):
     firstSeenDateTime: datetime | None = field(default_factory=lambda: datetime.min)
     isRecent: bool | None = None

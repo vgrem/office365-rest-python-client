@@ -3,10 +3,8 @@ from __future__ import annotations
 from office365.onenote.patchactiontype import OnenotePatchActionType
 from office365.onenote.patchinsertposition import OnenotePatchInsertPosition
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class OnenotePatchContentCommand(ClientValue):
     action: OnenotePatchActionType = OnenotePatchActionType.Replace
     content: str | None = None

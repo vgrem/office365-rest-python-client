@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.onedrive.operations.pending_content_update import PendingContentUpdate
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PendingOperations(ClientValue):
     """Indicates that one or more operations that might affect the state of the driveItem are pending completion."""
 

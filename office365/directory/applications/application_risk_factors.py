@@ -7,10 +7,8 @@ from office365.directory.applications.riskfactors.legal_info import ApplicationR
 from office365.directory.applications.riskfactors.security_info import ApplicationRiskFactorSecurityInfo
 from office365.directory.applications.security_compliance import ApplicationSecurityCompliance
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ApplicationRiskFactors(ClientValue):
     compliance: ApplicationSecurityCompliance = field(default_factory=ApplicationSecurityCompliance)
     general: ApplicationRiskFactorGeneralInfo = field(default_factory=ApplicationRiskFactorGeneralInfo)

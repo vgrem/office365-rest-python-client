@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.portal.m365tabitem import M365TabItem
 
 
-@value
 class PinToTeamParams(ClientValue):
     tabs: ClientValueCollection[M365TabItem] = field(default_factory=lambda: ClientValueCollection(M365TabItem))
     teamsId: Optional[str] = None

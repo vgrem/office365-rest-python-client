@@ -7,10 +7,8 @@ from office365.booking.availability import BookingsAvailability
 from office365.booking.availabilitywindow import BookingsAvailabilityWindow
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class BookingSchedulingPolicy(ClientValue):
     allowStaffSelection: bool | None = None
     customAvailabilities: ClientValueCollection[BookingsAvailabilityWindow] = field(

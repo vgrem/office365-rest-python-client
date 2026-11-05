@@ -7,10 +7,8 @@ from office365.externalconnectors.property_type import PropertyType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class Property(ClientValue):
     aliases: StringCollection = field(default_factory=StringCollection)
     description: str | None = None

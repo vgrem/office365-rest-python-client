@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class InternetMessageHeader(ClientValue):
     """
     A key-value pair that represents an Internet message header, as defined by RFC5322, that provides details of the

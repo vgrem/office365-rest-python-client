@@ -4,7 +4,6 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.security.account_object_id_action import AccountObjectIdAction
 from office365.security.account_sid_action import AccountSidAction
 from office365.security.device_action import DeviceAction
@@ -14,7 +13,6 @@ from office365.security.isolate_device_action import IsolateDeviceAction
 from office365.security.stop_and_quarantine_file_action import StopAndQuarantineFileAction
 
 
-@value
 class AutomatedActionSet(ClientValue):
     allowFiles: ClientValueCollection[FileAction] = field(default_factory=lambda: ClientValueCollection(FileAction))
     blockFiles: ClientValueCollection[FileAction] = field(default_factory=lambda: ClientValueCollection(FileAction))

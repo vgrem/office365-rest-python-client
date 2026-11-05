@@ -1,10 +1,8 @@
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SPFolderInformation(ClientValue):
     Depth: Optional[int] = None
     IsSpecified: Optional[bool] = None

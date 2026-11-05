@@ -1,10 +1,8 @@
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class RenderListDataParameters(ClientValue):
     """Specifies the parameters to be used to render list data as a JSON string
 

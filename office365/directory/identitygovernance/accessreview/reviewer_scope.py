@@ -4,10 +4,8 @@ from office365.directory.identitygovernance.accessreview.reviewer_scope_type imp
     AccessReviewReviewerScopeType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AccessReviewReviewerScope(ClientValue):
     query: str | None = None
     queryRoot: str | None = None

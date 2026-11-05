@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.onedrive.contenttypes.info import ContentTypeInfo
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class DocumentSetContent(ClientValue):
     """Represents the default content of document set in SharePoint."""
 

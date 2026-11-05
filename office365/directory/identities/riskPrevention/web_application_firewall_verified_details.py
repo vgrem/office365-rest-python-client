@@ -6,10 +6,8 @@ from office365.directory.identities.riskPrevention.web_application_firewall_dns_
     WebApplicationFirewallDnsConfiguration,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class WebApplicationFirewallVerifiedDetails(ClientValue):
     dnsConfiguration: WebApplicationFirewallDnsConfiguration = field(
         default_factory=WebApplicationFirewallDnsConfiguration

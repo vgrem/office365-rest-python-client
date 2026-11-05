@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SharedWithUser(ClientValue):
     """
     Returns the array of users that have been shared in sharing action for the change log.

@@ -5,11 +5,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.teams.sp_team_channel_capabilities import SPTeamChannelCapabilities
 
 
-@value
 class SPSiteCreationRequest(ClientValue):
     Title: str
     Url: str

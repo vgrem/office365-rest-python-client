@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.copilot.package_request_principal_type import CopilotPackageRequestPrincipalType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CopilotPackageRequestPrincipal(ClientValue):
     principalType: CopilotPackageRequestPrincipalType = CopilotPackageRequestPrincipalType.user
     userPrincipalName: str | None = None

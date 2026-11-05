@@ -4,13 +4,11 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.portal.home.datacachecontext import (
     SharePointHomeDataCacheContext,
 )
 
 
-@value
 class SharePointHomeDataCacheEntry(ClientValue):
     CacheContext: SharePointHomeDataCacheContext = field(default_factory=SharePointHomeDataCacheContext)
     CacheValue: Optional[str] = None

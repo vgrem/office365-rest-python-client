@@ -4,10 +4,8 @@ from office365.directory.certificates.x509.affinitylevel import X509CertificateA
 from office365.directory.certificates.x509.authenticationmode import X509CertificateAuthenticationMode
 from office365.directory.certificates.x509.ruletype import X509CertificateRuleType
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class X509CertificateRule(ClientValue):
     identifier: str | None = None
     issuerSubjectIdentifier: str | None = None

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.communications.onlinemeetings.lobbybypassscope import LobbyBypassScope
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class LobbyBypassSettings(ClientValue):
     isDialInBypassEnabled: bool | None = None
     scope: LobbyBypassScope = LobbyBypassScope.organizer

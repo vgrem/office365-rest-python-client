@@ -4,12 +4,10 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.device_evidence import DeviceEvidence
 from office365.security.user_evidence import UserEvidence
 
 
-@value
 class HostLogonSessionEvidence(ClientValue):
     account: UserEvidence = field(default_factory=UserEvidence)
     endUtcDateTime: datetime | None = field(default_factory=lambda: datetime.min)

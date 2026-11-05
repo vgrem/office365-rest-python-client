@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.identities.api_connector import IdentityApiConnector
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UserFlowApiConnectorConfiguration(ClientValue):
     postAttributeCollection: IdentityApiConnector | None = None
     postFederationSignup: IdentityApiConnector | None = None

@@ -18,10 +18,8 @@ from office365.intune.devices.management.mobileapps.win32.notification import (
     Win32LobAppNotification,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class Win32LobAppAssignmentSettings(ClientValue):
     autoUpdateSettings: Win32LobAppAutoUpdateSettings = field(default_factory=Win32LobAppAutoUpdateSettings)
     deliveryOptimizationPriority: Win32LobAppDeliveryOptimizationPriority = (

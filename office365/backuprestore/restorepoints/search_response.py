@@ -6,10 +6,8 @@ from office365.backuprestore.restorepoints.search_result import RestorePointSear
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class RestorePointSearchResponse(ClientValue):
     noResultProtectionUnitIds: StringCollection = field(default_factory=StringCollection)
     searchResponseId: str | None = None

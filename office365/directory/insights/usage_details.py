@@ -3,10 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UsageDetails(ClientValue):
     """Complex type containing properties of Used items. Information on when the resource was last accessed (viewed)
     or modified (edited) by the user.

@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from office365.directory.synchronization.objectdefinitionmetadata import ObjectDefinitionMetadata
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ObjectDefinitionMetadataEntry(ClientValue):
     key: ObjectDefinitionMetadata = ObjectDefinitionMetadata.PropertyNameAccountEnabled
     value: str | None = None

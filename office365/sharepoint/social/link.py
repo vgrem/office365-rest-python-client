@@ -1,10 +1,8 @@
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SocialLink(ClientValue):
     """The SocialLink class defines a link that includes a URI and text representation.
     This class is used to represent the location of a web site."""

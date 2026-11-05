@@ -4,7 +4,6 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.container.filterorder import (
     SPContainerFilterOrder,
 )
@@ -13,7 +12,6 @@ from office365.sharepoint.tenant.administration.container.sortorder import (
 )
 
 
-@value
 class SPOContainerQueryParams(ClientValue):
     FilterByColumnsList: ClientValueCollection[SPContainerFilterOrder] = field(
         default_factory=lambda: ClientValueCollection(SPContainerFilterOrder)

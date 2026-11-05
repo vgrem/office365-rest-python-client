@@ -5,10 +5,8 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class StorageUsageMetricsSnapshot(ClientValue):
     ActiveSitesCount: int | None = None
     ActiveUsedStorageMB: int | None = None

@@ -4,10 +4,8 @@ from office365.intune.devices.configurations.sharedpc.accountdeletionpolicytype 
     SharedPCAccountDeletionPolicyType,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SharedPCAccountManagerPolicy(ClientValue):
     accountDeletionPolicy: SharedPCAccountDeletionPolicyType = SharedPCAccountDeletionPolicyType.immediate
     cacheAccountsAboveDiskFreePercentage: int | None = None

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.security.dictionary import Dictionary
 from office365.security.ip_evidence import IpEvidence
 from office365.security.kubernetes_controller_evidence import (
@@ -22,7 +21,6 @@ if TYPE_CHECKING:
     from office365.security.container_evidence import ContainerEvidence
 
 
-@value
 class KubernetesPodEvidence(ClientValue):
     containers: ClientValueCollection[ContainerEvidence] | None = None
     controller: KubernetesControllerEvidence = field(default_factory=KubernetesControllerEvidence)

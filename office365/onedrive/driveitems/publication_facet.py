@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class PublicationFacet(ClientValue):
     """The publicationFacet resource provides details on the published status of a driveItemVersion or driveItem
     resource."""

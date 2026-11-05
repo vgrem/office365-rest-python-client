@@ -1,10 +1,8 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class TaxonomyFieldValue(ClientValue):
     """Represents a single value held in a TaxonomyField (section 3.1.5.27) object.
 

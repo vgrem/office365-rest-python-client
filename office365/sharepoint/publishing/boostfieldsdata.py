@@ -2,10 +2,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BoostFieldsData(ClientValue):
     BoostOrderType: Optional[int] = None
     BoostUntilSeen: Optional[bool] = None

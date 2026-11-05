@@ -5,11 +5,9 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.public_error import PublicError
-from office365.runtime.types.value import value
 from office365.security.attribute_mapping_source import AttributeMappingSource
 
 
-@value
 class ParseExpressionResponse(ClientValue):
     evaluationResult: StringCollection = field(default_factory=StringCollection)
     evaluationSucceeded: bool | None = None

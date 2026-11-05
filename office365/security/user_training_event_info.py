@@ -3,14 +3,12 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.attacksimulations.trainingstatus import TrainingStatus
 from office365.security.user_training_content_event_info import (
     UserTrainingContentEventInfo,
 )
 
 
-@value
 class UserTrainingEventInfo(ClientValue):
     displayName: str | None = None
     latestTrainingStatus: TrainingStatus = TrainingStatus.unknown

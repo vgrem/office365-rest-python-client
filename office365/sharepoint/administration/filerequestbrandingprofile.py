@@ -4,10 +4,8 @@ from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class FileRequestBrandingProfile(ClientValue):
     BackgroundFileId: Optional[UUID] = None
     BackgroundFileName: Optional[str] = None

@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.outlook.mail.body_type import BodyType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.odata_property import Compare, odata
-from office365.runtime.types.value import value
 
 
-@value
 class ItemBody(ClientValue):
     """Represents properties of the body of an item, such as a message, event or group post."""
 

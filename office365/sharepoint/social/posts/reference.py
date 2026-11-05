@@ -2,11 +2,9 @@ from dataclasses import field
 from typing import Any, Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.sharepoint.social.posts.post import SocialPost
 
 
-@value
 class SocialPostReference(ClientValue):
     """The SocialPostReference class specifies a reference to a post in another thread.  The referenced post can be a
     post with a tag, a post that is liked, a post that mentions a user, or a post that is a reply. Threads that contain

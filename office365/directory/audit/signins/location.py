@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.onedrive.driveitems.geo_coordinates import GeoCoordinates
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class SignInLocation(ClientValue):
     """Provides the city, state and country/region from where the sign-in happened.
 

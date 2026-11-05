@@ -6,13 +6,11 @@ from uuid import UUID
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import GuidCollection, StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysettings import (
     SPOFileVersionFileTypePolicySettings,
 )
 
 
-@value
 class SPSyntexApplicationProperties(ClientValue):
     ApplicationId: UUID | None = None
     ApplicationName: str | None = None

@@ -6,10 +6,8 @@ from office365.intune.print.jobprocessingstate import PrintJobProcessingState
 from office365.intune.print.jobstatedetail import PrintJobStateDetail
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class PrintJobStatus(ClientValue):
     description: str | None = None
     details: ClientValueCollection[PrintJobStateDetail] = field(

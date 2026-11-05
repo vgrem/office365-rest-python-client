@@ -9,10 +9,8 @@ from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 
 
-@value
 class MessageRulePredicates(ClientValue):
     """Represents the set of conditions and exceptions that are available for a rule."""
 

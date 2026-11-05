@@ -6,10 +6,8 @@ from office365.directory.policies.crosstenant.target_configuration import (
     CrossTenantAccessPolicyTargetConfiguration,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class CrossTenantAccessPolicyB2BSetting(ClientValue):
     applications: CrossTenantAccessPolicyTargetConfiguration = field(
         default_factory=CrossTenantAccessPolicyTargetConfiguration

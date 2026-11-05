@@ -3,10 +3,8 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class SocialDataOverlay(ClientValue):
     """The SocialDataOverlay class provides information about an overlay. An overlay is a substring in a post that
     represents a user, document, site, tag, or link. The SocialPost class (see section 3.1.5.26) contains an array

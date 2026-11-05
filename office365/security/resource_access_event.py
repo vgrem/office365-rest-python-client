@@ -4,10 +4,8 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class ResourceAccessEvent(ClientValue):
     accessDateTime: datetime | None = field(default_factory=lambda: datetime.min)
     accountId: str | None = None

@@ -6,13 +6,11 @@ from typing import TYPE_CHECKING
 from office365.directory.role_template import RoleTemplate
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.directory.groups.group import Group
 
 
-@value
 class DelegatedAdministrationRoleAssignment(ClientValue):
     groupDisplayName: str | None = None
     roleTemplates: ClientValueCollection[RoleTemplate] = field(

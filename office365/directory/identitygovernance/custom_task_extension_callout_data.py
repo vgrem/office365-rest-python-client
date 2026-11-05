@@ -10,13 +10,11 @@ from office365.directory.identitygovernance.task_processing_result import (
 from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
 from office365.directory.users.user import User
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.workflow.workflow import Workflow
 
 
-@value
 class CustomTaskExtensionCalloutData(ClientValue):
     subject: User | None = None
     task: Task | None = None

@@ -6,10 +6,8 @@ from office365.directory.tenantinformation.multitenantorganizationmemberprocessi
 from office365.directory.tenantinformation.multitenantorganizationmemberrole import MultiTenantOrganizationMemberRole
 from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class MultiTenantOrganizationMemberTransitionDetails(ClientValue):
     desiredRole: MultiTenantOrganizationMemberRole = MultiTenantOrganizationMemberRole.owner
     desiredState: MultiTenantOrganizationMemberState = MultiTenantOrganizationMemberState.pending

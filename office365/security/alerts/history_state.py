@@ -3,12 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 from office365.security.alerts.feedback import AlertFeedback
 from office365.security.alerts.status import AlertStatus
 
 
-@value
 class AlertHistoryState(ClientValue):
     """
     Stores changes made to alerts.

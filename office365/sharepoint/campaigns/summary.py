@@ -4,11 +4,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.campaigns.userinfo import CampaignUserInfo
 
 
-@value
 class CampaignSummary(ClientValue):
     campaignId: Optional[str] = None
     endDate: Optional[datetime] = None

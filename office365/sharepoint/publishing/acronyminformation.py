@@ -1,10 +1,8 @@
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AcronymInformation(ClientValue):
     Acronym: Optional[str] = None
     Color: Optional[str] = None

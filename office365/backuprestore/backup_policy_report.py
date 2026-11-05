@@ -4,10 +4,8 @@ from dataclasses import field
 
 from office365.backuprestore.backup_count_statistics import BackupCountStatistics
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class BackupPolicyReport(ClientValue):
     backupPolicyId: str | None = None
     countStatistics: BackupCountStatistics = field(default_factory=BackupCountStatistics)

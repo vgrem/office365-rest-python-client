@@ -5,11 +5,9 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.sharing.role import Role
 
 
-@value
 class UserSharingResult(ClientValue):
     """Specifies a sharing result for an individual user that method UpdateDocumentSharingInfo
     (section 3.2.5.187.2.1.1) returns.

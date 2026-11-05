@@ -4,10 +4,8 @@ from office365.intune.devices.configurations.windows.statemanagementsetting impo
     StateManagementSetting,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class WindowsFirewallNetworkProfile(ClientValue):
     authorizedApplicationRulesFromGroupPolicyMerged: bool | None = None
     connectionSecurityRulesFromGroupPolicyMerged: bool | None = None

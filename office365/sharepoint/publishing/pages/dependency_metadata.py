@@ -3,11 +3,9 @@ from typing import Any, Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.webpartdetailswrapper import WebPartDetailsWrapper
 
 
-@value
 class SitePageDependencyMetadata(ClientValue):
     DependencyItemPath: Any = None
     IsInPageSiteAssetsFolder: Any = None

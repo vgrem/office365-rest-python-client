@@ -3,7 +3,6 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.publishing.amplify.clientamplifyendpointinfo import (
     ClientAmplifyEndpointInfo,
 )
@@ -12,7 +11,6 @@ from office365.sharepoint.publishing.amplify.clientamplifyextraproperty import (
 )
 
 
-@value
 class ClientAmplifyResult(ClientValue):
     canvasElement: Optional[str] = None
     code: Optional[str] = None

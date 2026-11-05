@@ -6,10 +6,8 @@ from office365.directory.authentication.methods.registrationcampaign import (
     AuthenticationMethodsRegistrationCampaign as RegistrationCampaign,
 )
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class RegistrationEnforcement(ClientValue):
     authenticationMethodsRegistrationCampaign: RegistrationCampaign = field(default_factory=RegistrationCampaign)
 

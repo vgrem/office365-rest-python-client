@@ -5,10 +5,8 @@ from dataclasses import field
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.locale_info import LocaleInfo
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class AutomaticRepliesMailTips(ClientValue):
     """MailTips about any automatic replies that have been set up on a mailbox."""
 

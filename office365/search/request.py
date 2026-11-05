@@ -7,7 +7,6 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.json_format import JsonProfile
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.value import value
 from office365.search.aggregation_option import AggregationOption
 from office365.search.collapse_property import CollapseProperty
 from office365.search.query import SearchQuery
@@ -17,7 +16,6 @@ from office365.search.sharepoint_onedrive_options import SharePointOneDriveOptio
 from office365.search.sort_property import SortProperty
 
 
-@value
 class SearchRequest(ClientValue):
     """A search request formatted in a JSON blob."""
 

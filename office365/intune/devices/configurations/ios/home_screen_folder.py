@@ -7,10 +7,8 @@ from office365.intune.devices.configurations.ios.home_screen_folder_page import 
 )
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 
 
-@value
 class IosHomeScreenFolder(ClientValue):
     pages: ClientValueCollection[IosHomeScreenFolderPage] = field(
         default_factory=lambda: ClientValueCollection(IosHomeScreenFolderPage)

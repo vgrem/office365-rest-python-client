@@ -25,7 +25,6 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
-from office365.runtime.types.value import value
 
 
 def _package_models() -> list:
@@ -47,7 +46,6 @@ def test_every_compare_rule_in_the_package_fits_its_field():
 
 
 def _problems(**declared) -> list:
-    @value
     class Sample(ClientValue):
         text: Optional[str] = field(default=None, metadata=odata("text", compare=declared.get("text")))
         when: Optional[datetime] = field(default=None, metadata=odata("when", compare=declared.get("when")))
@@ -125,8 +123,10 @@ def test_every_model_stores_the_schema_its_declarations_describe() -> None:
     # ``TypeSchema.of`` answers from the schema the class stored, never by scanning it
     # again, so a class that declares something and stores nothing answers every
     # question about itself with the empty schema -- silently, and in the direction of
-    # asking for less than the model can carry. That is what a bare ``@dataclass``, or a
-    # subclass that declares nothing of its own, would do, so the walk is the gate.
+    # asking for less than the model can carry. Only one thing can still cause that now
+    # that ``ClientValue.__init_subclass__`` reads every class: a subclass that writes
+    # its own ``__init_subclass__`` and forgets ``super()``, which is a one-line mistake
+    # with no visible symptom, so the walk is the gate.
     stale = [
         f"{model.__module__}.{model.__qualname__}"
         for model in _package_models()

@@ -3,10 +3,8 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.runtime.types.value import value
 
 
-@value
 class UsageInfo(ClientValue):
     """Provides fields used to access information regarding site collection usage.
 

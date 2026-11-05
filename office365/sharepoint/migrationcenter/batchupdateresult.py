@@ -3,11 +3,9 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.value import value
 from office365.sharepoint.migrationcenter.taskupdateresult import TaskUpdateResult
 
 
-@value
 class BatchUpdateResult(ClientValue):
     ErrorCode: Optional[str] = None
     FailCount: Optional[int] = None
