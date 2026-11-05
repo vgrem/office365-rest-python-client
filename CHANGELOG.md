@@ -932,6 +932,15 @@ introduced.
 
 ### Changed
 
+- **A created type says which of its columns it does not send.** `ListItem` and `Folder`
+  already answered that question, and `File`, `Field`, `ContentType` and `SitePage` answer
+  it for most of their columns. `List`, `Web` and the SharePoint principal types did not,
+  so whether a `POST` payload could carry a column was left to the caller remembering it.
+  Their undeclared columns are now counted and pinned (97, 117, 16, 16), which makes the
+  gap a number that may only fall: a column that arrives with nobody deciding its direction
+  fails the suite instead of silently reading as writable. Dropping one `readonly=True`
+  from `SecurableObject.has_unique_role_assignments` fails with
+  `{'List': 98, 'Web': 118}`.
 - **A caller asks for a role, not for a name.** A member can now declare the role it
   plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
   `TypeSchema.columns_of_facet(AUTHORSHIP)` answers the columns of that role the way

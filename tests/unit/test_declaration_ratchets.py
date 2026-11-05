@@ -1,4 +1,4 @@
-"""Four ratchets that walk the whole package and fail on *this* tree.
+"""Five ratchets that walk the whole package and fail on *this* tree.
 
 The first is ``Compare`` rules: each must say something its field's type can bear
 (see ``runtime/compare_check.py``). The second is a dataclass field default: it
@@ -6,7 +6,9 @@ must be hashable on whichever interpreter runs the suite. The third is the set o
 projections ``TypeSchema`` derives: a caller that asks the model instead of keeping
 its own name list is only served if the projections stay a partition of what the
 declarations say. The fourth is the schema a model stores: it is only an answer if
-it is the one its declarations describe.
+it is the one its declarations describe. The fifth is the write direction of a type
+the migration layer creates: a column nobody has said the service owns is a name a
+caller may still send, so the count of those may only fall.
 """
 
 from __future__ import annotations
@@ -25,6 +27,16 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.contenttypes.content_type import ContentType
+from office365.sharepoint.fields.field import Field
+from office365.sharepoint.files.file import File
+from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.list import List as SharePointList
+from office365.sharepoint.principal.groups.group import Group
+from office365.sharepoint.principal.users.user import User
+from office365.sharepoint.publishing.pages.page import SitePage
+from office365.sharepoint.webs.web import Web
 
 
 def _package_models() -> list:
@@ -145,3 +157,49 @@ def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:
         "these dataclass fields default to an unhashable instance, which Python 3.11 "
         f"rejects at class-creation time: {sorted(offenders)}"
     )
+
+
+#: The SharePoint types the migration layer creates with a POST. A create sends a handful
+#: of settings into a model of a hundred columns, so most of the model is a name a caller
+#: *may* send and the service answers 400 for. Where those columns are declared read-only,
+#: ``to_json`` drops them and the question is closed; where they are not, the caller has to
+#: know which ones those are, so the count is measured here instead of being guessed at a
+#: call site.
+_CREATED = (SharePointList, Web, User, Group, Field, ContentType, Folder, File, ListItem, SitePage)
+
+#: Created types whose write direction was probed live (a ``MERGE`` per column): most of
+#: their columns are declared, and extending that is a probe, not an edit -- so the pin
+#: below stays off them and only the floor is held.
+_PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
+
+#: Created types whose write direction is still unconsidered: columns minus read-only
+#: declarations, read off the tree on 2026-11-05. The number may only fall -- a column that
+#: arrives with no direction decided fails here, which is the cheapest place to decide it.
+#: List and Web are containers whose create payload is a named handful of settings, and the
+#: principal types carry four flags that site security writes; the rest of each model is
+#: the service's, and saying so needs the same probe the others got.
+_UNDECLARED = {"List": 97, "Web": 117, "User": 16, "Group": 16}
+
+
+def _undeclared(model: type) -> int:
+    """The columns of ``model`` that no declaration says the service owns."""
+    schema = TypeSchema.of(model)
+    return len(schema.columns) - len(schema.readonly)
+
+
+def test_a_created_type_says_which_columns_it_does_not_send() -> None:
+    # Two ways to answer the same question -- "may I send this column?" -- and every created
+    # type has to take one of them: declare the read-only columns, or be counted here. What
+    # the ratchet forbids is the third case, where nobody has said anything and the answer
+    # silently reads "yes" for every column the generator adds. A declared column lowers the
+    # count without failing anything, so the pin is a ceiling and never a target.
+    assert set(_UNDECLARED) | {model.__name__ for model in _PROBED} == {m.__name__ for m in _CREATED}
+    assert [model.__name__ for model in _PROBED if not TypeSchema.of(model).readonly] == []
+    grown = {
+        name: undeclared
+        for name, undeclared in (
+            (model.__name__, _undeclared(model)) for model in _CREATED if model.__name__ in _UNDECLARED
+        )
+        if undeclared > _UNDECLARED[name]
+    }
+    assert grown == {}, f"these created types gained a column with no declared direction: {grown}"
