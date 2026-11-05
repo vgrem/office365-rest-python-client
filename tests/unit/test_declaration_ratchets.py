@@ -175,10 +175,13 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: Created types whose write direction is still unconsidered: columns minus read-only
 #: declarations, read off the tree on 2026-11-05. The number may only fall -- a column that
 #: arrives with no direction decided fails here, which is the cheapest place to decide it.
-#: List and Web are containers whose create payload is a named handful of settings, and the
-#: principal types carry four flags that site security writes; the rest of each model is
-#: the service's, and saying so needs the same probe the others got.
-_UNDECLARED = {"List": 97, "Web": 117, "User": 16, "Group": 16}
+#: List was probed on a scratch list and a scratch library (write a different value, read it
+#: back, restore) and 41 of its 98 columns refused the write in both; the 57 left are
+#: settings whose refusal depends on the object's state -- ``DraftVersionVisibility`` is
+#: only refused until content approval is on, ``EnableMinorVersions`` until versioning is --
+#: so they stay undecided rather than being declared read-only on the strength of one
+#: template. Web and the principal types have had no probe yet.
+_UNDECLARED = {"List": 57, "Web": 117, "User": 16, "Group": 16}
 
 
 def _undeclared(model: type) -> int:

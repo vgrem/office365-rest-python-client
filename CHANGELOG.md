@@ -941,6 +941,18 @@ introduced.
   fails the suite instead of silently reading as writable. Dropping one `readonly=True`
   from `SecurableObject.has_unique_role_assignments` fails with
   `{'List': 98, 'Web': 118}`.
+- **A list stops sending the columns the service will not keep.** 41 of `List`'s 98 columns
+  are now declared read-only, taken from a write-and-read-back probe rather than from a
+  reading of the docs: a scratch list and a scratch library were created, each column was
+  written with a different value through a one-property `MERGE`, read back, restored if it
+  stuck, and deleted. 41 columns kept their old value on both objects -- `Id`, `Created`,
+  `BaseTemplate`, `ItemCount`, `SchemaXml`, the `LastItem*` stamps, `ParentWebUrl` and the
+  feature flags behind them -- so `to_json` no longer offers them to a caller whose value
+  the service would silently drop. The columns that stay undeclared are the ones the probe
+  could not settle: `DraftVersionVisibility` is refused only until content approval is on,
+  `EnableMinorVersions` only until versioning is, and `ValidationFormula` bounces anything
+  that does not parse. Reading the same refusal as "read-only" would have taken a working
+  migration setting out of the payload.
 - **A caller asks for a role, not for a name.** A member can now declare the role it
   plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
   `TypeSchema.columns_of_facet(AUTHORSHIP)` answers the columns of that role the way
