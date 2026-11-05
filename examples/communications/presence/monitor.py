@@ -2,7 +2,8 @@
 Presence monitoring — the "routing desk" pattern.
 
 Poll a set of agents with ``getPresencesByUserId`` (one request per cycle),
-remember the previous state, and act only on transitions. The helpers below
+remember the previous state, and act only on transitions. The action takes user
+*object ids*, so addresses are resolved once up front. The helpers below
 also show the business rules: who is reachable, and how to drive an agent's
 own presence session when their shift starts or ends.
 
@@ -35,11 +36,12 @@ def describe(presence: Presence) -> str:
     return f"availability={presence.availability}, activity={presence.activity}"
 
 
-def route_call(client: GraphClient, agents: list[str]) -> None:
+def route_call(client: GraphClient, agents: list[str], labels: dict[str, str]) -> None:
     """Pick the first reachable agent using a single bulk presence request."""
     presences = client.communications.get_presences_by_user_id(agents).execute_query()
     available = next((p for p in presences if is_available(p)), None)
-    print(f"Routing: {'call ' + available.id if available else 'no agent available — queue the call'}")
+    answer = f"call {labels.get(available.id, available.id)}" if available else "no agent available — queue the call"
+    print(f"Routing: {answer}")
 
 
 def set_shift(client: GraphClient, on_duty: bool) -> None:
@@ -60,14 +62,14 @@ def set_shift(client: GraphClient, on_duty: bool) -> None:
     print(f"You are now {'on duty' if on_duty else 'off duty'}")
 
 
-def monitor(client: GraphClient, agents: list[str], cycles: int, interval: int) -> None:
+def monitor(client: GraphClient, agents: list[str], cycles: int, interval: int, labels: dict[str, str]) -> None:
     print(f"Watching {len(agents)} agent(s), {cycles} cycle(s) every {interval}s\n")
     previous: dict[str, str] = {}
     for cycle in range(1, cycles + 1):
         for presence in client.communications.get_presences_by_user_id(agents).execute_query():
             state = describe(presence)
             change = "" if previous.get(presence.id) in (None, state) else f"  (was {previous[presence.id]})"
-            print(f"  [{cycle}/{cycles}] {presence.id}: {state}{change}")
+            print(f"  [{cycle}/{cycles}] {labels.get(presence.id, presence.id)}: {state}{change}")
             previous[presence.id] = state
         if cycle < cycles:
             sleep(interval)
@@ -87,8 +89,13 @@ def main():
 
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-    monitor(client, args.agents, args.cycles, args.interval)
-    route_call(client, args.agents)
+    # ``getPresencesByUserId`` takes user *object ids*: an address here answers PresenceUnknown
+    # for everyone, so addresses are resolved first and kept as labels for the output.
+    ids = [client.users[agent].get().execute_query().id if "@" in agent else agent for agent in args.agents]
+    labels = dict(zip(ids, args.agents))
+
+    monitor(client, ids, args.cycles, args.interval, labels)
+    route_call(client, ids, labels)
     if args.apply:
         set_shift(client, on_duty=args.apply == "on-duty")
 

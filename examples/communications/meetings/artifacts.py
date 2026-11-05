@@ -33,26 +33,32 @@ def main():
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
     meeting_id = args.meeting_id
+    temporary = None
     if meeting_id is None:
         start = datetime.now(timezone.utc) + timedelta(hours=1)
-        meeting = client.me.online_meetings.create(
+        temporary = client.me.online_meetings.create(
             subject="Artifacts demo",
             start_datetime=start,
             end_datetime=start + timedelta(minutes=30),
         ).execute_query()
-        meeting_id = meeting.id
+        meeting_id = temporary.id
         print(f"No --meeting-id given — using throwaway meeting {meeting_id}\n")
 
     target = client.me.online_meetings[meeting_id]
-    for label, navigation, permission in ARTIFACTS:
-        collection = getattr(target, navigation)
-        try:
-            items = collection.get().execute_query()
-            print(f"{label:<18}: {len(items)} item(s)")
-            for item in items:
-                print(f"    {item.id}  {getattr(item, 'created_date_time', '')}")
-        except ClientRequestException as e:
-            print(f"{label:<18}: unavailable ({e.code}) — grant {permission}, and attend the meeting first")
+    try:
+        for label, navigation, permission in ARTIFACTS:
+            collection = getattr(target, navigation)
+            try:
+                items = collection.get().execute_query()
+                print(f"{label:<18}: {len(items)} item(s)")
+                for item in items:
+                    print(f"    {item.id}  {getattr(item, 'created_date_time', '')}")
+            except ClientRequestException as e:
+                print(f"{label:<18}: unavailable ({e.code}) — grant {permission}, and attend the meeting first")
+    finally:
+        if temporary is not None:
+            temporary.delete_object().execute_query()
+            print("\nThrowaway meeting deleted.")
 
 
 if __name__ == "__main__":
