@@ -1004,6 +1004,15 @@ introduced.
   a state rather than an empty string; the ingestion-job monitor counts its
   deadline on the clock instead of adding `interval` per iteration;
   `PollableOperation.wait(sleep=None)` can be woken by `cancel()`.
+- **A published row answers the type that spends it.** `limits_of(DriveItem)` returned
+  nothing while `onedrive/quotas.py` published nine rows for it, because a catalog registers
+  a product and `limits_of` reads a class. `BaseItem` and `Permission` now declare
+  `FILES_QUOTAS` (a drive item, a drive and a permission operation spend the same
+  resource-unit budget), `ChatMessage` declares
+  `CHAT_MESSAGES_READ` and `CHAT_MESSAGES_WRITE` (the two calls a message makes, not the
+  whole Teams table), and `MailFolder` and `Calendar` declare `OUTLOOK_MAILBOX_BUDGETS`,
+  which `OutlookItem` already carried for the item hierarchy. No new numbers: a test holds
+  each of them to answering rows a catalog actually published.
 
 ### Fixed
 

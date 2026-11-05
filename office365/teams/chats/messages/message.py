@@ -7,6 +7,7 @@ from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.channels.iIdentity import ChannelIdentity
@@ -18,8 +19,10 @@ from office365.teams.chats.messages.hosted_content import ChatMessageHostedConte
 from office365.teams.chats.messages.mention import ChatMessageMention
 from office365.teams.chats.messages.policy_violation import ChatMessagePolicyViolation
 from office365.teams.chats.messages.reaction import ChatMessageReaction
+from office365.teams.quotas import CHAT_MESSAGES_READ, CHAT_MESSAGES_WRITE
 
 
+@limit(*(CHAT_MESSAGES_READ + CHAT_MESSAGES_WRITE))  # the two calls a chat message makes
 class ChatMessage(Entity):
     """
     Represents an individual chat message within a channel or chat.

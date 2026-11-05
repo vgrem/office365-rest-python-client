@@ -14,9 +14,11 @@ from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.collection import EventCollection
 from office365.outlook.calendar.permissions.collection import CalendarPermissionCollection
 from office365.outlook.calendar.schedule.information import ScheduleInformation
+from office365.outlook.quotas import OUTLOOK_MAILBOX_BUDGETS
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -24,6 +26,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
+@limit(*OUTLOOK_MAILBOX_BUDGETS)  # a calendar is read inside the mailbox budget
 class Calendar(Entity):
     """
     A calendar which is a container for events. It can be a calendar for a user, or the default calendar

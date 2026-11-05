@@ -13,7 +13,13 @@ import subprocess
 import sys
 import unittest
 
-from office365.runtime.limits import LimitKind, catalog, catalog_products
+from office365.onedrive.driveitems.driveItem import DriveItem
+from office365.onedrive.drives.drive import Drive
+from office365.onedrive.permissions.permission import Permission
+from office365.outlook.calendar.calendar import Calendar
+from office365.outlook.mail.folders.folder import MailFolder
+from office365.runtime.limits import LimitKind, catalog, catalog_products, limits_of
+from office365.teams.chats.messages.message import ChatMessage
 
 #: What a row may say about the shape of the request it counts.
 REQUEST_TYPES = {"", "read", "write", "delete", "any"}
@@ -56,3 +62,36 @@ print(sorted(set(catalog_products()) - seen - {"model"}))  # "model" is written 
         result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
 
         self.assertEqual(result.stdout.strip(), "[]", f"not imported by office365/limits.py: {result.stdout.strip()}")
+
+
+class TestBindings(unittest.TestCase):
+    """A published row reaches a caller only through the type that spends it.
+
+    Every catalog above can be complete, reachable and correct while a caller who asks a
+    model what a request costs gets nothing back: the rows are registered under a product,
+    not on the class, and ``limits_of`` reads the class. So the types migration code touches
+    most are held to answering rows — and to answering the *published* ones, so a binding
+    cannot smuggle in a number nobody can check.
+    """
+
+    #: The resources a migration reads most, one per spending hierarchy.
+    P1 = (
+        DriveItem,  # and everything else on ``BaseItem``
+        Drive,
+        Permission,
+        ChatMessage,
+        MailFolder,
+        Calendar,
+    )
+
+    def test_a_p1_type_answers_the_rows_it_spends(self):
+        for target in self.P1:
+            with self.subTest(target.__name__):
+                self.assertTrue(limits_of(target), f"{target.__name__} declares no limits")
+
+    def test_a_binding_answers_a_published_row(self):
+        published = catalog()
+        for target in self.P1:
+            for decl in limits_of(target):
+                with self.subTest(target.__name__, row=str(decl.limit)):
+                    self.assertIn(decl.limit, published, f"{target.__name__} declares a row no catalog published")

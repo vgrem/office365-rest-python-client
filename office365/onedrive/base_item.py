@@ -8,6 +8,8 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.onedrive.listitems.item_reference import ItemReference
+from office365.onedrive.quotas import FILES_QUOTAS
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -15,6 +17,7 @@ if TYPE_CHECKING:
     from office365.directory.users.user import User
 
 
+@limit(*FILES_QUOTAS)  # a drive item and a drive spend the same resource-unit budget
 class BaseItem(Entity):
     """The baseItem resource is an abstract resource that contains a auth set of properties shared among several
     other resources types"""

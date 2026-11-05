@@ -10,8 +10,10 @@ from office365.onedrive.listitems.item_reference import ItemReference
 from office365.onedrive.permissions.sharepoint_identity_set import SharePointIdentitySet
 from office365.onedrive.permissions.sharing_invitation import SharingInvitation
 from office365.onedrive.permissions.sharing_link import SharingLink
+from office365.onedrive.quotas import FILES_QUOTAS
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -21,6 +23,7 @@ if TYPE_CHECKING:
     from office365.onedrive.permissions.collection import PermissionCollection
 
 
+@limit(*FILES_QUOTAS)  # a permission operation costs five resource units of the same budget
 class Permission(Entity):
     """The Permission resource provides information about a sharing permission granted for a DriveItem resource."""
 
