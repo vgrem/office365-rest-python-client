@@ -26,6 +26,20 @@ Three independent areas — with three different permission stories:
 Real-time `calls` and `adhoc_calls` need a media bot (application- or
 service-hosted media), so they are out of scope here.
 
+## What do you want to do?
+
+| Task | Script |
+| --- | --- |
+| Check that credentials and consent work | [`quickstart.py`](./quickstart.py) |
+| Put a colleague list on one presence board, as CSV | [`presence/team_status.py`](./presence/team_status.py) |
+| Read, override or annotate your own presence | [`presence/status.py`](./presence/status.py) |
+| Watch a desk and act when someone becomes free | [`presence/monitor.py`](./presence/monitor.py) |
+| Book meetings idempotently — one, or a CSV of many | [`meetings/book.py`](./meetings/book.py) |
+| Find a meeting by its join link, retitle it or cancel it | [`meetings/manage.py`](./meetings/manage.py) |
+| See which recordings, transcripts and attendance a meeting has | [`meetings/artifacts.py`](./meetings/artifacts.py) |
+| Review PSTN quality: where the failed calls ended | [`callrecords/direct_routing.py`](./callrecords/direct_routing.py) |
+| List recent calls, or walk one call down to its media segments | [`callrecords/list.py`](./callrecords/list.py), [`sessions.py`](./callrecords/sessions.py) |
+
 ## Start here
 
 ```bash
@@ -47,9 +61,14 @@ or override your own status for a fixed window.
 presence = client.me.presence.get().execute_query()
 print(presence.availability, presence.activity)  # e.g. Busy / InACall
 
-for presence in client.communications.get_presences_by_user_id(upns).execute_query():
-    print(presence.id, presence.availability)  # one request, many users
+# the bulk action takes user object ids, not addresses: one request, many users
+for presence in client.communications.get_presences_by_user_id(user_ids).execute_query():
+    print(presence.id, presence.availability)
 ```
+
+→ [`status.py`](./presence/status.py) reads, sets, annotates and clears your own;
+[`team_status.py`](./presence/team_status.py) resolves a list of UPNs and exports the whole
+board through the data pipeline, one request.
 
 ## Online meetings — join links without a calendar
 
@@ -70,6 +89,10 @@ Idempotent creation is available too — `create_or_get(external_id=…)` return
 existing meeting when your external id is already known, which makes retries and
 booking syncs safe.
 
+→ [`book.py`](./meetings/book.py) books from flags or from a CSV, one `create_or_get` per
+row; [`manage.py`](./meetings/manage.py) resolves a meeting by the `joinWebUrl` on a ticket
+and retitles, moves or cancels it — printing the change unless you pass `--apply`.
+
 ## Call records — call quality and PSTN
 
 [`callrecords/`](./callrecords/) · `CallRecords.Read.All` (application)
@@ -86,6 +109,16 @@ their own Graph namespace — `client.communications` — with their own endpoin
 their own scopes, and this tree mirrors the client: one folder per namespace. The
 only overlap with the product is online meetings, so [`../teams/`](../teams/)
 links here instead of duplicating the code.
+
+## Virtual events — wired, but not exercised here
+
+`client.solutions.virtual_events` (town halls, webinars, their registrations,
+presenters and sessions) is part of this namespace in the library, and the path
+resolves: `/solutions/virtualEvents/townhalls`. Reading it needs
+`VirtualEvent.Read.All` — the `.ReadWrite` variants to create — plus a Teams
+Premium licence, and our test tenant answers `403 Insufficient permissions`. So
+there is no script here that we could actually run; the model is there and the
+first tenant that grants the scope can read it.
 
 ## Official docs
 

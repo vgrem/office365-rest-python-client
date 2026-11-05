@@ -19,7 +19,7 @@ flowchart LR
     M --> A["recordings · transcripts · attendance_reports"]
 ```
 
-## Create
+## Book a meeting — once, even if you call twice
 
 ```python
 meeting = client.me.online_meetings.create(
@@ -31,13 +31,9 @@ meeting = client.me.online_meetings.create(
 print(meeting.join_web_url)
 ```
 
-→ [`create.py`](./create.py)
-
-## Create once, even if you call twice
-
 `createOrGet` keys the meeting on **your** `externalId`: call it again and you
 get the same meeting back. That makes retries and two concurrent booking workers
-safe.
+safe, which is what a booking sync needs.
 
 ```python
 meeting = client.me.online_meetings.create_or_get(
@@ -48,7 +44,8 @@ meeting = client.me.online_meetings.create_or_get(
 ).execute_query()
 ```
 
-→ [`create_or_get.py`](./create_or_get.py)
+→ [`book.py`](./book.py) — one meeting from flags, or a whole CSV of bookings, one
+`create_or_get` per row.
 
 ## Find a meeting again
 
@@ -61,7 +58,8 @@ client.me.online_meetings[meeting_id].get().execute_query()
 client.me.online_meetings.filter(f"JoinWebUrl eq '{join_url}'").get().execute_query()
 ```
 
-→ [`lookup.py`](./lookup.py)
+→ [`manage.py`](./manage.py) — both lookups, then retitle, move or cancel what it found.
+It prints the change it would send and stops; `--apply` is what writes.
 
 ## Change options
 
@@ -75,8 +73,6 @@ meeting.set_property("allowTranscription", True)
 meeting.update().execute_query()
 ```
 
-→ [`update.py`](./update.py) · delete with [`delete.py`](./delete.py)
-
 ## Artifacts
 
 Recordings, transcripts and attendance reports hang off the meeting, and each
@@ -88,6 +84,7 @@ actually allows instead of failing, so you can see which consent is missing.
 | Symptom | Cause |
 | --- | --- |
 | `InvalidArgument: … to lookup meeting by QueryOptions is null` | listing needs `$filter=JoinWebUrl eq '…'` |
+| `NotFound 3004: Specified meeting is not found` on a join URL | the meeting was deleted; Graph resolves that filter server-side, so a miss is a 404 rather than an empty list |
 | `AttributeError: can't set attribute` | the property is read-only in the client: use `set_property(...)` + `update()` |
 | `lobbyBypassSettings.scope` comes back `unknownFutureValue` | the lobby object was sent partially (include `isDialInBypassEnabled`) or batched with other properties |
 | recording/transcript/attendance `403` | the artifact scope is not consented, or the meeting has not ended |

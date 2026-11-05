@@ -30,8 +30,8 @@ presence = client.me.presence.get().execute_query()
 print(presence.availability, presence.activity)
 ```
 
-→ [`get.py`](./get.py) — pass `--user ana@contoso.com` to read a colleague's
-presence with `client.users[upn].presence`.
+A colleague's is the same resource reached through their user, and needs
+`Presence.Read.All`: `client.users[upn].presence.get().execute_query()`.
 
 ## Read many users at once
 
@@ -39,11 +39,15 @@ One request per 650 users instead of one per user — the right shape for a
 people-picker or a "who's available" dashboard.
 
 ```python
-for presence in client.communications.get_presences_by_user_id(upns).execute_query():
+for presence in client.communications.get_presences_by_user_id(ids).execute_query():
     print(presence.id, presence.availability, presence.activity)
 ```
 
-→ [`bulk_get.py`](./bulk_get.py)
+The action takes user **object ids**, not UPNs, so the script resolves addresses first and
+then exports the board through the data pipeline (`export_to`, the same surface a
+SharePoint list uses).
+
+→ [`team_status.py`](./team_status.py)
 
 ## Set your own presence
 
@@ -52,7 +56,7 @@ client.me.presence.set_user_preferred_presence("DoNotDisturb", "DoNotDisturb", "
 client.me.presence.set_status_message("In a meeting", expiry).execute_query()
 ```
 
-→ [`set.py`](./set.py) · the counterpart is [`clear.py`](./clear.py)
+→ [`status.py`](./status.py) — `get`, `set`, `message` and `clear`, one subcommand each.
 
 Two things to know:
 

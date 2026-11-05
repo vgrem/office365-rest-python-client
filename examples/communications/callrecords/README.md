@@ -55,7 +55,9 @@ rows = (
 → [`direct_routing.py`](./direct_routing.py)
 
 This one is not an entity collection: the rows are `DirectRoutingLogRow`
-**values** inside a `ClientResult`, so read `.value` before iterating.
+**values** inside a `ClientResult`, so read `.value` before iterating. The script groups
+the failed calls by their final SIP phrase — the summary a voice team asks for — and
+prints a few samples to check the grouping against.
 
 ## Gotchas
 
