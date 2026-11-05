@@ -248,15 +248,17 @@ def _normalize_datetime_string(value: str) -> str:
     if "." not in value:
         return value
     before, _, after = value.partition(".")
-    tz_marker = ""
+    fraction_width = 6
+    fraction_end = len(after)
     for marker in ("Z", "+", "-"):
-        if marker in after:
-            index = after.find(marker)
-            tz_marker = after[index:]
-            after = after[:index]
+        index = after.find(marker)
+        if index != -1:
+            fraction_end = index
             break
-    frac = after[:6].ljust(6, "0")
-    return f"{before}.{frac}{tz_marker}"
+    if fraction_end == fraction_width and type(value) is str:
+        return value
+    frac = after[:fraction_end][:fraction_width].ljust(fraction_width, "0")
+    return f"{before}.{frac}{after[fraction_end:]}"
 
 
 def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
@@ -278,36 +280,52 @@ def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
     if isinstance(value, datetime):
         return value
 
-    known_formats = [
-        "%Y-%m-%dT%H:%M:%SZ",  # ISO 8601 UTC
-        "%Y-%m-%dT%H:%M:%S.%fZ",  # ISO 8601 with microseconds
-        "%Y-%m-%dT%H:%M:%S",  # Without timezone
-        "%Y-%m-%dT%H:%M:%S.%f",  # With microseconds no TZ
-        "%Y-%m-%dT%H:%M:%S%z",  # ISO 8601 with numeric offset
-        "%Y-%m-%dT%H:%M:%S.%f%z",  # ISO 8601 with microseconds and offset
-        "%Y-%m-%d",  # Date only
-    ]
-
     if isinstance(value, str):
         value = _normalize_datetime_string(value)
 
-    for fmt in known_formats:
-        try:
-            result = datetime.strptime(value, fmt)
-            if result.tzinfo is None and fmt.endswith("Z"):
-                result = result.replace(tzinfo=timezone.utc)
-            return result
-        except ValueError:
-            continue
-    # Anything ISO-8601 the fixed list does not spell (a space separator, no
-    # seconds, ...). The fraction is normalized first, so this answers the same
-    # thing on every supported interpreter: ``fromisoformat`` only learned to
-    # accept more than six fractional digits in 3.11, and a .NET stamp carries
-    # seven.
-    try:
-        return datetime.fromisoformat(value)
-    except ValueError:
-        return None
+    iso_first = type(value) is str
+    if iso_first and "." in value and not value.endswith("Z"):
+        date_length = 10
+        offset_start = max(value.rfind("+"), value.rfind("-"))
+        # fromisoformat can discard fractions on offsets below one second.
+        iso_first = offset_start <= date_length or value.find(".", offset_start) == -1
+
+    # Keep one implementation of each parser, changing only their order.
+    # Legacy parsing also handles non-padded fields, lowercase Z, and Python
+    # versions where fromisoformat does not accept a trailing Z.
+    for use_iso in (True, False) if iso_first else (False, True):
+        if use_iso:
+            try:
+                return datetime.fromisoformat(value)
+            except ValueError:
+                continue
+        known_formats = (
+            (
+                "%Y-%m-%dT%H:%M:%SZ",  # ISO 8601 UTC
+                "%Y-%m-%dT%H:%M:%S",  # Without timezone
+                "%Y-%m-%dT%H:%M:%S%z",  # ISO 8601 with numeric offset
+                "%Y-%m-%d",  # Date only
+            ),
+            (
+                "%Y-%m-%dT%H:%M:%S.%fZ",  # ISO 8601 with microseconds
+                "%Y-%m-%dT%H:%M:%S.%f",  # With microseconds no TZ
+                "%Y-%m-%dT%H:%M:%S.%f%z",  # ISO 8601 with microseconds and offset
+            ),
+        )
+        # Try the likely fractional forms first, retaining every legacy format.
+        if type(value) is str and "." in value:
+            known_formats = known_formats[::-1]
+        strptime = datetime.strptime
+        for formats in known_formats:
+            for fmt in formats:
+                try:
+                    result = strptime(value, fmt)
+                    if result.tzinfo is None and fmt.endswith("Z"):
+                        result = result.replace(tzinfo=timezone.utc)
+                    return result
+                except ValueError:
+                    continue
+    return None
 
 
 def wall_clock(value: Any) -> Optional[datetime]:
