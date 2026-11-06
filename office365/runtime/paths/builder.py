@@ -137,7 +137,12 @@ class ODataPathBuilder:
         """
         # _SPECIAL_CHARS also covers the single quote ("'" -> "''"); escaping it
         # separately here would double it twice.
-        for char, replacement in ODataPathBuilder._SPECIAL_CHARS.items():
-            value = value.replace(char, replacement)
+        replacements = ODataPathBuilder._SPECIAL_CHARS
+        exact = type(value) is str
+        probe = value if exact else replacements
+        replace = str.replace if exact else lambda value, char, replacement: value.replace(char, replacement)
+        for char in replacements:
+            if char in probe:
+                value = replace(value, char, replacements[char])
 
         return f"'{value}'"
