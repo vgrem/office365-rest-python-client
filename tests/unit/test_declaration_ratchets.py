@@ -184,8 +184,16 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: group accepts requests, ``AlternateCssUrl`` until the stylesheet exists -- and the settings
 #: the migration layer carries are exactly that kind. ``User`` has had no probe because it
 #: has no scratch instance: a wrong write lands on a real account, and restoring it needs a
-#: token the write may have broken.
-_UNDECLARED = {"List": 57, "Web": 55, "User": 16, "Group": 11}
+#: token the write may have broken. Its direction is read off what the service answers with
+#: instead. ``Id`` is the ``<Key>`` of ``SP.Principal``, ``PrincipalType`` is the discriminator
+#: that decides what a row *is*, and the identity a row was shared in as -- ``AadObjectId``,
+#: ``UserId``, ``IsEmailAuthenticationGuestUser``, ``IsShareByEmailGuestUser``,
+#: ``EmailWithFallback``, ``UserPrincipalName`` -- is the service's answer, not the caller's
+#: choice. What stays counted is what a caller does choose (``Title``, ``Email``,
+#: ``IsSiteAdmin``, and ``LoginName``, the name a create is posted under) plus the three names
+#: nothing describes: ``Expiration``, which ``expire()`` sets through an action and no document
+#: says a ``MERGE`` may, and ``HexCid``/``UserIdentityType``. A name is not evidence.
+_UNDECLARED = {"List": 57, "Web": 55, "User": 7, "Group": 8}
 
 
 def _undeclared(model: type) -> int:

@@ -56,7 +56,7 @@ class User(Principal):
         self.context.add_query(qry)
         return self
 
-    @odata(name="AadObjectId")
+    @odata(name="AadObjectId", readonly=True)
     @property
     def aad_object_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
@@ -83,7 +83,7 @@ class User(Principal):
         """Gets a Boolean value that specifies whether the user is a site collection administrator."""
         return self.properties.get("IsSiteAdmin", None)
 
-    @odata(name="UserId")
+    @odata(name="UserId", readonly=True)
     @property
     def user_id(self) -> UserIdInfo:
         """Gets the information of the user that contains the user's name identifier and the issuer of the
@@ -99,7 +99,7 @@ class User(Principal):
         """
         return self.properties.get("Email", None)
 
-    @odata(name="EmailWithFallback")
+    @odata(name="EmailWithFallback", readonly=True)
     @property
     def email_with_fallback(self) -> Optional[str]:
         return self.properties.get("EmailWithFallback", None)
@@ -109,7 +109,7 @@ class User(Principal):
     def expiration(self) -> Optional[str]:
         return self.properties.get("Expiration", None)
 
-    @odata(name="IsEmailAuthenticationGuestUser")
+    @odata(name="IsEmailAuthenticationGuestUser", readonly=True)
     @property
     def is_email_authentication_guest_user(self) -> Optional[bool]:
         """
@@ -118,7 +118,7 @@ class User(Principal):
         """
         return self.properties.get("IsEmailAuthenticationGuestUser", None)
 
-    @odata(name="IsShareByEmailGuestUser")
+    @odata(name="IsShareByEmailGuestUser", readonly=True)
     @property
     def is_share_by_email_guest_user(self) -> Optional[bool]:
         """
@@ -127,7 +127,7 @@ class User(Principal):
         """
         return self.properties.get("IsShareByEmailGuestUser", None)
 
-    @odata(name="UserPrincipalName")
+    @odata(name="UserPrincipalName", readonly=True)
     @property
     def user_principal_name(self) -> Optional[str]:
         """User principal name of the user that initiated the sign-in."""

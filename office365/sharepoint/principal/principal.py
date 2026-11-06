@@ -15,7 +15,7 @@ class Principal(Entity):
     def __repr__(self) -> str:
         return self.login_name or str(self.id or "") or self.entity_type_name
 
-    @odata(name="Id")
+    @odata(name="Id", readonly=True)
     @property
     def id(self) -> Optional[int]:
         """Gets a value that specifies the member identifier for the user or group."""
@@ -38,7 +38,7 @@ class Principal(Entity):
         """Gets the login name of the principal."""
         return self.properties.get("LoginName", None)
 
-    @odata(name="IsHiddenInUI")
+    @odata(name="IsHiddenInUI", readonly=True)
     @property
     def is_service_account(self) -> bool:
         """Whether the login is the service rather than a person: the tenant's app principal
@@ -46,13 +46,13 @@ class Principal(Entity):
         login = (self.login_name or "").lower()
         return "app@sharepoint" in login or "sharepoint\\system" in login
 
-    @odata(name="IsHiddenInUI")
+    @odata(name="IsHiddenInUI", readonly=True)
     @property
     def is_hidden_in_ui(self) -> Optional[bool]:
         """Gets the login name of the principal."""
         return self.properties.get("IsHiddenInUI", None)
 
-    @odata(name="PrincipalType")
+    @odata(name="PrincipalType", readonly=True)
     @property
     def principal_type(self) -> Optional[PrincipalType]:
         """Gets the type of the principal."""
