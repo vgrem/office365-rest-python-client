@@ -2,8 +2,9 @@
 
 Covers the base-library fixes that make a taxonomy column usable: the field is
 created without a ``List`` attribute (so its ``LookupList`` binds to the web's
-hidden TaxonomyHiddenList), a multi-value collection is actually populated, and
-a multi-value write lands on the hidden note companion column.
+hidden TaxonomyHiddenList) and a multi-value collection is actually populated.
+The write onto the hidden note companion column needs a real column, so it is
+covered in ``tests/sharepoint/test_taxonomy.py``.
 
 The term store export/import walk over the same managed-metadata types lives here
 too — export reads a store tree, import replays it into queued creates.
@@ -14,7 +15,6 @@ from __future__ import annotations
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.taxonomy.create_xml_parameters import TaxonomyFieldCreateXmlParameters
 from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValue
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
@@ -45,21 +45,10 @@ def test_taxonomy_schema_omits_list_attribute():
     assert "4d7c4109-db97-4c49-8f7f-a72f0785ee3c" in schema
 
 
-def test_set_taxonomy_collection_writes_note_companion():
-    note_id = "33333333-3333-3333-3333-333333333333"
-    # The companion name is resolved synchronously (a deferred lookup would run
-    # after the write payload was built): the taxonomy column's TextField id, then
-    # the hidden note field, whose *item* property is its EntityPropertyName.
-    ctx = _ctx(
-        [
-            {"d": {"TextField": note_id}},
-            {"d": {"EntityPropertyName": "Dept_0"}},
-        ]
-    )
-    lst = ctx.web.lists.get_by_title("Tasks")
-    item = ListItem(ctx, None, lst)
-    item.set_property("Dept", TaxonomyFieldValueCollection([TaxonomyFieldValue(Label="TermA", TermGuid="a" * 8)]))
-    assert item.properties.get("Dept_0") == "-1;#TermA|aaaaaaaa"
+def test_set_taxonomy_collection_populates_items():
+    terms = TaxonomyFieldValueCollection([TaxonomyFieldValue(Label="TermA", TermGuid="a" * 8)])
+    assert len(terms) == 1
+    assert terms[0].TermGuid == "aaaaaaaa"
 
 
 # --- The term store: export reads a tree, import replays it ------------------------------------------------
