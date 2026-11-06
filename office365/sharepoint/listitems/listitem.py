@@ -749,14 +749,14 @@ class ListItem(SecurableObject):
             ContentType(self.context, ResourcePath("ContentType", self.resource_path)),
         )
 
-    @odata(name="EffectiveBasePermissions")
+    @odata(name="EffectiveBasePermissions", readonly=True)
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """Gets a value that specifies the effective permissions on the list item that are assigned
         to the current user."""
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
-    @odata(name="EffectiveBasePermissionsForUI")
+    @odata(name="EffectiveBasePermissionsForUI", readonly=True)
     @property
     def effective_base_permissions_for_ui(self) -> BasePermissions:
         """Specifies the effective base permissions for the current user, as they SHOULD be displayed in the user

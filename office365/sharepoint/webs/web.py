@@ -2249,7 +2249,7 @@ class Web(SecurableObject):
         """
         return self.properties.get("AllowRevertFromTemplateForCurrentUser", None)
 
-    @odata(name="EffectiveBasePermissions")
+    @odata(name="EffectiveBasePermissions", readonly=True)
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """Specifies the effective permissions that are assigned to the current user"""
@@ -2517,7 +2517,7 @@ class Web(SecurableObject):
             ThemeInfo(self.context, ResourcePath("ThemeInfo", self.resource_path)),
         )
 
-    @odata(name="Url", identity=ABSOLUTE_URL)
+    @odata(name="Url", readonly=True, identity=ABSOLUTE_URL)
     @property
     def url(self) -> Optional[str]:
         """Gets the absolute URL for the website."""
@@ -2755,7 +2755,7 @@ class Web(SecurableObject):
             UserCustomActionCollection(self.context, ResourcePath("UserCustomActions", self.resource_path)),
         )
 
-    @odata(name="ServerRelativePath", beta=True)
+    @odata(name="ServerRelativePath", readonly=True, beta=True)
     @property
     def server_relative_path(self) -> SPResPath:
         """Gets the server-relative Path of the Web."""
@@ -2866,7 +2866,7 @@ class Web(SecurableObject):
         """Gets the ContainsConfidentialInfo property"""
         return self.properties.get("ContainsConfidentialInfo", None)
 
-    @odata(name="CurrentChangeToken")
+    @odata(name="CurrentChangeToken", readonly=True)
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the CurrentChangeToken property"""
@@ -3202,7 +3202,7 @@ class Web(SecurableObject):
         """Gets the SearchScope property"""
         return self.properties.get("SearchScope", None)
 
-    @odata(name="ServerRelativeUrl", identity=SERVER_RELATIVE_URL)
+    @odata(name="ServerRelativeUrl", readonly=True, identity=SERVER_RELATIVE_URL)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""

@@ -242,7 +242,7 @@ class SecurableObject(Entity):
         """
         return self.role_assignments.expand(TypeSchema.of(RoleAssignment).expansions).get()
 
-    @odata(name="EffectiveBasePermissions", system=True)
+    @odata(name="EffectiveBasePermissions", readonly=True, system=True)
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """Gets the EffectiveBasePermissions property"""

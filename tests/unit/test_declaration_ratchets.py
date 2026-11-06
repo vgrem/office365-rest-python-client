@@ -193,7 +193,7 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: ``IsSiteAdmin``, and ``LoginName``, the name a create is posted under) plus the three names
 #: nothing describes: ``Expiration``, which ``expire()`` sets through an action and no document
 #: says a ``MERGE`` may, and ``HexCid``/``UserIdentityType``. A name is not evidence.
-_UNDECLARED = {"List": 57, "Web": 55, "User": 7, "Group": 8}
+_UNDECLARED = {"List": 52, "Web": 50, "User": 7, "Group": 8}
 
 
 def _undeclared(model: type) -> int:

@@ -1572,7 +1572,7 @@ class List(SecurableObject):
         """Specifies the location of the default display form for the list."""
         return self.properties.get("DefaultDisplayFormUrl", None)
 
-    @odata(name="DefaultViewPath")
+    @odata(name="DefaultViewPath", readonly=True)
     @property
     def default_view_path(self) -> SPResPath:
         """Specifies the server-relative URL of the default view for the list."""
@@ -1612,7 +1612,7 @@ class List(SecurableObject):
             CreatablesInfo(self.context, ResourcePath("CreatablesInfo", self.resource_path)),
         )
 
-    @odata(name="CurrentChangeToken")
+    @odata(name="CurrentChangeToken", readonly=True)
     @property
     def current_change_token(self) -> ChangeToken:
         """Gets the current change token that is used in the change log for the list."""
@@ -1664,7 +1664,7 @@ class List(SecurableObject):
         """Specifies the URL of the document template assigned to the list."""
         return self.properties.get("DocumentTemplateUrl", None)
 
-    @odata(name="EffectiveBasePermissions")
+    @odata(name="EffectiveBasePermissions", readonly=True)
     @property
     def effective_base_permissions(self) -> BasePermissions:
         """
@@ -1672,7 +1672,7 @@ class List(SecurableObject):
         """
         return self.properties.get("EffectiveBasePermissions", BasePermissions())
 
-    @odata(name="EffectiveBasePermissionsForUI")
+    @odata(name="EffectiveBasePermissionsForUI", readonly=True)
     @property
     def effective_base_permissions_for_ui(self) -> BasePermissions:
         """
@@ -2130,7 +2130,7 @@ class List(SecurableObject):
             UserResource(self.context, ResourcePath("DescriptionResource", self.resource_path)),
         )
 
-    @odata(name="ParentWebPath")
+    @odata(name="ParentWebPath", readonly=True)
     @property
     def parent_web_path(self) -> SPResPath:
         """Returns the path of the parent web for the list."""
