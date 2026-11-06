@@ -19,20 +19,10 @@ class ListItemCollection(EntityCollection[ListItem]):
 
     _list_view_threshold = LIST_VIEW_THRESHOLD
     _truncation_hint = "page it with List.get_items(query, page_size=2000) or items.get_all(page_size=2000)"
+    _accepts_unknown_columns = True
 
     def __init__(self, context, resource_path=None, parent=None):
         super().__init__(context, ListItem, resource_path, parent)
-
-    def queue_records(self, records, progress: "ProgressCallback | None" = None) -> Self:
-        """Queue an item create per record.
-
-        List item columns are defined per list at runtime, not on the ``ListItem``
-        class, so every record key is forwarded to the server (no unknown-column
-        filtering). Deferred — run the creates with ``execute_query()``.
-        """
-        from office365.runtime.converters.csv_reader import coerce_records
-
-        return self._import_records(coerce_records(self._item_type, records, allow_unknown=True), progress=progress)
 
     def _import_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> Self:
         """Queue the creates and adopt the list's entity type annotation first.

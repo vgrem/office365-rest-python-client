@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import unittest
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal
+from uuid import UUID
 
 from office365.booking.appointment import BookingAppointment
 from office365.communications.callrecords.call_record import CallRecord
@@ -28,9 +30,12 @@ from office365.runtime.converters.records import iter_records
 from office365.runtime.converters.scalars import (
     iso_z,
     normalize_guid,
+    parse_date,
     parse_datetime,
+    parse_decimal,
     parse_duration,
     parse_int,
+    parse_uuid,
     wall_clock,
     wall_clock_text,
 )
@@ -186,6 +191,93 @@ class TestScalarConverters(unittest.TestCase):
         # for "no component", which a caller must be able to tell from "not a GUID".
         zero = "00000000-0000-0000-0000-000000000000"
         self.assertEqual(normalize_guid("{%s}" % zero), zero)
+
+
+class TestDecimalAndIdentityParsers(unittest.TestCase):
+    def test_parse_decimal_is_exact(self):
+        """A float cannot hold 0.1, so an amount round-tripped through it drifts."""
+        self.assertEqual(parse_decimal("1234.50"), Decimal("1234.50"))
+        self.assertEqual(parse_decimal(0.1), Decimal("0.1"))
+        self.assertEqual(parse_decimal(Decimal("1.10")), Decimal("1.10"))
+        self.assertIsNone(parse_decimal(""))
+        self.assertIsNone(parse_decimal("n/a"))
+        self.assertIsNone(parse_decimal(None))
+
+    def test_parse_uuid_accepts_the_forms_a_payload_uses(self):
+        guid = UUID("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d")
+        for spelled in (str(guid), "{%s}" % guid, str(guid).replace("-", ""), "  %s  " % guid):
+            self.assertEqual(parse_uuid(spelled), guid)
+        self.assertEqual(parse_uuid(guid), guid)
+        self.assertIsNone(parse_uuid("not a guid"))
+        self.assertIsNone(parse_uuid(None))
+
+    def test_parse_date_drops_the_time_of_day(self):
+        """``Edm.Date`` names a day: two equal days must compare equal, whatever the time."""
+        self.assertEqual(parse_date("2026-01-06"), date(2026, 1, 6))
+        self.assertEqual(parse_date("2026-01-06T09:00:00Z"), date(2026, 1, 6))
+        self.assertEqual(parse_date(datetime(2026, 1, 6, 9, 0)), date(2026, 1, 6))
+        self.assertEqual(parse_date(date(2026, 1, 6)), date(2026, 1, 6))
+        self.assertIsNone(parse_date(None))
+        self.assertIsNone(parse_date("not a date"))
+
+
+class TestConverterFor(unittest.TestCase):
+    """``coerce=`` accepts four spellings; all of them resolve to one callable."""
+
+    def test_a_wire_name_resolves_to_its_parser(self):
+        from office365.runtime.converters.coercion import converter_for
+
+        offset = converter_for("Edm.DateTimeOffset")
+        self.assertEqual(offset("2026-01-06T09:00:00Z"), datetime(2026, 1, 6, 9, tzinfo=timezone.utc))
+        self.assertEqual(converter_for("Edm.Date")("2026-01-06"), date(2026, 1, 6))
+        self.assertIsInstance(converter_for("Edm.Guid")("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d"), UUID)
+        self.assertEqual(converter_for("Edm.Decimal")("1.10"), Decimal("1.10"))
+        self.assertEqual(converter_for("Edm.Int32")("42"), 42)
+
+    def test_a_python_type_is_the_same_answer_as_its_name(self):
+        from office365.runtime.converters.coercion import converter_for
+
+        self.assertEqual(converter_for(bool)("yes"), converter_for("Edm.Boolean")("yes"))
+        self.assertEqual(converter_for(datetime)("2026-01-06T09:00:00"), datetime(2026, 1, 6, 9))
+        self.assertEqual(converter_for(date)("2026-01-06"), date(2026, 1, 6))
+
+    def test_an_unlisted_type_is_its_own_constructor(self):
+        """The general arm: a class the registry does not know is called with the cell."""
+        from office365.runtime.converters.coercion import converter_for
+
+        class Cents(int):
+            pass
+
+        self.assertEqual(converter_for(Cents)("42"), 42)
+
+    def test_a_callable_passes_through_untouched(self):
+        from office365.runtime.converters.coercion import converter_for
+
+        def double(value):
+            return value * 2
+
+        self.assertIs(converter_for(double), double)
+
+    def test_an_unknown_name_raises_instead_of_doing_nothing(self):
+        """A typo must not silently mean "no coercion": the column would arrive untyped."""
+        from office365.runtime.converters.coercion import converter_for
+
+        with self.assertRaises(ValueError) as raised:
+            converter_for("datetim")
+        self.assertIn("datetime", str(raised.exception))  # the known names are listed
+
+    def test_a_known_type_without_a_converter_names_the_type(self):
+        from office365.runtime.converters.coercion import converter_for
+
+        with self.assertRaises(ValueError) as raised:
+            converter_for("Edm.TimeOfDay")
+        self.assertIn("time", str(raised.exception))
+
+    def test_a_non_spec_is_refused(self):
+        from office365.runtime.converters.coercion import converter_for
+
+        with self.assertRaises(TypeError):
+            converter_for(42)
 
 
 def _new_user(properties: dict) -> User:

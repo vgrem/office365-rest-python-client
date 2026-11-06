@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import re
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from enum import Enum
 from typing import Any, Optional, Union
+from uuid import UUID
 
 _TRUE_VALUES = {"true", "1", "yes", "y"}
 _FALSE_VALUES = {"false", "0", "no", "n"}
@@ -164,6 +166,32 @@ def try_float(value: Any) -> Any:
         return float(value)
     except (TypeError, ValueError):
         return value
+
+
+def parse_decimal(value: Any) -> Optional[Decimal]:
+    """Parse an exact decimal amount, or ``None`` when the value is not one.
+
+    ``Decimal`` is the right type for money and quantities: a float cannot hold
+    ``0.1`` exactly, so a currency column round-tripped through ``float`` drifts.
+    Thousands separators and currency symbols are *not* stripped -- that is a
+    locale decision, and the caller can pass its own parser via ``coerce``.
+    """
+    if value is None or isinstance(value, Decimal):
+        return value
+    try:
+        return Decimal(str(value).strip())
+    except (InvalidOperation, ValueError):
+        return None
+
+
+def parse_uuid(value: Any) -> Optional[UUID]:
+    """Parse a GUID into ``uuid.UUID``, or ``None`` when the value is not one."""
+    if value is None or isinstance(value, UUID):
+        return value
+    try:
+        return UUID(str(value).strip())
+    except ValueError:
+        return None
 
 
 def normalize_guid(value: Any) -> Optional[str]:
@@ -326,6 +354,23 @@ def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
                 except ValueError:
                     continue
     return None
+
+
+def parse_date(value: Any) -> Optional[date]:
+    """Parse a calendar date, dropping any time component, or ``None``.
+
+    ``Edm.Date`` (a birthday, a due date) names a day, not a moment: keeping the
+    ``datetime`` a parser would answer makes two equal dates compare unequal when
+    one carries a time and the other does not.
+    """
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    parsed = parse_datetime(value)
+    return parsed.date() if parsed is not None else None
 
 
 def wall_clock(value: Any) -> Optional[datetime]:

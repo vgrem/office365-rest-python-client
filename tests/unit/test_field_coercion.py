@@ -67,3 +67,16 @@ def test_listitem_persists_multi_user_and_lookup_ids():
     assert list(item.properties["MultiDeptId"]) == [2, 3]
     assert item.to_json()["MultiOwnerId"] == [12, 7]
     assert item.to_json()["MultiDeptId"] == [2, 3]
+
+
+def test_converter_for_resolves_a_field_type_through_the_shared_seam():
+    """``coerce={col: FieldType}`` and ``schema={col: FieldType}`` are one mechanism.
+
+    A list item's field types are known only at runtime, so ``FieldType`` is the
+    schema a caller has; it resolves to the payload coercion above, which means the
+    typed-columns path and the generic ``coerce`` path share one implementation.
+    """
+    from office365.runtime.converters.coercion import converter_for
+
+    assert converter_for(FieldType.Integer)("42") == 42  # noqa: PLR2004
+    assert list(converter_for(FieldType.MultiChoice)("a; b")) == ["a", "b"]

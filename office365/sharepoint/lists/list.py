@@ -91,6 +91,7 @@ from office365.sharepoint.views.view import View
 from office365.sharepoint.webhooks.subscription_collection import SubscriptionCollection
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.coercion import ConverterSpec
     from office365.runtime.converters.dataframe import DataFrameResult
     from office365.runtime.imports import (
         CheckpointStore,
@@ -977,6 +978,7 @@ class List(SecurableObject):
         on_schema_change: str = "evolve",
         dead_letter: "str | None" = None,
         mapping: "Dict[str, str] | None" = None,
+        coerce: "Dict[str, ConverterSpec] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this list's items, memory-bounded (streaming entry).
 
@@ -997,7 +999,14 @@ class List(SecurableObject):
             format: Source format (default ``"records"``).
             schema: Optional explicit ``{column: FieldType}``; inferred from dtypes.
                 A ``FieldType`` also drives typed value coercion (multi-choice,
-                lookup, user, URL, geolocation, ...).
+                lookup, user, URL, geolocation, ...). A list item's field types are
+                not declared on ``ListItem``, so this is the only place they can be
+                stated -- ``coerce`` is the same mechanism with the general arms.
+            coerce: Optional ``{column: converter}`` for a cell the field type does not
+                describe: a callable, a Python type, a type name or a ``FieldType``
+                (see :func:`~office365.runtime.converters.coercion.converter_for`).
+                Keys are column names as they appear in the source; an entry here wins
+                over the ``schema`` entry for the same column.
             chunksize: Rows per chunk for a DataFrame/CSV source.
             progress: Optional hook fired live (initial, per chunk, per batch).
             total: Total rows when known upfront (drives the progress percentage).
@@ -1015,21 +1024,21 @@ class List(SecurableObject):
         Returns:
             ImportResult: The deferred streaming import driver.
         """
-        from functools import partial
-
         from office365.runtime.converters.dataframe import records_from_dataframe
-        from office365.sharepoint.fields.coercion import coerce_field_value
         from office365.sharepoint.fields.name import internal_field_name
 
         if on_schema_change not in ("evolve", "fail"):
             raise ValueError(f"on_schema_change must be 'evolve' or 'fail', got {on_schema_change!r}")
         provisioned: set[str] = set()
-        coercions: "Dict[str, Any] | None" = None
-        if isinstance(schema, dict):
-            coercions = {
-                internal_field_name(str(column)): partial(coerce_field_value, field_type)
-                for column, field_type in schema.items()
-            }
+        coercions: "Dict[str, ConverterSpec]" = {}
+        if isinstance(schema, dict) or coerce:
+            # A DataFrame/CSV chunk is renamed to internal field names on the way in, so
+            # the coercion keys are too. A `records` batch arrives as the caller spelled
+            # it, so its keys are taken verbatim.
+            spelled = internal_field_name if format in ("dataframe", "csv") else str
+            coercions = {spelled(str(column)): field_type for column, field_type in (schema or {}).items()}
+            for column, spec in (coerce or {}).items():
+                coercions[spelled(str(column))] = spec
 
         def _mapped(chunk: Any) -> Any:
             if mapping and hasattr(chunk, "rename"):

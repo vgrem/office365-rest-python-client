@@ -393,8 +393,8 @@ class _ImportTarget:
 class _ImportCollection(RecordCollection):
     """Fake record collection driving the real ``RecordCollection.from_records``."""
 
-    def __init__(self, existing: dict | None = None) -> None:
-        super().__init__(cast(Any, _FakeContext()), ClientObject)
+    def __init__(self, existing: dict | None = None, item_type: type = ClientObject) -> None:
+        super().__init__(cast(Any, _FakeContext()), item_type)
         self.existing = dict(existing or {})
         self.created: list[dict] = []
         self.updated: list = []
@@ -456,18 +456,51 @@ def test_checkpoint_signature_mismatch_rescans_from_start():
 
 
 def test_from_records_applies_coerce_converters():
+    """A converter wins over the declared property type, and runs exactly once."""
+    from office365.directory.users.user import User
     from office365.runtime.record_collection import RecordCollection
 
-    collection = _ImportCollection()
+    collection = _ImportCollection(item_type=User)
     driver = RecordCollection.from_records(
         collection,
-        [[{"n": 2}]],
+        [[{"displayName": "ann"}]],
         format="records",
-        coerce={"n": lambda value: value * 2},
+        coerce={"displayName": lambda value: value.upper()},
     )
     driver.execute_query()
 
-    assert collection.created == [{"n": 4}]
+    assert collection.created == [{"displayName": "ANN"}]
+
+
+def test_a_converter_for_an_undeclared_column_raises():
+    """A misspelt destination key must not silently mean "the column was dropped"."""
+    from office365.runtime.record_collection import RecordCollection
+
+    collection = _ImportCollection()
+    with pytest.raises(ValueError, match="no column 'n'"):
+        RecordCollection.from_records(
+            collection,
+            [[{"n": "2"}]],
+            format="records",
+            coerce={"n": int},
+        )
+
+
+def test_a_target_that_accepts_unknown_columns_keeps_the_coercion():
+    """A list item forwards every key, so its columns are known only at runtime."""
+    from office365.runtime.record_collection import RecordCollection
+
+    collection = _ImportCollection()
+    collection._accepts_unknown_columns = True
+    driver = RecordCollection.from_records(
+        collection,
+        [[{"n": "30"}]],
+        format="records",
+        coerce={"n": "Edm.Int32"},
+    )
+    driver.execute_query()
+
+    assert collection.created == [{"n": 30}]
 
 
 # --------------------------------------------------------------------------
