@@ -154,3 +154,35 @@ class TestOnlineMeetingsCreateWithSettings(GraphDelegatedTestCase):
             meeting.delete_object().execute_query()
         except Exception:
             pass
+
+
+class TestOnlineMeetingImport(GraphDelegatedTestCase):
+    """Importing meetings from records, where ``externalId`` is the idempotency key."""
+
+    @requires_delegated(
+        "OnlineMeetings.ReadWrite",
+        bypass_roles=["Teams Administrator", "Global Administrator"],
+    )
+    def test_01_import_books_the_same_meeting_twice(self):
+        """A record imported twice books one meeting, so a replayed file changes nothing."""
+        start = datetime.now(pytz.utc) + timedelta(days=3)
+        record = {
+            "externalId": f"sdk-import-once-{int(time.time())}",
+            "subject": "SDK Test — Imported Twice",
+            "startDateTime": start.isoformat(),
+            "endDateTime": (start + timedelta(hours=1)).isoformat(),
+        }
+        booking = None
+        try:
+            booking = self.client.me.online_meetings.queue_records([record]).execute_query()[-1]
+            replay = self.client.me.online_meetings.queue_records([record]).execute_query()[-1]
+
+            self.assertIsNotNone(booking.get_property("joinWebUrl"))
+            self.assertEqual(booking.id, replay.id)
+            self.assertEqual(booking.get_property("joinWebUrl"), replay.get_property("joinWebUrl"))
+        finally:
+            if booking is not None:
+                try:
+                    booking.delete_object().execute_query()
+                except Exception:
+                    pass

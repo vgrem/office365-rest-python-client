@@ -124,3 +124,26 @@ class TestPresence(GraphDelegatedTestCase):
                 "UrgentInterruptionsOnly",
             }
             self.assertIn(activity, known_activities, f"Unexpected activity '{activity}'")
+
+    @requires_call(
+        CloudCommunications.get_presences_by_principal_name,
+        flow="delegated",
+        bypass_roles=["Global Administrator"],
+    )
+    def test_09_get_presences_by_principal_name(self):
+        """A principal name reaches the presence its object id would.
+
+        ``getPresencesByUserId`` handed a name answers ``PresenceUnknown`` rather
+        than raising, which reads as "they are offline". The method resolves the
+        names through the directory first, and one ``execute_query()`` runs the
+        read and the action behind it.
+        """
+        me = self.client.me.get().execute_query()
+        if not me.user_principal_name or not me.id:
+            self.skipTest("Cannot determine the signed-in user")
+
+        result = self.client.communications.get_presences_by_principal_name([me.user_principal_name]).execute_query()
+        if len(result) == 0:
+            self.skipTest("Presence is not available for the signed-in user")
+        self.assertEqual(result[0].id, me.id)
+        self.assertIsNotNone(result[0].get_property("availability"))

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING, List
+
+from typing_extensions import Self
 
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
 from office365.communications.onlinemeetings.participants import MeetingParticipants
@@ -9,6 +12,9 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_value import ClientValue
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+
+if TYPE_CHECKING:
+    from office365.runtime.operations import ProgressCallback
 
 
 class ChatInfo(ClientValue):
@@ -24,7 +30,13 @@ class ChatInfo(ClientValue):
 
 
 class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
-    """ """
+    """
+    A meeting's ``externalId`` is its idempotency key, so every import into this
+    collection books with ``createOrGet`` rather than a plain create: a replayed
+    file returns the meetings it already booked. A record must therefore carry
+    ``externalId`` (plus ``subject``/``startDateTime``/``endDateTime``); use
+    :meth:`create` for an ad-hoc meeting that has no key of yours.
+    """
 
     def __init__(self, context, resource_path=None):
         super().__init__(context, OnlineMeeting, resource_path)
@@ -54,6 +66,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         subject: str | None = None,
         participants: MeetingParticipants | None = None,
         chat_info: ChatInfo | None = None,
+        **kwargs,
     ) -> OnlineMeeting:
         """Create an onlineMeeting object with a custom specified external ID. If the external ID already exists,
         this API will return the onlineMeeting object with that external ID.
@@ -77,9 +90,26 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
             "chatInfo": chat_info,
             "participants": participants,
         }
+        payload.update({name: value for name, value in kwargs.items() if value is not None})
         qry = ServiceOperationQuery(self, "createOrGet", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    def _import_records(self, records: List[dict], progress: ProgressCallback | None = None) -> Self:
+        """Queue one ``createOrGet`` per record, so importing a file twice books nothing twice.
+
+        The record keys are the meeting's own — ``externalId``, ``subject``,
+        ``startDateTime``, ``endDateTime`` — which is what an import maps a file
+        header onto, so a CSV with those columns needs no per-row code.
+        """
+        from office365.runtime.operations import query_progress_hook
+
+        hook = query_progress_hook(len(records), progress) if callable(progress) else None
+        for record in records:
+            self.create_or_get(**record)
+            if hook is not None:
+                self.context.after_execute(hook)
+        return self
 
     @require_permission(delegated=["OnlineMeetingRecording.Read.All"], application=["OnlineMeetingRecording.Read.All"])
     def get_all_recordings(
