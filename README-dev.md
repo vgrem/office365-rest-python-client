@@ -47,10 +47,16 @@ That is the whole setup for most contributions. Continue only to run against a r
 A live suite that calls an operation is that operation's acceptance — `--offline` skips
 it, it does not stand in for it. So an offline test earns its place on what a tenant call
 cannot show: a parser, a path builder, a declaration table, a converter's edge case. It
-does not earn it by restating what the live run already asserts (`this upload session
-accepts a 10 MiB chunk`, `this page payload carries no empty object`): three such pins were
-deleted once the live suites that exercise the same code were found to assert the same
-thing. A test that duplicates a live assertion is maintenance, not coverage.
+does not earn it by restating what the live run already asserts — that an upload session
+accepts a 10 MiB chunk is the upload succeeding, and three such pins were deleted in one
+commit.
+
+The question is narrower than "is this code exercised live": does the live run tell the two
+behaviours apart? For a chunk it does, because the upload is refused otherwise. It does not
+for a header no tenant reads, and it does not for a payload a modern farm accepts either way
+— SharePoint 2019 refuses the empty object the serialiser used to send, and there is no 2019
+lab here. Both of those are pinned offline, and the docstring names the tenant that cannot
+show it.
 
 ## Lint, format and git hooks
 
