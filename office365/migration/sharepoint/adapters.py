@@ -51,6 +51,8 @@ from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.type import PrincipalType
 from office365.sharepoint.taxonomy.field import TaxonomyField
+from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValue
+from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
 
 if TYPE_CHECKING:
     from office365.migration.map import ContentTypeMap
@@ -1770,7 +1772,8 @@ class SharePointListTarget:
                     continue
                 if allow_many and note_name:
                     record.pop(internal_name, None)
-                    record[note_name] = ";#".join(f"-1;#|{guid}" for guid in guids)
+                    values = [TaxonomyFieldValue(TermGuid=g) for g in guids]
+                    record[note_name] = str(TaxonomyFieldValueCollection(values))
                 elif allow_many:
                     record.pop(internal_name, None)
                     unresolved.add(internal_name)
