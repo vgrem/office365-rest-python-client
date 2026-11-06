@@ -103,6 +103,21 @@ def _list_context(payloads):
     return lst, transport
 
 
+def test_to_csv_writes_an_already_loaded_collection(tmp_path):
+    """Export a resolved collection without a second ``execute_query()``.
+
+    ``col.execute_query(); col.to_csv(path)`` is the shape a chained read
+    (``after_execute``) leaves behind: nothing is pending, so a handler
+    registered through ``after_execute`` would never fire.
+    """
+    path = tmp_path / "loaded.csv"
+
+    _collection(RECORDS).to_csv(str(path))
+
+    records = registry.reader_for("csv")(str(path))
+    assert [r["userPrincipalName"] for r in records] == ["a@contoso.com", "b@contoso.com"]
+
+
 def test_export_to_streams_pages_sync(tmp_path):
     ctx = GraphClient()
     ctx.pending_request().beforeExecute.clear()

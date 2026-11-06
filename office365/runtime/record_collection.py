@@ -74,16 +74,24 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """Deferred export of the loaded items to ``target`` in ``format``.
 
         The writer is resolved from the format registry, so formats are pluggable.
+        A queued read is written when it resolves; an already-loaded collection
+        (nothing pending, e.g. one filled by an ``after_execute`` chain) is written
+        there and then, so no second ``execute_query()`` is needed.
         Pass ``page_size`` to **stream** an appendable format (CSV/TSV/NDJSON/JSON)
         page by page — bounded memory for large collections:
 
             >>> client.users.get_all().export_to(f, format="csv").execute_query()
+            >>> col.execute_query()
+            >>> col.to_csv(f)
             >>> lst.items.export_to("out.csv", page_size=2000).execute_query()
         """
         if page_size:
             return self._export_paged(target, format, page_size, opts)
         writer = registry.writer_for(format)
-        return self.after_execute(lambda _: writer(self, target, **opts))
+        if self.context.has_pending_request:
+            return self.after_execute(lambda _: writer(self, target, **opts))
+        writer(self, target, **opts)
+        return self
 
     def _export_paged(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
         """Page through the collection and append records (bounded memory)."""
@@ -200,13 +208,17 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
         return iter_records(self, raw=raw)
 
-    def to_csv(self, file: IO[str]) -> Self:
-        """Export loaded items to CSV (deferred)."""
-        return self.export_to(file, format="csv")
+    def to_csv(self, target: Union[str, PathLike, IO[str]]) -> Self:
+        """Export the items to CSV — a path or an already-open text stream.
 
-    def to_ndjson(self, file: IO[str]) -> Self:
-        """Export loaded items as NDJSON — one record per line (deferred)."""
-        return self.export_to(file, format="ndjson")
+        Written when a queued read resolves, or immediately when nothing is
+        pending (an already-loaded collection).
+        """
+        return self.export_to(target, format="csv")
+
+    def to_ndjson(self, target: Union[str, PathLike, IO[str]]) -> Self:
+        """Export the items as NDJSON — one record per line (path or open stream)."""
+        return self.export_to(target, format="ndjson")
 
     def to_excel(self, target: Union[str, PathLike]) -> Self:
         """Export loaded items to an Excel (.xlsx) worksheet (deferred).
