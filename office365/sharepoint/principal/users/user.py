@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class User(Principal):
     """Represents a user in Microsoft SharePoint Foundation. A user is a type of SP.Principal.
 
-    ``SP.User`` carries thirteen properties and two links, and that is all it carries: the profile
+    ``SP.User`` carries eleven properties and two links, and that is all it carries: the profile
     fields a *user profile* answers -- ``aboutMe``, ``skills``, ``hireDate`` -- are not among them,
     and the service drops such a name from ``$select`` silently, leaving an empty payload.  Read them
     from :class:`office365.sharepoint.directory.users.user.User` (``SP.Directory.User``) or through
