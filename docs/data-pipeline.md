@@ -132,6 +132,40 @@ lst.from_dataframe(
 )
 ```
 
+## Typing a cell
+
+A Graph entity declares its property types, so an import types its cells for free.
+Where nothing declares the type — a list item, an undocumented column, a spelling
+that differs — pass `coerce={column: converter}` to any `from_*`/`queue_records`.
+One converter is one callable, spelled four ways:
+
+```python
+lst.from_csv(
+    "stocks.csv",
+    coerce={
+        "Traded": "Edm.DateTimeOffset",  # a wire type name
+        "Price": Decimal,  # a Python type
+        "Notes": lambda cell: cell.strip() or None,  # a callable
+    },
+).execute_batch()
+
+lst.from_dataframe(df, schema={"Tags": FieldType.MultiChoice})  # FieldType is one too
+```
+
+Rules worth knowing:
+
+- **A `coerce` key is the destination key** — after `mapping` has renamed the
+  column. A key naming a column the type does not declare **raises**, so a typo
+  cannot silently mean "the column was dropped". Targets that accept arbitrary
+  columns (list items) are exempt.
+- **The converter wins over the declared type**, and runs once. It tolerates an
+  already-typed cell (`try_int(30) → 30`), so re-importing typed data is safe.
+- **Nothing is guessed.** A column with no `coerce` entry and no declared type is
+  left exactly as the reader produced it — `30` stays an `int`, `"abc"` stays a
+  `str`. `"18/2111"` is a room number, not a date.
+- **Per-cell vs per-row.** `coerce` types one cell; `to_records=` reshapes the whole
+  row (derived columns, defaults, validation).
+
 ## Files (document libraries)
 
 ```python
