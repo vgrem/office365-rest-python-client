@@ -41,10 +41,6 @@ def lookup(client: GraphClient, join_url: str | None, meeting_id: str | None):
         return []
 
 
-def describe(meeting) -> str:
-    return f"{meeting.subject or '(no subject)'} · {meeting.start_datetime} → {meeting.end_datetime} · {meeting.id}"
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Find and change one online meeting")
     name = parser.add_mutually_exclusive_group(required=True)
@@ -62,7 +58,8 @@ def main() -> None:
     if not meetings:
         raise SystemExit("No meeting matches — check the join URL.")
     for meeting in meetings:
-        print(f"found: {describe(meeting)}")
+        when = f"{meeting.start_datetime} → {meeting.end_datetime}"
+        print(f"found: {meeting.subject or '(no subject)'} · {when} · {meeting.id}")
 
     changes = {}
     if args.subject:
