@@ -182,7 +182,14 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: a rule -- ``DraftVersionVisibility`` is refused until content approval is on,
 #: ``EnableMinorVersions`` until versioning is, ``AutoAcceptRequestToJoinLeave`` until the
 #: group accepts requests, ``AlternateCssUrl`` until the stylesheet exists -- and the settings
-#: the migration layer carries are exactly that kind. ``User`` has had no probe because it
+#: the migration layer carries are exactly that kind. A later pass on the same scratch objects
+#: wrote each remaining column's own value back, then a changed one: a refusal and a value
+#: that comes back unchanged are two different answers, and only the second one says the
+#: service owns the column. ``ParentWebPath`` and ``DefaultViewPath`` were that, the permission
+#: bit field and the change token likewise, so they are declared; ``TemplateTypeId`` took what
+#: it was sent; and ``ValidationFormula``, ``DefaultDisplayFormUrl`` and ``ThemedCssFolderUrl``
+#: refuse a value that names nothing, which is a check on the value and not a direction.
+#: ``User`` has had no probe because it
 #: has no scratch instance: a wrong write lands on a real account, and restoring it needs a
 #: token the write may have broken. Its direction is read off what the service answers with
 #: instead. ``Id`` is the ``<Key>`` of ``SP.Principal``, ``PrincipalType`` is the discriminator
