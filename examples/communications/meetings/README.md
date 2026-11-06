@@ -14,6 +14,7 @@ throwaway meetings and delete them at the end, so they are safe to re-run.
 flowchart LR
     C["client.me.online_meetings"] --> N["create(subject, start, end)<br/>→ join_web_url"]
     C --> COG["create_or_get(external_id)<br/>idempotent"]
+    C --> I["from_csv(path)<br/>a createOrGet per row"]
     C --> F["filter(&quot;JoinWebUrl eq '…'&quot;)"]
     M["/me/onlineMeetings/{id}"] --> U["update() — chat, lobby, transcription"]
     M --> A["recordings · transcripts · attendance_reports"]
@@ -44,8 +45,8 @@ meeting = client.me.online_meetings.create_or_get(
 ).execute_query()
 ```
 
-→ [`book.py`](./book.py) — one meeting from flags, or a whole CSV of bookings, one
-`create_or_get` per row.
+→ [`book.py`](./book.py) — one meeting from flags, or a whole CSV of bookings through
+`from_csv`, which queues the same `createOrGet` per row.
 
 ## Find a meeting again
 

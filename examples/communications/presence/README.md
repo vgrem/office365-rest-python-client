@@ -7,7 +7,8 @@ bulk, override it for yourself, and poll it for changes — using throwaway stat
 that expires on its own.
 
 Permissions: `Presence.Read` (your own), `Presence.Read.All` (anyone),
-`Presence.ReadWrite` (change your own).
+`Presence.ReadWrite` (change your own). Reading many people by name also needs
+`User.Read.All` — the directory read behind each name.
 
 ## The model
 
@@ -17,7 +18,8 @@ flowchart LR
     M --> AC["activity<br/>InACall · InAMeeting · OutOfOffice · …"]
     M --> SM["status_message"]
     M --> WL["work_location"]
-    C["client.communications"] --> B["get_presences_by_user_id([…])"]
+    C["client.communications"] --> B["get_presences_by_user_id([ids])"]
+    C --> P["get_presences_by_principal_name([upns])"]
 ```
 
 `availability` is the coarse state; `activity` refines it. A status message and a
@@ -43,9 +45,22 @@ for presence in client.communications.get_presences_by_user_id(ids).execute_quer
     print(presence.id, presence.availability, presence.activity)
 ```
 
-The action takes user **object ids**, not UPNs, so the script resolves addresses first and
-then exports the board through the data pipeline (`export_to`, the same surface a
-SharePoint list uses).
+The action takes user **object ids**. Handed a principal name it answers
+`PresenceUnknown` rather than raising, which reads as "offline", so resolve the
+names first — `get_presences_by_principal_name` does it in one queued step and
+then calls the action with the ids:
+
+```python
+presences = client.communications.get_presences_by_principal_name(upns)
+presences.execute_query()  # the directory read and the action, one round
+```
+
+The directory read is one `$filter` over `userPrincipalName`, so it names at most
+15 people; beyond that, read the ids yourself and use the id-based call. Either
+way the rows come back keyed by object id, in no particular order — keep your
+input list beside the output when you need the addresses back. Then export the
+board through the data pipeline (`to_csv`, the same surface a SharePoint list
+uses).
 
 → [`team_status.py`](./team_status.py)
 
@@ -75,8 +90,10 @@ softphone — with `client.communications.presences[user_id].set_presence(sessio
 
 Presence has no change notifications: no webhooks, no delta. Monitoring means
 polling, and the pattern is bulk-read, remember the previous state, report only
-transitions. The same file shows the business rules — who is reachable, and how
-to drive an agent on/off duty.
+transitions. The agents are named by principal name, so a cycle is one presence
+request on top of the directory read — not one request per agent. The same file
+shows the business rules — who is reachable, and how to drive an agent on/off
+duty.
 
 → [`monitor.py`](./monitor.py)
 

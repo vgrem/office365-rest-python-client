@@ -61,14 +61,14 @@ or override your own status for a fixed window.
 presence = client.me.presence.get().execute_query()
 print(presence.availability, presence.activity)  # e.g. Busy / InACall
 
-# the bulk action takes user object ids, not addresses: one request, many users
-for presence in client.communications.get_presences_by_user_id(user_ids).execute_query():
+# the bulk action takes user object ids; the by-name call resolves them first
+for presence in client.communications.get_presences_by_principal_name(upns).execute_query():
     print(presence.id, presence.availability)
 ```
 
 → [`status.py`](./presence/status.py) reads, sets, annotates and clears your own;
-[`team_status.py`](./presence/team_status.py) resolves a list of UPNs and exports the whole
-board through the data pipeline, one request.
+[`team_status.py`](./presence/team_status.py) resolves the UPNs you list and exports the
+whole board as CSV, one presence request.
 
 ## Online meetings — join links without a calendar
 
