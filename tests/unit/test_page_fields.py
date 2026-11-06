@@ -7,7 +7,9 @@ from office365.runtime.schema import TypeSchema
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
 from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
+from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.fields import PAGE_FIELDS
+from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
 from office365.sharepoint.publishing.pages.page import SitePage
 
 #: A page content type derived from "Site Page" (the ID is hierarchical).
@@ -43,6 +45,28 @@ class TestPageFields(unittest.TestCase):
         # Why the projection reads the item column: the entity's own spelling is not it.
         self.assertEqual(TypeSchema.of(SitePage).name_of("file_name"), "FileName")
         self.assertNotEqual(TypeSchema.of(SitePage).name_of("file_name"), SPBuiltInFieldName.FileLeafRef)
+
+
+class TestPagePayload(unittest.TestCase):
+    """A body carries what the caller filled in, not what the type declares.
+
+    ``SitePageFieldsData`` holds four ``default_factory`` members, so serialising every
+    attribute sent ``"CoAuthState": {}`` -- an empty object where a SharePoint 2019 farm wants
+    an object it can read, and it answers ``property CoAuthState does not exist on type``. A
+    modern farm knows the property and accepts the empty object, which is why no run against
+    our tenant can show this: the defect and its fix look the same there. No 2019 lab is
+    available (doc 37 V7), so the payload itself is the evidence.
+    """
+
+    def test_only_what_the_caller_set_reaches_the_body(self):
+        self.assertEqual(SitePageFieldsData(Title="x").to_json(), {"Title": "x"})
+
+    def test_a_nested_value_the_caller_filled_in_is_still_sent(self):
+        # The rule drops what is empty, not what is nested: over-reaching here would break
+        # every collaborative edit, silently.
+        data = SitePageFieldsData(Title="x", CoAuthState=SitePageCoAuthState(IsNewSession=True))
+
+        self.assertEqual(data.to_json(), {"Title": "x", "CoAuthState": {"IsNewSession": True}})
 
 
 class TestIsModernPage(unittest.TestCase):
