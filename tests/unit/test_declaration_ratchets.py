@@ -181,18 +181,28 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: group. The columns that stayed undecided are the ones whose refusal was a precondition, not
 #: a rule -- ``DraftVersionVisibility`` is refused until content approval is on,
 #: ``EnableMinorVersions`` until versioning is, ``AutoAcceptRequestToJoinLeave`` until the
-#: group accepts requests, ``AlternateCssUrl`` until the stylesheet exists -- and the settings
-#: the migration layer carries are exactly that kind. A later pass on the same scratch objects
-#: wrote each remaining column's own value back, then a changed one: a refusal and a value
-#: that comes back unchanged are two different answers, and only the second one says the
-#: service owns the column. ``ParentWebPath`` and ``DefaultViewPath`` were that, the permission
-#: bit field and the change token likewise, so they are declared; ``TemplateTypeId`` took what
-#: it was sent; and ``ValidationFormula``, ``DefaultDisplayFormUrl`` and ``ThemedCssFolderUrl``
-#: refuse a value that names nothing, which is a check on the value and not a direction.
-#: ``User`` has had no probe because it
-#: has no scratch instance: a wrong write lands on a real account, and restoring it needs a
-#: token the write may have broken. Its direction is read off what the service answers with
-#: instead. ``Id`` is the ``<Key>`` of ``SP.Principal``, ``PrincipalType`` is the discriminator
+#: group accepts requests -- and the settings the migration layer carries are exactly that
+#: kind. A later pass on the same scratch objects wrote each remaining column's own value
+#: back, then a changed one: a refusal and a value that comes back unchanged are two
+#: different answers, and only the second one says the service owns the column.
+#: ``ParentWebPath`` and ``DefaultViewPath`` were that, the permission bit field and the
+#: change token likewise, so they are declared; ``TemplateTypeId`` took what it was sent; and
+#: ``ValidationFormula``, ``DefaultDisplayFormUrl`` and ``ThemedCssFolderUrl`` refuse a value
+#: that names nothing, which is a check on the value and not a direction.
+#: What is left is mostly a caller's to set. Of ``List``'s 52, 36 took the value they were
+#: sent and 11 refused it on account of what the column names (a form, a validation formula, a
+#: permission level, a sensitivity label, a versioning feature that is off), 3 hold a complex
+#: value the probe could not spell, and 2 discarded it -- ``DocumentTemplateUrl`` and
+#: ``DraftVersionVisibility``, the second only while content approval is off. ``Web``'s 50
+#: divide the same way: 33 taken, 9 refused because the name asks for something the site does
+#: not have or the caller may not change (a master page, a welcome page, a primary colour, a
+#: search box placeholder, crawl settings), 7 complex. So the pin is a floor, not a debt:
+#: falling further needs a tenant whose sites have those features on, and the columns that
+#: would fall are the ones a caller sets.
+#: ``User`` has had no probe because it has no scratch instance: a wrong write lands on a real
+#: account, and restoring it needs a token the write may have broken. Its direction is read off
+#: what the service answers with instead. ``Id`` is the ``<Key>`` of ``SP.Principal``,
+#: ``PrincipalType`` is the discriminator
 #: that decides what a row *is*, and the identity a row was shared in as -- ``AadObjectId``,
 #: ``UserId``, ``IsEmailAuthenticationGuestUser``, ``IsShareByEmailGuestUser``,
 #: ``EmailWithFallback``, ``UserPrincipalName`` -- is the service's answer, not the caller's
