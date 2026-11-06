@@ -263,6 +263,38 @@ catalog("outlook")  # ... and every Outlook throttling quota
 See [Service limits](limits.md) for the SharePoint catalog and the Graph
 throttling quota tables.
 
+### Capabilities
+
+Four facts about the same type are declared in four places — the shape on the model
+(`@odata`, `@facet`), the requirement beside the request it describes
+(`@require_permission`, and on the same declaration its licences), the ceilings
+(`@limit`) and the query rules (`@query_capabilities`). `capabilities_of` reads them
+together; it declares nothing and sends no request.
+
+```python
+from office365.capabilities import capabilities_of
+from office365.communications.callrecords.collection import CallRecordCollection
+from office365.outlook.mail.messages.message import Message
+
+caps = capabilities_of(CallRecordCollection)
+caps.schema.columns  # the shape (empty: a collection has no columns of its own)
+caps.declarations  # entry point -> PermissionRequirement
+caps.licenses  # every service plan those declarations name, once each
+caps.limits  # the ceilings, still as declarations, so `arg` survives
+caps.queries.supports("top")  # False — the callRecords feed rejects $top
+
+capabilities_of(Message.send).declarations["send"].delegated  # ('Mail.Send',)
+```
+
+- A **type** answers all four; a single **call** answers its requirement and its
+  limits, with no schema (a method has no columns) and no query rules (those belong to
+  the collection that issues the query).
+- `declarations` is what the type promises, inherited declarations included and a
+  subclass's own declaration replacing the one it overrides. An entry point that names
+  nothing is absent rather than empty.
+- It decides nothing. A missing declaration is reported, not repaired and not refused,
+  and the warn-or-raise policy belongs to the caller that knows whether it matters.
+
 ## Error handling
 
 Every failed request raises a `ClientRequestException`, dispatched to the most
