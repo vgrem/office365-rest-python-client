@@ -92,7 +92,7 @@ jobs:
       - name: Run offline tests
         run: uv run pytest -q          # offline by default; live suites need --live and a tenant
       - name: Report live-suite prerequisites
-        run: uv run python -m tests.preflight --report tests-report --json tests-report
+        run: uv run python -m tests.preflight
 
   docs:
     runs-on: ubuntu-latest
