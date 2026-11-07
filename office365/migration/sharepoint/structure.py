@@ -72,7 +72,7 @@ from office365.sharepoint.fields.field import (
     is_taxonomy_column,
     schema_property,
 )
-from office365.sharepoint.fields.schema import FieldSchema
+from office365.sharepoint.fields.schema import CONTAINER_ATTRIBUTES, SERVER_ASSIGNED_ATTRIBUTES, FieldSchema
 from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.permissions import SiteLevel, site_access
 
@@ -168,12 +168,15 @@ _SETTING_DEPENDS_ON = {
 #: ``=IF(Title="",TRUE,FALSE)``), so both sides are compared without decoration.
 _FORMULA_NOISE = re.compile(r"[\s\[\]]")
 
-#: ``SchemaXml`` attributes a faithful re-create legitimately changes: they name the
-#: *containing* site (the owning list, a lookup's target list, a taxonomy column's
-#: hidden note list and its web) or are assigned by the server (column id, storage
-#: column/ordinal). Everything else — type, required/indexed/unique flags, length,
-#: format, rich text, choice list, default, formula, validation — must reproduce.
-_SCHEMA_ATTRIBUTE_NOISE = frozenset({"SourceID", "List", "ListId", "WebId", "TextField", "ID", "ColName", "RowOrdinal"})
+#: ``SchemaXml`` attributes a faithful re-create legitimately changes: the ones that
+#: name a container (:data:`~office365.sharepoint.fields.schema.CONTAINER_ATTRIBUTES`)
+#: and the ones the service assigns when it stores a definition
+#: (:data:`~office365.sharepoint.fields.schema.SERVER_ASSIGNED_ATTRIBUTES`). Everything
+#: else — type, required/indexed/unique flags, length, format, rich text, choice list,
+#: default, formula, validation — must reproduce. Which attributes those two families
+#: hold is what SharePoint means, so the library names them; that a faithful copy may
+#: differ on them is this module's verdict, so the composition is here.
+_SCHEMA_ATTRIBUTE_NOISE = CONTAINER_ATTRIBUTES | SERVER_ASSIGNED_ATTRIBUTES
 
 
 def comparable_setting(name: str, value: Any) -> Any:

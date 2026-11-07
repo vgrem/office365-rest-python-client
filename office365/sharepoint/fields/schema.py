@@ -28,6 +28,15 @@ ORIGIN_ATTRIBUTES = ("SourceID", "Version")
 #: The attribute a lookup column uses to name the list it resolves against.
 LIST_ATTRIBUTE = "List"
 
+#: The attributes that name *where* a definition lives: the list it belongs to, the
+#: list it was copied from, and that list's web.
+CONTAINER_ATTRIBUTES = frozenset({LIST_ATTRIBUTE, "ListId", "WebId", "SourceID"})
+
+#: The attributes the service assigns when it stores a definition: its id, the storage
+#: column it maps to and that column's ordinal, and the hidden column a taxonomy column
+#: keeps its labels in.
+SERVER_ASSIGNED_ATTRIBUTES = frozenset({"ID", "ColName", "RowOrdinal", "TextField"})
+
 
 class FieldSchema:
     """One parsed ``SchemaXml``.
