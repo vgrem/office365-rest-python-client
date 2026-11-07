@@ -24,7 +24,7 @@ import argparse
 import sys
 
 from office365.migration.sharepoint import verify_list_structure
-from office365.migration.sharepoint.resolvers import is_migratable_list
+from office365.migration.sharepoint.resolvers import LIST_SCOPE_SELECT, is_migrated_as_items
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
@@ -47,7 +47,8 @@ def main():
     target_ctx = _connect(args.target_site)
 
     if args.all:
-        titles = [entry.title for entry in source_ctx.web.lists.get().execute_query() if is_migratable_list(entry)]
+        lists = source_ctx.web.lists.select(LIST_SCOPE_SELECT).get().execute_query()
+        titles = [entry.title for entry in lists if is_migrated_as_items(entry)]
     else:
         titles = [args.list_title]
 

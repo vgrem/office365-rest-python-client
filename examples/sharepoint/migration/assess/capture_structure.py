@@ -24,7 +24,7 @@ import os
 import tempfile
 
 from office365.migration.sharepoint import capture_list_structure
-from office365.migration.sharepoint.resolvers import is_migratable_list
+from office365.migration.sharepoint.resolvers import LIST_SCOPE_SELECT, is_migrated_as_items
 from office365.sharepoint.client_context import ClientContext
 from tests.settings import cert_path, cert_thumbprint, client_id, site_url, tenant
 
@@ -47,7 +47,8 @@ def main():
     )
 
     if args.all:
-        targets = [entry for entry in ctx.web.lists.get().execute_query() if is_migratable_list(entry)]
+        lists = ctx.web.lists.select(LIST_SCOPE_SELECT).get().execute_query()
+        targets = [entry for entry in lists if is_migrated_as_items(entry)]
     else:
         targets = [ctx.web.lists.get_by_title(args.list_title)]
 

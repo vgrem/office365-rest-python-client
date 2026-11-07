@@ -118,7 +118,7 @@ from office365.migration.sharepoint.pages import (
     capture_site_pages,
     is_page_library,
 )
-from office365.migration.sharepoint.resolvers import is_migratable_list
+from office365.migration.sharepoint.resolvers import LIST_SCOPE_SELECT, is_migrated_as_items
 from office365.migration.tasks import MigrationTask
 from office365.runtime.http.throttling import RateLimiter
 from office365.sharepoint.client_context import ClientContext
@@ -270,8 +270,8 @@ def main():
 
     # Plan: read the source site's lists directly (no target writes on a dry run).
     source_ctx = ctx.clone(args.source_site)
-    all_lists = source_ctx.web.lists.get().execute_query()
-    lists = [entry for entry in all_lists if is_migratable_list(entry)]
+    all_lists = source_ctx.web.lists.select(LIST_SCOPE_SELECT).get().execute_query()
+    lists = [entry for entry in all_lists if is_migrated_as_items(entry)]
     if include:
         lists = [entry for entry in lists if entry.title in include]
     if exclude:
