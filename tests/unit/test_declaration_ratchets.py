@@ -215,8 +215,7 @@ _UNDECLARED = {"List": 52, "Web": 50, "User": 7, "Group": 8}
 
 def _undeclared(model: type) -> int:
     """The columns of ``model`` that no declaration says the service owns."""
-    schema = TypeSchema.of(model)
-    return len(schema.columns) - len(schema.readonly)
+    return len(TypeSchema.of(model).content_columns)
 
 
 def test_a_created_type_says_which_columns_it_does_not_send() -> None:

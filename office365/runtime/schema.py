@@ -220,6 +220,24 @@ class TypeSchema:
         return frozenset(name for name, declared in self.properties.items() if declared.readonly)
 
     @cached_property
+    def content_columns(self) -> Tuple[str, ...]:
+        """The columns a request may send: the projection minus the names the service assigns.
+
+        A name stays here when nothing declares the service owns it, so the answer is the
+        model's own statement of direction rather than a guess from the name. A navigation
+        is already absent from :attr:`columns`, so a link the service also assigns
+        (``Event.attachments``) is left out once -- subtracting ``readonly`` from the
+        columns instead counts it as a column a request could send, which is what this
+        projection replaces.
+
+        A column the type does not declare is absent here and from :attr:`columns` alike,
+        so this answers "may I send this name?" for the model's vocabulary and not "is
+        this key content?" for a payload: a list's site columns exist on the wire and not
+        in the CSDL, and a caller filtering a record by this set would drop them.
+        """
+        return tuple(name for name in self.columns if name not in self.readonly)
+
+    @cached_property
     def persistable(self) -> frozenset[str]:
         """OData names a request always sends, even when nobody set them."""
         return frozenset(name for name, declared in self.properties.items() if declared.persist)
