@@ -329,6 +329,10 @@ git tag -a v3.3.0 -m "3.3.0"
 git push origin v3.3.0
 ```
 
+The next release is **3.4.0**: the Python floor raise under `[Unreleased]` in
+`CHANGELOG.md` is a breaking change, so no 3.3.x can carry it. Drop this line when
+3.4.0 ships.
+
 The GitHub release is then created by hand on the
 [Releases page](https://github.com/vgrem/office365-rest-python-client/releases/new):
 pick the `v3.3.0` tag, title it `v3.3.0`, and write the body from the matching
