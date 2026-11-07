@@ -84,6 +84,12 @@ getters read, so a projection cannot drift from the code that consumes it: a nam
 getter, and asking for an attribute that has no declaration raises `AttributeError`
 instead of guessing.
 
+A projection narrows what the object *knows*, not only what the service sends back: after
+`select(["Title"])` a web has no `Url` at all. `web.absolute_url` answers with whichever
+identity spelling the read asked for -- `Url` first, `ServerRelativeUrl` second, `None`
+when neither was read -- so code that needs the address does not re-derive which columns
+somebody else projected.
+
 ### Paging
 
 `get_all()` follows server-driven paging (`@odata.nextLink`) so you never write

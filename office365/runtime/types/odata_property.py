@@ -223,7 +223,7 @@ class odata(dict):
     same address whole and inside its site collection -- and a caller that has to
     identify a web it did not create has no other way to know the two spellings. Declared
     once, both are read back with ``TypeSchema.of(web).identities``, in the order a reader
-    should try them::
+    should try them -- which is what ``Web.absolute_url`` does::
 
         @odata(name="Url", identity=ABSOLUTE_URL)
         def url(self): ...
