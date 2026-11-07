@@ -52,6 +52,7 @@ from office365.sharepoint.sharing.object_sharing_information import (
     ObjectSharingInformation,
 )
 from office365.sharepoint.sharing.result import SharingResult
+from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
 from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.wopi_action import SPWOPIAction
@@ -1035,43 +1036,44 @@ class ListItem(SecurableObject):
     def _set_taxonomy_field_value(self, name: str, value: TaxonomyFieldValueCollection) -> None:
         """Sets a multi-value taxonomy column.
 
-        A taxonomy column keeps its value in a hidden note companion column, and
-        the collection must be written there as a ``WssId;#Label|TermGuid`` string.
-        The companion's *item* property is its ``EntityPropertyName`` (==
-        ``InternalName``) — not the field's ``StaticName``, which for a
-        library-created column is a random token (writing it fails with "The
-        property ... does not exist on type"). Because ``update()``/``create()``
-        snapshot the item properties when they are called, the companion name is
-        resolved synchronously here; a deferred lookup would set the property after
-        the payload was already built and silently drop the value.
+        A taxonomy column keeps its value in a hidden note companion column, and the
+        collection must be written there as a ``WssId;#Label|TermGuid`` string. Which
+        column that is is a fact about the column itself (it names its note by id), so the
+        column set is read once and each column answers its own companion. The companion's
+        *item* property is its ``InternalName``, not the field's ``StaticName``, which for a
+        column created through the API is a random token (writing it fails with "The
+        property ... does not exist on type").
+
+        Because ``update()``/``create()`` snapshot the item properties when they are called,
+        the companion is resolved synchronously; a deferred lookup would set the property
+        after the payload was already built and silently drop the value.
+
+        A column set that names no note, or a ``name`` that is not a Managed Metadata column
+        of this list, raises: the value has nowhere to go, and leaving the property unset
+        would report a write that never happened.
 
         Args:
             name (str): Taxonomy field name
             value (TaxonomyFieldValueCollection): Taxonomy field value
         """
-        if self.parent_list is None:
-            return
-        try:
-            tax_field = (
-                self.parent_list.fields.get_by_internal_name_or_title(name).select(["TextField"]).get().execute_query()
-            )
-            text_field_id = tax_field.properties.get("TextField")
-            if not text_field_id:
-                return
-            text_field = (
-                self.parent_list.fields.get_by_id(text_field_id)
-                .select(["EntityPropertyName", "InternalName", "StaticName"])
-                .get()
-                .execute_query()
-            )
-        except Exception:  # noqa: BLE001 — an unresolvable companion leaves the column unset
-            return
-        properties = text_field.properties
-        note_name = (
-            properties.get("EntityPropertyName") or properties.get("InternalName") or properties.get("StaticName")
+        # ``TypeAsString`` is what makes the collection answer a Managed Metadata column
+        # with :class:`TaxonomyField`; without it the columns read back as plain ``Field``
+        # and none of them names its note.
+        fields = (
+            self.parent_list.fields.select(["Id", "InternalName", "Title", "TypeAsString", "TextField"])
+            .get()
+            .execute_query()
         )
-        if note_name:
-            self.set_property(note_name, str(value))
+        note_name = None
+        for field in fields:
+            if isinstance(field, TaxonomyField) and name in (field.internal_name, field.title):
+                note_name = field.text_field_name
+                break
+        if not note_name:
+            raise ValueError(
+                f"{name!r} is not a Managed Metadata column of this list, or it names no note column to carry its value"
+            )
+        self.set_property(note_name, str(value))
 
     @site_access(SiteLevel.READ)
     def ensure_type_name(self, target_list) -> Self:

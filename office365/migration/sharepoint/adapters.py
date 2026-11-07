@@ -998,15 +998,16 @@ class SharePointListSource:
         """The hidden note companions of the source's taxonomy columns.
 
         The note column is what the target's write payload becomes for a multi-value
-        column, and its name is chosen by the service; the taxonomy column names it by
-        id, so it is resolved through the column set.
+        column, and its name is chosen by the service; each taxonomy column names its own
+        note, so it is answered from the column set (no request per value).
         """
-        fields = self._source_fields()
-        by_id = {normalize_guid(field.id): field.internal_name for field in fields}
-        # ``TextField`` is declared on ``TaxonomyField``; a read of the mixed collection
-        # answers the typed class, so the declaration is reachable by a cast.
-        notes = (normalize_guid(cast(TaxonomyField, field).text_field_id) for field in fields)
-        return {name for name in (by_id.get(note) for note in notes) if name}
+        notes: set[str] = set()
+        for field in self._source_fields():
+            if field.is_taxonomy:
+                note_name = cast(TaxonomyField, field).text_field_name
+                if note_name:
+                    notes.add(note_name)
+        return notes
 
     def _project_taxonomy_values(self, records: list[dict]) -> None:
         """Project taxonomy columns as bare ``[{"TermGuid": ...}]`` term lists.
@@ -1597,17 +1598,14 @@ class SharePointListTarget:
         except Exception as e:  # noqa: BLE001 — without columns we cannot remap; content still migrates
             self.warnings.append(f"could not read target columns for typed-value remapping: {e}")
             return lookups, users, multi_lookups, multi_users, taxonomy, multi_choices
-        by_id = {normalize_guid(field.id): field.internal_name for field in fields}
         for field in fields:
             internal_name = field.internal_name
             if not internal_name or internal_name in _PERSON_EXCLUDED:
                 continue
             if field.is_taxonomy:
-                # The companion note column that actually carries the write payload
-                # has an unpredictable name; resolve it through the column's
-                # ``TextField`` id.
-                note_name = by_id.get(normalize_guid(cast(TaxonomyField, field).text_field_id))
-                taxonomy[internal_name] = (field.is_multi_valued, note_name)
+                # The companion note column that carries the write payload has a name
+                # the service chooses; the column itself resolves it from ``TextField``.
+                taxonomy[internal_name] = (field.is_multi_valued, cast(TaxonomyField, field).text_field_name)
             elif field.is_person or field.is_lookup:
                 multiple = field.is_multi_valued
                 if field.is_person:

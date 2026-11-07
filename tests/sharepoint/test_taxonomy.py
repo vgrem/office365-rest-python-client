@@ -113,6 +113,15 @@ class TestSPTaxonomy(SPTestCase):
         if not (target_field and target_term and target_list):
             self.skipTest("No target field from previous test")
         note_name = target_field.text_field.get().execute_query().properties["EntityPropertyName"]
+
+        # The column answers its own note from the set it was read with, and agrees with
+        # the column the service names by id -- which is what ``set_property`` relies on
+        # below (it reads the set instead of asking twice per value).
+        fields = target_list.fields.select(["Id", "InternalName", "Title", "TypeAsString", "TextField"]).get()
+        fields.execute_query()
+        column = next(f for f in fields if f.internal_name == target_field.internal_name)
+        self.assertEqual(note_name, column.text_field_name)
+
         item = target_list.add_item({"Title": "taxonomy-value"}).execute_query()
 
         def stored_label():

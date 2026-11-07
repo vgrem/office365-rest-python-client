@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, Optional, cast
 
+from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.fields.lookup import FieldLookup
 from office365.sharepoint.fields.multi_line_text import FieldMultiLineText
@@ -194,6 +195,38 @@ class TaxonomyField(FieldLookup):
         text_field_id = self.text_field_id
         assert text_field_id is not None
         return cast(FieldMultiLineText, self.parent_collection.parent.fields.get_by_id(text_field_id))
+
+    @property
+    def text_field_name(self) -> Optional[str]:
+        """The column, and item property, that carries this column's labels.
+
+        A Managed Metadata column does not hold its own value: ``TextField`` names a hidden
+        note column by id, and ``-1;#Label|guid`` text is written there. That note column is
+        in the same column set, so its name is answered from the set this field was read
+        with -- no request. A field read on its own (a ``get_by_internal_name_or_title``
+        handle, or a set that did not project the note) answers ``None``, so read the set
+        first:
+
+            >>> fields = lst.fields.select(["Id", "InternalName", "TypeAsString", "TextField"]).get()
+            >>> [(f.internal_name, f.text_field_name) for f in fields.execute_query()]
+            [('Topics', 'Topics_0'), ...]
+
+        ``TypeAsString`` is part of that projection on purpose: a column set answers each
+        column with the class its ``TypeAsString`` names, so without it the columns come
+        back as plain ``Field`` and this member is not on them at all.
+
+        The name is also the item property the text is written to: a note column's
+        ``InternalName`` is its schema ``Name``, which is what the service exposes as
+        ``EntityPropertyName``, while the ``StaticName`` of a column created through the
+        API is a random token.
+        """
+        text_field_id = normalize_guid(self.text_field_id)
+        if not text_field_id or self._parent_collection is None:
+            return None
+        for field in self.parent_collection:
+            if normalize_guid(field.id) == text_field_id:
+                return field.internal_name
+        return None
 
     @odata(name="UserCreated")
     @property
