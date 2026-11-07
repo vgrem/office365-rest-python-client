@@ -13,7 +13,7 @@ class FieldScanner(BaseScanner):
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         for field in target.entity:
-            name = field.properties.get("InternalName", "")
+            name = field.internal_name or ""
             schema = field.properties.get("SchemaXml", "")
             loc = f"{target.location}/{name}"
 
@@ -32,7 +32,7 @@ class FieldScanner(BaseScanner):
             if name in self.options.system_field_names:
                 continue
 
-            if 'ReadOnly="TRUE"' in schema:
+            if field.read_only_field:
                 self.flag(
                     report,
                     "warning",

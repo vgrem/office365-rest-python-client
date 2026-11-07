@@ -11,8 +11,6 @@ from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners.base import BaseScanner, ScanTarget
 from office365.runtime.limits import hint
 
-_LOOKUP_TYPES = frozenset({"Lookup", "LookupMulti", "User", "UserMulti", "TaxonomyFieldType", "TaxonomyFieldTypeMulti"})
-
 
 class LookupColumnScanner(BaseScanner):
     """Flags lists whose lookup/people/managed-metadata columns exceed the lookup threshold."""
@@ -21,9 +19,9 @@ class LookupColumnScanner(BaseScanner):
 
     def run(self, target: ScanTarget, report: AssessmentReport) -> None:
         lookups = [
-            field.properties.get("InternalName", "")
+            field.internal_name or ""
             for field in target.entity
-            if field.properties.get("TypeAsString") in _LOOKUP_TYPES
+            if field.is_lookup or field.is_person or field.is_taxonomy
         ]
         limit = self.options.limit("lookup_joins")
         if len(lookups) > limit.value:
