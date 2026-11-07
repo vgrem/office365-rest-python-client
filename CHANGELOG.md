@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [3.3.1] - 2026-11-07
+
 Two changes shape this line. Model types now declare what they read: every getter names
 the OData member behind it, and a type's schema derives its projections from those
 declarations instead of a hand-kept list. The migration layer becomes a set of portable
@@ -307,6 +309,9 @@ and imported into another tenant.
 - A published row answers the type that spends it: `BaseItem` and `Permission` declare
   `FILES_QUOTAS`, so `limits_of(DriveItem)` no longer returns nothing while
   `office365/onedrive/quotas.py` publishes nine rows for it.
+- The lockfile and the dev tooling need Python 3.11, not 3.10: every patched release of
+  `filelock` and `tornado` declares `requires-python >=3.11`, so a 3.10 lock branch could
+  only keep a vulnerable pin. The package itself still installs on 3.8.
 
 ### Fixed
 
