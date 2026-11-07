@@ -30,7 +30,6 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Dict, List, Optional
 from urllib.parse import urlsplit
 
-from office365.runtime.schema import TypeSchema
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -70,16 +69,13 @@ _CLEARABLE = frozenset({_LOGO, _CSS})
 
 
 def _web_url(web: "Web") -> str:
-    """A web's absolute URL, falling back to the site URL of its context.
+    """A web's URL, falling back to the site URL of its context.
 
-    A projected read replaces the loaded properties with the ones it asked for, so
-    ``Url`` may be gone by the time a note needs it.
+    A projected read replaces the loaded properties with the ones it asked for, so the web
+    may no longer know its own URL by the time a note needs it -- the context still knows
+    which site it is bound to.
     """
-    for name in TypeSchema.of(web).identities:
-        value = web.get_property(name)
-        if value:
-            return str(value)
-    return str(getattr(getattr(web, "context", None), "base_url", "") or "")
+    return web.absolute_url or str(web.context.base_url or "")
 
 
 def _rebase(value: Optional[str], source_path: Optional[str], target_path: Optional[str]) -> Optional[str]:

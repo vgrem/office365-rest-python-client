@@ -54,12 +54,7 @@ SITE_SCOPE = "site scope"
 
 def _web_url(web: "Web") -> str:
     """The web's URL, falling back to the context's base URL (a projected read drops it)."""
-    for getter in ("url", "server_relative_url"):
-        value = getattr(web, getter, None)
-        if value:
-            return str(value)
-    context = getattr(web, "context", None)
-    return str(getattr(context, "base_url", "") or "")
+    return web.absolute_url or str(web.context.base_url or "")
 
 
 def _site_scope_findings(source_context: "ClientContext", target_context: "ClientContext") -> List[str]:

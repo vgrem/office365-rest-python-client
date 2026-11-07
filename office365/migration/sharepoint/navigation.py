@@ -37,11 +37,8 @@ def capture_navigation(web) -> Navigation:
 
 
 def _web_url(web) -> str:
-    """A web's absolute URL — its own ``Url`` when loaded, else the context base URL."""
-    value = getattr(web, "url", None)
-    if value:
-        return value
-    return getattr(getattr(web, "context", None), "base_url", "") or ""
+    """A web's URL, falling back to the context base URL when the read dropped it."""
+    return web.absolute_url or str(getattr(getattr(web, "context", None), "base_url", "") or "")
 
 
 def _prefixes(source_web, target_web) -> tuple[str, str]:

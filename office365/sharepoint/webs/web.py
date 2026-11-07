@@ -16,6 +16,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.schema import TypeSchema
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import ABSOLUTE_URL, SERVER_RELATIVE_URL, odata
 from office365.sharepoint.activities.entity import SPActivityEntity
@@ -3207,6 +3208,22 @@ class Web(SecurableObject):
     def server_relative_url(self) -> Optional[str]:
         """Gets the ServerRelativeUrl property"""
         return self.properties.get("ServerRelativeUrl", None)
+
+    @property
+    def absolute_url(self) -> Optional[str]:
+        """The web's own URL, in whichever spelling the read happened to ask for.
+
+        A projected read replaces the loaded properties with the ones it asked for, so
+        ``Url`` may be gone while ``ServerRelativeUrl`` is there -- both name the same
+        web, and :attr:`TypeSchema.identities` ranks them the way a reader wants them.
+        Answers ``None`` when neither was read: a web does not infer its location from
+        the context it was reached through, which may be bound to another site.
+        """
+        for name in TypeSchema.of(self).identities:
+            value = self.get_property(name)
+            if value:
+                return str(value)
+        return None
 
     @odata(name="ShouldExtendHeaderBgImageToNav", readonly=True, beta=True)
     @property

@@ -53,7 +53,6 @@ from office365.migration.sharepoint.structure import (
 from office365.migration.tasks import FILE_SHARE, SHAREPOINT, MigrationTask
 from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.operations import Progress
-from office365.runtime.schema import TypeSchema
 from office365.sharepoint.lists.base_type import BaseType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.webs.creation_information import WebCreationInformation
@@ -629,12 +628,8 @@ def _web_identity(web: Web) -> tuple[str, str, str]:
 
 
 def _web_url(web: Web) -> str:
-    """A web's absolute URL, or its server-relative URL when only that is loaded."""
-    for name in TypeSchema.of(web).identities:
-        value = web.get_property(name)
-        if value:
-            return str(value)
-    return web.server_relative_url or web.url or ""
+    """A web's URL, or empty when the read asked for neither spelling of it."""
+    return web.absolute_url or ""
 
 
 def _web_leaf(web: Web) -> str:
