@@ -13,6 +13,12 @@ profile card customization.
 | `ServiceHealth.Read.All` | Read service health and message center |
 | `SharePointTenantSettings.ReadWrite.All` | Read / update SharePoint tenant settings |
 | `PeopleSettings.Read.All` | Read profile card properties |
+| `Exchange.ManageAsAppV2` | Exchange admin calls (mailboxes, folder permissions) |
+| `AppRoleAssignment.ReadWrite.All` (delegated) | Grant the permission above, in `exchange_admin.py` |
+| `RoleManagement.ReadWrite.Directory` (delegated) | Assign the directory role that answers for Exchange |
+
+The last two rows exist so the Exchange example can grant its own prerequisites: it signs in as
+an administrator, checks both Exchange grants, and assigns whichever is missing.
 
 ---
 
@@ -37,6 +43,7 @@ graph TD
 | Message Center + Service Health report | [`service_health_report.py`](./service_health_report.py) | `ServiceHealth.Read.All` |
 | SharePoint / OneDrive tenant settings (+ opt-in updates) | [`sharepoint_settings.py`](./sharepoint_settings.py) | `SharePointTenantSettings.ReadWrite.All` |
 | Custom profile card properties | [`profile_card.py`](./profile_card.py) | `PeopleSettings.Read.All` |
+| Exchange organisation config + mailboxes (grants what is missing first) | [`exchange_admin.py`](./exchange_admin.py) | `Exchange.ManageAsAppV2`, `AppRoleAssignment.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` |
 
 ---
 
