@@ -116,9 +116,9 @@ docs = [
 # The package still declares `requires-python >=3.8` (see [project]) so this
 # does not change what consumers may install; it only keeps the universal
 # lockfile from retaining unpatched pins that can no longer be upgraded on
-# EOL interpreters (3.8/3.9). Remove this once requires-python is raised
-# (planned for 4.0).
-environments = [ "python_full_version >= '3.10'" ]
+# EOL interpreters (3.8/3.9, and 3.10 since 2026-10-31). Remove this once
+# requires-python is raised (planned for 4.0).
+environments = [ "python_full_version >= '3.11'" ]
 build-backend.module-name = "office365"
 build-backend.module-root = ""
 
