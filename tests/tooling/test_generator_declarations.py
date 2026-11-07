@@ -1,7 +1,10 @@
 """The generator's own declaration check: ``python -m generator verify``.
 
 The rules are internal to the generator, so this is the floor under them, not a spec:
-the model answers every rule, and a model that breaks them is reported.
+a model that breaks them is reported. The sweep *over this repo's model* is not
+repeated here -- ``python -m generator verify`` is that test, and CI runs it as its
+own job (``.github/workflows/ci.yml``); what is pinned here is that the check can
+actually fail.
 """
 
 from __future__ import annotations
@@ -10,7 +13,6 @@ import textwrap
 from pathlib import Path
 
 from generator.tools.declarations import (
-    declaration_report,
     navigation_disagreements,
     untyped_columns,
     witness_disagreements,
@@ -25,11 +27,6 @@ def _model(tmp_path: Path, source: str) -> Path:
     (package / "probe" / "__init__.py").write_text("", encoding="utf-8")
     (package / "probe" / "item.py").write_text(textwrap.dedent(source), encoding="utf-8")
     return package
-
-
-def test_the_model_answers_every_rule():
-    report = declaration_report()
-    assert report.ok, report.render()
 
 
 def test_a_model_that_breaks_the_rules_is_reported(tmp_path, monkeypatch):
