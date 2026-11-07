@@ -25,12 +25,17 @@ LIBRARY = index(office365)
 #: have left the map the same way - ``intune``, ``backuprestore``, ``reports``, ``todo``,
 #: ``planner``, ``booking``, ``security``, ``subscriptions`` and ``common`` name every
 #: operation they own, and ``sharepoint`` closed the map too: all 2,224 of its public
-#: request-issuing operations declare. Nothing is left to pay, and the map is empty.
+#: request-issuing operations declare. Then ``admin`` reopened it with a single entry: the
+#: Exchange admin client's ``invoke_all`` submits a request, and the names it would declare -
+#: ``Exchange.ManageAsAppV2`` / ``Exchange.ManageV2`` - have no committed snapshot, so a
+#: declaration there would be unchecked rather than verified. Pay it by generating the
+#: Exchange snapshot (``scripts/gen_permission_catalog.py`` has no Exchange source yet),
+#: declaring on the method, and deleting this entry.
 #:
 #: The detector counts a method that *submits* a query (``add_query``, ``execute_query``,
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
-PENDING: dict[str, int] = {}
+PENDING: dict[str, int] = {"admin": 1}
 
 
 class TestTheRatchet(TestCase):
