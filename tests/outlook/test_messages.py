@@ -2,7 +2,7 @@
 
 Tests cover:
   - Creating a draft message (and marking/updating/deleting it)
-  - Listing, searching, and delta-querying messages
+  - Listing, searching, sorting, and delta-querying messages
   - Sending a message
   - Creating a reply draft and forwarding a message (from a sent message)
   - Downloading the MIME representation of a sent message
@@ -228,3 +228,28 @@ class TestOutlookMessages(GraphDelegatedTestCase):
             self.client.me.mail_folders["Inbox"].messages.delta.change_type(ChangeType.created).get().execute_query()
         )
         self.assertIsNotNone(messages)
+
+    @requires_delegated(
+        "Mail.Read",
+        "Mail.ReadWrite",
+        bypass_roles=["Exchange Administrator", "Global Administrator"],
+    )
+    def test_14_order_by_reaches_the_service(self):
+        """An ascending read starts at the oldest message, so the ordering arrived.
+
+        Sorting is the one option whose spelling cannot be checked by comparing two
+        answers: a misspelled ``$order_by`` is answered ``200`` and ignored, and the
+        mailbox just comes back in its default (newest first) order.
+        """
+        result = (
+            self.client.me.messages.select(["receivedDateTime"])
+            .order_by("receivedDateTime asc")
+            .top(5)
+            .get()
+            .execute_query()
+        )
+        stamps = [m.received_date_time for m in result if m.received_date_time]
+        if len(stamps) < 2:  # noqa: PLR2004 - one message cannot show an order
+            self.skipTest("The mailbox holds fewer than two messages")
+        self.assertEqual(stamps, sorted(stamps), "the ascending order was ignored")
+        self.assertLess(stamps[0], stamps[-1])

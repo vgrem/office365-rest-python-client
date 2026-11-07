@@ -1071,6 +1071,12 @@ introduced.
 
 ### Fixed
 
+- **`order_by` never reached the service.** `QueryOptions` emitted its Python attribute names as query
+  keys, so a sorted read asked for `$order_by` — which Graph answers `200` to and *ignores*: no error,
+  no ordering, the default order coming back. Every standard option is now spelled as the
+  specification spells it (`order_by` → `$orderby`), and a `custom` key is still the caller's own.
+  Sorting was the only option whose spelling was wrong, and the only one whose mistake is invisible in
+  the answer — `$filter`, `$select`, `$expand`, `$top` and `$skip` were already right.
 - **A small file was never attached to a message that already exists.** `Message.upload_attachment`
   sends anything under 3 MB inline, and that path only registered a child on the message's
   `attachments` collection — a child that rides the *message create*. On a message that already

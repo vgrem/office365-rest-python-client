@@ -48,35 +48,49 @@ class QueryOptions:
         """Checks if any query options are set."""
         return not any(self.__dict__.values())
 
-    _ODATA_OPTIONS = ("select", "expand", "filter", "order_by", "top", "skip")
+    _OPTIONS = {
+        "select": "select",
+        "expand": "expand",
+        "filter": "filter",
+        "order_by": "orderby",
+        "top": "top",
+        "skip": "skip",
+    }
+    _WIRE_NAMES = frozenset(_OPTIONS.values())
 
     def to_url(self) -> str:
         """Generates URL query string from current options.
 
-        Standard OData system query options are prefixed with ``$``; custom
-        query parameters are emitted verbatim (the caller controls the key,
-        e.g. ``token`` for OneDrive/SharePoint delta queries).
+        In a request every option is spelled the way the specification spells it:
+        ``order_by`` is sent as ``$orderby``, because sending the Python name is
+        not refused — the service answers ``200`` and ignores the option, so the
+        caller silently loses the ordering.
+
+        The six names above are always ``$``-prefixed, so a caller who spells one
+        of them as a custom key still gets the URL the service expects. Any other
+        custom key is emitted verbatim: it is the caller's vocabulary, not ours
+        (``token`` is the OneDrive/SharePoint delta cursor).
 
         Returns:
             URL-encoded query string (without leading ?)
         """
         parts = []
         for key, value in self:
-            prefix = "$" if key in self._ODATA_OPTIONS else ""
+            prefix = "$" if key in self._WIRE_NAMES else ""
             parts.append(f"{prefix}{key}={value}")
         return "&".join(parts)
 
     def __iter__(self) -> Iterator[Tuple[str, str]]:
-        """Yields non-empty query options as key-value pairs."""
+        """Yields non-empty query options as key-value pairs, under their wire names."""
         for k, v in self.__dict__.items():
             if not v:
                 continue
             if k in ("select", "expand"):
-                yield k, ",".join(v)
+                yield self._OPTIONS[k], ",".join(v)
             elif k == "custom":
                 yield from self.custom.items()
             else:
-                yield k, str(v)
+                yield self._OPTIONS[k], str(v)
 
     def apply_to(self, target) -> None:
         """Forward ``$select`` / ``$expand`` onto a collection-like target about to load.
