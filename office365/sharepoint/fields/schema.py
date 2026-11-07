@@ -2,19 +2,22 @@
 
 ``SchemaXml`` is the ``FieldDefinition`` element of ``[MS-WSSFO2] 2.2.8.3.3.1``: 142
 attributes, 13 child elements, ``xs:anyAttribute``, and a ``Customization`` element
-declared ``processContents="skip"``. The parts a caller edits are two root attributes
-(the ``List`` a lookup resolves against, and the ``SourceID``/``Version`` pair that
-names where the definition came from); everything else has to survive untouched,
-which is why this edits a parsed tree instead of running a regular expression over
-the string. On a tenant with 7,751 field schemas, all of them parse, and 28 distinct
-attributes appear that the published schema does not declare -- so the tree is
-carried as found rather than validated against the spec.
+declared ``processContents="skip"``. Two kinds of caller read it: one edits two root
+attributes (the ``List`` a lookup resolves against, and the ``SourceID``/``Version``
+pair that names where the definition came from), the other compares a definition with
+what came back (attributes, choice options, the columns a composite one is built
+from). Everything else has to survive untouched, which is why this edits and reads a
+parsed tree instead of running a regular expression over the string. On a tenant with
+7,751 field schemas, all of them parse, and 28 distinct attributes appear that the
+published schema does not declare -- so the tree is carried as found rather than
+validated against the spec.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Optional
+from types import MappingProxyType
+from typing import Mapping, Optional, Tuple
 from xml.etree import ElementTree
 
 #: The attributes that name a definition's *origin*: the web/list it was copied from
@@ -68,6 +71,42 @@ class FieldSchema:
         or content-type membership, not the list the column resolves against.
         """
         return self._root.get(LIST_ATTRIBUTE)
+
+    @property
+    def attributes(self) -> Mapping[str, str]:
+        """The root element's attributes, as the service spells them.
+
+        A read-only view: an edit answers a new schema rather than changing this one.
+        """
+        return MappingProxyType(self._root.attrib)
+
+    @property
+    def child_names(self) -> Tuple[str, ...]:
+        """The root's child element names, in the order the document lists them."""
+        return tuple(child.tag for child in self._root)
+
+    def child_text(self, name: str) -> Optional[str]:
+        """The text of the first child element with this name, or ``None``."""
+        for child in self._root:
+            if child.tag == name:
+                return child.text or ""
+        return None
+
+    @property
+    def choices(self) -> Tuple[str, ...]:
+        """A choice column's options, in the order its ``CHOICES`` element lists them."""
+        for child in self._root:
+            if child.tag.upper() == "CHOICES":
+                return tuple(choice.text or "" for choice in child)
+        return ()
+
+    @property
+    def field_reference_names(self) -> Tuple[str, ...]:
+        """The columns a ``FieldRefs`` element builds this one from, in order."""
+        for child in self._root:
+            if child.tag.upper() == "FIELDREFS":
+                return tuple(ref.attrib.get("Name") or "" for ref in child)
+        return ()
 
     def without_origin_attributes(self) -> "FieldSchema":
         """A copy that names no origin, portable to another site."""

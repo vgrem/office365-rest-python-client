@@ -58,7 +58,6 @@ from dataclasses import asdict, dataclass
 from dataclasses import field as dc_field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Tuple
-from xml.etree import ElementTree
 
 from office365.migration.map import ContentTypeMap
 from office365.runtime.client_request_exception import ClientRequestException
@@ -202,27 +201,27 @@ def comparable_schema(schema_xml: Optional[str]) -> Dict[str, Any]:
     a tuple of its options. Unparsable schema yields an empty mapping, so an
     unreadable column is never reported as a difference.
     """
-    if not schema_xml:
-        return {}
     try:
-        root = ElementTree.fromstring(schema_xml)
-    except ElementTree.ParseError:
+        schema = FieldSchema.parse(schema_xml)
+    except ValueError:
+        return {}
+    if schema is None:
         return {}
     comparable: Dict[str, Any] = {
         f"attribute {name}": _comparable_attribute(name, value)
-        for name, value in sorted(root.attrib.items())
+        for name, value in sorted(schema.attributes.items())
         if name not in _SCHEMA_ATTRIBUTE_NOISE
     }
-    for child in root:
-        tag = child.tag.upper()
+    for name in schema.child_names:
+        tag = name.upper()
         if tag == "CHOICES":
-            comparable["choices"] = tuple(choice.text or "" for choice in child)
+            comparable["choices"] = schema.choices
         elif tag == "FIELDREFS":
-            comparable["field references"] = tuple(ref.attrib.get("Name") or "" for ref in child)
+            comparable["field references"] = schema.field_reference_names
         elif tag in {"FORMULA", "VALIDATIONFORMULA"}:
-            comparable[tag.lower()] = _FORMULA_NOISE.sub("", child.text or "")
+            comparable[tag.lower()] = _FORMULA_NOISE.sub("", schema.child_text(name) or "")
         else:
-            comparable[tag.lower()] = (child.text or "").strip()
+            comparable[tag.lower()] = (schema.child_text(name) or "").strip()
     return comparable
 
 
