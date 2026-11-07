@@ -67,11 +67,13 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.field import (
+    LOOKUP_FIELD_TYPES,
     is_external_data_column,
     is_multi_valued_column,
     is_taxonomy_column,
     schema_property,
 )
+from office365.sharepoint.fields.schema import FieldSchema
 from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.permissions import SiteLevel, site_access
 
@@ -505,11 +507,6 @@ def _is_capturable_content_type(content_type: ContentType) -> bool:
 #: ``0x0101``, ...); custom content types append a 32-hex-digit GUID.
 _MIN_CUSTOM_CONTENT_TYPE_ID_LENGTH = 20
 
-#: ``Type="Lookup"`` / ``Type="LookupMulti"`` — the columns that name their list.
-_LOOKUP_TYPE_RE = re.compile(r'\bType="Lookup(?:Multi)?"')
-#: The ``List="..."`` attribute a lookup column carries in its ``SchemaXml``.
-_LIST_ATTR_RE = re.compile(r'\sList="([^"]*)"')
-
 
 def rewrite_lookup_schema(
     schema_xml: Optional[str], list_id_map: Dict[str, str] | None
@@ -527,12 +524,12 @@ def rewrite_lookup_schema(
     field must be skipped), and the unresolved source list id when the referenced
     list is not part of the migration (so the caller can warn).
     """
-    if not schema_xml or not _LOOKUP_TYPE_RE.search(schema_xml):
+    schema = FieldSchema.parse(schema_xml)
+    if schema is None or schema.type_name not in LOOKUP_FIELD_TYPES:
         return schema_xml, None
-    match = _LIST_ATTR_RE.search(schema_xml)
-    if match is None:
+    if schema.list_id is None:
         return schema_xml, None
-    referenced = normalize_guid(match.group(1))
+    referenced = normalize_guid(schema.list_id)
     if referenced is None:
         # ``List="UserInfo"`` (the User column's user-information list) is a
         # keyword, portable as-is.
@@ -540,8 +537,7 @@ def rewrite_lookup_schema(
     target = (list_id_map or {}).get(referenced)
     if target is None:
         return None, referenced
-    rewritten = f'{schema_xml[: match.start()]} List="{{{target}}}"{schema_xml[match.end() :]}'
-    return rewritten, None
+    return schema.with_list(target).to_xml(), None
 
 
 #: A column bound to an external (BCS) content type. ``FieldType`` carries no member for

@@ -12,6 +12,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.fields.schema import FieldSchema
 from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import Limits, limit
@@ -340,10 +341,10 @@ class Field(Entity):
         lets the copy complete cleanly. Returns ``None`` when the schema is
         not loaded.
         """
-        xml = self.schema_xml
-        if xml is None:
+        schema = FieldSchema.parse(self.schema_xml)
+        if schema is None:
             return None
-        return re.sub(r'\s*(?:SourceID|Version)="[^"]*"', "", xml)
+        return schema.without_origin_attributes().to_xml()
 
     @odata(name="TypeAsString")
     @property
