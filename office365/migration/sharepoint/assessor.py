@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 
 #: The projection every list-items scan reads: the row's identity, the ``File`` part,
 #: and the row's kind. A column a scan reads through the model must be selected here —
-#: ``tests/unit/test_migration_assessment.py`` walks the scanners' source and says so.
+#: ``tests/unit/test_migration_scans.py`` walks the scanners' source and says so.
 _ITEM_SCAN_SELECT = [
     "FileRef",
     "FileLeafRef",
