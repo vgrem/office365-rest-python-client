@@ -1,8 +1,8 @@
 # Microsoft 365 Admin
 
-Examples for common Microsoft 365 admin-center tasks via Graph —
-service health / message center, SharePoint tenant settings, and
-profile card customization.
+Examples for common admin-center tasks — service health and message center,
+SharePoint tenant settings, profile card customization, and the Exchange
+admin API.
 
 ---
 
@@ -14,11 +14,12 @@ profile card customization.
 | `SharePointTenantSettings.ReadWrite.All` | Read / update SharePoint tenant settings |
 | `PeopleSettings.Read.All` | Read profile card properties |
 | `Exchange.ManageAsAppV2` | Exchange admin calls (mailboxes, folder permissions) |
-| `AppRoleAssignment.ReadWrite.All` (delegated) | Grant the permission above, in `exchange_admin.py` |
+| `AppRoleAssignment.ReadWrite.All` (delegated) | Grant the permission above, in `exchange_permissions.py` |
 | `RoleManagement.ReadWrite.Directory` (delegated) | Assign the directory role that answers for Exchange |
 
-The last two rows exist so the Exchange example can grant its own prerequisites: it signs in as
-an administrator, checks both Exchange grants, and assigns whichever is missing.
+The two Exchange grants are made once per tenant by [`exchange_permissions.py`](./exchange_permissions.py):
+it signs in as an administrator, checks both, assigns whichever is missing, then calls the API to
+prove they work. After that, [`exchange_admin.py`](./exchange_admin.py) is a plain read.
 
 ---
 
@@ -26,12 +27,14 @@ an administrator, checks both Exchange grants, and assigns whichever is missing.
 
 ```mermaid
 graph TD
-    A[M365 Admin via Graph] --> B[Service health / message center]
+    A[M365 Admin] --> B[Service health / message center]
     A --> C[SharePoint tenant settings]
     A --> D[Profile card]
+    A --> E[Exchange admin API]
     B --> B1[health overviews / issues / messages]
     C --> C1[sharing, idle timeout, domains, legacy auth]
     D --> D1[custom profile card properties]
+    E --> E1[organisation config / mailboxes / folder permissions]
 ```
 
 ---
@@ -43,7 +46,8 @@ graph TD
 | Message Center + Service Health report | [`service_health_report.py`](./service_health_report.py) | `ServiceHealth.Read.All` |
 | SharePoint / OneDrive tenant settings (+ opt-in updates) | [`sharepoint_settings.py`](./sharepoint_settings.py) | `SharePointTenantSettings.ReadWrite.All` |
 | Custom profile card properties | [`profile_card.py`](./profile_card.py) | `PeopleSettings.Read.All` |
-| Exchange organisation config + mailboxes (grants what is missing first) | [`exchange_admin.py`](./exchange_admin.py) | `Exchange.ManageAsAppV2`, `AppRoleAssignment.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` |
+| **Grant** the Exchange permissions, then check them | [`exchange_permissions.py`](./exchange_permissions.py) | `Exchange.ManageAsAppV2`, `AppRoleAssignment.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` |
+| Exchange organisation config + mailboxes | [`exchange_admin.py`](./exchange_admin.py) | `Exchange.ManageAsAppV2` |
 
 ---
 
