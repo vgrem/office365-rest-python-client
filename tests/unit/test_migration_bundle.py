@@ -1,14 +1,13 @@
 """The bundle format: what a portable export is, and what re-reading it gives back.
 
 A bundle is not a copy of a tree with a sidecar beside it — it is content-addressed
-payloads plus one ledger. These tests pin the four properties that make it worth
-having: identical content costs one blob, a destination's digest is the one the
-source reported, a re-run changes nothing, and folders survive as ledger rows even
-though they have no payload of their own.
+payloads plus one ledger, and it has to answer for itself: which destinations it
+holds, which bytes each one is, and whether it is the whole export. These tests pin
+that on both sides of the pair, an export and an import, without a tenant.
 
-Deliberately not covered here: reading a bundle into a target (that adapter lands
-with its own ``MigrationJob`` round trip), version blobs, permissions and the
-structure sidecar — none of them are in the format yet.
+Deliberately not covered here: versions, permissions, authorship and the list
+structure sidecar — none of them are in the format yet, and a job asked to preserve
+one refuses at ``plan()`` rather than importing nothing quietly.
 """
 
 from __future__ import annotations
@@ -17,8 +16,8 @@ import json
 
 import pytest
 from office365.migration import ConflictResolution, MigrationJob, MigrationOptions
-from office365.migration.adapters.bundle import CONTENT_DIR, INDEX_NAME, LEDGER_NAME, BundleTarget
-from office365.migration.adapters.filesystem import FileSystemSource
+from office365.migration.adapters.bundle import CONTENT_DIR, INDEX_NAME, LEDGER_NAME, BundleSource, BundleTarget
+from office365.migration.adapters.filesystem import FileSystemSource, FileSystemTarget
 from office365.migration.base import MigrationItem
 from office365.runtime.converters.json_file import record_to_json
 
@@ -73,6 +72,30 @@ def test_export_stores_identical_content_once_and_names_every_destination(tmp_pa
     assert report.ok and report.complete, report.summary()
 
 
+def test_a_bundle_reads_back_into_another_target(tmp_path, source):
+    bundle = tmp_path / "bundle"
+    export = MigrationJob(FileSystemSource(source), BundleTarget(bundle))
+    export.plan()
+    export.run()
+
+    imported = MigrationJob(BundleSource(bundle), FileSystemTarget(tmp_path / "dst"))
+    imported.plan()
+    imported.run()
+
+    assert imported.stats.errors == 0
+    assert (tmp_path / "dst" / "a.txt").read_bytes() == b"same"
+    assert (tmp_path / "dst" / "c.txt").read_bytes() == b"other"
+    # The import's manifest remembers what each copy is a copy *of*.
+    assert {item.source_path for item in imported.manifest.items} == {
+        str(source / "a.txt"),
+        str(source / "b.txt"),
+        str(source / "c.txt"),
+    }
+
+    report = imported.verify()
+    assert report.ok and report.complete, report.summary()
+
+
 def test_a_folder_is_a_ledger_row_with_no_payload(tmp_path):
     bundle = tmp_path / "bundle"
     target = BundleTarget(bundle)
@@ -84,7 +107,7 @@ def test_a_folder_is_a_ledger_row_with_no_payload(tmp_path):
     assert target.exists(folder)
     assert target.checksum(folder) == ""
     with pytest.raises(IsADirectoryError):
-        target.read("Empty/")
+        target.payload("Empty/")
     assert _index(bundle)["by_type"] == {"folder": 1}
 
 
@@ -96,7 +119,7 @@ def test_a_record_is_stored_in_its_json_form_and_reports_no_comparable_digest(tm
     target.write(item, payload)
     target.commit()
 
-    assert target.read("1") == payload
+    assert target.payload("1") == payload
     blob = (bundle / CONTENT_DIR).rglob("*")
     texts = [p.read_text(encoding="utf-8") for p in blob if p.is_file()]
     assert texts == [record_to_json(payload)]
@@ -149,6 +172,21 @@ def test_a_rerun_over_the_same_bundle_changes_nothing(tmp_path, source):
     assert _index(bundle)["blobs"] == first_index["blobs"]
     # The bundle keeps the moment it was started, not the moment it was re-sealed.
     assert _index(bundle)["created_at"] == first_index["created_at"]
+
+
+def test_a_bundle_refuses_fidelity_it_does_not_carry(tmp_path, source):
+    bundle = tmp_path / "bundle"
+    export = MigrationJob(FileSystemSource(source), BundleTarget(bundle))
+    export.plan()
+    export.run()
+
+    job = MigrationJob(
+        BundleSource(bundle),
+        BundleTarget(tmp_path / "copy"),
+        options=MigrationOptions(preserve_permissions=True),
+    )
+    with pytest.raises(NotImplementedError):
+        job.plan()
 
 
 def test_the_index_is_derived_from_the_ledger(tmp_path, source):
