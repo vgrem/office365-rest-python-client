@@ -48,6 +48,7 @@ graph TD
 | Custom profile card properties | [`profile_card.py`](./profile_card.py) | `PeopleSettings.Read.All` |
 | **Grant** the Exchange permissions, then check them | [`exchange_permissions.py`](./exchange_permissions.py) | `Exchange.ManageAsAppV2`, `AppRoleAssignment.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` |
 | Exchange organisation config + mailboxes | [`exchange_admin.py`](./exchange_admin.py) | `Exchange.ManageAsAppV2` |
+| The same read, signed in with a certificate instead of a secret | [`exchange_certificate.py`](./exchange_certificate.py) | `Exchange.ManageAsAppV2` |
 
 ---
 
