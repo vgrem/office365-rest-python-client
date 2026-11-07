@@ -273,6 +273,7 @@ class TypeBuilder(ast.NodeTransformer):
                     method_schema,
                     resolver=self._resolver,
                     client_value_types=self._context.client_value_types,
+                    named_parameters=self._context.context_type.startswith("Graph"),
                 )
             )
             seen_methods.add(method_key)

@@ -61,6 +61,12 @@ _V4_CSDL = """<?xml version="1.0" encoding="utf-8"?>
         <Parameter Name="bindingParameter" Type="microsoft.graph.Widget" />
         <Parameter Name="reason" Type="Edm.String" />
       </Action>
+      <Function Name="findWidgets" IsBound="true" IsComposable="true">
+        <Parameter Name="bindingParameter" Type="microsoft.graph.Widget" />
+        <Parameter Name="startDateTime" Type="Edm.String" />
+        <Parameter Name="returnType" Type="Edm.String" />
+        <ReturnType Type="Collection(microsoft.graph.Widget)" />
+      </Function>
     </Schema>
   </edmx:DataServices>
 </edmx:Edmx>
@@ -159,6 +165,12 @@ def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     assert 'def entity_type_name(self) -> str:\n        return "microsoft.graph.Widget"' in entity
     assert "_odata_type_name" not in entity
     assert "def reset" in entity  # bound Action -> generated method
+    # Graph matches a function's parameters by name; an unnamed list reads as a
+    # navigation property to the service.
+    assert '{"startDateTime": start_date_time, "returnType": return_type},' in entity
+    # A parameter called returnType must not take the returned object's place.
+    assert "return_type_ = EntityCollection(self.context, Widget)" in entity
+    assert "return return_type_" in entity
     # A navigation property is declared as such: $expand reaches it, $select cannot.
     assert '@odata(name="widgets", navigation=True)' in entity
     assert '@odata(name="id")' in entity

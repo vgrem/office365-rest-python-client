@@ -111,7 +111,9 @@ class ReturnType:
         if self.kind is TypeKind.PRIMITIVE_COLLECTION:
             return f"ClientResult({context}, {self._collection_default(name)})"
         if self.kind is TypeKind.CLIENT_VALUE_COLLECTION:
-            return f"ClientResult({context}, ClientValueCollection[{item_name(name)}]())"
+            # The item type is what makes the collection typed; ``ClientValueCollection[X]()``
+            # is a generic alias whose call passes no item type at all.
+            return f"ClientResult({context}, ClientValueCollection({item_name(name)}))"
         return f"EntityCollection({context}, {item_name(name)})"
 
     def _classify(self) -> TypeKind:
