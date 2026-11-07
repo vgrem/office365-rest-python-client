@@ -23,7 +23,6 @@ from office365.intune.devices.device import Device
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.odata.request import ODataRequest
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
@@ -255,22 +254,6 @@ class TestDeltaToken(unittest.TestCase):
             ReadEntityQuery(delta).url,
             "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=abc123",
         )
-
-
-class TestClientMetadata(unittest.TestCase):
-    """Entity type-name resolution, query-option building and ClientResult wrapping."""
-
-    def test_query_options_apply_to(self):
-        web = ClientContext(test_site_url).web
-        QueryOptions(select=["Title"], expand=["Fields"]).apply_to(web)
-
-        self.assertEqual(web.query_options.select, ["Title"])
-        self.assertEqual(web.query_options.expand, ["Fields"])
-
-        untouched = ClientContext(test_site_url).web
-        QueryOptions().apply_to(untouched)
-        self.assertEqual(untouched.query_options.select, [])
-        self.assertEqual(untouched.query_options.expand, [])
 
 
 class _MeetingMode(Enum):

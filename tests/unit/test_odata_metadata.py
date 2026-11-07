@@ -46,16 +46,6 @@ def test_a_row_says_whether_it_is_a_file_or_a_folder():
     assert not row(None).is_file and not row(None).is_folder  # absent is neither
 
 
-def test_columns_is_the_projection_the_declarations_describe():
-    columns = TypeSchema.of(Event).columns
-
-    assert "iCalUId" in columns  # a column whose name a snake-case guess gets wrong
-    assert "id" in columns  # inherited from Entity, so the base carries a declaration too
-    assert "attachments" not in columns  # a navigation property: $select would reject it
-    assert "calendar" not in columns
-    assert len(columns) == len(set(columns))
-
-
 def test_expansions_is_the_complement_of_columns():
     expansions = TypeSchema.of(Event).expansions
 

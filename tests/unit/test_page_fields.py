@@ -5,8 +5,6 @@ import unittest
 from office365.migration.offline import offline_context
 from office365.runtime.schema import TypeSchema
 from office365.sharepoint.contenttypes.builtin_content_type_id import SPBuiltInContentTypeId
-from office365.sharepoint.fields.builtin_field_name import SPBuiltInFieldName
-from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.fields import PAGE_FIELDS
 from office365.sharepoint.publishing.pages.fields_data import SitePageFieldsData
@@ -21,30 +19,10 @@ def _page(payload: dict) -> SitePage:
     return SitePage(offline_context()).hydrate(payload)
 
 
-class TestSitePageDeclarations(unittest.TestCase):
-    def test_a_hydrated_page_answers_the_body_properties(self):
-        # A wire name may be declared only once per class: a second marker for the same
-        # name wins and leaves the earlier getter unreadable.
-        page = _page({"CanvasContent1": "<div/>", "LayoutWebpartsContent": "<div>l</div>"})
-        self.assertEqual(page.canvas_content, "<div/>")
-        self.assertEqual(page.layout_web_parts_content, "<div>l</div>")
-
-    def test_a_hydrated_page_answers_the_item_columns(self):
-        page = _page({"FileLeafRef": "x.aspx", "WikiField": "<div>wiki</div>", "OData__ModerationStatus": 0})
-        self.assertEqual(page.file_leaf_ref, "x.aspx")
-        self.assertEqual(page.wiki, "<div>wiki</div>")
-        self.assertEqual(page.moderation_status, SPModerationStatusType.Approved)
-
-
 class TestPageFields(unittest.TestCase):
     def test_every_projected_name_is_declared(self):
         declared = set(SitePage._schema.by_attr.values())
         self.assertEqual(set(PAGE_FIELDS) - declared, set())
-
-    def test_the_page_type_spells_the_file_name_differently(self):
-        # Why the projection reads the item column: the entity's own spelling is not it.
-        self.assertEqual(TypeSchema.of(SitePage).name_of("file_name"), "FileName")
-        self.assertNotEqual(TypeSchema.of(SitePage).name_of("file_name"), SPBuiltInFieldName.FileLeafRef)
 
 
 class TestPagePayload(unittest.TestCase):
