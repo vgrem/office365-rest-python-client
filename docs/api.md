@@ -76,8 +76,9 @@ events = client.me.calendar.events.select(TypeSchema.of(Event).columns).get_all(
 
 `TypeSchema.of(Event)` answers those questions for a type: `.columns` is every column
 `$select` accepts, `.expansions` the navigation properties it does not — `attachments`,
-`instances`, `singleValueExtendedProperties` — and `.name_of("ical_uid")` the wire name
-one attribute is declared under. All three are derived from the same declarations the
+`instances`, `singleValueExtendedProperties` — `.readonly` the columns the service assigns
+(so `.content_columns` is what a request may send), and `.name_of("ical_uid")` the wire name
+one attribute is declared under. All four are derived from the same declarations the
 getters read, so a projection cannot drift from the code that consumes it: a name like
 `iCalUId` (which no snake-case rule derives from `ical_uid`) is written once, on the
 getter, and asking for an attribute that has no declaration raises `AttributeError`

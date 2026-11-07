@@ -10,6 +10,7 @@ created::
     Event._schema.columns  # the columns $select accepts
     Event._schema.navigations  # what $expand can reach
     Event._schema.readonly  # what a request may not send
+    Event._schema.content_columns  # what a request may send
     Event._schema.by_attr  # python attribute -> OData name
     Event._schema.declared_limits()  # the @limit declarations of the type and its members
 

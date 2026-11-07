@@ -144,6 +144,10 @@ def _scalar_mapping(value: Any) -> dict | None:
 #: Record columns a faithful copy does not compare: what ``ListItem`` declares
 #: server-assigned or reachable by ``$expand``. What remains is the item's *content*,
 #: which a faithful copy preserves.
+#:
+#: A deny-list, not ``ListItem._schema.content_columns``: a record carries the site columns
+#: the tenant defines, which the CSDL does not declare, and a set built from declared names
+#: would drop exactly the columns a faithful copy exists to carry.
 _CONTENT_EXCLUDED = frozenset(ListItem._schema.readonly) | frozenset(ListItem._schema.navigations)
 
 
