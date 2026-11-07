@@ -1119,6 +1119,20 @@ back as `=IF(Title="",FALSE,TRUE)`), so `verify_list_structure` compares it with
 whitespace and brackets stripped and reports any other difference as a
 `settings_mismatch`.
 
+All twelve names are declared on `List` by the model — `TypeSchema.of(List)` answers
+each of them, and none is read-only — so the vocabulary is the library's. The three
+verdicts *about* that vocabulary stay in this package, because each has exactly one
+reader and a keyword nobody else reads is a promise nothing keeps:
+
+| Fact | Reads it today | What would promote it into the library |
+|---|---|---|
+| Minor versions, their limit and required check-out exist only on a document library | `_LIBRARY_SETTING_NAMES` | a call that writes versioning itself, e.g. `ensure_list(versioning=...)` — it would need the same split, beside `is_document_library` |
+| A limit is only expressible while its flavour is on (`MajorVersionLimit` → `EnableVersioning`, `MajorWithMinorVersionsLimit` → `EnableMinorVersions`) | `_SETTING_DEPENDS_ON` | an `@odata(depends_on=...)` keyword, once a second reader exists — a preflight that reports a list's policy is the likely one |
+| A validation formula is rewritten on write | `comparable_setting` | a `@odata(compare=...)` for the member, which would apply the rule to every reader of the formula |
+
+Noting them here is what keeps the move a decision rather than a rediscovery: the
+trigger is a second reader, and until one exists the seam is this module.
+
 ### Site settings
 
 Replaying a list's structure reproduces its columns, content types, views and
