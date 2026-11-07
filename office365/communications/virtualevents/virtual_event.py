@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.communications.quotas import VIRTUAL_EVENT_QUOTAS
 from office365.communications.virtualevents.communications_identity_set import CommunicationsIdentitySet
 from office365.communications.virtualevents.external_information import VirtualEventExternalInformation
@@ -16,6 +18,7 @@ from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -110,3 +113,28 @@ class VirtualEvent(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.VirtualEvent"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def publish(self) -> Self:
+        """publish operation."""
+        qry = ServiceOperationQuery(self, "publish", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_external_event_information(self, external_event_id: str) -> Self:
+        """setExternalEventInformation operation.
+
+        Args:
+            external_event_id (str):
+                externalEventId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "setExternalEventInformation", None, {"externalEventId": external_event_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self

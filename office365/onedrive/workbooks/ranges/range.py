@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.onedrive.workbooks.ranges.format import WorkbookRangeFormat
@@ -12,6 +14,9 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onedrive.workbooks.ranges.range import WorkbookRange
 
 
 class WorkbookRange(Entity):
@@ -234,3 +239,211 @@ class WorkbookRange(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRange"
+
+    def delete(self, shift: str) -> Self:
+        """delete operation.
+
+        Args:
+            shift (str):
+                shift parameter
+        """
+        qry = ServiceOperationQuery(self, "delete", None, {"shift": shift}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def merge(self, across: bool) -> Self:
+        """merge operation.
+
+        Args:
+            across (bool):
+                across parameter
+        """
+        qry = ServiceOperationQuery(self, "merge", None, {"across": across}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def unmerge(self) -> Self:
+        """unmerge operation."""
+        qry = ServiceOperationQuery(self, "unmerge", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def bounding_rect(self, another_range: str) -> WorkbookRange:
+        """boundingRect operation.
+
+        Args:
+            another_range (str):
+                anotherRange parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "boundingRect", {"anotherRange": another_range}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def column(self, column: int) -> WorkbookRange:
+        """column operation.
+
+        Args:
+            column (int):
+                column parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "column", {"column": column}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def columns_after(self, count: int) -> WorkbookRange:
+        """columnsAfter operation.
+
+        Args:
+            count (int):
+                count parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "columnsAfter", {"count": count}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def columns_before(self, count: int) -> WorkbookRange:
+        """columnsBefore operation.
+
+        Args:
+            count (int):
+                count parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "columnsBefore", {"count": count}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def entire_column(self) -> WorkbookRange:
+        """entireColumn operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "entireColumn", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def entire_row(self) -> WorkbookRange:
+        """entireRow operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "entireRow", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def intersection(self, another_range: str) -> WorkbookRange:
+        """intersection operation.
+
+        Args:
+            another_range (str):
+                anotherRange parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "intersection", {"anotherRange": another_range}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def last_cell(self) -> WorkbookRange:
+        """lastCell operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "lastCell", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def last_column(self) -> WorkbookRange:
+        """lastColumn operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "lastColumn", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def offset_range(self, row_offset: int, column_offset: int) -> WorkbookRange:
+        """offsetRange operation.
+
+        Args:
+            row_offset (int):
+                rowOffset parameter
+            column_offset (int):
+                columnOffset parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "offsetRange", {"rowOffset": row_offset, "columnOffset": column_offset}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def resized_range(self, delta_rows: int, delta_columns: int) -> WorkbookRange:
+        """resizedRange operation.
+
+        Args:
+            delta_rows (int):
+                deltaRows parameter
+            delta_columns (int):
+                deltaColumns parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "resizedRange", {"deltaRows": delta_rows, "deltaColumns": delta_columns}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def row(self, row: int) -> WorkbookRange:
+        """row operation.
+
+        Args:
+            row (int):
+                row parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "row", {"row": row}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def rows_above(self, count: int) -> WorkbookRange:
+        """rowsAbove operation.
+
+        Args:
+            count (int):
+                count parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "rowsAbove", {"count": count}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def rows_below(self, count: int) -> WorkbookRange:
+        """rowsBelow operation.
+
+        Args:
+            count (int):
+                count parameter
+        """
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "rowsBelow", {"count": count}, return_type)
+        self.context.add_query(qry)
+        return return_type

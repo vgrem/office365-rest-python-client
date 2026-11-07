@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.rolemanagement.unifiedrole.permission import (
     UnifiedRolePermission,
@@ -9,8 +9,12 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.rolemanagement.unifiedrole.definition import UnifiedRoleDefinition
 
 
 class UnifiedRoleDefinition(Entity):
@@ -91,3 +95,12 @@ class UnifiedRoleDefinition(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleDefinition"
+
+    def restore(self) -> UnifiedRoleDefinition:
+        """restore operation."""
+        from office365.directory.rolemanagement.unifiedrole.definition import UnifiedRoleDefinition
+
+        return_type = UnifiedRoleDefinition(self.context)
+        qry = ServiceOperationQuery(self, "restore", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

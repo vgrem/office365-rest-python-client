@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.identitygovernance.privilegedaccess.group_eligibility_schedule import (
     PrivilegedAccessGroupEligibilitySchedule,
@@ -10,7 +12,15 @@ from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.onedrive.termstore.groups.group import Group
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.identitygovernance.privilegedaccess.group_assignment_schedule_request import (
+        PrivilegedAccessGroupAssignmentScheduleRequest,
+    )
+    from office365.directory.request_schedule import RequestSchedule
+    from office365.security.evaluation_outcome import EvaluationOutcome
 
 
 class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
@@ -73,3 +83,45 @@ class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroupAssignmentScheduleRequest"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_request(
+        self, evaluation_id: str, evaluation_outcome: EvaluationOutcome, schedule_info: RequestSchedule, reason: str
+    ) -> PrivilegedAccessGroupAssignmentScheduleRequest:
+        """updateRequest operation.
+
+        Args:
+            evaluation_id (str):
+                evaluationId parameter
+            evaluation_outcome (EvaluationOutcome):
+                evaluationOutcome parameter
+            schedule_info (RequestSchedule):
+                scheduleInfo parameter
+            reason (str):
+                reason parameter
+        """
+        from office365.directory.identitygovernance.privilegedaccess.group_assignment_schedule_request import (
+            PrivilegedAccessGroupAssignmentScheduleRequest,
+        )
+
+        return_type = PrivilegedAccessGroupAssignmentScheduleRequest(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "updateRequest",
+            None,
+            {
+                "evaluationId": evaluation_id,
+                "evaluationOutcome": evaluation_outcome,
+                "scheduleInfo": schedule_info,
+                "reason": reason,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

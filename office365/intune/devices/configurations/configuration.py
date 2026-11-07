@@ -5,7 +5,11 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -151,3 +155,33 @@ class DeviceConfiguration(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceConfiguration"
+
+    def assign(
+        self, assignments: ClientValueCollection[DeviceConfigurationAssignment]
+    ) -> EntityCollection[DeviceConfigurationAssignment]:
+        """assign operation.
+
+        Args:
+            assignments (ClientValueCollection[DeviceConfigurationAssignment]):
+                assignments parameter
+        """
+        from office365.intune.devices.configuration_assignment import DeviceConfigurationAssignment
+
+        return_type = EntityCollection(self.context, DeviceConfigurationAssignment)
+        qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_oma_setting_plain_text_value(self, secret_reference_value_id: str) -> ClientResult[str]:
+        """getOmaSettingPlainTextValue operation.
+
+        Args:
+            secret_reference_value_id (str):
+                secretReferenceValueId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(
+            self, "getOmaSettingPlainTextValue", {"secretReferenceValueId": secret_reference_value_id}, return_type
+        )
+        self.context.add_query(qry)
+        return return_type

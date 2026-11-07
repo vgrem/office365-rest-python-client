@@ -3,16 +3,21 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.users.identity import UserIdentity
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.job_configuration import PrintJobConfiguration
 from office365.intune.print.job_status import PrintJobStatus
+from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.document import PrintDocument
+    from office365.intune.print.job import PrintJob
     from office365.intune.print.task import PrintTask
 
 
@@ -95,3 +100,52 @@ class PrintJob(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrintJob"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def start(self) -> ClientResult[PrintJobStatus]:
+        """start operation."""
+        from office365.intune.print.job_status import PrintJobStatus
+
+        return_type = ClientResult(self.context, PrintJobStatus())
+        qry = ServiceOperationQuery(self, "start", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def abort(self, reason: str) -> Self:
+        """abort operation.
+
+        Args:
+            reason (str):
+                reason parameter
+        """
+        qry = ServiceOperationQuery(self, "abort", None, {"reason": reason}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def redirect(self, destination_printer_id: str, configuration: PrintJobConfiguration) -> PrintJob:
+        """redirect operation.
+
+        Args:
+            destination_printer_id (str):
+                destinationPrinterId parameter
+            configuration (PrintJobConfiguration):
+                configuration parameter
+        """
+        from office365.intune.print.job import PrintJob
+
+        return_type = PrintJob(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "redirect",
+            None,
+            {"destinationPrinterId": destination_printer_id, "configuration": configuration},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

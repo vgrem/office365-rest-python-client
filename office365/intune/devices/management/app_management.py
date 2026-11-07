@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.app.registration import (
@@ -17,6 +19,7 @@ from office365.intune.devices.management.mobileapps.relationship import (
 from office365.intune.devices.management.vpptokens.vpp_token import VppToken
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -279,3 +282,9 @@ class DeviceAppManagement(Entity):
                 ResourcePath("windowsInformationProtectionPolicies", self.resource_path),
             ),
         )
+
+    def sync_microsoft_store_for_business_apps(self) -> Self:
+        """syncMicrosoftStoreForBusinessApps operation."""
+        qry = ServiceOperationQuery(self, "syncMicrosoftStoreForBusinessApps", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

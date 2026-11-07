@@ -61,3 +61,15 @@ class WorkbookTableSort(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookTableSort"
+
+    def clear(self) -> Self:
+        """clear operation."""
+        qry = ServiceOperationQuery(self, "clear", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reapply(self) -> Self:
+        """reapply operation."""
+        qry = ServiceOperationQuery(self, "reapply", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

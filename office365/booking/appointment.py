@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.booking.customers.informationbase import BookingCustomerInformationBase
 from office365.booking.pricetype import BookingPriceType
 from office365.booking.reminder import BookingReminder
@@ -10,6 +12,7 @@ from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.location import Location
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.duration import timedelta
 from office365.runtime.types.odata_property import odata
@@ -219,3 +222,14 @@ class BookingAppointment(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingAppointment"
+
+    def cancel(self, cancellation_message: str) -> Self:
+        """cancel operation.
+
+        Args:
+            cancellation_message (str):
+                cancellationMessage parameter
+        """
+        qry = ServiceOperationQuery(self, "cancel", None, {"cancellationMessage": cancellation_message}, None, None)
+        self.context.add_query(qry)
+        return self

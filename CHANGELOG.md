@@ -15,6 +15,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   stopped importing altogether in 3.3.1 (`functools.cache`). An older interpreter now
   gets a resolver error instead of a traceback.
 
+### Added
+
+- **A Graph type carries the operations its CSDL declares.** Generation of operations was
+  off for Graph, so `assign()`, `retire()`, `get_oma_setting_plain_text_value()` and the
+  workbook functions existed only where someone had written them by hand. 157 types gain
+  740 methods — 638 actions and 102 functions — returning declared types rather than raw
+  payloads. What the tenant grants them is a permission question, not a model one: the
+  methods name no permission yet, and the ratchet records that count.
+
 ## [3.3.1] - 2026-11-07
 
 Two changes shape this line. Model types now declare what they read: every getter names

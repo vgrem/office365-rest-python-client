@@ -1,11 +1,18 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.security.account import Account
+
+if TYPE_CHECKING:
+    from office365.security.action import Action
+    from office365.security.identity_provider import IdentityProvider
+    from office365.security.invoke_action_result import InvokeActionResult
 
 
 class IdentityAccounts(Entity):
@@ -48,3 +55,30 @@ class IdentityAccounts(Entity):
     def accounts(self) -> ClientValueCollection[Account]:
         """Gets the accounts property"""
         return self.properties.get("accounts", ClientValueCollection[Account](Account))
+
+    def invoke_action(
+        self, account_id: str, action: Action, identity_provider: IdentityProvider
+    ) -> ClientResult[InvokeActionResult]:
+        """invokeAction operation.
+
+        Args:
+            account_id (str):
+                accountId parameter
+            action (Action):
+                action parameter
+            identity_provider (IdentityProvider):
+                identityProvider parameter
+        """
+        from office365.security.invoke_action_result import InvokeActionResult
+
+        return_type = ClientResult(self.context, InvokeActionResult())
+        qry = ServiceOperationQuery(
+            self,
+            "invokeAction",
+            None,
+            {"accountId": account_id, "action": action, "identityProvider": identity_provider},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

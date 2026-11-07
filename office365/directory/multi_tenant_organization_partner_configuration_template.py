@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from office365.directory.applications.templateapplicationlevel import TemplateApplicationLevel
 from office365.directory.policies.crosstenant.b2_b_setting import CrossTenantAccessPolicyB2BSetting
 from office365.directory.policies.crosstenant.inbound_trust import CrossTenantAccessPolicyInboundTrust
 from office365.directory.policies.inbound_outbound_policy_configuration import InboundOutboundPolicyConfiguration
 from office365.entity import Entity
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -54,3 +57,9 @@ class MultiTenantOrganizationPartnerConfigurationTemplate(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.MultiTenantOrganizationPartnerConfigurationTemplate"
+
+    def reset_to_default_settings(self) -> Self:
+        """resetToDefaultSettings operation."""
+        qry = ServiceOperationQuery(self, "resetToDefaultSettings", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

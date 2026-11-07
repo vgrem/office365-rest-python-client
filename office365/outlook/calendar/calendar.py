@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.communications.onlinemeetings.provider_type import OnlineMeetingProviderType
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
@@ -258,3 +260,9 @@ class Calendar(Entity):
     def is_shared(self) -> Optional[bool]:
         """Gets the isShared property"""
         return self.properties.get("isShared", None)
+
+    def permanent_delete(self) -> Self:
+        """permanentDelete operation."""
+        qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

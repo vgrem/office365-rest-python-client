@@ -3,9 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -81,3 +84,33 @@ class EdiscoveryCustodian(Entity):
             "userSources",
             EntityCollection[UserSource](self.context, UserSource, ResourcePath("userSources", self.resource_path)),
         )
+
+    def activate(self) -> Self:
+        """activate operation."""
+        qry = ServiceOperationQuery(self, "activate", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def apply_hold(self) -> Self:
+        """applyHold operation."""
+        qry = ServiceOperationQuery(self, "applyHold", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def release(self) -> Self:
+        """release operation."""
+        qry = ServiceOperationQuery(self, "release", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def remove_hold(self) -> Self:
+        """removeHold operation."""
+        qry = ServiceOperationQuery(self, "removeHold", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_index(self) -> Self:
+        """updateIndex operation."""
+        qry = ServiceOperationQuery(self, "updateIndex", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

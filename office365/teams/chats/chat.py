@@ -3,13 +3,17 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from typing_extensions import Self
+
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.chats.messages.collection import ChatMessageCollection
@@ -23,8 +27,13 @@ from office365.teams.tabs.tab import TeamsTab
 from office365.teams.teamwork.online_meeting_info import TeamworkOnlineMeetingInfo
 
 if TYPE_CHECKING:
+    from office365.outlook.mail.item_body import ItemBody
+    from office365.runtime.types.key_value_pair import KeyValuePair
     from office365.teams.chats.pinned_chat_message_info import PinnedChatMessageInfo
     from office365.teams.chats.targeted_chat_message import TargetedChatMessage
+    from office365.teams.teamwork.activity_topic import TeamworkActivityTopic
+    from office365.teams.teamwork.notification_recipient import TeamworkNotificationRecipient
+    from office365.teams.teamwork.user_identity import TeamworkUserIdentity
 
 
 class Chat(Entity):
@@ -193,3 +202,137 @@ class Chat(Entity):
                 self.context, TargetedChatMessage, ResourcePath("targetedMessages", self.resource_path)
             ),
         )
+
+    def complete_migration(self) -> Self:
+        """completeMigration operation."""
+        qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def start_migration(self, conversation_creation_date_time: datetime) -> Self:
+        """startMigration operation.
+
+        Args:
+            conversation_creation_date_time (datetime):
+                conversationCreationDateTime parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "startMigration", None, {"conversationCreationDateTime": conversation_creation_date_time}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def send_activity_notification(
+        self,
+        topic: TeamworkActivityTopic,
+        activity_type: str,
+        chain_id: int,
+        preview_text: ItemBody,
+        teams_app_id: str,
+        template_parameters: ClientValueCollection[KeyValuePair],
+        recipient: TeamworkNotificationRecipient,
+        icon_id: str,
+    ) -> Self:
+        """sendActivityNotification operation.
+
+        Args:
+            topic (TeamworkActivityTopic):
+                topic parameter
+            activity_type (str):
+                activityType parameter
+            chain_id (int):
+                chainId parameter
+            preview_text (ItemBody):
+                previewText parameter
+            teams_app_id (str):
+                teamsAppId parameter
+            template_parameters (ClientValueCollection[KeyValuePair]):
+                templateParameters parameter
+            recipient (TeamworkNotificationRecipient):
+                recipient parameter
+            icon_id (str):
+                iconId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "sendActivityNotification",
+            None,
+            {
+                "topic": topic,
+                "activityType": activity_type,
+                "chainId": chain_id,
+                "previewText": preview_text,
+                "teamsAppId": teams_app_id,
+                "templateParameters": template_parameters,
+                "recipient": recipient,
+                "iconId": icon_id,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def hide_for_user(self, user: TeamworkUserIdentity) -> Self:
+        """hideForUser operation.
+
+        Args:
+            user (TeamworkUserIdentity):
+                user parameter
+        """
+        qry = ServiceOperationQuery(self, "hideForUser", None, {"user": user}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def mark_chat_read_for_user(self, user: TeamworkUserIdentity) -> Self:
+        """markChatReadForUser operation.
+
+        Args:
+            user (TeamworkUserIdentity):
+                user parameter
+        """
+        qry = ServiceOperationQuery(self, "markChatReadForUser", None, {"user": user}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def mark_chat_unread_for_user(self, user: TeamworkUserIdentity, last_message_read_date_time: datetime) -> Self:
+        """markChatUnreadForUser operation.
+
+        Args:
+            user (TeamworkUserIdentity):
+                user parameter
+            last_message_read_date_time (datetime):
+                lastMessageReadDateTime parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "markChatUnreadForUser",
+            None,
+            {"user": user, "lastMessageReadDateTime": last_message_read_date_time},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def remove_all_access_for_user(self, user: TeamworkUserIdentity) -> Self:
+        """removeAllAccessForUser operation.
+
+        Args:
+            user (TeamworkUserIdentity):
+                user parameter
+        """
+        qry = ServiceOperationQuery(self, "removeAllAccessForUser", None, {"user": user}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def unhide_for_user(self, user: TeamworkUserIdentity) -> Self:
+        """unhideForUser operation.
+
+        Args:
+            user (TeamworkUserIdentity):
+                user parameter
+        """
+        qry = ServiceOperationQuery(self, "unhideForUser", None, {"user": user}, None, None)
+        self.context.add_query(qry)
+        return self

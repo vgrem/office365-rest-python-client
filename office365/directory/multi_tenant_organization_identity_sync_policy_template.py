@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from office365.directory.applications.templateapplicationlevel import TemplateApplicationLevel
 from office365.directory.policies.crosstenant.user_sync_inbound import CrossTenantUserSyncInbound
 from office365.entity import Entity
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -22,3 +25,9 @@ class MultiTenantOrganizationIdentitySyncPolicyTemplate(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.MultiTenantOrganizationIdentitySyncPolicyTemplate"
+
+    def reset_to_default_settings(self) -> Self:
+        """resetToDefaultSettings operation."""
+        qry = ServiceOperationQuery(self, "resetToDefaultSettings", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

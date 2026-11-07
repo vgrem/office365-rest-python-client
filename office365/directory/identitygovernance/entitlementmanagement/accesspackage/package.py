@@ -6,12 +6,18 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.groups.group import Group
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_policy import (
         AccessPackageAssignmentPolicy,
+    )
+    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_request_requirements import (  # noqa: E501
+        AccessPackageAssignmentRequestRequirements,
     )
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.catalog import (
         AccessPackageCatalog,
@@ -163,3 +169,16 @@ class AccessPackage(Entity):
                 ResourcePath(self.wire_name("resourceRoleScopes"), self.resource_path),
             ),
         )
+
+    def get_applicable_policy_requirements(
+        self,
+    ) -> ClientResult[ClientValueCollection[AccessPackageAssignmentRequestRequirements]]:
+        """getApplicablePolicyRequirements operation."""
+        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_request_requirements import (  # noqa: E501
+            AccessPackageAssignmentRequestRequirements,
+        )
+
+        return_type = ClientResult(self.context, ClientValueCollection(AccessPackageAssignmentRequestRequirements))
+        qry = ServiceOperationQuery(self, "getApplicablePolicyRequirements", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

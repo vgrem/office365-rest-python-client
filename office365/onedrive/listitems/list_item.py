@@ -15,11 +15,14 @@ from office365.onedrive.internal.queries.get_activities_by_interval import (
 from office365.onedrive.listitems.field_value_set import FieldValueSet
 from office365.onedrive.versions.list_item import ListItemVersion
 from office365.permissions import require_permission
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.driveitems.driveItem import DriveItem
+    from office365.onedrive.drives.recipient import DriveRecipient
     from office365.onedrive.permissions.permission import Permission
 
 
@@ -124,3 +127,57 @@ class ListItem(BaseItem):
             "permissions",
             EntityCollection[Permission](self.context, Permission, ResourcePath("permissions", self.resource_path)),
         )
+
+    def create_link(
+        self,
+        type_: str,
+        scope: str,
+        expiration_date_time: datetime,
+        password: str,
+        message: str,
+        recipients: ClientValueCollection[DriveRecipient],
+        retain_inherited_permissions: bool,
+        send_notification: bool,
+    ) -> Permission:
+        """createLink operation.
+
+        Args:
+            type_ (str):
+                type parameter
+            scope (str):
+                scope parameter
+            expiration_date_time (datetime):
+                expirationDateTime parameter
+            password (str):
+                password parameter
+            message (str):
+                message parameter
+            recipients (ClientValueCollection[DriveRecipient]):
+                recipients parameter
+            retain_inherited_permissions (bool):
+                retainInheritedPermissions parameter
+            send_notification (bool):
+                sendNotification parameter
+        """
+        from office365.onedrive.permissions.permission import Permission
+
+        return_type = Permission(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "createLink",
+            None,
+            {
+                "type": type_,
+                "scope": scope,
+                "expirationDateTime": expiration_date_time,
+                "password": password,
+                "message": message,
+                "recipients": recipients,
+                "retainInheritedPermissions": retain_inherited_permissions,
+                "sendNotification": send_notification,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

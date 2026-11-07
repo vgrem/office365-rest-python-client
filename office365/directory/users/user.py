@@ -1751,3 +1751,34 @@ class User(DirectoryObject):
                 self.context, DistributionList, ResourcePath("distributionLists", self.resource_path)
             ),
         )
+
+    def retry_service_provisioning(self) -> Self:
+        """retryServiceProvisioning operation."""
+        qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reminder_view(self, start_date_time: str, end_date_time: str) -> ClientResult[ClientValueCollection[Reminder]]:
+        """reminderView operation.
+
+        Args:
+            start_date_time (str):
+                StartDateTime parameter
+            end_date_time (str):
+                EndDateTime parameter
+        """
+        from office365.outlook.calendar.events.reminder import Reminder
+
+        return_type = ClientResult(self.context, ClientValueCollection(Reminder))
+        qry = FunctionQuery(
+            self, "reminderView", {"StartDateTime": start_date_time, "EndDateTime": end_date_time}, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_managed_devices_with_app_failures(self) -> ClientResult[StringCollection]:
+        """getManagedDevicesWithAppFailures operation."""
+        return_type = ClientResult(self.context, StringCollection())
+        qry = FunctionQuery(self, "getManagedDevicesWithAppFailures", None, return_type)
+        self.context.add_query(qry)
+        return return_type

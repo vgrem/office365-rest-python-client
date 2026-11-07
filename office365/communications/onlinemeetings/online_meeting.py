@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.communications.calls.transcript import CallTranscript
 from office365.communications.onlinemeetings.base import OnlineMeetingBase
@@ -10,9 +14,16 @@ from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.communications.onlinemeetings.attendee_notification_info import AttendeeNotificationInfo
+    from office365.communications.onlinemeetings.remindbeforetimeinminutestype import RemindBeforeTimeInMinutesType
+    from office365.communications.onlinemeetings.virtualappointmentmessagetype import VirtualAppointmentMessageType
 
 
 class OnlineMeeting(OnlineMeetingBase):
@@ -177,3 +188,44 @@ class OnlineMeeting(OnlineMeetingBase):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.OnlineMeeting"
+
+    def send_virtual_appointment_reminder_sms(
+        self,
+        remind_before_time_in_minutes_type: RemindBeforeTimeInMinutesType,
+        attendees: ClientValueCollection[AttendeeNotificationInfo],
+    ) -> Self:
+        """sendVirtualAppointmentReminderSms operation.
+
+        Args:
+            remind_before_time_in_minutes_type (RemindBeforeTimeInMinutesType):
+                remindBeforeTimeInMinutesType parameter
+            attendees (ClientValueCollection[AttendeeNotificationInfo]):
+                attendees parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "sendVirtualAppointmentReminderSms",
+            None,
+            {"remindBeforeTimeInMinutesType": remind_before_time_in_minutes_type, "attendees": attendees},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def send_virtual_appointment_sms(
+        self, message_type: VirtualAppointmentMessageType, attendees: ClientValueCollection[AttendeeNotificationInfo]
+    ) -> Self:
+        """sendVirtualAppointmentSms operation.
+
+        Args:
+            message_type (VirtualAppointmentMessageType):
+                messageType parameter
+            attendees (ClientValueCollection[AttendeeNotificationInfo]):
+                attendees parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "sendVirtualAppointmentSms", None, {"messageType": message_type, "attendees": attendees}, None, None
+        )
+        self.context.add_query(qry)
+        return self

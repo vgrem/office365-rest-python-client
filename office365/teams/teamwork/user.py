@@ -1,13 +1,21 @@
-from typing import Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.user_scope_installation import UserScopeTeamsAppInstallation
 from office365.teams.associated_info import AssociatedTeamInfo
+
+if TYPE_CHECKING:
+    from office365.teams.chats.targeted_chat_message import TargetedChatMessage
 
 
 class UserTeamwork(Entity):
@@ -95,3 +103,43 @@ class UserTeamwork(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserTeamwork"
+
+    def delete_targeted_message(self, team_id: str, channel_id: str, message_id: str) -> Self:
+        """deleteTargetedMessage operation.
+
+        Args:
+            team_id (str):
+                teamId parameter
+            channel_id (str):
+                channelId parameter
+            message_id (str):
+                messageId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "deleteTargetedMessage",
+            None,
+            {"teamId": team_id, "channelId": channel_id, "messageId": message_id},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def get_all_retained_targeted_messages(self) -> EntityCollection[TargetedChatMessage]:
+        """getAllRetainedTargetedMessages operation."""
+        from office365.teams.chats.targeted_chat_message import TargetedChatMessage
+
+        return_type = EntityCollection(self.context, TargetedChatMessage)
+        qry = FunctionQuery(self, "getAllRetainedTargetedMessages", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_all_targeted_messages(self) -> EntityCollection[TargetedChatMessage]:
+        """getAllTargetedMessages operation."""
+        from office365.teams.chats.targeted_chat_message import TargetedChatMessage
+
+        return_type = EntityCollection(self.context, TargetedChatMessage)
+        qry = FunctionQuery(self, "getAllTargetedMessages", None, return_type)
+        self.context.add_query(qry)
+        return return_type

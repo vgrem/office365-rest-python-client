@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onedrive.workbooks.ranges.range import WorkbookRange
 
 
 class WorkbookRangeView(Entity):
@@ -94,3 +98,12 @@ class WorkbookRangeView(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRangeView"
+
+    def range(self) -> WorkbookRange:
+        """range operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "range", None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 from datetime import datetime
+
+from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -53,3 +58,9 @@ class ChangeTrackedEntity(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChangeTrackedEntity"
+
+    def stage_for_deletion(self) -> Self:
+        """stageForDeletion operation."""
+        qry = ServiceOperationQuery(self, "stageForDeletion", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

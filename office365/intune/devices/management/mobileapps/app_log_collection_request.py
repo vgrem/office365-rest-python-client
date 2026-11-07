@@ -1,12 +1,19 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.intune.devices.management.apploguploadstate import AppLogUploadState
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.intune.devices.management.mobileapps.app_log_collection_download_details import (
+        AppLogCollectionDownloadDetails,
+    )
 
 
 class AppLogCollectionRequest(Entity):
@@ -37,3 +44,14 @@ class AppLogCollectionRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.AppLogCollectionRequest"
+
+    def create_download_url(self) -> ClientResult[AppLogCollectionDownloadDetails]:
+        """createDownloadUrl operation."""
+        from office365.intune.devices.management.mobileapps.app_log_collection_download_details import (
+            AppLogCollectionDownloadDetails,
+        )
+
+        return_type = ClientResult(self.context, AppLogCollectionDownloadDetails())
+        qry = ServiceOperationQuery(self, "createDownloadUrl", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

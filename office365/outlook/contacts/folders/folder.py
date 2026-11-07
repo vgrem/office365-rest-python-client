@@ -1,4 +1,8 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
@@ -8,6 +12,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.contacts.collection import ContactCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -78,3 +83,9 @@ class ContactFolder(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ContactFolder"
+
+    def permanent_delete(self) -> Self:
+        """permanentDelete operation."""
+        qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

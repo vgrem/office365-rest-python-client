@@ -2,15 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.deleted import DeletedTeam
 
 if TYPE_CHECKING:
+    from office365.outlook.mail.item_body import ItemBody
+    from office365.runtime.types.key_value_pair import KeyValuePair
     from office365.teams.app_settings import TeamsAppSettings
     from office365.teams.chats.deleted import DeletedChat
+    from office365.teams.teamwork.activity_topic import TeamworkActivityTopic
+    from office365.teams.teamwork.notification_recipient import TeamworkNotificationRecipient
     from office365.teams.workforce_integration import WorkforceIntegration
 
 
@@ -80,3 +88,54 @@ class Teamwork(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Teamwork"
+
+    def send_activity_notification_to_recipients(
+        self,
+        topic: TeamworkActivityTopic,
+        activity_type: str,
+        chain_id: int,
+        preview_text: ItemBody,
+        teams_app_id: str,
+        template_parameters: ClientValueCollection[KeyValuePair],
+        recipients: ClientValueCollection[TeamworkNotificationRecipient],
+        icon_id: str,
+    ) -> Self:
+        """sendActivityNotificationToRecipients operation.
+
+        Args:
+            topic (TeamworkActivityTopic):
+                topic parameter
+            activity_type (str):
+                activityType parameter
+            chain_id (int):
+                chainId parameter
+            preview_text (ItemBody):
+                previewText parameter
+            teams_app_id (str):
+                teamsAppId parameter
+            template_parameters (ClientValueCollection[KeyValuePair]):
+                templateParameters parameter
+            recipients (ClientValueCollection[TeamworkNotificationRecipient]):
+                recipients parameter
+            icon_id (str):
+                iconId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "sendActivityNotificationToRecipients",
+            None,
+            {
+                "topic": topic,
+                "activityType": activity_type,
+                "chainId": chain_id,
+                "previewText": preview_text,
+                "teamsAppId": teams_app_id,
+                "templateParameters": template_parameters,
+                "recipients": recipients,
+                "iconId": icon_id,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

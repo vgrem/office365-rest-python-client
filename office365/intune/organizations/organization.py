@@ -16,8 +16,10 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.mdmauthority import MdmAuthority
 from office365.intune.organizations.branding import OrganizationalBranding
 from office365.intune.organizations.privacy_profile import PrivacyProfile
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
@@ -209,3 +211,10 @@ class Organization(DirectoryObject):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Organization"
+
+    def set_mobile_device_management_authority(self) -> ClientResult[int]:
+        """setMobileDeviceManagementAuthority operation."""
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(self, "setMobileDeviceManagementAuthority", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

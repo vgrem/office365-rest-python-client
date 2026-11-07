@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer import AccessPackageAnswer
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment import (
@@ -29,7 +31,11 @@ from office365.directory.identitygovernance.entitlementmanagement.schedule impor
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.extensions.custom.data import CustomExtensionData
 
 
 class AccessPackageAssignmentRequest(Entity):
@@ -123,3 +129,30 @@ class AccessPackageAssignmentRequest(Entity):
     def schedule(self) -> EntitlementManagementSchedule:
         """Gets the schedule property"""
         return self.properties.get("schedule", EntitlementManagementSchedule())
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reprocess(self) -> Self:
+        """reprocess operation."""
+        qry = ServiceOperationQuery(self, "reprocess", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def resume(self, source: str, type_: str, data: CustomExtensionData) -> Self:
+        """resume operation.
+
+        Args:
+            source (str):
+                source parameter
+            type_ (str):
+                type parameter
+            data (CustomExtensionData):
+                data parameter
+        """
+        qry = ServiceOperationQuery(self, "resume", None, {"source": source, "type": type_, "data": data}, None, None)
+        self.context.add_query(qry)
+        return self

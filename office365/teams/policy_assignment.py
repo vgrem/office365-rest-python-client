@@ -5,12 +5,14 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.teams.administration.policy_user_assignment import (
         TeamsPolicyUserAssignment,
     )
+    from office365.teams.policy_identifier_detail import PolicyIdentifierDetail
 
 
 class TeamsPolicyAssignment(Entity):
@@ -32,3 +34,19 @@ class TeamsPolicyAssignment(Entity):
                 self.context, TeamsPolicyUserAssignment, ResourcePath("userAssignments", self.resource_path)
             ),
         )
+
+    def get_policy_id(self, type_: str, name: str) -> EntityCollection[PolicyIdentifierDetail]:
+        """getPolicyId operation.
+
+        Args:
+            type_ (str):
+                type parameter
+            name (str):
+                name parameter
+        """
+        from office365.teams.policy_identifier_detail import PolicyIdentifierDetail
+
+        return_type = EntityCollection(self.context, PolicyIdentifierDetail)
+        qry = FunctionQuery(self, "getPolicyId", {"type": type_, "name": name}, return_type)
+        self.context.add_query(qry)
+        return return_type

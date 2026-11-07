@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.onenote.entity_schema_object_model import OnenoteEntitySchemaObjectModel
 from office365.onenote.notebooks.notebook import Notebook
@@ -9,10 +11,17 @@ from office365.onenote.pages.links import PageLinks
 from office365.onenote.sections.section import OnenoteSection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onenote.onenote_page_preview import OnenotePagePreview
+    from office365.onenote.onenote_patch_content_command import OnenotePatchContentCommand
+    from office365.onenote.operations.onenote import OnenoteOperation
 
 
 class OnenotePage(OnenoteEntitySchemaObjectModel):
@@ -110,3 +119,50 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.OnenotePage"
+
+    def copy_to_section(self, id_: str, group_id: str, site_collection_id: str, site_id: str) -> OnenoteOperation:
+        """copyToSection operation.
+
+        Args:
+            id_ (str):
+                id parameter
+            group_id (str):
+                groupId parameter
+            site_collection_id (str):
+                siteCollectionId parameter
+            site_id (str):
+                siteId parameter
+        """
+        from office365.onenote.operations.onenote import OnenoteOperation
+
+        return_type = OnenoteOperation(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "copyToSection",
+            None,
+            {"id": id_, "groupId": group_id, "siteCollectionId": site_collection_id, "siteId": site_id},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def onenote_patch_content(self, commands: ClientValueCollection[OnenotePatchContentCommand]) -> Self:
+        """onenotePatchContent operation.
+
+        Args:
+            commands (ClientValueCollection[OnenotePatchContentCommand]):
+                commands parameter
+        """
+        qry = ServiceOperationQuery(self, "onenotePatchContent", None, {"commands": commands}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def preview(self) -> ClientResult[OnenotePagePreview]:
+        """preview operation."""
+        from office365.onenote.onenote_page_preview import OnenotePagePreview
+
+        return_type = ClientResult(self.context, OnenotePagePreview())
+        qry = FunctionQuery(self, "preview", None, return_type)
+        self.context.add_query(qry)
+        return return_type

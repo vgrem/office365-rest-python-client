@@ -462,3 +462,9 @@ class Team(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Team"
+
+    def complete_migration(self) -> Self:
+        """completeMigration operation."""
+        qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

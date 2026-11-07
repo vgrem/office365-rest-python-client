@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
@@ -8,7 +8,11 @@ from office365.onenote.notebook_links import NotebookLinks
 from office365.onenote.sections.collection import OnenoteSectionCollection
 from office365.onenote.userrole import OnenoteUserRole
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onenote.operations.onenote import OnenoteOperation
 
 
 class Notebook(OnenoteEntityHierarchyModel):
@@ -85,3 +89,40 @@ class Notebook(OnenoteEntityHierarchyModel):
     def user_role(self) -> OnenoteUserRole:
         """Gets the userRole property"""
         return self.properties.get("userRole", OnenoteUserRole.Unknown)
+
+    def copy_notebook(
+        self, group_id: str, rename_as: str, notebook_folder: str, site_collection_id: str, site_id: str
+    ) -> OnenoteOperation:
+        """copyNotebook operation.
+
+        Args:
+            group_id (str):
+                groupId parameter
+            rename_as (str):
+                renameAs parameter
+            notebook_folder (str):
+                notebookFolder parameter
+            site_collection_id (str):
+                siteCollectionId parameter
+            site_id (str):
+                siteId parameter
+        """
+        from office365.onenote.operations.onenote import OnenoteOperation
+
+        return_type = OnenoteOperation(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "copyNotebook",
+            None,
+            {
+                "groupId": group_id,
+                "renameAs": rename_as,
+                "notebookFolder": notebook_folder,
+                "siteCollectionId": site_collection_id,
+                "siteId": site_id,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

@@ -2,7 +2,7 @@
 metadata_path: ./metadata/Graph.xml
 output_path: ../office365
 context_type: GraphClient
-generate_methods: false
+generate_methods: true
 include_base_types:
   - ComplexType
   - EnumType

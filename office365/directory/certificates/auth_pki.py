@@ -3,9 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -61,3 +64,18 @@ class CertificateBasedAuthPki(DirectoryObject):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CertificateBasedAuthPki"
+
+    def upload(self, upload_url: str, sha256_file_hash: str) -> Self:
+        """upload operation.
+
+        Args:
+            upload_url (str):
+                uploadUrl parameter
+            sha256_file_hash (str):
+                sha256FileHash parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "upload", None, {"uploadUrl": upload_url, "sha256FileHash": sha256_file_hash}, None, None
+        )
+        self.context.add_query(qry)
+        return self

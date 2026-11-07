@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.intune.devices.management.mobileapps.win32.lob_app_install_experience import Win32LobAppInstallExperience
 from office365.intune.devices.management.mobileapps.win32.lob_app_msi_information import Win32LobAppMsiInformation
@@ -9,6 +11,7 @@ from office365.intune.devices.management.mobileapps.win32.lob_app_return_code im
 from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -100,3 +103,21 @@ class Win32LobApp(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Win32LobApp"
+
+    def enable_applicable_architectures(self, applicable_architectures: WindowsArchitecture) -> Self:
+        """enableApplicableArchitectures operation.
+
+        Args:
+            applicable_architectures (WindowsArchitecture):
+                applicableArchitectures parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "enableApplicableArchitectures",
+            None,
+            {"applicableArchitectures": applicable_architectures},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

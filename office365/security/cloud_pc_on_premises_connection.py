@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectionstatus import (  # noqa: E501
     CloudPcOnPremisesConnectionStatus,
@@ -12,6 +14,7 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (  # noqa: E501
     CloudPcOnPremisesConnectionType,
 )
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
@@ -134,3 +137,22 @@ class CloudPcOnPremisesConnection(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcOnPremisesConnection"
+
+    def run_health_checks(self) -> Self:
+        """runHealthChecks operation."""
+        qry = ServiceOperationQuery(self, "runHealthChecks", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_ad_domain_password(self, ad_domain_password: str) -> Self:
+        """updateAdDomainPassword operation.
+
+        Args:
+            ad_domain_password (str):
+                adDomainPassword parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "updateAdDomainPassword", None, {"adDomainPassword": ad_domain_password}, None, None
+        )
+        self.context.add_query(qry)
+        return self

@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.security.search.data_source import DataSource
 
@@ -38,3 +41,27 @@ class EdiscoveryNoncustodialDataSource(Entity):
             "lastIndexOperation",
             EdiscoveryIndexOperation(self.context, ResourcePath("lastIndexOperation", self.resource_path)),
         )
+
+    def apply_hold(self) -> Self:
+        """applyHold operation."""
+        qry = ServiceOperationQuery(self, "applyHold", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def release(self) -> Self:
+        """release operation."""
+        qry = ServiceOperationQuery(self, "release", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def remove_hold(self) -> Self:
+        """removeHold operation."""
+        qry = ServiceOperationQuery(self, "removeHold", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_index(self) -> Self:
+        """updateIndex operation."""
+        qry = ServiceOperationQuery(self, "updateIndex", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

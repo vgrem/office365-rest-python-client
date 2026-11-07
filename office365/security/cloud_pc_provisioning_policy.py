@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.cloud_pc_windows_setting import CloudPcWindowsSetting
@@ -20,6 +22,7 @@ from office365.intune.devices.management.virtualendpoint.provisioningpolicies.mi
 )
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -146,3 +149,14 @@ class CloudPcProvisioningPolicy(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcProvisioningPolicy"
+
+    def assign(self, assignments: ClientValueCollection[CloudPcProvisioningPolicyAssignment]) -> Self:
+        """assign operation.
+
+        Args:
+            assignments (ClientValueCollection[CloudPcProvisioningPolicyAssignment]):
+                assignments parameter
+        """
+        qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, None)
+        self.context.add_query(qry)
+        return self

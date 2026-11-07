@@ -3,10 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.common.mime_content import MimeContent
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -133,3 +137,16 @@ class ManagedEBook(Entity):
                 self.context, UserInstallStateSummary, ResourcePath("userStateSummary", self.resource_path)
             ),
         )
+
+    def assign(self, managed_e_book_assignments: ClientValueCollection[ManagedEBookAssignment]) -> Self:
+        """assign operation.
+
+        Args:
+            managed_e_book_assignments (ClientValueCollection[ManagedEBookAssignment]):
+                managedEBookAssignments parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "assign", None, {"managedEBookAssignments": managed_e_book_assignments}, None, None
+        )
+        self.context.add_query(qry)
+        return self

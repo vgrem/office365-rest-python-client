@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from office365.communications.callrecords.media_stream import MediaStream
 from office365.communications.calls.invitation_participant_info import (
@@ -20,6 +20,9 @@ from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.common.mute_participant_operation import MuteParticipantOperation
 
 
 class Participant(Entity):
@@ -128,3 +131,17 @@ class Participant(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Participant"
+
+    def mute(self, client_context: str) -> MuteParticipantOperation:
+        """mute operation.
+
+        Args:
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.mute_participant_operation import MuteParticipantOperation
+
+        return_type = MuteParticipantOperation(self.context)
+        qry = ServiceOperationQuery(self, "mute", None, {"clientContext": client_context}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

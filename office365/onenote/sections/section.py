@@ -111,3 +111,40 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
     def pages_url(self) -> Optional[str]:
         """Gets the pagesUrl property"""
         return self.properties.get("pagesUrl", None)
+
+    def copy_to_notebook(
+        self, id_: str, group_id: str, rename_as: str, site_collection_id: str, site_id: str
+    ) -> OnenoteOperation:
+        """copyToNotebook operation.
+
+        Args:
+            id_ (str):
+                id parameter
+            group_id (str):
+                groupId parameter
+            rename_as (str):
+                renameAs parameter
+            site_collection_id (str):
+                siteCollectionId parameter
+            site_id (str):
+                siteId parameter
+        """
+        from office365.onenote.operations.onenote import OnenoteOperation
+
+        return_type = OnenoteOperation(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "copyToNotebook",
+            None,
+            {
+                "id": id_,
+                "groupId": group_id,
+                "renameAs": rename_as,
+                "siteCollectionId": site_collection_id,
+                "siteId": site_id,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

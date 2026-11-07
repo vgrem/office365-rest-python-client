@@ -237,3 +237,23 @@ class ContentType(BaseItem):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ContentType"
+
+    def copy_to_default_content_location(self, source_file: ItemReference, destination_file_name: str) -> Self:
+        """copyToDefaultContentLocation operation.
+
+        Args:
+            source_file (ItemReference):
+                sourceFile parameter
+            destination_file_name (str):
+                destinationFileName parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "copyToDefaultContentLocation",
+            None,
+            {"sourceFile": source_file, "destinationFileName": destination_file_name},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

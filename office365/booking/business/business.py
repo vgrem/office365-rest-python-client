@@ -252,3 +252,9 @@ class BookingBusiness(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingBusiness"
+
+    def unpublish(self) -> Self:
+        """unpublish operation."""
+        qry = ServiceOperationQuery(self, "unpublish", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

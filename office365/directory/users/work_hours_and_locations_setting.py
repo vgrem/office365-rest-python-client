@@ -6,6 +6,7 @@ from office365.communications.max_work_location_details import MaxWorkLocationDe
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -49,3 +50,21 @@ class WorkHoursAndLocationsSetting(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkHoursAndLocationsSetting"
+
+    def occurrences_view(self, start_date_time: str, end_date_time: str) -> EntityCollection[WorkPlanOccurrence]:
+        """occurrencesView operation.
+
+        Args:
+            start_date_time (str):
+                startDateTime parameter
+            end_date_time (str):
+                endDateTime parameter
+        """
+        from office365.directory.users.work_plan_occurrence import WorkPlanOccurrence
+
+        return_type = EntityCollection(self.context, WorkPlanOccurrence)
+        qry = FunctionQuery(
+            self, "occurrencesView", {"startDateTime": start_date_time, "endDateTime": end_date_time}, return_type
+        )
+        self.context.add_query(qry)
+        return return_type

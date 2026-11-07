@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID
 
 from typing_extensions import Self
 
@@ -46,9 +47,12 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.teams.team import Team
+
+if TYPE_CHECKING:
+    from office365.directory.groups.group import Group
 
 
 class Group(DirectoryObject):
@@ -762,3 +766,54 @@ class Group(DirectoryObject):
     def unseen_messages_count(self) -> Optional[int]:
         """Gets the unseenMessagesCount property"""
         return self.properties.get("unseenMessagesCount", None)
+
+    def assign_license(self, add_licenses: ClientValueCollection[AssignedLicense], remove_licenses: list[UUID]) -> Group:
+        """assignLicense operation.
+
+        Args:
+            add_licenses (ClientValueCollection[AssignedLicense]):
+                addLicenses parameter
+            remove_licenses (list[UUID]):
+                removeLicenses parameter
+        """
+        from office365.directory.groups.group import Group
+
+        return_type = Group(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "assignLicense",
+            None,
+            {"addLicenses": add_licenses, "removeLicenses": GuidCollection(remove_licenses)},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def retry_service_provisioning(self) -> Self:
+        """retryServiceProvisioning operation."""
+        qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def validate_properties(self, display_name: str, mail_nickname: str, on_behalf_of_user_id: UUID) -> Self:
+        """validateProperties operation.
+
+        Args:
+            display_name (str):
+                displayName parameter
+            mail_nickname (str):
+                mailNickname parameter
+            on_behalf_of_user_id (UUID):
+                onBehalfOfUserId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "validateProperties",
+            None,
+            {"displayName": display_name, "mailNickname": mail_nickname, "onBehalfOfUserId": on_behalf_of_user_id},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

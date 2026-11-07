@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.identitygovernance.accessreview.history.status import AccessReviewHistoryStatus
 from office365.entity import Entity
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.identitygovernance.accessreview.history_instance import AccessReviewHistoryInstance
 
 
 class AccessReviewHistoryInstance(Entity):
@@ -54,3 +58,12 @@ class AccessReviewHistoryInstance(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.AccessReviewHistoryInstance"
+
+    def generate_download_uri(self) -> AccessReviewHistoryInstance:
+        """generateDownloadUri operation."""
+        from office365.directory.identitygovernance.accessreview.history_instance import AccessReviewHistoryInstance
+
+        return_type = AccessReviewHistoryInstance(self.context)
+        qry = ServiceOperationQuery(self, "generateDownloadUri", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -7,12 +7,15 @@ from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.browser.siteliststatus import BrowserSiteListStatus
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.admin.browser_shared_cookie import BrowserSharedCookie
     from office365.admin.browser_site import BrowserSite
+    from office365.admin.browser_site_list import BrowserSiteList
 
 
 class BrowserSiteList(Entity):
@@ -90,3 +93,33 @@ class BrowserSiteList(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.BrowserSiteList"
+
+    def publish(
+        self,
+        revision: str,
+        sites: ClientValueCollection[BrowserSite],
+        shared_cookies: ClientValueCollection[BrowserSharedCookie],
+    ) -> BrowserSiteList:
+        """publish operation.
+
+        Args:
+            revision (str):
+                revision parameter
+            sites (ClientValueCollection[BrowserSite]):
+                sites parameter
+            shared_cookies (ClientValueCollection[BrowserSharedCookie]):
+                sharedCookies parameter
+        """
+        from office365.admin.browser_site_list import BrowserSiteList
+
+        return_type = BrowserSiteList(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "publish",
+            None,
+            {"revision": revision, "sites": sites, "sharedCookies": shared_cookies},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

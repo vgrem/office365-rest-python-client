@@ -1,13 +1,17 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.outlook.calendar.sharing.message_action import (
     CalendarSharingMessageAction,
 )
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.outlook.calendar.calendar import Calendar
 
 
 class CalendarSharingMessage(Message):
@@ -46,3 +50,12 @@ class CalendarSharingMessage(Message):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CalendarSharingMessage"
+
+    def accept(self) -> Calendar:
+        """accept operation."""
+        from office365.outlook.calendar.calendar import Calendar
+
+        return_type = Calendar(self.context)
+        qry = ServiceOperationQuery(self, "accept", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

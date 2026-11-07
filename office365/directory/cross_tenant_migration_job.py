@@ -10,11 +10,15 @@ from office365.directory.exchange_online_cross_tenant_migration_settings import 
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
+    from office365.directory.cross_tenant_migration_job import CrossTenantMigrationJob
     from office365.directory.cross_tenant_migration_task import CrossTenantMigrationTask
 
 
@@ -119,3 +123,30 @@ class CrossTenantMigrationJob(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantMigrationJob"
+
+    def cancel(self) -> ClientResult[CrossTenantMigrationCancelResponse]:
+        """cancel operation."""
+        from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
+
+        return_type = ClientResult(self.context, CrossTenantMigrationCancelResponse())
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def migrate(self) -> CrossTenantMigrationJob:
+        """migrate operation."""
+        from office365.directory.cross_tenant_migration_job import CrossTenantMigrationJob
+
+        return_type = CrossTenantMigrationJob(self.context)
+        qry = ServiceOperationQuery(self, "migrate", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def validate(self) -> CrossTenantMigrationJob:
+        """validate operation."""
+        from office365.directory.cross_tenant_migration_job import CrossTenantMigrationJob
+
+        return_type = CrossTenantMigrationJob(self.context)
+        qry = ServiceOperationQuery(self, "validate", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

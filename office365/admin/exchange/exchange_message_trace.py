@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.admin.exchange.exchange_message_trace_status import ExchangeMessageTraceStatus
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.admin.exchange.exchange_message_trace_detail import ExchangeMessageTraceDetail
 
 
 class ExchangeMessageTrace(Entity):
@@ -66,3 +71,17 @@ class ExchangeMessageTrace(Entity):
     def status(self) -> ExchangeMessageTraceStatus:
         """Gets the status property"""
         return self.properties.get("status", ExchangeMessageTraceStatus.gettingStatus)
+
+    def get_details_by_recipient(self, recipient_address: str) -> EntityCollection[ExchangeMessageTraceDetail]:
+        """getDetailsByRecipient operation.
+
+        Args:
+            recipient_address (str):
+                recipientAddress parameter
+        """
+        from office365.admin.exchange.exchange_message_trace_detail import ExchangeMessageTraceDetail
+
+        return_type = EntityCollection(self.context, ExchangeMessageTraceDetail)
+        qry = FunctionQuery(self, "getDetailsByRecipient", {"recipientAddress": recipient_address}, return_type)
+        self.context.add_query(qry)
+        return return_type

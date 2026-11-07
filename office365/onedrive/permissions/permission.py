@@ -21,6 +21,7 @@ from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.onedrive.permissions.collection import PermissionCollection
+    from office365.onedrive.permissions.permission import Permission
 
 
 @limit(*FILES_QUOTAS)  # a permission operation costs five resource units of the same budget
@@ -134,3 +135,17 @@ class Permission(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Permission"
+
+    def revoke_grants(self, grantees: ClientValueCollection[DriveRecipient]) -> Permission:
+        """revokeGrants operation.
+
+        Args:
+            grantees (ClientValueCollection[DriveRecipient]):
+                grantees parameter
+        """
+        from office365.onedrive.permissions.permission import Permission
+
+        return_type = Permission(self.context)
+        qry = ServiceOperationQuery(self, "revokeGrants", None, {"grantees": grantees}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

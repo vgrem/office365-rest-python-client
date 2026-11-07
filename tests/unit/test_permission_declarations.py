@@ -20,22 +20,43 @@ LIBRARY = index(office365)
 #: Public operations that still name no permission, per service package. The map only shrinks:
 #: a harvest lowers a number here, and a declaration removed anywhere raises one. Both
 #: directions fail until the number is recorded, which is the point - a debt nobody writes down
-#: is a debt nobody pays. ``outlook`` is absent because it is closed: it is the pilot for the
-#: markers-before-consumers design, small enough to finish before scaling. Nine more packages
-#: have left the map the same way - ``intune``, ``backuprestore``, ``reports``, ``todo``,
-#: ``planner``, ``booking``, ``security``, ``subscriptions`` and ``common`` name every
-#: operation they own, and ``sharepoint`` closed the map too: all 2,224 of its public
-#: request-issuing operations declare. Then ``exchange`` reopened it with a single entry: the
-#: Exchange admin client's ``invoke_all`` submits a request, and the names it would declare -
-#: ``Exchange.ManageAsAppV2`` / ``Exchange.ManageV2`` - have no committed snapshot, so a
-#: declaration there would be unchecked rather than verified. Pay it by generating the
-#: Exchange snapshot (``scripts/gen_permission_catalog.py`` has no Exchange source yet),
-#: declaring on the method, and deleting this entry.
+#: is a debt nobody pays. Nine packages closed the map one harvest at a time - ``todo``,
+#: ``planner``, ``subscriptions``, ``booking``, ``security``, ``reports``, ``backuprestore``,
+#: ``common`` and ``outlook`` named every operation they own, and ``sharepoint`` closed it too:
+#: all 2,224 of its public request-issuing operations declare.
+#:
+#: The map reopened on 2026-11-07 for one reason, not 741: ``generator/settings.graph.yaml``
+#: switched ``generate_methods`` on, so a CSDL operation the model used to omit is now a method
+#: that submits a request (740 of the 741 below are those new methods). Every entry is that
+#: single decision seen per package - the
+#: composition is ``onedrive`` 413 (workbook functions and their typed results), ``intune`` 77,
+#: ``directory`` 74, ``reports`` 53, ``teams`` 32, ``security`` 30, ``communications`` 23,
+#: ``outlook`` 11, ``common`` 6, ``onenote`` 5, ``partners`` 5, ``copilot`` 4, ``booking`` 3,
+#: ``admin`` 2 and the single ones in ``backuprestore``, ``search`` and ``exchange``. The map
+#: shrinks by harvesting, package by package, exactly as it grew before.
 #:
 #: The detector counts a method that *submits* a query (``add_query``, ``execute_query``,
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
-PENDING: dict[str, int] = {"exchange": 1}
+PENDING: dict[str, int] = {
+    "admin": 2,
+    "backuprestore": 1,
+    "booking": 3,
+    "common": 6,
+    "communications": 23,
+    "copilot": 4,
+    "directory": 74,
+    "exchange": 1,
+    "intune": 77,
+    "onedrive": 413,
+    "onenote": 5,
+    "outlook": 11,
+    "partners": 5,
+    "reports": 53,
+    "search": 1,
+    "security": 30,
+    "teams": 32,
+}
 
 
 class TestTheRatchet(TestCase):

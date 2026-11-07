@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -59,3 +61,10 @@ class ApplePushNotificationCertificate(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ApplePushNotificationCertificate"
+
+    def download_apple_push_notification_certificate_signing_request(self) -> ClientResult[str]:
+        """downloadApplePushNotificationCertificateSigningRequest operation."""
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(self, "downloadApplePushNotificationCertificateSigningRequest", None, return_type)
+        self.context.add_query(qry)
+        return return_type

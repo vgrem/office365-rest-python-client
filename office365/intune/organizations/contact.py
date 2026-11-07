@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.booking.phone import Phone
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.object import DirectoryObject
@@ -11,6 +13,7 @@ from office365.directory.objects.serviceprovisioningerror import ServiceProvisio
 from office365.intune.organizations.physical_office_address import PhysicalOfficeAddress
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
@@ -176,3 +179,9 @@ class OrgContact(DirectoryObject):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.OrgContact"
+
+    def retry_service_provisioning(self) -> Self:
+        """retryServiceProvisioning operation."""
+        qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

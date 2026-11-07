@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
     UnifiedRoleScheduleRequestActions,
 )
@@ -9,6 +11,7 @@ from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -139,3 +142,9 @@ class UnifiedRoleEligibilityScheduleRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleEligibilityScheduleRequest"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

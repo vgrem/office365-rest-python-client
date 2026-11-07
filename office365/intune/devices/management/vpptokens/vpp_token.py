@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType
 from office365.intune.devices.management.vpptokens.state import VppTokenState
 from office365.intune.devices.management.vpptokens.syncstatus import VppTokenSyncStatus
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.intune.devices.management.vpptokens.vpp_token import VppToken
 
 
 class VppToken(Entity):
@@ -85,3 +91,12 @@ class VppToken(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.VppToken"
+
+    def sync_licenses(self) -> VppToken:
+        """syncLicenses operation."""
+        from office365.intune.devices.management.vpptokens.vpp_token import VppToken
+
+        return_type = VppToken(self.context)
+        qry = ServiceOperationQuery(self, "syncLicenses", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

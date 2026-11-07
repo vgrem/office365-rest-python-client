@@ -3,9 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -184,3 +188,39 @@ class DeviceCompliancePolicy(Entity):
     def os_minimum_version(self) -> Optional[str]:
         """Gets the osMinimumVersion property"""
         return self.properties.get("osMinimumVersion", None)
+
+    def assign(
+        self, assignments: ClientValueCollection[DeviceCompliancePolicyAssignment]
+    ) -> EntityCollection[DeviceCompliancePolicyAssignment]:
+        """assign operation.
+
+        Args:
+            assignments (ClientValueCollection[DeviceCompliancePolicyAssignment]):
+                assignments parameter
+        """
+        from office365.intune.devices.compliance_policy_assignment import DeviceCompliancePolicyAssignment
+
+        return_type = EntityCollection(self.context, DeviceCompliancePolicyAssignment)
+        qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def schedule_actions_for_rules(
+        self, device_compliance_scheduled_action_for_rules: ClientValueCollection[DeviceComplianceScheduledActionForRule]
+    ) -> Self:
+        """scheduleActionsForRules operation.
+
+        Args:
+            device_compliance_scheduled_action_for_rules:
+                deviceComplianceScheduledActionForRules parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "scheduleActionsForRules",
+            None,
+            {"deviceComplianceScheduledActionForRules": device_compliance_scheduled_action_for_rules},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

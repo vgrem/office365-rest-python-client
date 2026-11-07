@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.intune.devices.management.mobileapps.contentfileuploadstate import MobileAppContentFileUploadState
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.intune.devices.management.mobileapps.file_encryption_info import FileEncryptionInfo
 
 
 class MobileAppContentFile(Entity):
@@ -72,3 +78,20 @@ class MobileAppContentFile(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.MobileAppContentFile"
+
+    def commit(self, file_encryption_info: FileEncryptionInfo) -> Self:
+        """commit operation.
+
+        Args:
+            file_encryption_info (FileEncryptionInfo):
+                fileEncryptionInfo parameter
+        """
+        qry = ServiceOperationQuery(self, "commit", None, {"fileEncryptionInfo": file_encryption_info}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def renew_upload(self) -> Self:
+        """renewUpload operation."""
+        qry = ServiceOperationQuery(self, "renewUpload", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

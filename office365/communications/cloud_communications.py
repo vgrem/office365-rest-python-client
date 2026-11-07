@@ -11,6 +11,7 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.odata.literals import odata_literal
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from office365.communications.onlinemeetings.engagement_conversation import (
         OnlineMeetingEngagementConversation,
     )
+    from office365.teams.viva.engagement.conversation_message import EngagementConversationMessage
 
 
 class CloudCommunications(Entity):
@@ -140,3 +142,12 @@ class CloudCommunications(Entity):
                 ResourcePath("onlineMeetingConversations", self.resource_path),
             ),
         )
+
+    def get_all_online_meeting_messages(self) -> EntityCollection[EngagementConversationMessage]:
+        """getAllOnlineMeetingMessages operation."""
+        from office365.teams.viva.engagement.conversation_message import EngagementConversationMessage
+
+        return_type = EntityCollection(self.context, EngagementConversationMessage)
+        qry = FunctionQuery(self, "getAllOnlineMeetingMessages", None, return_type)
+        self.context.add_query(qry)
+        return return_type

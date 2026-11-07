@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from office365.entity import Entity
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.reviewsetsettings import ReviewSetSettings
 from office365.security.cases.type import CaseType
@@ -43,3 +46,9 @@ class EdiscoveryCaseSettings(Entity):
     def topic_modeling(self) -> TopicModelingSettings:
         """Gets the topicModeling property"""
         return self.properties.get("topicModeling", TopicModelingSettings())
+
+    def reset_to_default(self) -> Self:
+        """resetToDefault operation."""
+        qry = ServiceOperationQuery(self, "resetToDefault", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

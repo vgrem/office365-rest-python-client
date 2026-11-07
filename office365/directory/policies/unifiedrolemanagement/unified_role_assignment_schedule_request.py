@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
     UnifiedRoleScheduleRequestActions,
 )
@@ -9,10 +11,14 @@ from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
+    from office365.directory.policies.unifiedrolemanagement.unified_role_assignment_schedule_request import (
+        UnifiedRoleAssignmentScheduleRequest,
+    )
     from office365.directory.rolemanagement.app_scope import AppScope
     from office365.directory.rolemanagement.unifiedrole.definition import (
         UnifiedRoleDefinition,
@@ -23,6 +29,7 @@ if TYPE_CHECKING:
     from office365.directory.unified_role_eligibility_schedule import (
         UnifiedRoleEligibilitySchedule,
     )
+    from office365.security.evaluation_outcome import EvaluationOutcome
 
 
 class UnifiedRoleAssignmentScheduleRequest(Entity):
@@ -159,3 +166,45 @@ class UnifiedRoleAssignmentScheduleRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleAssignmentScheduleRequest"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_request(
+        self, evaluation_id: str, evaluation_outcome: EvaluationOutcome, schedule_info: RequestSchedule, reason: str
+    ) -> UnifiedRoleAssignmentScheduleRequest:
+        """updateRequest operation.
+
+        Args:
+            evaluation_id (str):
+                evaluationId parameter
+            evaluation_outcome (EvaluationOutcome):
+                evaluationOutcome parameter
+            schedule_info (RequestSchedule):
+                scheduleInfo parameter
+            reason (str):
+                reason parameter
+        """
+        from office365.directory.policies.unifiedrolemanagement.unified_role_assignment_schedule_request import (
+            UnifiedRoleAssignmentScheduleRequest,
+        )
+
+        return_type = UnifiedRoleAssignmentScheduleRequest(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "updateRequest",
+            None,
+            {
+                "evaluationId": evaluation_id,
+                "evaluationOutcome": evaluation_outcome,
+                "scheduleInfo": schedule_info,
+                "reason": reason,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

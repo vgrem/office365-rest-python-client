@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
@@ -11,6 +13,9 @@ from office365.security.attacksimulations.repeat_offender import (
 from office365.security.attacksimulations.user_coverage import (
     AttackSimulationSimulationUserCoverage,
 )
+
+if TYPE_CHECKING:
+    from office365.security.attacksimulations.training_user_coverage import AttackSimulationTrainingUserCoverage
 
 
 class SecurityReportsRoot(Entity):
@@ -46,3 +51,14 @@ class SecurityReportsRoot(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.SecurityReportsRoot"
+
+    def get_attack_simulation_training_user_coverage(
+        self,
+    ) -> ClientResult[ClientValueCollection[AttackSimulationTrainingUserCoverage]]:
+        """getAttackSimulationTrainingUserCoverage operation."""
+        from office365.security.attacksimulations.training_user_coverage import AttackSimulationTrainingUserCoverage
+
+        return_type = ClientResult(self.context, ClientValueCollection(AttackSimulationTrainingUserCoverage))
+        qry = FunctionQuery(self, "getAttackSimulationTrainingUserCoverage", None, return_type)
+        self.context.add_query(qry)
+        return return_type

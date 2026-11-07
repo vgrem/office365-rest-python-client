@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.synchronization.directorydefinitiondiscoverabilities import DirectoryDefinitionDiscoverabilities
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.security.object_definition import ObjectDefinition
+
+if TYPE_CHECKING:
+    from office365.directory.synchronization.directory_definition import DirectoryDefinition
 
 
 class DirectoryDefinition(Entity):
@@ -57,3 +63,12 @@ class DirectoryDefinition(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DirectoryDefinition"
+
+    def discover(self) -> DirectoryDefinition:
+        """discover operation."""
+        from office365.directory.synchronization.directory_definition import DirectoryDefinition
+
+        return_type = DirectoryDefinition(self.context)
+        qry = ServiceOperationQuery(self, "discover", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.app import TeamsApp
 from office365.teams.apps.definition import TeamsAppDefinition
@@ -41,3 +44,16 @@ class TeamsAppInstallation(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.TeamsAppInstallation"
+
+    def upgrade(self, consented_permission_set: TeamsAppPermissionSet) -> Self:
+        """upgrade operation.
+
+        Args:
+            consented_permission_set (TeamsAppPermissionSet):
+                consentedPermissionSet parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "upgrade", None, {"consentedPermissionSet": consented_permission_set}, None, None
+        )
+        self.context.add_query(qry)
+        return self

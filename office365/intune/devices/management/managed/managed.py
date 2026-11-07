@@ -43,6 +43,9 @@ if TYPE_CHECKING:
     from office365.intune.devices.log_collection_response import (
         DeviceLogCollectionResponse,
     )
+    from office365.intune.devices.management.update_windows_device_account_action_parameter import (
+        UpdateWindowsDeviceAccountActionParameter,
+    )
     from office365.intune.devices.management.windows_protection_state import WindowsProtectionState
 
 
@@ -580,3 +583,100 @@ class ManagedDevice(Entity):
             "windowsProtectionState",
             WindowsProtectionState(self.context, ResourcePath("windowsProtectionState", self.resource_path)),
         )
+
+    def bypass_activation_lock(self) -> Self:
+        """bypassActivationLock operation."""
+        qry = ServiceOperationQuery(self, "bypassActivationLock", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def clean_windows_device(self, keep_user_data: bool) -> Self:
+        """cleanWindowsDevice operation.
+
+        Args:
+            keep_user_data (bool):
+                keepUserData parameter
+        """
+        qry = ServiceOperationQuery(self, "cleanWindowsDevice", None, {"keepUserData": keep_user_data}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def delete_user_from_shared_apple_device(self, user_principal_name: str) -> Self:
+        """deleteUserFromSharedAppleDevice operation.
+
+        Args:
+            user_principal_name (str):
+                userPrincipalName parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "deleteUserFromSharedAppleDevice", None, {"userPrincipalName": user_principal_name}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def disable_lost_mode(self) -> Self:
+        """disableLostMode operation."""
+        qry = ServiceOperationQuery(self, "disableLostMode", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def logout_shared_apple_device_active_user(self) -> Self:
+        """logoutSharedAppleDeviceActiveUser operation."""
+        qry = ServiceOperationQuery(self, "logoutSharedAppleDeviceActiveUser", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def recover_passcode(self) -> Self:
+        """recoverPasscode operation."""
+        qry = ServiceOperationQuery(self, "recoverPasscode", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def request_remote_assistance(self) -> Self:
+        """requestRemoteAssistance operation."""
+        qry = ServiceOperationQuery(self, "requestRemoteAssistance", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reset_passcode(self) -> Self:
+        """resetPasscode operation."""
+        qry = ServiceOperationQuery(self, "resetPasscode", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_windows_device_account(
+        self, update_windows_device_account_action_parameter: UpdateWindowsDeviceAccountActionParameter
+    ) -> Self:
+        """updateWindowsDeviceAccount operation.
+
+        Args:
+            update_windows_device_account_action_parameter (UpdateWindowsDeviceAccountActionParameter):
+                updateWindowsDeviceAccountActionParameter parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "updateWindowsDeviceAccount",
+            None,
+            {"updateWindowsDeviceAccountActionParameter": update_windows_device_account_action_parameter},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def windows_defender_scan(self, quick_scan: bool) -> Self:
+        """windowsDefenderScan operation.
+
+        Args:
+            quick_scan (bool):
+                quickScan parameter
+        """
+        qry = ServiceOperationQuery(self, "windowsDefenderScan", None, {"quickScan": quick_scan}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def windows_defender_update_signatures(self) -> Self:
+        """windowsDefenderUpdateSignatures operation."""
+        qry = ServiceOperationQuery(self, "windowsDefenderUpdateSignatures", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

@@ -3,10 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.operation import CaseOperation
 from office365.security.ediscovery.case_member import EdiscoveryCaseMember
@@ -143,3 +146,15 @@ class EdiscoveryCase(Entity):
                 self.context, EdiscoveryReviewTag, ResourcePath("tags", self.resource_path)
             ),
         )
+
+    def close(self) -> Self:
+        """close operation."""
+        qry = ServiceOperationQuery(self, "close", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reopen(self) -> Self:
+        """reopen operation."""
+        qry = ServiceOperationQuery(self, "reopen", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

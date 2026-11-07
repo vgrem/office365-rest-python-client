@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.identitygovernance.quarantine_details import QuarantineDetails
 from office365.directory.identitygovernance.run import Run
 from office365.directory.identitygovernance.task_report import TaskReport
@@ -14,13 +16,23 @@ from office365.directory.identitygovernance.workflow.version import WorkflowVers
 from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.directory.identitygovernance.activationscope import ActivationScope
+    from office365.directory.identitygovernance.awaited_workflow_processing_result import AwaitedWorkflowProcessingResult
+    from office365.directory.identitygovernance.cancel_scope import CancelScope
+    from office365.directory.identitygovernance.preview_failed_task import PreviewFailedTask
     from office365.directory.identitygovernance.subject_processing_result import (
         SubjectProcessingResult,
     )
+    from office365.directory.identitygovernance.workflow.subject import WorkflowSubject
+    from office365.directory.identitygovernance.workflow.workflow import Workflow
+    from office365.directory.users.user import User
 
 
 class Workflow(Entity):
@@ -139,3 +151,104 @@ class Workflow(Entity):
                 self.context, SubjectProcessingResult, ResourcePath("subjectProcessingResults", self.resource_path)
             ),
         )
+
+    def activate(self, subjects: ClientValueCollection[User]) -> Self:
+        """activate operation.
+
+        Args:
+            subjects (ClientValueCollection[User]):
+                subjects parameter
+        """
+        qry = ServiceOperationQuery(self, "activate", None, {"subjects": subjects}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def activate_and_wait(self, subject: WorkflowSubject) -> ClientResult[AwaitedWorkflowProcessingResult]:
+        """activateAndWait operation.
+
+        Args:
+            subject (WorkflowSubject):
+                subject parameter
+        """
+        from office365.directory.identitygovernance.awaited_workflow_processing_result import (
+            AwaitedWorkflowProcessingResult,
+        )
+
+        return_type = ClientResult(self.context, AwaitedWorkflowProcessingResult())
+        qry = ServiceOperationQuery(self, "activateAndWait", None, {"subject": subject}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def activate_with_scope(self, scope: ActivationScope) -> Self:
+        """activateWithScope operation.
+
+        Args:
+            scope (ActivationScope):
+                scope parameter
+        """
+        qry = ServiceOperationQuery(self, "activateWithScope", None, {"scope": scope}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def cancel_processing(self, scope: CancelScope) -> Self:
+        """cancelProcessing operation.
+
+        Args:
+            scope (CancelScope):
+                scope parameter
+        """
+        qry = ServiceOperationQuery(self, "cancelProcessing", None, {"scope": scope}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def clear_quarantine(self) -> Workflow:
+        """clearQuarantine operation."""
+        from office365.directory.identitygovernance.workflow.workflow import Workflow
+
+        return_type = Workflow(self.context)
+        qry = ServiceOperationQuery(self, "clearQuarantine", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def create_new_version(self, workflow: Workflow) -> Workflow:
+        """createNewVersion operation.
+
+        Args:
+            workflow (Workflow):
+                workflow parameter
+        """
+        from office365.directory.identitygovernance.workflow.workflow import Workflow
+
+        return_type = Workflow(self.context)
+        qry = ServiceOperationQuery(self, "createNewVersion", None, {"workflow": workflow}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def preview_task_failures(self) -> ClientResult[ClientValueCollection[PreviewFailedTask]]:
+        """previewTaskFailures operation."""
+        from office365.directory.identitygovernance.preview_failed_task import PreviewFailedTask
+
+        return_type = ClientResult(self.context, ClientValueCollection(PreviewFailedTask))
+        qry = ServiceOperationQuery(self, "previewTaskFailures", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def preview_workflow(self, subjects: ClientValueCollection[DirectoryObject]) -> Self:
+        """previewWorkflow operation.
+
+        Args:
+            subjects (ClientValueCollection[DirectoryObject]):
+                subjects parameter
+        """
+        qry = ServiceOperationQuery(self, "previewWorkflow", None, {"subjects": subjects}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def restore(self) -> Workflow:
+        """restore operation."""
+        from office365.directory.identitygovernance.workflow.workflow import Workflow
+
+        return_type = Workflow(self.context)
+        qry = ServiceOperationQuery(self, "restore", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
@@ -17,6 +17,9 @@ from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.communications.presences.work_location_type import WorkLocationType
 
 
 @limit(*PRESENCE_QUOTAS)
@@ -163,3 +166,45 @@ class Presence(Entity):
     def work_location(self) -> UserWorkLocation:
         """Gets the workLocation property"""
         return self.properties.get("workLocation", UserWorkLocation())
+
+    def clear_automatic_location(self) -> Self:
+        """clearAutomaticLocation operation."""
+        qry = ServiceOperationQuery(self, "clearAutomaticLocation", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def clear_location(self) -> Self:
+        """clearLocation operation."""
+        qry = ServiceOperationQuery(self, "clearLocation", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def set_automatic_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
+        """setAutomaticLocation operation.
+
+        Args:
+            work_location_type (WorkLocationType):
+                workLocationType parameter
+            place_id (str):
+                placeId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "setAutomaticLocation", None, {"workLocationType": work_location_type, "placeId": place_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def set_manual_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
+        """setManualLocation operation.
+
+        Args:
+            work_location_type (WorkLocationType):
+                workLocationType parameter
+            place_id (str):
+                placeId parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "setManualLocation", None, {"workLocationType": work_location_type, "placeId": place_id}, None, None
+        )
+        self.context.add_query(qry)
+        return self

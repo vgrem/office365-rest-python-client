@@ -6,6 +6,8 @@ from uuid import UUID
 
 from office365.entity import Entity
 from office365.intune.devices.management.apploguploadstate import AppLogUploadState
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -61,3 +63,10 @@ class DeviceLogCollectionResponse(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceLogCollectionResponse"
+
+    def create_download_url(self) -> ClientResult[str]:
+        """createDownloadUrl operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "createDownloadUrl", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

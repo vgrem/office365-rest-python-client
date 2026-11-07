@@ -17,6 +17,7 @@ from office365.onedrive.filestorage.containers.status import FileStorageContaine
 from office365.onedrive.filestorage.containers.viewpoint import FileStorageContainerViewpoint
 from office365.onedrive.filestorage.sitelockstate import SiteLockState
 from office365.permissions import require_permission
+from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -24,9 +25,11 @@ from office365.runtime.types.odata_property import odata
 if TYPE_CHECKING:
     from office365.onedrive.columns.definition import ColumnDefinition
     from office365.onedrive.drives.drive import Drive
+    from office365.onedrive.filestorage.containers.container import FileStorageContainer
     from office365.onedrive.permissions.permission import Permission
     from office365.onedrive.recyclebin.recyclebin import RecycleBin
     from office365.onedrive.sharepoint.group import SharePointGroup
+    from office365.onedrive.sharepoint.migration.container_info import SharePointMigrationContainerInfo
     from office365.onedrive.sharepoint.migration.migration_job import (
         SharePointMigrationJob,
     )
@@ -185,3 +188,44 @@ class FileStorageContainer(Entity):
                 self.context, SharePointGroup, ResourcePath("sharePointGroups", self.resource_path)
             ),
         )
+
+    def restore(self) -> FileStorageContainer:
+        """restore operation."""
+        from office365.onedrive.filestorage.containers.container import FileStorageContainer
+
+        return_type = FileStorageContainer(self.context)
+        qry = ServiceOperationQuery(self, "restore", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def permanent_delete(self) -> Self:
+        """permanentDelete operation."""
+        qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def lock(self, lock_state: SiteLockState) -> Self:
+        """lock operation.
+
+        Args:
+            lock_state (SiteLockState):
+                lockState parameter
+        """
+        qry = ServiceOperationQuery(self, "lock", None, {"lockState": lock_state}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def provision_migration_containers(self) -> ClientResult[SharePointMigrationContainerInfo]:
+        """provisionMigrationContainers operation."""
+        from office365.onedrive.sharepoint.migration.container_info import SharePointMigrationContainerInfo
+
+        return_type = ClientResult(self.context, SharePointMigrationContainerInfo())
+        qry = ServiceOperationQuery(self, "provisionMigrationContainers", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def unlock(self) -> Self:
+        """unlock operation."""
+        qry = ServiceOperationQuery(self, "unlock", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

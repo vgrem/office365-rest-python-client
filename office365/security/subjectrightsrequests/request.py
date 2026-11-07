@@ -10,8 +10,10 @@ from office365.directory.privacy.subjectrightsrequeststatus import SubjectRights
 from office365.directory.privacy.subjectrightsrequesttype import SubjectRightsRequestType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.subjectrightsrequests.data_subject import DataSubject
@@ -226,3 +228,17 @@ class SubjectRightsRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.SubjectRightsRequest"
+
+    def get_final_attachment(self) -> ClientResult[bytes]:
+        """getFinalAttachment operation."""
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(self, "getFinalAttachment", None, return_type, return_raw_content=True)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_final_report(self) -> ClientResult[bytes]:
+        """getFinalReport operation."""
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(self, "getFinalReport", None, return_type, return_raw_content=True)
+        self.context.add_query(qry)
+        return return_type

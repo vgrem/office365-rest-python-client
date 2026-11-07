@@ -1,11 +1,25 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningtype import CloudPcProvisioningType
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_operating_system import (
+        CloudPcOperatingSystem,
+    )
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_user_account_type import (
+        CloudPcUserAccountType,
+    )
 
 
 class CloudPC(Entity):
@@ -96,3 +110,78 @@ class CloudPC(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPC"
+
+    def end_grace_period(self) -> Self:
+        """endGracePeriod operation."""
+        qry = ServiceOperationQuery(self, "endGracePeriod", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reboot(self) -> Self:
+        """reboot operation."""
+        qry = ServiceOperationQuery(self, "reboot", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def rename(self, display_name: str) -> Self:
+        """rename operation.
+
+        Args:
+            display_name (str):
+                displayName parameter
+        """
+        qry = ServiceOperationQuery(self, "rename", None, {"displayName": display_name}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def reprovision(self, user_account_type: CloudPcUserAccountType, os_version: CloudPcOperatingSystem) -> Self:
+        """reprovision operation.
+
+        Args:
+            user_account_type (CloudPcUserAccountType):
+                userAccountType parameter
+            os_version (CloudPcOperatingSystem):
+                osVersion parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "reprovision", None, {"userAccountType": user_account_type, "osVersion": os_version}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def resize(self, target_service_plan_id: str) -> Self:
+        """resize operation.
+
+        Args:
+            target_service_plan_id (str):
+                targetServicePlanId parameter
+        """
+        qry = ServiceOperationQuery(self, "resize", None, {"targetServicePlanId": target_service_plan_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def restore(self, cloud_pc_snapshot_id: str) -> Self:
+        """restore operation.
+
+        Args:
+            cloud_pc_snapshot_id (str):
+                cloudPcSnapshotId parameter
+        """
+        qry = ServiceOperationQuery(self, "restore", None, {"cloudPcSnapshotId": cloud_pc_snapshot_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def troubleshoot(self) -> Self:
+        """troubleshoot operation."""
+        qry = ServiceOperationQuery(self, "troubleshoot", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def retrieve_cloud_pc_launch_detail(self) -> ClientResult[CloudPcLaunchDetail]:
+        """retrieveCloudPcLaunchDetail operation."""
+        from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
+
+        return_type = ClientResult(self.context, CloudPcLaunchDetail())
+        qry = FunctionQuery(self, "retrieveCloudPcLaunchDetail", None, return_type)
+        self.context.add_query(qry)
+        return return_type

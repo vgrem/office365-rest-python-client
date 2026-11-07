@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from urllib.parse import quote
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.driveitems.driveItem import DriveItem
@@ -284,3 +286,46 @@ class Channel(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Channel"
+
+    def archive(self, should_set_spo_site_read_only_for_members: bool) -> Self:
+        """archive operation.
+
+        Args:
+            should_set_spo_site_read_only_for_members (bool):
+                shouldSetSpoSiteReadOnlyForMembers parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "archive",
+            None,
+            {"shouldSetSpoSiteReadOnlyForMembers": should_set_spo_site_read_only_for_members},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def unarchive(self) -> Self:
+        """unarchive operation."""
+        qry = ServiceOperationQuery(self, "unarchive", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def complete_migration(self) -> Self:
+        """completeMigration operation."""
+        qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def start_migration(self, conversation_creation_date_time: datetime) -> Self:
+        """startMigration operation.
+
+        Args:
+            conversation_creation_date_time (datetime):
+                conversationCreationDateTime parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "startMigration", None, {"conversationCreationDateTime": conversation_creation_date_time}, None, None
+        )
+        self.context.add_query(qry)
+        return self

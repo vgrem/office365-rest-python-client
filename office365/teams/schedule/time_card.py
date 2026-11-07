@@ -1,16 +1,20 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.confirmedby import ConfirmedBy
 from office365.teams.schedule.time_card_break import TimeCardBreak
 from office365.teams.schedule.time_card_entry import TimeCardEntry
 from office365.teams.schedule.time_card_event import TimeCardEvent
 from office365.teams.schedule.time_card_state import TimeCardState
+
+if TYPE_CHECKING:
+    from office365.teams.schedule.time_card import TimeCard
 
 
 class TimeCard(Entity):
@@ -65,3 +69,71 @@ class TimeCard(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.TimeCard"
+
+    def clock_out(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
+        """clockOut operation.
+
+        Args:
+            is_at_approved_location (bool):
+                isAtApprovedLocation parameter
+            notes (ItemBody):
+                notes parameter
+        """
+        from office365.teams.schedule.time_card import TimeCard
+
+        return_type = TimeCard(self.context)
+        qry = ServiceOperationQuery(
+            self, "clockOut", None, {"isAtApprovedLocation": is_at_approved_location, "notes": notes}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def confirm(self) -> TimeCard:
+        """confirm operation."""
+        from office365.teams.schedule.time_card import TimeCard
+
+        return_type = TimeCard(self.context)
+        qry = ServiceOperationQuery(self, "confirm", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def end_break(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
+        """endBreak operation.
+
+        Args:
+            is_at_approved_location (bool):
+                isAtApprovedLocation parameter
+            notes (ItemBody):
+                notes parameter
+        """
+        from office365.teams.schedule.time_card import TimeCard
+
+        return_type = TimeCard(self.context)
+        qry = ServiceOperationQuery(
+            self, "endBreak", None, {"isAtApprovedLocation": is_at_approved_location, "notes": notes}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def start_break(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
+        """startBreak operation.
+
+        Args:
+            is_at_approved_location (bool):
+                isAtApprovedLocation parameter
+            notes (ItemBody):
+                notes parameter
+        """
+        from office365.teams.schedule.time_card import TimeCard
+
+        return_type = TimeCard(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "startBreak",
+            None,
+            {"isAtApprovedLocation": is_at_approved_location, "notes": notes},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

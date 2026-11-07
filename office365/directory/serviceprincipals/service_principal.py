@@ -881,3 +881,16 @@ class ServicePrincipal(DirectoryObject):
                 self.context, DirectoryObject, ResourcePath("transitiveMemberOf", self.resource_path)
             ),
         )
+
+    def remove_key(self, key_id: UUID, proof: str) -> Self:
+        """removeKey operation.
+
+        Args:
+            key_id (UUID):
+                keyId parameter
+            proof (str):
+                proof parameter
+        """
+        qry = ServiceOperationQuery(self, "removeKey", None, {"keyId": key_id, "proof": proof}, None, None)
+        self.context.add_query(qry)
+        return self

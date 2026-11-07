@@ -13,11 +13,15 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_file import (  # noqa: E501
         CustomDataProvidedResourceFile,
+    )
+    from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_session import (  # noqa: E501
+        CustomDataProvidedResourceUploadSession,
     )
 
 
@@ -76,3 +80,14 @@ class CustomDataProvidedResourceUploadSession(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CustomDataProvidedResourceUploadSession"
+
+    def upload_file(self) -> CustomDataProvidedResourceUploadSession:
+        """uploadFile operation."""
+        from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_session import (  # noqa: E501
+            CustomDataProvidedResourceUploadSession,
+        )
+
+        return_type = CustomDataProvidedResourceUploadSession(self.context)
+        qry = ServiceOperationQuery(self, "uploadFile", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

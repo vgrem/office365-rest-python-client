@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.identitygovernance.accessreview.error import AccessReviewError
 from office365.directory.identitygovernance.accessreview.instance_decision_item import (
@@ -19,7 +21,13 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.identitygovernance.accessreview.instance_decision_item_apply_result import (
+        AccessReviewInstanceDecisionItemApplyResult,
+    )
 
 
 class AccessReviewInstance(Entity):
@@ -113,3 +121,93 @@ class AccessReviewInstance(Entity):
         return self.properties.get(
             "reviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
+
+    def accept_recommendations(self) -> Self:
+        """acceptRecommendations operation."""
+        qry = ServiceOperationQuery(self, "acceptRecommendations", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def apply_decisions(self) -> Self:
+        """applyDecisions operation."""
+        qry = ServiceOperationQuery(self, "applyDecisions", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def batch_apply_custom_data_provided_resource_decisions(
+        self,
+        apply_result: AccessReviewInstanceDecisionItemApplyResult,
+        apply_description: str,
+        custom_data_provided_resource_id: str,
+    ) -> Self:
+        """batchApplyCustomDataProvidedResourceDecisions operation.
+
+        Args:
+            apply_result (AccessReviewInstanceDecisionItemApplyResult):
+                applyResult parameter
+            apply_description (str):
+                applyDescription parameter
+            custom_data_provided_resource_id (str):
+                customDataProvidedResourceId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "batchApplyCustomDataProvidedResourceDecisions",
+            None,
+            {
+                "applyResult": apply_result,
+                "applyDescription": apply_description,
+                "customDataProvidedResourceId": custom_data_provided_resource_id,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def batch_record_decisions(self, decision: str, justification: str, principal_id: str, resource_id: str) -> Self:
+        """batchRecordDecisions operation.
+
+        Args:
+            decision (str):
+                decision parameter
+            justification (str):
+                justification parameter
+            principal_id (str):
+                principalId parameter
+            resource_id (str):
+                resourceId parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "batchRecordDecisions",
+            None,
+            {
+                "decision": decision,
+                "justification": justification,
+                "principalId": principal_id,
+                "resourceId": resource_id,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def reset_decisions(self) -> Self:
+        """resetDecisions operation."""
+        qry = ServiceOperationQuery(self, "resetDecisions", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def send_reminder(self) -> Self:
+        """sendReminder operation."""
+        qry = ServiceOperationQuery(self, "sendReminder", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def stop(self) -> Self:
+        """stop operation."""
+        qry = ServiceOperationQuery(self, "stop", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

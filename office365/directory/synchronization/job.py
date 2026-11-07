@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.synchronization.bulk_upload import BulkUpload
 from office365.directory.synchronization.schedule import SynchronizationSchedule
@@ -8,11 +10,18 @@ from office365.directory.synchronization.schema import SynchronizationSchema
 from office365.directory.synchronization.status import SynchronizationStatus
 from office365.entity import Entity
 from office365.permissions import require_permission
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.key_value_pair import KeyValuePair
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.synchronization.job_application_parameters import SynchronizationJobApplicationParameters
+    from office365.directory.synchronization.job_restart_criteria import SynchronizationJobRestartCriteria
+    from office365.directory.synchronization.secret_key_string_value_pair import SynchronizationSecretKeyStringValuePair
+    from office365.security.string_key_string_value_pair import StringKeyStringValuePair
 
 
 class SynchronizationJob(Entity):
@@ -88,3 +97,65 @@ class SynchronizationJob(Entity):
     def schedule(self) -> SynchronizationSchedule:
         """Gets the schedule property"""
         return self.properties.get("schedule", SynchronizationSchedule())
+
+    def provision_on_demand(
+        self, parameters: ClientValueCollection[SynchronizationJobApplicationParameters]
+    ) -> ClientResult[StringKeyStringValuePair]:
+        """provisionOnDemand operation.
+
+        Args:
+            parameters (ClientValueCollection[SynchronizationJobApplicationParameters]):
+                parameters parameter
+        """
+        from office365.security.string_key_string_value_pair import StringKeyStringValuePair
+
+        return_type = ClientResult(self.context, StringKeyStringValuePair())
+        qry = ServiceOperationQuery(self, "provisionOnDemand", None, {"parameters": parameters}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def restart(self, criteria: SynchronizationJobRestartCriteria) -> Self:
+        """restart operation.
+
+        Args:
+            criteria (SynchronizationJobRestartCriteria):
+                criteria parameter
+        """
+        qry = ServiceOperationQuery(self, "restart", None, {"criteria": criteria}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def validate_credentials(
+        self,
+        application_identifier: str,
+        template_id: str,
+        use_saved_credentials: bool,
+        credentials: ClientValueCollection[SynchronizationSecretKeyStringValuePair],
+    ) -> Self:
+        """validateCredentials operation.
+
+        Args:
+            application_identifier (str):
+                applicationIdentifier parameter
+            template_id (str):
+                templateId parameter
+            use_saved_credentials (bool):
+                useSavedCredentials parameter
+            credentials (ClientValueCollection[SynchronizationSecretKeyStringValuePair]):
+                credentials parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "validateCredentials",
+            None,
+            {
+                "applicationIdentifier": application_identifier,
+                "templateId": template_id,
+                "useSavedCredentials": use_saved_credentials,
+                "credentials": credentials,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

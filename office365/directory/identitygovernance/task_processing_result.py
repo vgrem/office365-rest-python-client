@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
     LifecycleWorkflowProcessingStatus,
@@ -11,7 +13,13 @@ from office365.directory.identitygovernance.workflow.subject import WorkflowSubj
 from office365.directory.users.user import User
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.identitygovernance.workflow.customtaskextensioncallbackdata import (
+        CustomTaskExtensionCallbackData,
+    )
 
 
 class TaskProcessingResult(Entity):
@@ -72,3 +80,18 @@ class TaskProcessingResult(Entity):
     def workflow_subject(self) -> WorkflowSubject:
         """Gets the workflowSubject property"""
         return self.properties.get("workflowSubject", WorkflowSubject())
+
+    def resume(self, source: str, type_: str, data: CustomTaskExtensionCallbackData) -> Self:
+        """resume operation.
+
+        Args:
+            source (str):
+                source parameter
+            type_ (str):
+                type parameter
+            data (CustomTaskExtensionCallbackData):
+                data parameter
+        """
+        qry = ServiceOperationQuery(self, "resume", None, {"source": source, "type": type_, "data": data}, None, None)
+        self.context.add_query(qry)
+        return self

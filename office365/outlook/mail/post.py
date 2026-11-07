@@ -3,12 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -139,3 +142,29 @@ class Post(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Post"
+
+    def forward(self, comment: str, to_recipients: ClientValueCollection[Recipient]) -> Self:
+        """forward operation.
+
+        Args:
+            comment (str):
+                Comment parameter
+            to_recipients (ClientValueCollection[Recipient]):
+                ToRecipients parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "forward", None, {"Comment": comment, "ToRecipients": to_recipients}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def reply(self, post: Post) -> Self:
+        """reply operation.
+
+        Args:
+            post (Post):
+                Post parameter
+        """
+        qry = ServiceOperationQuery(self, "reply", None, {"Post": post}, None, None)
+        self.context.add_query(qry)
+        return self

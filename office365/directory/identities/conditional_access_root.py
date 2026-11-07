@@ -16,12 +16,17 @@ from office365.directory.policies.conditionalaccess.conditional_access import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.common.what_if_analysis_result import WhatIfAnalysisResult
     from office365.directory.identities.conditional_access_template import (
         ConditionalAccessTemplate,
     )
+    from office365.directory.identities.sign_in_context import SignInContext
+    from office365.directory.policies.conditionalaccess.sign_in_conditions import SignInConditions
+    from office365.directory.policies.conditionalaccess.sign_in_identity import SignInIdentity
 
 
 class ConditionalAccessRoot(Entity):
@@ -96,3 +101,41 @@ class ConditionalAccessRoot(Entity):
                 self.context, ConditionalAccessTemplate, ResourcePath("templates", self.resource_path)
             ),
         )
+
+    def evaluate(
+        self,
+        sign_in_identity: SignInIdentity,
+        sign_in_context: SignInContext,
+        sign_in_conditions: SignInConditions,
+        applied_policies_only: bool,
+    ) -> EntityCollection[WhatIfAnalysisResult]:
+        """evaluate operation.
+
+        Args:
+            sign_in_identity (SignInIdentity):
+                signInIdentity parameter
+            sign_in_context (SignInContext):
+                signInContext parameter
+            sign_in_conditions (SignInConditions):
+                signInConditions parameter
+            applied_policies_only (bool):
+                appliedPoliciesOnly parameter
+        """
+        from office365.common.what_if_analysis_result import WhatIfAnalysisResult
+
+        return_type = EntityCollection(self.context, WhatIfAnalysisResult)
+        qry = ServiceOperationQuery(
+            self,
+            "evaluate",
+            None,
+            {
+                "signInIdentity": sign_in_identity,
+                "signInContext": sign_in_context,
+                "signInConditions": sign_in_conditions,
+                "appliedPoliciesOnly": applied_policies_only,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

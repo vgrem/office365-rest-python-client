@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.communications.callrecords.modality import Modality
 from office365.communications.calls.direction import CallDirection
 from office365.communications.calls.incoming_context import IncomingContext
@@ -38,13 +40,24 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.common.add_large_gallery_view_operation import AddLargeGalleryViewOperation
+    from office365.common.mute_participant_operation import MuteParticipantOperation
+    from office365.common.play_prompt_operation import PlayPromptOperation
+    from office365.common.prompt import Prompt
+    from office365.common.record_operation import RecordOperation
+    from office365.common.send_dtmf_tones_operation import SendDtmfTonesOperation
+    from office365.common.subscribe_to_tone_operation import SubscribeToToneOperation
     from office365.communications.calls.audio_routing_group import AudioRoutingGroup
     from office365.communications.calls.content_sharing_session import (
         ContentSharingSession,
     )
+    from office365.communications.calls.screensharingrole import ScreenSharingRole
+    from office365.communications.calls.tone import Tone
+    from office365.communications.incoming_call_options import IncomingCallOptions
 
 
 @limit(*CALL_QUOTAS)
@@ -305,3 +318,236 @@ class Call(Entity):
                 self.context, ContentSharingSession, ResourcePath("contentSharingSessions", self.resource_path)
             ),
         )
+
+    def redirect(
+        self, targets: ClientValueCollection[InvitationParticipantInfo], timeout: int, callback_uri: str
+    ) -> Self:
+        """redirect operation.
+
+        Args:
+            targets (ClientValueCollection[InvitationParticipantInfo]):
+                targets parameter
+            timeout (int):
+                timeout parameter
+            callback_uri (str):
+                callbackUri parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "redirect", None, {"targets": targets, "timeout": timeout, "callbackUri": callback_uri}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def add_large_gallery_view(self, client_context: str) -> AddLargeGalleryViewOperation:
+        """addLargeGalleryView operation.
+
+        Args:
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.add_large_gallery_view_operation import AddLargeGalleryViewOperation
+
+        return_type = AddLargeGalleryViewOperation(self.context)
+        qry = ServiceOperationQuery(
+            self, "addLargeGalleryView", None, {"clientContext": client_context}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def answer(
+        self,
+        callback_uri: str,
+        media_config: MediaConfig,
+        accepted_modalities: ClientValueCollection[Modality],
+        participant_capacity: int,
+        call_options: IncomingCallOptions,
+    ) -> Self:
+        """answer operation.
+
+        Args:
+            callback_uri (str):
+                callbackUri parameter
+            media_config (MediaConfig):
+                mediaConfig parameter
+            accepted_modalities (ClientValueCollection[Modality]):
+                acceptedModalities parameter
+            participant_capacity (int):
+                participantCapacity parameter
+            call_options (IncomingCallOptions):
+                callOptions parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "answer",
+            None,
+            {
+                "callbackUri": callback_uri,
+                "mediaConfig": media_config,
+                "acceptedModalities": accepted_modalities,
+                "participantCapacity": participant_capacity,
+                "callOptions": call_options,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def change_screen_sharing_role(self, role: ScreenSharingRole) -> Self:
+        """changeScreenSharingRole operation.
+
+        Args:
+            role (ScreenSharingRole):
+                role parameter
+        """
+        qry = ServiceOperationQuery(self, "changeScreenSharingRole", None, {"role": role}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def keep_alive(self) -> Self:
+        """keepAlive operation."""
+        qry = ServiceOperationQuery(self, "keepAlive", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def mute(self, client_context: str) -> MuteParticipantOperation:
+        """mute operation.
+
+        Args:
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.mute_participant_operation import MuteParticipantOperation
+
+        return_type = MuteParticipantOperation(self.context)
+        qry = ServiceOperationQuery(self, "mute", None, {"clientContext": client_context}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def play_prompt(self, prompts: ClientValueCollection[Prompt], client_context: str) -> PlayPromptOperation:
+        """playPrompt operation.
+
+        Args:
+            prompts (ClientValueCollection[Prompt]):
+                prompts parameter
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.play_prompt_operation import PlayPromptOperation
+
+        return_type = PlayPromptOperation(self.context)
+        qry = ServiceOperationQuery(
+            self, "playPrompt", None, {"prompts": prompts, "clientContext": client_context}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def record_response(
+        self,
+        prompts: ClientValueCollection[Prompt],
+        barge_in_allowed: bool,
+        initial_silence_timeout_in_seconds: int,
+        max_silence_timeout_in_seconds: int,
+        max_record_duration_in_seconds: int,
+        play_beep: bool,
+        stop_tones: list[str],
+        client_context: str,
+    ) -> RecordOperation:
+        """recordResponse operation.
+
+        Args:
+            prompts (ClientValueCollection[Prompt]):
+                prompts parameter
+            barge_in_allowed (bool):
+                bargeInAllowed parameter
+            initial_silence_timeout_in_seconds (int):
+                initialSilenceTimeoutInSeconds parameter
+            max_silence_timeout_in_seconds (int):
+                maxSilenceTimeoutInSeconds parameter
+            max_record_duration_in_seconds (int):
+                maxRecordDurationInSeconds parameter
+            play_beep (bool):
+                playBeep parameter
+            stop_tones (list[str]):
+                stopTones parameter
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.record_operation import RecordOperation
+
+        return_type = RecordOperation(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "recordResponse",
+            None,
+            {
+                "prompts": prompts,
+                "bargeInAllowed": barge_in_allowed,
+                "initialSilenceTimeoutInSeconds": initial_silence_timeout_in_seconds,
+                "maxSilenceTimeoutInSeconds": max_silence_timeout_in_seconds,
+                "maxRecordDurationInSeconds": max_record_duration_in_seconds,
+                "playBeep": play_beep,
+                "stopTones": StringCollection(stop_tones),
+                "clientContext": client_context,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def send_dtmf_tones(
+        self, tones: ClientValueCollection[Tone], delay_between_tones_ms: int, client_context: str
+    ) -> SendDtmfTonesOperation:
+        """sendDtmfTones operation.
+
+        Args:
+            tones (ClientValueCollection[Tone]):
+                tones parameter
+            delay_between_tones_ms (int):
+                delayBetweenTonesMs parameter
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.send_dtmf_tones_operation import SendDtmfTonesOperation
+
+        return_type = SendDtmfTonesOperation(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "sendDtmfTones",
+            None,
+            {"tones": tones, "delayBetweenTonesMs": delay_between_tones_ms, "clientContext": client_context},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def subscribe_to_tone(self, client_context: str) -> SubscribeToToneOperation:
+        """subscribeToTone operation.
+
+        Args:
+            client_context (str):
+                clientContext parameter
+        """
+        from office365.common.subscribe_to_tone_operation import SubscribeToToneOperation
+
+        return_type = SubscribeToToneOperation(self.context)
+        qry = ServiceOperationQuery(self, "subscribeToTone", None, {"clientContext": client_context}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def transfer(self, transfer_target: InvitationParticipantInfo, transferee: ParticipantInfo) -> Self:
+        """transfer operation.
+
+        Args:
+            transfer_target (InvitationParticipantInfo):
+                transferTarget parameter
+            transferee (ParticipantInfo):
+                transferee parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "transfer", None, {"transferTarget": transfer_target, "transferee": transferee}, None, None
+        )
+        self.context.add_query(qry)
+        return self

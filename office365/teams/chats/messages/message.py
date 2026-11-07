@@ -3,12 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
@@ -220,3 +223,37 @@ class ChatMessage(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChatMessage"
+
+    def set_reaction(self, reaction_type: str) -> Self:
+        """setReaction operation.
+
+        Args:
+            reaction_type (str):
+                reactionType parameter
+        """
+        qry = ServiceOperationQuery(self, "setReaction", None, {"reactionType": reaction_type}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def soft_delete(self) -> Self:
+        """softDelete operation."""
+        qry = ServiceOperationQuery(self, "softDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def undo_soft_delete(self) -> Self:
+        """undoSoftDelete operation."""
+        qry = ServiceOperationQuery(self, "undoSoftDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def unset_reaction(self, reaction_type: str) -> Self:
+        """unsetReaction operation.
+
+        Args:
+            reaction_type (str):
+                reactionType parameter
+        """
+        qry = ServiceOperationQuery(self, "unsetReaction", None, {"reactionType": reaction_type}, None, None)
+        self.context.add_query(qry)
+        return self

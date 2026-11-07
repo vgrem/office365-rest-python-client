@@ -43,6 +43,7 @@ from office365.runtime.types.odata_property import Compare, odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.events.event import Event
+    from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
 
 
 class Event(OutlookItem):
@@ -540,3 +541,51 @@ class Event(OutlookItem):
     def uid(self) -> Optional[str]:
         """Gets the uid property"""
         return self.properties.get("uid", None)
+
+    def forward(self, to_recipients: ClientValueCollection[Recipient], comment: str) -> Self:
+        """forward operation.
+
+        Args:
+            to_recipients (ClientValueCollection[Recipient]):
+                ToRecipients parameter
+            comment (str):
+                Comment parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "forward", None, {"ToRecipients": to_recipients, "Comment": comment}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def snooze_reminder(self, new_reminder_time: DateTimeTimeZone) -> Self:
+        """snoozeReminder operation.
+
+        Args:
+            new_reminder_time (DateTimeTimeZone):
+                NewReminderTime parameter
+        """
+        qry = ServiceOperationQuery(self, "snoozeReminder", None, {"NewReminderTime": new_reminder_time}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def tentatively_accept(self, proposed_new_time: TimeSlot, send_response: bool, comment: str) -> Self:
+        """tentativelyAccept operation.
+
+        Args:
+            proposed_new_time (TimeSlot):
+                ProposedNewTime parameter
+            send_response (bool):
+                SendResponse parameter
+            comment (str):
+                Comment parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "tentativelyAccept",
+            None,
+            {"ProposedNewTime": proposed_new_time, "SendResponse": send_response, "Comment": comment},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

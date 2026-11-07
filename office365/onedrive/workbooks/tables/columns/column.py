@@ -68,3 +68,21 @@ class WorkbookTableColumn(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookTableColumn"
+
+    def data_body_range(self) -> WorkbookRange:
+        """dataBodyRange operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "dataBodyRange", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def total_row_range(self) -> WorkbookRange:
+        """totalRowRange operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "totalRowRange", None, return_type)
+        self.context.add_query(qry)
+        return return_type

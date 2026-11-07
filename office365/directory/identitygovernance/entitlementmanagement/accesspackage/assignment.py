@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_policy import (
     AccessPackageAssignmentPolicy,
 )
@@ -22,6 +24,7 @@ from office365.directory.identitygovernance.entitlementmanagement.schedule impor
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -87,3 +90,9 @@ class AccessPackageAssignment(Entity):
     def schedule(self) -> EntitlementManagementSchedule:
         """Gets the schedule property"""
         return self.properties.get("schedule", EntitlementManagementSchedule())
+
+    def reprocess(self) -> Self:
+        """reprocess operation."""
+        qry = ServiceOperationQuery(self, "reprocess", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

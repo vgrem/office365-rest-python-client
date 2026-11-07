@@ -4,11 +4,15 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.common.distribution_list import DistributionList
     from office365.common.distribution_list_member import DistributionListMember
+    from office365.common.member import Member
     from office365.directory.extensions.extended_property import SingleValueLegacyExtendedProperty
 
 
@@ -62,3 +66,31 @@ class DistributionList(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DistributionList"
+
+    def add_members(self, members: ClientValueCollection[Member]) -> DistributionList:
+        """addMembers operation.
+
+        Args:
+            members (ClientValueCollection[Member]):
+                Members parameter
+        """
+        from office365.common.distribution_list import DistributionList
+
+        return_type = DistributionList(self.context)
+        qry = ServiceOperationQuery(self, "addMembers", None, {"Members": members}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def delete_members(self, members: ClientValueCollection[Member]) -> DistributionList:
+        """deleteMembers operation.
+
+        Args:
+            members (ClientValueCollection[Member]):
+                Members parameter
+        """
+        from office365.common.distribution_list import DistributionList
+
+        return_type = DistributionList(self.context)
+        qry = ServiceOperationQuery(self, "deleteMembers", None, {"Members": members}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

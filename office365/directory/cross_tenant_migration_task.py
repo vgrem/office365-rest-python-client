@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.cross_tenant_migration_service_status_details import CrossTenantMigrationServiceStatusDetails
 from office365.entity import Entity
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
 
 
 class CrossTenantMigrationTask(Entity):
@@ -34,3 +39,12 @@ class CrossTenantMigrationTask(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantMigrationTask"
+
+    def cancel(self) -> ClientResult[CrossTenantMigrationCancelResponse]:
+        """cancel operation."""
+        from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
+
+        return_type = ClientResult(self.context, CrossTenantMigrationCancelResponse())
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

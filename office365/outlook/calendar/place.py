@@ -9,11 +9,13 @@ from office365.entity_collection import EntityCollection
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.check_in_claim import CheckInClaim
+    from office365.outlook.calendar.place import Place
 
 
 class Place(Entity):
@@ -100,3 +102,12 @@ class Place(Entity):
     def last_updated_time(self) -> Optional[datetime]:
         """Gets the lastUpdatedTime property"""
         return self.properties.get("lastUpdatedTime", datetime.min)
+
+    def descendants(self) -> EntityCollection[Place]:
+        """descendants operation."""
+        from office365.outlook.calendar.place import Place
+
+        return_type = EntityCollection(self.context, Place)
+        qry = FunctionQuery(self, "descendants", None, return_type)
+        self.context.add_query(qry)
+        return return_type

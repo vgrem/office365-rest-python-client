@@ -1,5 +1,7 @@
-from datetime import date
-from typing import Optional, Union
+from __future__ import annotations
+
+from datetime import date, datetime
+from typing import TYPE_CHECKING, Optional, Union
 
 from office365.directory.authentication.methods.root import AuthenticationMethodsRoot
 from office365.entity import Entity
@@ -18,12 +20,19 @@ from office365.reports.report_export import (
 )
 from office365.reports.report_result import ReportResult
 from office365.reports.security.root import SecurityReportsRoot
+from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.operations import ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.intune.print.archived_print_job import ArchivedPrintJob
+    from office365.reports.relying_party_detailed_summary import RelyingPartyDetailedSummary
+    from office365.reports.report import Report
 
 
 @limit(*REPORT_QUOTAS)
@@ -468,3 +477,757 @@ class ReportRoot(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ReportRoot"
+
+    def get_relying_party_detailed_summary(self, period: str) -> EntityCollection[RelyingPartyDetailedSummary]:
+        """getRelyingPartyDetailedSummary operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.relying_party_detailed_summary import RelyingPartyDetailedSummary
+
+        return_type = EntityCollection(self.context, RelyingPartyDetailedSummary)
+        qry = FunctionQuery(self, "getRelyingPartyDetailedSummary", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_email_app_usage_versions_user_counts(self, period: str) -> ClientResult[bytes]:
+        """getEmailAppUsageVersionsUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getEmailAppUsageVersionsUserCounts", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_m365_app_platform_user_counts(self, period: str) -> ClientResult[bytes]:
+        """getM365AppPlatformUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getM365AppPlatformUserCounts", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_activations_user_detail(self) -> ClientResult[Report]:
+        """getOffice365ActivationsUserDetail operation."""
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365ActivationsUserDetail", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_active_user_counts(self, period: str) -> ClientResult[Report]:
+        """getOffice365ActiveUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365ActiveUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_active_user_detail(self, period: str) -> ClientResult[Report]:
+        """getOffice365ActiveUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365ActiveUserDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_groups_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getOffice365GroupsActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365GroupsActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_groups_activity_detail(self, period: str) -> ClientResult[Report]:
+        """getOffice365GroupsActivityDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365GroupsActivityDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_groups_activity_file_counts(self, period: str) -> ClientResult[Report]:
+        """getOffice365GroupsActivityFileCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365GroupsActivityFileCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_groups_activity_group_counts(self, period: str) -> ClientResult[Report]:
+        """getOffice365GroupsActivityGroupCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365GroupsActivityGroupCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_groups_activity_storage(self, period: str) -> ClientResult[Report]:
+        """getOffice365GroupsActivityStorage operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365GroupsActivityStorage", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_office365_services_user_counts(self, period: str) -> ClientResult[Report]:
+        """getOffice365ServicesUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOffice365ServicesUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_onedrive_usage_account_counts(self, period: str) -> ClientResult[Report]:
+        """getOneDriveUsageAccountCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOneDriveUsageAccountCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_onedrive_usage_account_detail(self, period: str) -> ClientResult[Report]:
+        """getOneDriveUsageAccountDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getOneDriveUsageAccountDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_sharepoint_activity_file_counts(self, period: str) -> ClientResult[Report]:
+        """getSharePointActivityFileCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSharePointActivityFileCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_sharepoint_site_usage_file_counts(self, period: str) -> ClientResult[Report]:
+        """getSharePointSiteUsageFileCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSharePointSiteUsageFileCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_sharepoint_site_usage_pages(self, period: str) -> ClientResult[Report]:
+        """getSharePointSiteUsagePages operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSharePointSiteUsagePages", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_sharepoint_site_usage_storage(self, period: str) -> ClientResult[Report]:
+        """getSharePointSiteUsageStorage operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSharePointSiteUsageStorage", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_activity_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessActivityUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessActivityUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_activity_user_detail(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessActivityUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessActivityUserDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_device_usage_distribution_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessDeviceUsageDistributionUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(
+            self, "getSkypeForBusinessDeviceUsageDistributionUserCounts", {"period": period}, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_device_usage_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessDeviceUsageUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessDeviceUsageUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_device_usage_user_detail(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessDeviceUsageUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessDeviceUsageUserDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_organizer_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessOrganizerActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessOrganizerActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_organizer_activity_minute_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessOrganizerActivityMinuteCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessOrganizerActivityMinuteCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_organizer_activity_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessOrganizerActivityUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessOrganizerActivityUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_participant_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessParticipantActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessParticipantActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_participant_activity_minute_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessParticipantActivityMinuteCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessParticipantActivityMinuteCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_participant_activity_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessParticipantActivityUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessParticipantActivityUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_peer_to_peer_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessPeerToPeerActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessPeerToPeerActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_peer_to_peer_activity_minute_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessPeerToPeerActivityMinuteCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessPeerToPeerActivityMinuteCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_skype_for_business_peer_to_peer_activity_user_counts(self, period: str) -> ClientResult[Report]:
+        """getSkypeForBusinessPeerToPeerActivityUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getSkypeForBusinessPeerToPeerActivityUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_device_usage_distribution_user_counts(self, period: str) -> ClientResult[bytes]:
+        """getTeamsDeviceUsageDistributionUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getTeamsDeviceUsageDistributionUserCounts", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_device_usage_user_counts(self, period: str) -> ClientResult[bytes]:
+        """getTeamsDeviceUsageUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getTeamsDeviceUsageUserCounts", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_device_usage_user_detail(self, period: str) -> ClientResult[bytes]:
+        """getTeamsDeviceUsageUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getTeamsDeviceUsageUserDetail", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_team_activity_counts(self, period: str) -> ClientResult[bytes]:
+        """getTeamsTeamActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(self, "getTeamsTeamActivityCounts", {"period": period}, return_type, return_raw_content=True)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_team_activity_detail(self, period: str) -> ClientResult[bytes]:
+        """getTeamsTeamActivityDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(self, "getTeamsTeamActivityDetail", {"period": period}, return_type, return_raw_content=True)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_team_activity_distribution_counts(self, period: str) -> ClientResult[bytes]:
+        """getTeamsTeamActivityDistributionCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getTeamsTeamActivityDistributionCounts", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_teams_user_activity_user_detail(self, period: str) -> ClientResult[bytes]:
+        """getTeamsUserActivityUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = FunctionQuery(
+            self, "getTeamsUserActivityUserDetail", {"period": period}, return_type, return_raw_content=True
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_activity_user_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerActivityUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerActivityUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_activity_user_detail(self, period: str) -> ClientResult[Report]:
+        """getYammerActivityUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerActivityUserDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_device_usage_distribution_user_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerDeviceUsageDistributionUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerDeviceUsageDistributionUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_device_usage_user_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerDeviceUsageUserCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerDeviceUsageUserCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_device_usage_user_detail(self, period: str) -> ClientResult[Report]:
+        """getYammerDeviceUsageUserDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerDeviceUsageUserDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_groups_activity_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerGroupsActivityCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerGroupsActivityCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_groups_activity_detail(self, period: str) -> ClientResult[Report]:
+        """getYammerGroupsActivityDetail operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerGroupsActivityDetail", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_yammer_groups_activity_group_counts(self, period: str) -> ClientResult[Report]:
+        """getYammerGroupsActivityGroupCounts operation.
+
+        Args:
+            period (str):
+                period parameter
+        """
+        from office365.reports.report import Report
+
+        return_type = ClientResult(self.context, Report())
+        qry = FunctionQuery(self, "getYammerGroupsActivityGroupCounts", {"period": period}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_group_archived_print_jobs(
+        self, group_id: str, start_date_time: datetime, end_date_time: datetime
+    ) -> ClientResult[ClientValueCollection[ArchivedPrintJob]]:
+        """getGroupArchivedPrintJobs operation.
+
+        Args:
+            group_id (str):
+                groupId parameter
+            start_date_time (datetime):
+                startDateTime parameter
+            end_date_time (datetime):
+                endDateTime parameter
+        """
+        from office365.intune.print.archived_print_job import ArchivedPrintJob
+
+        return_type = ClientResult(self.context, ClientValueCollection(ArchivedPrintJob))
+        qry = FunctionQuery(
+            self,
+            "getGroupArchivedPrintJobs",
+            {"groupId": group_id, "startDateTime": start_date_time, "endDateTime": end_date_time},
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_printer_archived_print_jobs(
+        self, printer_id: str, start_date_time: datetime, end_date_time: datetime
+    ) -> ClientResult[ClientValueCollection[ArchivedPrintJob]]:
+        """getPrinterArchivedPrintJobs operation.
+
+        Args:
+            printer_id (str):
+                printerId parameter
+            start_date_time (datetime):
+                startDateTime parameter
+            end_date_time (datetime):
+                endDateTime parameter
+        """
+        from office365.intune.print.archived_print_job import ArchivedPrintJob
+
+        return_type = ClientResult(self.context, ClientValueCollection(ArchivedPrintJob))
+        qry = FunctionQuery(
+            self,
+            "getPrinterArchivedPrintJobs",
+            {"printerId": printer_id, "startDateTime": start_date_time, "endDateTime": end_date_time},
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_user_archived_print_jobs(
+        self, user_id: str, start_date_time: datetime, end_date_time: datetime
+    ) -> ClientResult[ClientValueCollection[ArchivedPrintJob]]:
+        """getUserArchivedPrintJobs operation.
+
+        Args:
+            user_id (str):
+                userId parameter
+            start_date_time (datetime):
+                startDateTime parameter
+            end_date_time (datetime):
+                endDateTime parameter
+        """
+        from office365.intune.print.archived_print_job import ArchivedPrintJob
+
+        return_type = ClientResult(self.context, ClientValueCollection(ArchivedPrintJob))
+        qry = FunctionQuery(
+            self,
+            "getUserArchivedPrintJobs",
+            {"userId": user_id, "startDateTime": start_date_time, "endDateTime": end_date_time},
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

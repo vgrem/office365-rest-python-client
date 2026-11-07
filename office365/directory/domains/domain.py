@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.directory.domains.dns_record import DomainDnsRecord
 from office365.directory.domains.state import DomainState
 from office365.directory.objects.collection import DirectoryObjectCollection
@@ -9,6 +11,7 @@ from office365.directory.quotas import IDENTITY_QUOTAS
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
+from office365.runtime.client_result import ClientResult
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -209,3 +212,23 @@ class Domain(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Domain"
+
+    def force_delete(self, disable_user_accounts: bool) -> Self:
+        """forceDelete operation.
+
+        Args:
+            disable_user_accounts (bool):
+                disableUserAccounts parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "forceDelete", None, {"disableUserAccounts": disable_user_accounts}, None, None
+        )
+        self.context.add_query(qry)
+        return self
+
+    def promote(self) -> ClientResult[bool]:
+        """promote operation."""
+        return_type = ClientResult(self.context, bool())
+        qry = ServiceOperationQuery(self, "promote", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

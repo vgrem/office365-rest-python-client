@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
+
+from typing_extensions import Self
 
 from office365.directory.identitygovernance.operationstatus import OperationStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.groups.group import SchedulingGroup
@@ -247,3 +251,25 @@ class Schedule(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Schedule"
+
+    def share(self, notify_team: bool, start_date_time: datetime, end_date_time: datetime) -> Self:
+        """share operation.
+
+        Args:
+            notify_team (bool):
+                notifyTeam parameter
+            start_date_time (datetime):
+                startDateTime parameter
+            end_date_time (datetime):
+                endDateTime parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "share",
+            None,
+            {"notifyTeam": notify_team, "startDateTime": start_date_time, "endDateTime": end_date_time},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

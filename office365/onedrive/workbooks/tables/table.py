@@ -170,3 +170,21 @@ class WorkbookTable(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookTable"
+
+    def convert_to_range(self) -> WorkbookRange:
+        """convertToRange operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = ServiceOperationQuery(self, "convertToRange", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def header_row_range(self) -> WorkbookRange:
+        """headerRowRange operation."""
+        from office365.onedrive.workbooks.ranges.range import WorkbookRange
+
+        return_type = WorkbookRange(self.context)
+        qry = FunctionQuery(self, "headerRowRange", None, return_type)
+        self.context.add_query(qry)
+        return return_type

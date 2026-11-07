@@ -138,6 +138,9 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_score_history import (
         UserExperienceAnalyticsScoreHistory,
     )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_work_from_anywhere_devices_summary import (  # noqa: E501
+        UserExperienceAnalyticsWorkFromAnywhereDevicesSummary,
+    )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_work_from_anywhere_hardware_readiness_metric import (  # noqa: E501
         UserExperienceAnalyticsWorkFromAnywhereHardwareReadinessMetric,
     )
@@ -1138,3 +1141,28 @@ class DeviceManagement(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagement"
+
+    def verify_windows_enrollment_auto_discovery(self, domain_name: str) -> ClientResult[bool]:
+        """verifyWindowsEnrollmentAutoDiscovery operation.
+
+        Args:
+            domain_name (str):
+                domainName parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "verifyWindowsEnrollmentAutoDiscovery", {"domainName": domain_name}, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def user_experience_analytics_summarize_work_from_anywhere_devices(
+        self,
+    ) -> ClientResult[UserExperienceAnalyticsWorkFromAnywhereDevicesSummary]:
+        """userExperienceAnalyticsSummarizeWorkFromAnywhereDevices operation."""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_work_from_anywhere_devices_summary import (  # noqa: E501
+            UserExperienceAnalyticsWorkFromAnywhereDevicesSummary,
+        )
+
+        return_type = ClientResult(self.context, UserExperienceAnalyticsWorkFromAnywhereDevicesSummary())
+        qry = FunctionQuery(self, "userExperienceAnalyticsSummarizeWorkFromAnywhereDevices", None, return_type)
+        self.context.add_query(qry)
+        return return_type

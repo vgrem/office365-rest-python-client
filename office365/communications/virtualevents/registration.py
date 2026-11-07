@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
+from typing_extensions import Self
+
 from office365.communications.virtualevents.attendeeregistrationstatus import VirtualEventAttendeeRegistrationStatus
 from office365.communications.virtualevents.external_registration_information import (  # noqa: E501
     VirtualEventExternalRegistrationInformation,
@@ -12,6 +14,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
@@ -104,3 +107,9 @@ class VirtualEventRegistration(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.VirtualEventRegistration"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

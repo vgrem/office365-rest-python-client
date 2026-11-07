@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.directory.groups.group import Group
 from office365.directory.identitygovernance.privilegedaccess.group_eligibility_schedule import (
     PrivilegedAccessGroupEligibilitySchedule,
@@ -10,6 +12,7 @@ from office365.directory.identitygovernance.privilegedaccess.grouprelationships 
 from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -64,3 +67,9 @@ class PrivilegedAccessGroupEligibilityScheduleRequest(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroupEligibilityScheduleRequest"
+
+    def cancel(self) -> Self:
+        """cancel operation."""
+        qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

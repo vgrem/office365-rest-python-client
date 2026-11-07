@@ -2,15 +2,19 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
 from office365.outlook.resource_link import ResourceLink
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.booking.building_map import BuildingMap
+    from office365.booking.business.import_building_map_setting import ImportBuildingMapSetting
 
 
 class Building(Entity):
@@ -37,3 +41,18 @@ class Building(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Building"
+
+    def ingest_map_file(self, file: str, import_setting: ImportBuildingMapSetting) -> Self:
+        """ingestMapFile operation.
+
+        Args:
+            file (str):
+                file parameter
+            import_setting (ImportBuildingMapSetting):
+                importSetting parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "ingestMapFile", None, {"file": file, "importSetting": import_setting}, None, None
+        )
+        self.context.add_query(qry)
+        return self

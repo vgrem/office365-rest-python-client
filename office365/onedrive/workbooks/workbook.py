@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from typing_extensions import Self
 
 from office365.entity import Entity
@@ -23,6 +25,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.onedrive.workbooks.tables.rows.row import WorkbookTableRow
 
 
 @limit(*EXCEL_QUOTAS)
@@ -167,3 +172,17 @@ class Workbook(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.Workbook"
+
+    def table_row_operation_result(self, key: str) -> WorkbookTableRow:
+        """tableRowOperationResult operation.
+
+        Args:
+            key (str):
+                key parameter
+        """
+        from office365.onedrive.workbooks.tables.rows.row import WorkbookTableRow
+
+        return_type = WorkbookTableRow(self.context)
+        qry = FunctionQuery(self, "tableRowOperationResult", {"key": key}, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from office365.common.mail_folder_operation import MailFolderOperation
     from office365.common.user_configuration import UserConfiguration
     from office365.outlook.mail.folders.collection import MailFolderCollection
+    from office365.outlook.mail.folders.folder import MailFolder
 
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
@@ -212,3 +213,17 @@ class MailFolder(Entity):
                 self.context, UserConfiguration, ResourcePath("userConfigurations", self.resource_path)
             ),
         )
+
+    def move(self, destination_id: str) -> MailFolder:
+        """move operation.
+
+        Args:
+            destination_id (str):
+                DestinationId parameter
+        """
+        from office365.outlook.mail.folders.folder import MailFolder
+
+        return_type = MailFolder(self.context)
+        qry = ServiceOperationQuery(self, "move", None, {"DestinationId": destination_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

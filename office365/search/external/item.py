@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -12,7 +12,11 @@ from office365.externalconnectors.external_item_information_protection_label imp
 )
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.externalconnectors.external_activity_result import ExternalActivityResult
 
 
 class ExternalItem(Entity):
@@ -50,3 +54,19 @@ class ExternalItem(Entity):
     def information_protection_label(self) -> Optional[ExternalItemInformationProtectionLabel]:
         """Gets the informationProtectionLabel property"""
         return self.properties.get("informationProtectionLabel", None)
+
+    def add_activities(
+        self, activities: ClientValueCollection[ExternalActivity]
+    ) -> EntityCollection[ExternalActivityResult]:
+        """addActivities operation.
+
+        Args:
+            activities (ClientValueCollection[ExternalActivity]):
+                activities parameter
+        """
+        from office365.externalconnectors.external_activity_result import ExternalActivityResult
+
+        return_type = EntityCollection(self.context, ExternalActivityResult)
+        qry = ServiceOperationQuery(self, "addActivities", None, {"activities": activities}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

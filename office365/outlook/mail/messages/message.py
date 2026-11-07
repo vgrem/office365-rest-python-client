@@ -597,3 +597,9 @@ class Message(OutlookItem):
         return self.properties.get(
             "mentions", EntityCollection[Mention](self.context, Mention, ResourcePath("mentions", self.resource_path))
         )
+
+    def permanent_delete(self) -> Self:
+        """permanentDelete operation."""
+        qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

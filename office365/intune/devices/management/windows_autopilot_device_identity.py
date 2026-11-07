@@ -3,8 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.intune.devices.management.enrollment_state import EnrollmentState
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -108,3 +111,60 @@ class WindowsAutopilotDeviceIdentity(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WindowsAutopilotDeviceIdentity"
+
+    def assign_user_to_device(self, user_principal_name: str, addressable_user_name: str) -> Self:
+        """assignUserToDevice operation.
+
+        Args:
+            user_principal_name (str):
+                userPrincipalName parameter
+            addressable_user_name (str):
+                addressableUserName parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "assignUserToDevice",
+            None,
+            {"userPrincipalName": user_principal_name, "addressableUserName": addressable_user_name},
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def unassign_user_from_device(self) -> Self:
+        """unassignUserFromDevice operation."""
+        qry = ServiceOperationQuery(self, "unassignUserFromDevice", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def update_device_properties(
+        self, user_principal_name: str, addressable_user_name: str, group_tag: str, display_name: str
+    ) -> Self:
+        """updateDeviceProperties operation.
+
+        Args:
+            user_principal_name (str):
+                userPrincipalName parameter
+            addressable_user_name (str):
+                addressableUserName parameter
+            group_tag (str):
+                groupTag parameter
+            display_name (str):
+                displayName parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "updateDeviceProperties",
+            None,
+            {
+                "userPrincipalName": user_principal_name,
+                "addressableUserName": addressable_user_name,
+                "groupTag": group_tag,
+                "displayName": display_name,
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self

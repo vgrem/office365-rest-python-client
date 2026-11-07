@@ -3,8 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from typing_extensions import Self
+
 from office365.entity import Entity
 from office365.intune.devices.management.remoteassistance.onboardingstatus import RemoteAssistanceOnboardingStatus
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 
@@ -36,3 +39,15 @@ class RemoteAssistancePartner(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.RemoteAssistancePartner"
+
+    def begin_onboarding(self) -> Self:
+        """beginOnboarding operation."""
+        qry = ServiceOperationQuery(self, "beginOnboarding", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def disconnect(self) -> Self:
+        """disconnect operation."""
+        qry = ServiceOperationQuery(self, "disconnect", None, {}, None, None)
+        self.context.add_query(qry)
+        return self

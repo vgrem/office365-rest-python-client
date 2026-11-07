@@ -9,9 +9,11 @@ from office365.directory.policies.conditionalaccess.session_controls import Cond
 from office365.directory.quotas import IDENTITY_PROTECTION_QUOTAS
 from office365.entity import Entity
 from office365.runtime.limits import limit
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
     from office365.directory.policies.conditionalaccess.grant_controls import (
         ConditionalAccessGrantControls,
     )
@@ -91,3 +93,12 @@ class ConditionalAccessPolicy(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ConditionalAccessPolicy"
+
+    def restore(self) -> ConditionalAccessPolicy:
+        """restore operation."""
+        from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
+
+        return_type = ConditionalAccessPolicy(self.context)
+        qry = ServiceOperationQuery(self, "restore", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.synchronization.attribute_mapping_function_schema import (
     AttributeMappingFunctionSchema,
@@ -10,10 +10,18 @@ from office365.directory.synchronization.rule import SynchronizationRule
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
+from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.synchronization.filter_operator_schema import FilterOperatorSchema
+    from office365.security.attribute_definition import AttributeDefinition
+    from office365.security.expression_input_object import ExpressionInputObject
+    from office365.security.parse_expression_response import ParseExpressionResponse
 
 
 class SynchronizationSchema(Entity):
@@ -59,3 +67,43 @@ class SynchronizationSchema(Entity):
         return self.properties.get(
             "synchronizationRules", ClientValueCollection[SynchronizationRule](SynchronizationRule)
         )
+
+    def parse_expression(
+        self, expression: str, test_input_object: ExpressionInputObject, target_attribute_definition: AttributeDefinition
+    ) -> ClientResult[ParseExpressionResponse]:
+        """parseExpression operation.
+
+        Args:
+            expression (str):
+                expression parameter
+            test_input_object (ExpressionInputObject):
+                testInputObject parameter
+            target_attribute_definition (AttributeDefinition):
+                targetAttributeDefinition parameter
+        """
+        from office365.security.parse_expression_response import ParseExpressionResponse
+
+        return_type = ClientResult(self.context, ParseExpressionResponse())
+        qry = ServiceOperationQuery(
+            self,
+            "parseExpression",
+            None,
+            {
+                "expression": expression,
+                "testInputObject": test_input_object,
+                "targetAttributeDefinition": target_attribute_definition,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def filter_operators(self) -> EntityCollection[FilterOperatorSchema]:
+        """filterOperators operation."""
+        from office365.directory.synchronization.filter_operator_schema import FilterOperatorSchema
+
+        return_type = EntityCollection(self.context, FilterOperatorSchema)
+        qry = FunctionQuery(self, "filterOperators", None, return_type)
+        self.context.add_query(qry)
+        return return_type
