@@ -66,7 +66,12 @@ from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.contenttypes.fieldlinks.collection import FieldLinkCollection
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
-from office365.sharepoint.fields.field import is_taxonomy_column, schema_property
+from office365.sharepoint.fields.field import (
+    is_external_data_column,
+    is_multi_valued_column,
+    is_taxonomy_column,
+    schema_property,
+)
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -109,6 +114,7 @@ _FIELD_SELECT = [
     "Title",
     "FieldTypeKind",
     "TypeAsString",
+    "AllowMultipleValues",
     "SchemaXml",
     "Required",
     "Hidden",
@@ -230,6 +236,7 @@ class FieldDefinition:
     title: Optional[str] = None
     field_type_kind: Optional[int] = None
     type_as_string: Optional[str] = None
+    allow_multiple_values: Optional[bool] = None
     schema_xml: Optional[str] = None
     required: Optional[bool] = None
     hidden: Optional[bool] = None
@@ -251,6 +258,7 @@ class FieldDefinition:
             title=data.get("title"),
             field_type_kind=data.get("field_type_kind"),
             type_as_string=data.get("type_as_string"),
+            allow_multiple_values=data.get("allow_multiple_values"),
             schema_xml=data.get("schema_xml"),
             required=data.get("required"),
             hidden=data.get("hidden"),
@@ -533,30 +541,16 @@ def rewrite_lookup_schema(
     return rewritten, None
 
 
-#: A column bound to an external (BCS) content type. The generated ``FieldType``
-#: model does not carry this member, so the ``TypeAsString``/``SchemaXml``
-#: spelling is what identifies it.
-_EXTERNAL_DATA_TYPE = "BusinessData"
-
-
+#: A column bound to an external (BCS) content type. ``FieldType`` carries no member for
+#: the spelling, so the shared predicate reads the type string and the schema.
 def _is_external_data_definition(definition: FieldDefinition) -> bool:
     """Whether a captured column reads its values from an external (BCS) source."""
-    if (definition.type_as_string or "") == _EXTERNAL_DATA_TYPE:
-        return True
-    return f'Type="{_EXTERNAL_DATA_TYPE}"' in (definition.schema_xml or "")
+    return is_external_data_column(definition.type_as_string, definition.schema_xml)
 
 
 def _is_taxonomy_definition(definition: FieldDefinition) -> bool:
     """Whether a captured column is a managed-metadata (taxonomy) column."""
     return is_taxonomy_column(definition.type_as_string, definition.schema_xml)
-
-
-def _taxonomy_allow_multiple(schema_xml: str) -> bool:
-    """Whether a taxonomy column's schema declares that it holds many terms."""
-    match = re.search(r'\bMult="(TRUE|FALSE)"', schema_xml, re.IGNORECASE)
-    if match:
-        return match.group(1).upper() == "TRUE"
-    return 'Type="TaxonomyFieldTypeMulti"' in schema_xml
 
 
 def _ensure_taxonomy_field(container: SPList | Web, definition: FieldDefinition, warnings: List[str]) -> Optional[Field]:
@@ -586,7 +580,7 @@ def _ensure_taxonomy_field(container: SPList | Web, definition: FieldDefinition,
             name,
             term_set,
             schema_property(definition.schema_xml, "SspId"),
-            _taxonomy_allow_multiple(definition.schema_xml or ""),
+            is_multi_valued_column(definition.type_as_string, definition.allow_multiple_values),
         )
     except Exception as exc:  # noqa: BLE001 - best effort, surfaced as a warning
         warning = f"taxonomy column '{name}' could not be recreated: {exc}"
@@ -621,6 +615,7 @@ def _field_definition(field: Field) -> FieldDefinition:
         title=field.title,
         field_type_kind=_field_kind_int(field),
         type_as_string=field.type_as_string,
+        allow_multiple_values=field.properties.get("AllowMultipleValues"),
         schema_xml=_schema_for_copy(field),
         required=field.required,
         hidden=field.hidden,

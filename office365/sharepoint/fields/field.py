@@ -61,6 +61,28 @@ def is_taxonomy_column(type_as_string: Optional[str], schema_xml: Optional[str])
     return type_as_string in TAXONOMY_FIELD_TYPES or "TermSetId" in (schema_xml or "")
 
 
+def is_multi_valued_column(type_as_string: Optional[str], allow_multiple_values: Optional[bool]) -> bool:
+    """Whether a column holds many values (a multi-lookup, -person, -choice or -term).
+
+    ``AllowMultipleValues`` is the authoritative flag; ``TypeAsString`` is a hint that is
+    wrong in both directions -- a column created from a ``Type="Lookup" Mult="TRUE"``
+    schema keeps the *single-value* spelling, and a schema's ``Mult`` attribute lies for a
+    choice column (live-probed). Both callers -- a live :class:`Field` and a replayed
+    structure definition -- ask here, so a snapshot answers what the column answered.
+    """
+    return type_as_string in MULTI_VALUE_FIELD_TYPES or allow_multiple_values is True
+
+
+def is_external_data_column(type_as_string: Optional[str], schema_xml: Optional[str]) -> bool:
+    """Whether a column reads its values from an external (BCS) source.
+
+    Such a column cannot be replayed: its values live in the business-data system, not in
+    SharePoint, and the target has no model bound to it. ``FieldType`` carries no member
+    for the spelling, so the type string and the schema are what answer.
+    """
+    return type_as_string == "BusinessData" or 'Type="BusinessData"' in (schema_xml or "")
+
+
 #: What a column may hold: the length of a single line of text, and how many terms a managed
 #: metadata column is expected to carry before downstream experiences stop being guaranteed.
 def _known_field_types() -> Dict[FieldType, Type["Field"]]:
@@ -187,7 +209,7 @@ class Field(Entity):
         any other type reports it as ``None``, so this predicate -- which answers for
         every column -- reads the row rather than a getter it cannot have.
         """
-        return self.type_as_string in MULTI_VALUE_FIELD_TYPES or self.properties.get("AllowMultipleValues") is True
+        return is_multi_valued_column(self.type_as_string, self.properties.get("AllowMultipleValues"))
 
     @property
     def is_multi_choice(self) -> bool:
