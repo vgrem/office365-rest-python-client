@@ -7,12 +7,11 @@ implementation and the primary storage for the migration toolkit — plus a
 
 from __future__ import annotations
 
-import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from office365.migration.adapters import MigrationProgress
+from office365.migration.adapters import MigrationProgress, checksum_file
 from office365.migration.base import MigrationItem
 from office365.runtime.converters.json_file import record_to_json
 from office365.runtime.converters.scalars import iso
@@ -53,7 +52,7 @@ class FileSystemSource:
         return Path(item.source_path).read_bytes()
 
     def checksum(self, item: MigrationItem) -> str:
-        return _md5(Path(item.source_path))
+        return checksum_file(Path(item.source_path))
 
     def close(self) -> None:
         pass
@@ -100,7 +99,7 @@ class FileSystemTarget:
         return iso(datetime.fromtimestamp((self._root / item.dest_path).stat().st_mtime, timezone.utc))
 
     def checksum(self, item: MigrationItem) -> str:
-        return _md5(self._root / item.dest_path)
+        return checksum_file(self._root / item.dest_path)
 
     def commit(self, options=None) -> None:
         pass
@@ -137,7 +136,7 @@ class JsonFileSource:
             return json.load(f)
 
     def checksum(self, item: MigrationItem) -> str:
-        return _md5(Path(item.source_path))
+        return checksum_file(Path(item.source_path))
 
     def close(self) -> None:
         pass
@@ -166,12 +165,4 @@ class JsonFileTarget(FileSystemTarget):
         return [p.relative_to(self._root).with_suffix("").as_posix() for p in self._root.rglob("*.json")]
 
     def checksum(self, item: MigrationItem) -> str:
-        return _md5(self._path(item))
-
-
-def _md5(path: Path) -> str:
-    digest = hashlib.md5()
-    with open(path, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+        return checksum_file(self._path(item))

@@ -34,6 +34,19 @@ def checksum(data: bytes) -> str:
     return hashlib.md5(data).hexdigest()
 
 
+def checksum_file(path) -> str:
+    """The same digest, read in chunks — for a payload too large to hold in memory.
+
+    A target answering "what is stored here?" has a path, not bytes, so the digest
+    of a file has to be computed from the file. One chunk size, one answer.
+    """
+    digest = hashlib.md5()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 class DataSource(ABC):
     """Reads migration items from a source.
 
