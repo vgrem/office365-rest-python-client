@@ -57,6 +57,7 @@ from office365.runtime.schema import TypeSchema
 from office365.sharepoint.lists.base_type import BaseType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.webs.creation_information import WebCreationInformation
+from office365.sharepoint.webs.templates.type import WebTemplateType
 
 if TYPE_CHECKING:
     from office365.migration.settings import MigrationSettings
@@ -623,7 +624,7 @@ def _web_identity(web: Web) -> tuple[str, str, str]:
     raw = _web_url(web)
     leaf = raw.rstrip("/").rsplit("/", 1)[-1]
     title = web.title or leaf
-    template = web.web_template or "STS#3"
+    template = web.web_template or WebTemplateType.STS_MODERN.value
     return leaf, title, template
 
 

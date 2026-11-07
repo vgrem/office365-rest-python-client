@@ -43,15 +43,16 @@ from office365.migration.sharepoint.pages import (
     detect_page_handoff,
     page_handoff_note,
 )
+from office365.sharepoint.lists.templates.type import ListTemplateType
 
 if TYPE_CHECKING:
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.webs.web import Web
 
-#: ``SPListTemplateType.ExternalList`` (MS-WSSTS 2.7) — a list whose rows live in
-#: an external business-data (BCS) system. Its structure is a view over a BDC
-#: model that a client-side copy cannot provision, so it is reported, not migrated.
-EXTERNAL_LIST_TEMPLATE = 600
+#: An external list (``ListTemplateType.ExternalList``) — its rows live in a
+#: business-data (BCS) system. Its structure is a view over a BDC model that a
+#: client-side copy cannot provision, so it is reported, not migrated.
+EXTERNAL_LIST_TEMPLATE = ListTemplateType.ExternalList.value
 
 #: Fragments that mark a list form as a browser-enabled InfoPath form. InfoPath
 #: browser forms are served by ``FormServer.aspx`` with the template in

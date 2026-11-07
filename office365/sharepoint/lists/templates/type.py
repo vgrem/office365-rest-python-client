@@ -127,3 +127,6 @@ class ListTemplateType(Enum):
     Holidays = 421
 
     IMEDic = 499
+
+    ExternalList = 600
+    """Specifies an external list, whose rows live in a business-data (BCS) system."""
