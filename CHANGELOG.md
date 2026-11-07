@@ -7,1466 +7,478 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Two stories. The model types now *declare* the metadata they read, so `$select`,
-`$expand`, comparison, provenance and throttling limits are derived from one
-declaration instead of hand-written at each call site. And the migration layer
-became a set of portable trees — mail, calendar, contacts, lists, navigation —
-built on those types, so a source and a target spell an item the same way.
+Two changes shape this line. Model types now declare what they read: every getter names
+the OData member behind it, and a type's schema derives its projections from those
+declarations instead of a hand-kept list. The migration layer becomes a set of portable
+trees — mail, calendars, contacts and a bundle — so an export can be inspected, resumed
+and imported into another tenant.
 
 ### Breaking
 
-Three of these reach shipped API — `Web.site_id`, the `SP.User` profile getters and
-the `NavNode`/`WebNavigation` records; the rest re-shape what this development line
-introduced.
-
-- The Teams export archive is the model's own JSON: `team.json` is
-  `team.to_json()` with `members`, `installedApps` and `channels` attached, and
-  `messages.ndjson` lines are `message.to_json()` plus `channel_id`. `TeamRecord`,
-  `ChannelRecord`, `MemberRecord`, `TabRecord`, `AppRecord` and the extractor
-  behind them are removed; `TeamsExportOptions` moved to
-  `migration.teams.adapters`.
-- Every mailbox sidecar is the model's own JSON with Graph's keys —
-  `Message.to_json()`, `Event.to_json()`, `Contact.to_json()` — plus the three
-  provenance keys a model cannot know. A tree written by a pre-release build is
-  refused by name (`refuse_legacy_sidecar`) instead of importing as empty fields.
-- SharePoint getters declare the OData names they read (4,013 declarations,
-  back-filled from the CSDL). `TypeSchema.of(Web).columns` goes 39 → 118 names and
-  `.navigations` 2 → 50, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41; a
-  projection built from the old lists asked for navigation properties, which
-  `$select` drops silently. Request bodies are unchanged — a declaration says what
-  a *response* may carry, never what a request must.
-- Graph getters declare the OData names they read: 6,911 declarations in 1,057
-  modules, back-filled from `Graph.xml` and its preview snapshot. a type's columns are
-  derived from the declarations, so projections grow: `User` 21 → 81 columns,
-  `Group` 13 → 53, `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13,
-  `AccessPackage` 6 → 11. 175 members that were declared as columns are now declared
-  as the navigations they are, so `$select` no longer asks for them — Graph drops
-  those silently, the same failure the SharePoint half had. Request bodies are
-  unchanged.
-- The back-fill that wrote those declarations has been retired, not kept beside the
-  tree it no longer changes: a dry run over every package under both services planned
-  nothing, and what guards them now is a test that reads each declaration against the
-  getter it sits above — one `created_by` in the SharePoint half carried its
-  neighbour's name, so `CreatedBy` was unmapped and `expansions` never asked for it.
-- A write payload no longer carries a value the service assigns: 117 SharePoint
-  columns are declared `readonly` from a live probe that wrote each one and read it
-  back. That is all 37 `File` columns — the service refuses every `MERGE` on
-  `SP.File`, so a file's metadata is written through `ListItemAllFields` — and 43 more
-  on `ListItem` (which leaves 7 writable columns out of 62), 13 on `Folder`, 17 on
-  `Field`, 6 on `ContentType`. `to_json(profile)` drops them, so a request that used
-  to echo a server-owned value back no longer does.
+- The Teams export archive is the model's own JSON: `team.json` is `team.to_json()` with
+  `members`, `installedApps` and `channels` attached, and `messages.ndjson` lines are
+  `message.to_json()` plus `channel_id`. `TeamRecord`, `ChannelRecord`, `MemberRecord`,
+  `TabRecord` and `AppRecord` are removed, with the extractor behind them;
+  `TeamsExportOptions` moved to `migration.teams.adapters`.
+- Every mailbox sidecar is the model's own JSON — `Message.to_json()`, `Event.to_json()`,
+  `Contact.to_json()` — plus three provenance keys a model cannot know. A tree written by
+  a pre-release build is refused by name (`refuse_legacy_sidecar`) instead of importing as
+  empty fields.
+- SharePoint getters declare the OData names they read (4,013 declarations, back-filled
+  from the CSDL): `TypeSchema.of(Web).columns` goes 39 → 118 names and `.navigations`
+  2 → 50, `List` 21 → 98, `File` 11 → 37, `Field` 3 → 41. A projection built from the old
+  lists asked for navigation properties, which `$select` drops silently. Request bodies
+  are unchanged: a declaration says what a *response* may carry, never what a request must.
+- Graph getters declare them too: 6,911 declarations in 1,057 modules. `User` goes 21 → 81
+  columns, `Group` 13 → 53, `DriveItem` 10 → 32, `Team` 9 → 17, `Channel` 5 → 13. 175
+  members that were declared as columns are now declared as navigations, so `$select` no
+  longer asks for them. Request bodies are unchanged.
+- The back-fill that wrote those declarations is retired, not kept beside the tree it no
+  longer changes. What guards them is a test that reads each declaration against the getter
+  it sits above.
+- A write payload no longer carries a value the service assigns: 117 SharePoint columns are
+  declared `readonly` from a live write-and-read-back probe — all 37 of `File`, 43 more on
+  `ListItem`, 13 on `Folder`, 17 on `Field`, 6 on `ContentType`. `to_json(profile)` drops
+  them, so a request no longer echoes a server-owned value back.
 - A column the service refuses is declared by the getter that reads it:
-  `@odata(..., selectable=False)` replaces `ClientObject._unselectable`, a type-level name
-  list `TypeSchema` read and then forgot. Six names moved onto the member that declares
-  them, and `ShieldAddRoleAssignmentPushdown` moved from `SecurableObject` to `ListItem`,
-  the one subclass a `$select` serves it for. Projections are unchanged, except that
-  `SecurableObject` no longer declares a column every list and web refuses.
+  `@odata(..., selectable=False)` replaces `ClientObject._unselectable`, and
+  `ShieldAddRoleAssignmentPushdown` moved to `ListItem`, the one subclass a `$select`
+  serves it for.
 - A folder's content type order is the collection the CSDL declares, not one id:
-  `Folder.content_type_order` and `Folder.unique_content_type_order` answer a
-  `ClientValueCollection[ContentTypeId]`, so a caller reads `StringValue` off each
-  member. The helper that guessed between the two shapes is gone with the cause, and
-  `ContentType.set_default()` reads the members directly.
-- An enum-typed Graph column returns the member, not the wire string: 386 type
-  imports in 241 modules moved from the getter's own body (and the dead
-  `if TYPE_CHECKING:` entry beside it) to the module block — 403 columns, because
-  one import serves every getter that names it — so `declared_type` can see what
-  the annotation says. `BrowserSharedCookie.source_environment` is
-  a `BrowserSharedCookieSourceEnvironment` rather than `'2'`; compare by
-  `.name`, which is what the service accepts back. A value no member names is
-  kept as the service sent it instead of being coerced to `None`; a value that differs
-  from a member only in case is that member, because one service spells one value set
-  two ways (`GET /teams/{id}` says `public`, the group it was listed from says `Public`).
-- A `ClientValue` subclass no longer takes `@dataclass` (`@value` is gone with it): the base
-  class applies `dataclass(cls, repr=False)` in `__init_subclass__`, once per class. A second
-  pass over fields the first already consumed is a different class — fatal when a field uses
-  `field(default_factory=...)`, which the first pass deletes from the class, and silent
-  otherwise, where the generated `__repr__` shadows the bounded one. Drop the decorator.
-- A complex-typed Graph column declares its type as well: 592 `ClientValue` imports
-  in 328 modules moved the same way, and 745 more columns answer the type they name
-  (1,760 value-typed columns in total). Writes behave as before — a getter that builds
-  its default instance already hydrated the value — but a column with no declared type
-  was *skipped* by the record importer as unknown, so
-  `coerce_records(BrowserSharedCookie, [{"history": …}])` dropped that column with
-  `Skipping unknown column 'history'` and keeps it now.
-- The names only a dead `if TYPE_CHECKING:` block binds are reachable too: 25 imports in
-  21 modules moved out of the block (66 of the sites are `Optional` in
-  `sharepoint.listitems.listitem`), and 145 of the 149 columns that still raised
-  `NameError` now answer a type — `ListItem.created` is `datetime`, not `None`. The four
-  left are the cyclic value types (`ChatInfo`, `ConditionalAccessGrantControls`). A
-  `timedelta` column now *declares* `timedelta` while still holding `'PT30M'`: the
-  declaration is this change's job, the converter is the next one.
-- `SP.User` loses the 58 profile getters that were a second copy of
-  `SP.Directory.User` (`about_me`, `skills`, `id_`, ...), plus
-  `User.get_user_profile_properties` and `Web.site_id`. The service drops those
-  names from `$select` silently; the profile fields live on
-  `sharepoint.directory.users.user.User` (63 declared) or behind
-  `PeopleManager.get_user_profile_properties`.
-- `NavNode` and `WebNavigation` are removed: a captured navigation is the model's
-  own tree, read through `Web.navigation.get_tree(recursive=True)`.
+  `Folder.content_type_order` and `unique_content_type_order` answer a
+  `ClientValueCollection[ContentTypeId]`, so a caller reads `StringValue` off each member.
+- An enum-typed Graph column returns the member, not the wire string: 386 type imports in
+  241 modules moved out of the getter's body into the module block, where `declared_type`
+  can see them — 403 columns. Compare by `.name`. A value no member names is kept as the
+  service sent it, and one that differs only in case is that member.
+- A `ClientValue` subclass no longer takes `@dataclass`: the base class applies
+  `dataclass(cls, repr=False)` in `__init_subclass__`, once per class. A second pass over
+  fields the first already consumed is a different class. Drop the decorator.
+- A complex-typed Graph column declares its type as well: 745 more columns, 1,760
+  value-typed in total, so the record importer no longer skips them as unknown.
+- The names a dead `if TYPE_CHECKING:` block bound are reachable: 145 more columns answer a
+  type — `ListItem.created` is `datetime`, not `None`. Four cyclic value types still cannot.
+- `SP.User` loses the 58 profile getters that were a second copy of `SP.Directory.User`,
+  plus `User.get_user_profile_properties` and `Web.site_id`. The profile fields live on
+  `sharepoint.directory.users.user.User` or behind `PeopleManager`.
+- `NavNode` and `WebNavigation` are removed: a captured navigation is the model's own tree,
+  read through `Web.navigation.get_tree(recursive=True)`.
 - `MigrationItem` no longer carries `author_id`/`editor_id` — they are
-  `item.author.user_id` / `item.editor.user_id`, and the old keywords raise
-  `TypeError`. `ItemReport` keeps both columns.
-- `PagePayload` is gone (a page item is a `SitePage`), `PAGE_LIBRARY_TEMPLATE`,
-  `SITE_PAGE_CONTENT_TYPE_PREFIX` and `is_modern_page` left
-  `migration.sharepoint.pages` in favour of `is_page_library(list)`, and
-  `offline_context()` moved up to `office365.migration.offline`.
-- `IcsProfile` is `IcsDialect`, and each family's record is one class with methods
-  rather than a record type plus free functions: `CalendarEventRecord` and its
-  `event_*` helpers are `EventRecord`, the `contact_*` helpers are
+  `item.author.user_id` / `item.editor.user_id`, and the old keywords raise `TypeError`.
+  `ItemReport` keeps both columns.
+- `PagePayload` is gone (a page item is a `SitePage`); `PAGE_LIBRARY_TEMPLATE`,
+  `SITE_PAGE_CONTENT_TYPE_PREFIX` and `is_modern_page` left `migration.sharepoint.pages` in
+  favour of `is_page_library(list)`; `offline_context()` moved to
+  `office365.migration.offline`.
+- `IcsProfile` is `IcsDialect`, and each family's record is one class with methods:
+  `CalendarEventRecord` and its helpers are `EventRecord`, the `contact_*` helpers are
   `ContactRecord`, and `STANDALONE_EVENT_TYPES`/`event_kind` are gone.
-- The permission-declaration machinery moved out of the Graph namespace into its own
-  package: `office365.permissions` exports `require_permission`, `declared`,
-  `PermissionRequirement`, `Requirement`, `Requirement.join`, `ResourceName` and `index`. The
-  old `office365.directory.permissions.require_permission` / `.requirement` / `.registry`
-  modules are gone, as is `.resource_name` (it is `office365.permissions.ResourceName` now); a
-  model method announces what its request needs, and `declared(method, flow=...)` reads it,
-  raising instead of answering an empty requirement when the method names nothing under that
-  flow. `office365.directory.permissions` keeps Graph's permission entities (`Identity`,
-  `IdentitySet`, ...), which are model types, not vocabulary.
-- A declaration and a requirement now name the **API resource** its permissions belong to
-  (`@require_permission(resource=ResourceName.SharePoint, delegated=["AllSites.FullControl"])`).
-  A permission name is only a grant on the API that defines it - `Sites.ReadWrite.All` is
-  granted separately on Microsoft Graph and on SharePoint, and `Mail.Send` is an application
-  permission on Graph but a delegated one on Exchange Online - so names from two resources are
-  never merged into one requirement (`Requirement.join` refuses). The default is
-  `ResourceName.Graph`, which is what every existing declaration means, so rendered
-  requirements are unchanged. Two readers that had assumed Graph are fixed: `guard`'s cached
-  lookups used `resource` only as a cache key while querying Microsoft Graph, and
-  `verify_permissions` hardcoded it.
-- `office365.sharepoint.workflow.task` is gone, with the second `SPWorkflowTask` it declared.
-  Its 25 operations were a strict subset of
-  `office365.sharepoint.workflow.sp_workflow_task.SPWorkflowTask`'s 32, and nothing in the
-  library, the tests or the examples imported either class — two classes wearing one metadata
-  name, which also made the declaration index count the same endpoints twice. The survivor is
-  the one that says what it is (`SP.Workflow.SPWorkflowTask`) rather than inheriting the
-  generic `SP.ListItem`; import from it.
-
+- The permission machinery moved to `office365.permissions`, which exports
+  `require_permission`, `declared`, `PermissionRequirement`, `Requirement`,
+  `Requirement.join`, `ResourceName` and `index`. The `office365.directory.permissions`
+  modules that held it are gone, and `declared(method, flow=...)` raises instead of
+  answering an empty requirement when the method names nothing under that flow. The
+  package keeps Graph's permission entities, which are model types, not vocabulary.
+- A declaration and a requirement name the **API resource** its permissions belong to:
+  `@require_permission(resource=ResourceName.SharePoint, delegated=[...])`. A name is only
+  a grant on the API that defines it, so names from two resources are never merged
+  (`Requirement.join` refuses). The default is `ResourceName.Graph`.
+- `office365.sharepoint.workflow.task` is gone with the second `SPWorkflowTask` it
+  declared; import `SP.Workflow.SPWorkflowTask` from
+  `office365.sharepoint.workflow.sp_workflow_task`.
 - `ListItem.moderation_status`, `SitePage.moderation_status` and
   `UserInfoItem.o_data___moderation_status` answer an `SPModerationStatusType` member
-  instead of the raw integer. The column's own `CHOICES` are `0;#Approved`,
-  `1;#Rejected`, `2;#Pending`, `3;#Draft`, `4;#Scheduled` — so a comparison against a
-  literal reads false now, and the one the migration layer made against `2` for
-  "approved" was backwards. `SitePage.moderation_status` is `readonly` as well: the
-  column states `ReadOnly="TRUE"`.
+  instead of the raw integer, so a comparison against a literal reads false.
+  `SitePage.moderation_status` is `readonly` as well.
 - The metadata doors on the model types are gone; the type's schema answers instead:
-  `Event.select_all()` is `TypeSchema.of(Event).columns`, `expand_all()` is
-  `.expansions`, `select_facet(f)` is `.columns_of_facet(f)` and `odata_name(a)` is
-  `.name_of(a)` — on a `ClientValue` too, which had its own `odata_name`. A schema is
-  asked by type, so the answer cannot depend on which instance you hold or which
-  client you hold it from. `select()`, `expand()` and `ensure_properties()` take any
-  `Sequence[str]`, so a projection feeds them directly:
-  `event.select(TypeSchema.of(Event).columns)`. All four were added after `3.3.0`, so
-  nothing shipped changes.
+  `select_all()` is `TypeSchema.of(...).columns`, `expand_all()` is `.expansions`,
+  `select_facet(f)` is `.columns_of_facet(f)` and `odata_name(a)` is `.name_of(a)` — on a
+  `ClientValue` too.
 
 ### Added
 
-**Migration**
-
-- `migration_client(client)` (`office365.migration`) applies the background-workload
-  policy in one call: a shared `RateLimiter` on the context's transport, plus
-  `x-ms-throttle-priority: low` on a Graph client, so a bulk export or import is
-  throttled last and paces on the server's own signal instead of discovering the
-  limit through `429`s. `priority=None` leaves the header off, `pace=False` skips the
-  limiter, and a SharePoint context gets pacing only — it signals load with
-  `X-SharePointHealthScore` instead.
-
 **Model metadata**
 
-- Two catalog modules for the limits a migration meets at scale: `subscriptions/quotas.py`
-  (change, reauthorize, read and list, each in its per-app-for-all-tenants and
-  per-app-per-tenant columns — the second is an order of magnitude smaller, and it is the
-  one a tenant-wide renewal hits) and `onenote/quotas.py` (delegated 120/min, 400/h, five
-  at a time; app-only 240/min, 800/h, twenty at a time — the token decides which column is
-  spent, so the model declares both). `Subscription`, `SubscriptionCollection`,
-  `OnenoteEntityBaseModel`, `Invitation` and `ConditionalAccessPolicy` now answer them;
-  `directory/quotas.py` also gained the tenant-wide invitation row (150 requests / 5 s) and
-  the identity-protection row (one request a second, and no `Retry-After` on a 429).
+- A value declares itself the way an object already did: `ClientValue.__init_subclass__`
+  runs `dataclass(cls, repr=False)` and reads the schema from those fields, with
+  `@dataclass_transform()` telling a type checker what the decorator said.
 - A type's schema carries its identity and its roots beside its properties: `_schema.key`
-  and `_schema.versions`, from `@key(...)` and `@version(...)` on the class. Both readers
-  (`property_ref_name` and the version gate) ask the schema rather than the class
-  attribute the decorator wrote, and the decorators rebuild it through one helper,
-  `TypeSchema.rebuild` — the one place that records why a decorator above a class has to:
-  the schema was read when the class was created, before anything above it ran.
+  and `_schema.versions`, from `@key(...)` and `@version(...)`.
+- `@key("tenantId")` declares which property spells a *type's* identity: what re-anchors an
+  entity's path when the value is set, and what a read forces into `$select`.
 - One index answers for both carriers, and the class states it once, in
-  `__init_subclass__`: a `ClientObject`'s schema and a value's are both built when the class
-  body has been read. `TypeSchema.of(Model)` is then an attribute read — nothing is scanned twice and
-  nothing is built lazily, so no cache has to be keyed weakly. The second index, a module-level
-  `field_declarations()` dict filled by walking `dataclasses.fields()` at each call site, is
-  gone: `ScopedProfile`, `compare_check`, the record importer and `ClientValue.to_json` ask
-  the schema instead. `declared_type` stopped guessing `to_snake_case(name)` as well: it
-  resolves the declaration's `attr`, so a value field declared under a different OData name
-  answers its type instead of silently answering `None`.
-- A value declares itself the way an object already did: `ClientValue.__init_subclass__` runs
-  `dataclass(cls, repr=False)` and then reads the schema from those fields. No decorator says
-  it, so no generated class can forget to. `@dataclass_transform()` on `ClientValue` is what
-  tells a type checker that the hook — not a literal `@dataclass` above each of 2,700 classes —
-  is what gives them their constructors; without it every value reads as a class that takes no
-  arguments. `repr=False` stays the documented way to say "generate no `__repr__`", so every
-  value keeps the bounded rendering it inherits and a collection keeps its preview; the hook
-  pins that rendering in each class besides, because a rendering only survives a later
-  `dataclass` if the class already carries it. `office365.runtime.types.value` is deleted.
-- Four fields defaulted to a value *instance* (`trigger: WorkflowExecutionTrigger =
-  WorkflowExecutionTrigger()`); they now use `field(default_factory=...)`. Sharing one instance
-  across every value ever constructed was the bug the dataclass pass surfaced — the aliasing,
-  not the error message. Six value classes also carried a plain `@dataclass` on top of the one
-  the base now installs; a second pass is not idempotent (`field(default_factory=...)` deletes
-  its class attribute, so the repeat sees a required field after a defaulted one), which is why
-  the two mechanisms could not have coexisted.
-- A schema derives its projections from that one index, on the first ask: `columns`,
+  `__init_subclass__`: `TypeSchema.of(Model)` is an attribute read, with nothing scanned
+  twice.
+- A schema derives its projections from that index on the first ask: `columns`,
   `navigations`, `expansions`, `readonly`, `persistable`, `system`, `beta_names`,
-  `canonical_names`, `beta_only`, `stable_only` and `facets` are computed from
-  `properties` and stored nowhere else, so `build()` reads the declarations and nothing
-  more and a class that declares two members is built as cheaply as one that declares
-  two hundred. `expansions` is the `$expand` half of `navigations`, and
-  `TypeSchema.of()` accepts a class or an instance of one.
+  `canonical_names`, `beta_only`, `stable_only` and `facets`.
 - A field can declare what the service treats as the same value:
-  `@odata(name="birthday", compare=Compare(format="date"))`
-  (`office365.runtime.types.odata_property.Compare`: `casefold`, `fallback`,
-  `default`, `unordered`, `format`, `ignore`, `key`). `entity.to_json(COMPARABLE)`
-  (`office365.runtime.odata.comparable`) spells a model in that comparable form,
-  so two copies that differ only by what the service rewrites — an address-only
-  email named after itself, a birthday's time of day, a label set's order, a
-  fractional second — compare equal and a real difference does not. It is one more
-  `JsonProfile`; `V4JsonFormat` output is unchanged.
-- `hydrate(payload, profile=None)` is the one in-place read verb on
-  `ClientObject`, `ClientValue` and `ClientResult`, answers `self` so it chains,
-  and `profile=None` reads what `to_json()` writes with no profile.
-  `JsonProfile.scoped(Model, only=..., without=...)` narrows any profile to some
-  properties of one model, and a scope narrows a `ClientValue` the same way: one
-  `TypeSchema.of()` answers for both carriers.
-- `JsonProfile` keeps only what it uses: four accessors that re-exported a dialect
-  field (`metadata_type`, `collection`, `collection_next`, `etag`) are gone.
-- One serialization contract (`office365.runtime.serialization`:
-  `JsonSerializable.to_json(profile=None)`, `PropertyReceiver.set_property(name,
-  value, persist_changes)`), structural, nothing inherits from it.
-- Getters declare their OData name in place, so nothing spells a name twice:
-  `declared_type(Event, "iCalUId")` now answers `str`, `@odata(navigation=True)`
-  marks an `$expand`-only member, and `TypeSchema.of(Event).columns` returns the 41
-  names `$select` accepts, `.expansions` the 7 `$expand`-only ones, `.name_of("ical_uid")`
-  the wire spelling. An enum-typed property reads back as
-  the generated enum member.
-- Every `$select` column of a served package resolves a declared type, including
-  the twelve value-object getters that carried no annotation, or one naming a type
-  imported only under `TYPE_CHECKING` — either way hydration read a bare dict where
-  the model promises a value object.
-- `@odata(..., expandable=False)` marks a navigation `$expand` will not follow
-  alone: `TypeSchema.of(Event).expansions` no longer names `extensions`, which the
-  service refuses without a `$filter`.
-- A collection cell reads back as a plain list: `values_of(cell)`
-  (`office365.runtime.converters.value`) answers the items of a cell in every shape
-  a read or a payload produces — a positional mapping (`{0: 1}`) for an undeclared
-  collection column, `{"results": [...]}`, a bare list, a `ClientValueCollection`, or
-  one scalar — and `ClientValueCollection.values()` is the same list once the model
-  already holds the value. A dict that is neither a container nor positional is one
-  value object, not a list of its fields.
-- `ListItem.value_column(name)` and `ListItem.string_value_column(name)` spell the item
-  columns a Lookup/Person value travels under -- `<name>Id`, and the read-only
-  `<name>StringId` a user column reports. `set_property`'s shadow write and the
-  migration layer's nineteen hand-appended suffixes now read the one declaration.
-- `@odata(..., system=True)` records provenance: the metadata declares no such
-  name, the service spells it on the item payload. `ListItem.author_id`,
-  `editor_id`, `created`, `modified`, `SitePage`'s three item columns and
-  `Tenant.displayName`/`id`/`serviceInfo` say so — the flag is derived by the
-  codemod (absent from the CSDL ⇒ `system`) and answered by `TypeSchema.system`.
-- `@key("tenantId")` declares which property spells a *type's* identity, above the
-  class next to `@version`: what re-anchors an entity's path when the value is set,
-  and what a read forces into `$select`. No declaration means the family default
-  (`id` for Graph, `Id` for SharePoint), so a class that states nothing behaves
-  exactly as it did; a composite key raises `CompositeKeyNotSupported` rather than
-  half-addressing. Nine v1.0 Graph types were addressed by `id` that no request can
-  satisfy (`WorkflowVersion` is keyed by `versionNumber`,
-  `CrossTenantAccessPolicyConfigurationPartner` by `tenantId`,
-  `AuthenticationConditionApplication` by `appId`, …); the generator now derives
-  the declaration from the CSDL `<Key>` — `--plan-keys` reports, `--apply-keys`
-  writes, and a mode the metadata cannot be trusted for (`keys_authoritative=False`,
-  SharePoint states 613 keys, 284 of which name a member no class has) refuses to write at all.
+  `@odata(name="birthday", compare=Compare(format="date"))`, where `Compare` carries
+  `casefold` and `fallback`.
+- `@odata(navigation=True)` marks an `$expand`-only member and `@odata(expandable=False)`
+  one `$expand` will not follow alone: `TypeSchema.of(Event).expansions` no longer names
+  `extensions`, which the service refuses without a `$filter`.
+- `@odata(system=True)` records provenance: the metadata declares no such name, the service
+  spells it on the item payload.
+- `hydrate(payload, profile=None)` is the one in-place read verb on `ClientObject`,
+  `ClientValue` and `ClientResult`, answers `self` so it chains, and reads what `to_json()`
+  writes when no profile is given.
+- `JsonProfile.scoped(Model, only=..., without=...)` narrows any profile to some properties of
+  one model, and `entity.to_json(COMPARABLE)` spells a model in the comparable form
+  (`office365.runtime.odata.comparable`), so two copies that differ only by what the service
+  rewrites compare equal and a real difference does not.
+- One serialization contract lives in `office365.runtime.serialization`
+  (`JsonSerializable.to_json(profile=None)`, `PropertyReceiver.set_property(...)`), and
+  `JsonProfile` keeps only what it uses.
+- `values_of(cell)` answers the items of a collection cell in every shape a read or a
+  payload produces.
+- `ListItem.value_column(name)` and `string_value_column(name)` spell the item columns a
+  Lookup or Person value travels under: `<name>Id`, and the read-only `<name>StringId`.
+- Every `$select` column of a served package resolves a declared type, including the twelve
+  value-object getters that carried no annotation.
 
 **SharePoint items**
 
-- `ListItem.set_system_metadata(values, new_document_update=False)` writes the system
-  fields of a list item in one `ValidateUpdateListItem` request: a `datetime` travels
-  as `...Z` UTC (what `datesInUTC` requires), a `User` as its login, a string as given,
-  and an `OData_`-escaped name — `OData__ModerationStatus` — under the internal name the
-  write takes. Every value shares one request because a system update re-approves the
-  item, so a second write would discard the approval state the first one set;
-  `new_document_update=True` takes the CSOM `UpdateOverwriteVersion` path, so a document
-  keeps its version count. A field the service refuses comes back on the result
-  (`ListItemFormUpdateValue.HasException` / `ErrorMessage`) instead of being dropped.
-
-- `ListItem.restore_fidelity(created, modified, author, editor, approval,
-  new_document_update=False, web_local_dates=False)` writes what a copy of an item cannot
-  carry in its payload — the dates, the authorship and the approval columns — in one
-  `ValidateUpdateListItem` request, because a system update re-approves the item and a
-  second write would undo the approval state the first one set. `approval` is the
-  approval columns as the source declared them (the status and the comments beside it),
-  not a lone enum. `web_local_dates=True` states that the timestamps already name the
-  web's wall clock and must be sent verbatim; an item of a document library needs that,
-  because its form ignores `datesInUTC` and refuses a trailing `Z` ("You must specify a
-  valid date within the range of 1/1/1900 and 12/31/8900.") while a list item takes the
-  `...Z` form and restores the same instant from it. `set_system_metadata` grew the same
-  grammar switch as `dates_in_utc=True`.
-
-- `SPModerationStatusType` (`office365.sharepoint.listitems.moderation_status`) spells the
-  approval column's five values, and the three getters that read the column answer it.
-  `_ModerationStatus` is `0` on a list without moderation and `2` on one with it — a
-  fresh item on a moderated list is *pending*, and a system update does not approve it, so
-  a caller replaying approval state writes it.
+- `ListItem.set_system_metadata(values, new_document_update=False)` writes the system fields
+  of a list item in one `ValidateUpdateListItem` request: a `datetime` as `...Z` UTC, a
+  `User` as its login.
+- `ListItem.restore_fidelity(created, modified, author, editor, approval, ...)` writes what a
+  copy of an item cannot carry in its payload — the dates, the authorship, the approval
+  columns — in one request.
+- `SPModerationStatusType` spells the approval column's five values, and the three getters
+  that read the column answer it.
 
 **Outlook mail**
 
-- `MessageCollection.add_from_mime(data)` creates a draft from RFC 822 bytes —
-  an `.eml` file as it sits on disk — posting them base64-encoded as
-  `text/plain`, the one Graph create whose body *is* the message.
+- `MessageCollection.add_from_mime(data)` creates a draft from RFC 822 bytes — an `.eml`
+  file as it sits on disk — posting them base64-encoded as `text/plain`.
 
 **Migration**
 
-- `IdentityMap` (`office365.migration`) maps source principals onto target
-  principals for authorship and ACLs, so a run can cross tenants: entries from a
-  CSV (`source,target[,system_id]`), e-mail domain rewrites, and a policy for
-  unmapped principals (`skip` / `fail` / `fallback_owner`). Unmapped principals
-  are reported, never silent. `MigrationSettings.user_mapping_file` feeds it and
-  `automatic_user_mapping=False` turns it off — both were previously listed as
-  unhonored.
-- Mail as a portable tree: `MailFolderSource` + `MailExportTarget` write one
-  `.eml` plus one JSON sidecar per message and a `manifest.jsonl` index, with
-  destinations derived from the message so a resumed run skips what is on disk;
-  `EmlTreeSource` + `MailboxTarget` import it back through `add_from_mime`,
-  recreating the folder chain, skipping messages by `internetMessageId`, and
-  replaying read state, categories and importance. Each family has its options
-  class — `MailExportOptions`, `MailImportOptions` and a matching pair per family
-  — and mail is verified by `mime_digest` — the semantic
-  headers plus a hash per decoded part — because Exchange re-serializes every
-  message it stores, so the bytes are never the same.
-- `MigrationItem.metadata` carries adapter-defined envelope attributes (a mail
-  message's subject, recipients and categories) into the manifest, so a portable
-  export writes its own index; the runner never interprets it.
-- Calendars: `CalendarSource` + `IcsExportTarget` write one `.ics` (CRLF, RFC 5545
-  folding, `TZID`, `RRULE`, `VALARM`, `X-ALT-DESC`) plus a sidecar per event;
-  `IcsTreeSource` + `CalendarTarget` import it, replaying Graph's own
-  `recurrence` object from the sidecar (an `.ics` alone is refused). Attendees are
-  opt-in, because creating an event with attendees makes Exchange send a real
-  invitation.
-- Contacts: `ContactSource` + `VcfExportTarget` write one `.vcf` (vCard 3.0, folded
-  at 75 octets) plus a sidecar per contact; `VcfTreeSource` + `ContactTarget`
-  import it, restoring every office field, address, phone, IM address, child, note
-  and category.
+- `migration_client(client)` applies the background-workload policy in one call: a shared
+  `RateLimiter` on the context's transport, plus `x-ms-throttle-priority: low` on a Graph
+  client.
+- `IdentityMap` maps source principals onto target principals for authorship and ACLs, from
+  a CSV (`source,target[,system_id]`), an e-mail domain rewrite or a policy.
+- Mail as a portable tree: `MailFolderSource` and `MailExportTarget` write one `.eml` plus
+  one sidecar per message and a `manifest.jsonl` index; `EmlTreeSource` and `MailboxTarget`
+  import it back through `add_from_mime`. A resumed run skips what is on disk, and mail is
+  verified by `mime_digest` — the semantic headers plus a hash per decoded part — because
+  Exchange re-serialises every message it stores. Each family has its options class
+  (`MailExportOptions`, `MailImportOptions` and a matching pair per family).
+- Calendars and contacts round-trip the same way: `CalendarSource`/`IcsExportTarget` and
+  `ContactSource`/`VcfExportTarget` write one `.ics` (RFC 5545 folding, `TZID`, `RRULE`,
+  `VALARM`) or one `.vcf` plus a sidecar per record, and `IcsTreeSource`/`CalendarTarget`
+  and `VcfTreeSource`/`ContactTarget` import them, replaying Graph's own `recurrence`
+  object from the sidecar.
+- `MigrationItem.metadata` carries adapter-defined envelope attributes — a message's
+  subject, recipients, categories — into the manifest, so a portable export writes its own
+  index. The runner never interprets it.
 - `MigrationJob.plan()` states the fidelity forecast before it enumerates
-  (`plan.fidelity`, `MigrationJob.fidelity()`, `export_reports`), and
-  `describe_fidelity` reports a product's own dimensions instead of always
-  printing SharePoint's fourteen: an adapter may declare
-  `fidelity_dimensions`.
-- `SharePointPackageTarget` and the library/list record targets accept a captured
-  structure (`sp_list=` / `structure=`) and replay it before the first write, so a
-  bundle can be imported into a library that has none of its shape. Verification
-  reads each verified record once per run, and a source/target that disagree about
-  files versus records are refused when the task is resolved instead of at the
-  first write.
-- The server-side package target grants SharePoint **groups** as well as users:
-  `PermissionEntry.principal_type="group"` plus `owner`/`owner_groups`, because a
-  `<Group>` without an `Owner` fails the whole ingestion job at schema validation.
-- `FileVersion.sort_key` compares version labels as numbers (`"1.9"` before
-  `"1.10"`), and `BasePermissions.value` / `from_value(mask)` own the 64-bit
-  permission mask in both directions — no caller derives the shift.
-- A page's fields are spelled by the library
-  (`office365.sharepoint.publishing.pages.fields`: `PAGE_FIELDS`, `BODY_FIELDS`,
-  every name derived from `SitePage`), and `SPBuiltInContentTypeId.SitePage` is
-  the content type base a modern page derives from. `SitePage` declares the three
-  item columns it answers (`file_leaf_ref`, `wiki`, `moderation_status`) and the
-  two writable content properties, with the page predicates (`is_modern`,
-  `is_classic`, `body`, `body_field`) and the write (`apply_page_payload`) on the
-  type.
-- A declared value is held under the attribute its declaration names: `UserIdInfo`
-  declares `NameId` and holds it in `name_id`, and `ClientValue.set_property` /
-  `get_property` resolve a wire spelling through the schema, the way `to_json` already
-  did in the other direction — before this a value could be serialized but never
-  filled, which is why every value declaring anything so far spelled its attribute
-  exactly like the wire. A name with no declaration is still held under its own
-  spelling, which is how the values that declare nothing work at all. The SharePoint
-  readers behind item authorship take the model's fields (`user.email`,
-  `user.user_id.name_id`) through one `_principal_of` instead of two copied blocks.
+  (`plan.fidelity`, `MigrationJob.fidelity()`, `export_reports`), and `describe_fidelity`
+  reports a product's own dimensions.
+- A target accepts a captured structure (`sp_list=` / `structure=`) and replays it before
+  the first write, so a bundle can be imported into a library that has none of its shape.
+- The server-side package target grants SharePoint **groups** as well as users
+  (`PermissionEntry.principal_type="group"`, `owner`, `owner_groups`), because a `<Group>`
+  without an `Owner` fails the whole ingestion job.
+- `FileVersion.sort_key` compares version labels as numbers (`"1.9"` before `"1.10"`), and
+  `BasePermissions.value` / `from_value(mask)` own the 64-bit permission mask both ways.
+- A page's fields are spelled by the library (`publishing/pages/fields.py`: `PAGE_FIELDS`,
+  `BODY_FIELDS`), and `SPBuiltInContentTypeId.SitePage` is the content type base a modern
+  page derives from.
+- A declared value is held under the attribute its declaration names: `UserIdInfo` holds
+  `name_id`, and `ClientValue.set_property` / `get_property` resolve a wire spelling through
+  the schema, the way `to_json` already did in the other direction.
 - A schema's projections are held to what they claim by a walk over the whole package
-  (`tests/unit/test_declaration_ratchets.py`): `$select` and `$expand` never offer the
-  same name, `expansions` stays inside `navigations`, a facet offers only names `$select`
-  can carry, no member is `readonly` and `persistable` at once, and the attribute index
-  answers the declaration it was built from. A caller that drops its own name list for a
-  projection is relying on exactly those, so they are stated where a break shows up as a
-  failing test over every model rather than as a `$select` the service trims.
+  (`tests/unit/test_declaration_ratchets.py`): `$select` and `$expand` never offer the same
+  name, `expansions` stays inside `navigations`, a facet offers only names `$select` can
+  carry.
 
 **Long-running operations**
 
-- An operation is watchable, not just waitable: `stream()` / `astream()` on every
-  poller yield each snapshot, terminal one last, and raise nothing for a failed
-  outcome. `wait()` is the same loop with the failure policy applied.
-- `OperationStatus` carries the operation's timeline (`created_date_time`,
-  `last_action_date_time` timezone-aware with UTC fallback, `retry_after`), and a
-  `partiallySucceeded` operation is terminal-but-neither-outcome instead of an
-  unknown status that polled until timeout.
-- `RespondAsyncRequest.execute()` returns an operation either way: pollable when
-  the service answered `202`, already terminal when it finished in the submitting
-  round-trip (`LongRunningOperationResult.completed(...)`, `is_completed`).
+- An operation is watchable, not just waitable: `stream()` / `astream()` yield each snapshot,
+  terminal one last, and raise nothing for a failed outcome. `wait()` is the same loop with
+  the failure policy applied.
+- `OperationStatus` carries the timeline (`created_date_time`, `last_action_date_time`
+  timezone-aware with a UTC fallback, `retry_after`), and a `partiallySucceeded` operation is
+  terminal-but-neither-outcome.
+- `RespondAsyncRequest.execute()` returns an operation either way: pollable when the service
+  answered `202`, already terminal when it finished in the submitting round-trip
+  (`LongRunningOperationResult.completed(...)`, `is_completed`).
 - One engine behind every wait (`office365.runtime.operation.Operation`): deadline,
-  `Retry-After` pacing, jitter, progress hook, cooperative cancel, and
-  `transient_statuses=` as data. `OperationPoller` and `PollableOperation` are
-  specialisations of it, so `PollableOperation` gains `stream()` and `cancel()`.
-- `MigrationServerJob.job_wait()` returns the wait instead of running it, so polls
-  can be streamed, cancelled or monitored concurrently; a sync `status_fn` given to
-  an async wait is bridged with `asyncio.to_thread`.
+  `Retry-After` pacing, jitter, progress hook, cooperative cancel and `transient_statuses=`
+  as data.
+- `MigrationServerJob.job_wait()` returns the wait instead of running it, so polls can be
+  streamed, cancelled or monitored concurrently.
 
 **Service limits**
 
-- Graph's throttling quotas are data: one `quotas` module per product
-  (`outlook`, `teams`, `onedrive`, `onedrive.workbooks`, `reports`, `security`,
-  `directory`, `communications`) plus `GLOBAL_QUOTAS` (130,000 requests / 10 s per
-  app), each registering itself at import. `office365.limits.catalog(product=...)`
-  answers from a fresh interpreter, `catalog_products()` lists the keys, and
-  importing `office365.limits` imports all of them. A row states where its number
-  comes from, and a concurrency ceiling appears where the service states one. The
-  rows are reference only: the library reacts to the server signals it already
-  parses and does not simulate a token bucket.
-- A model **references** a row instead of re-spelling it (`CALL_RECORD_QUOTAS`,
-  `EXCEL_QUOTAS`), and a quota is declared where the request is made, not on the
-  type whose name it mentions — including on a method, where a declaration may sit
-  on the operation that makes the call (`CallRecord` carries the table, and
-  `sessions`/`participants_v2` its per-resource row; `PSTN_RECORD_QUOTAS` rides
-  the direct-routing call listing).
-- `@limit` **composes**: a second decorator on one target adds its rows instead of
-  replacing the first, and stacked declarations share one `Limits:` section.
-  `declared_limits()` answers each row once, reads `@limit` off the MRO, and
-  `limits_of(cls)` now answers class-level rows too, de-duplicated by
-  declaration.
-- 97 of the 122 published rows are now reachable from some `_schema`, up from a
-  handful. The 25 that are not are named rather than forgotten: Teams' 12 default
-  rows (a default names no resource), one security surface this library does not
-  spell, two SharePoint rows that describe an object it does not address, and the
-  10 OneDrive/files rows whose bindings are still to come. The Service limits page
-  is generated from both registries, so a published number cannot drift from its
-  declaration.
+- Graph's throttling quotas are data: one `quotas` module per product (`outlook`, `teams`,
+  `onedrive`, `onedrive.workbooks`, `reports`, `security`, `directory`, `communications`),
+  each registering itself at import, plus `GLOBAL_QUOTAS`. Two more modules carry the limits
+  a migration meets at scale: `subscriptions/quotas.py` and `onenote/quotas.py`.
+- A model references a row instead of re-spelling it (`CALL_RECORD_QUOTAS`, `EXCEL_QUOTAS`),
+  and a quota is declared where the request is made — including on the operation that makes
+  the call.
+- `@limit` composes: a second decorator on one target adds its rows, and stacked
+  declarations share one `Limits:` section. `declared_limits()` answers each row once, reads
+  `@limit` off the MRO, and `limits_of(cls)` answers class-level rows too.
+- 97 of the 122 published rows are reachable from some `_schema`; the 25 that are not are
+  named rather than forgotten.
 
 **Permissions**
 
-- **The migration layer names what it needs, and the ledger has no package left to exempt.**
-  The 54 public request-issuing operations under `office365.migration` declare their grant: the
-  37 SharePoint ones as a `@site_access` rung (`capture_*`/`read*` are `READ`,
-  `apply_*`/`provision_*`/`write` are `WRITE`, `copy_site_pages`, `apply_navigation`,
-  `apply_site_security` and `apply_permissions` are `MANAGE`), the Outlook ones as Graph names,
-  and the two thin wrappers (`MailboxTarget.checksum`, `MigrationServerJob.progress_async`)
-  borrow theirs with `@derived_from`. `migration` left `UNTRACKED`, so
-  `index(office365).debt()` is `{}` for every package rather than `{}` for the packages that
-  were asked. Two shapes have no single name to give and say so in `notes` instead of inventing
-  one: `MigrationJob.assess` submits whatever assessor it was handed, and
-  `TeamsArchiveSource.read` fans out across endpoints whose own declarations name them.
-- **The request detector counts the async twins.** `_SUBMIT` now includes
-  `execute_query_async` and `execute_batch_async`, which made ten tracked operations visible
-  for the first time (three of them methods on private download-plan classes). Most were already
-  covered by the rung of the synchronous twin they mirror — `File.download_session_async`,
-  `File.get_content_stream_async`, `FileCollection.create_upload_session_async`,
-  `Entity.execute_batch_async` and `ClientContext.execute_batch_async` — and two needed a
-  declaration of their own. Widening belongs in this batch rather than after it: declaring
-  `MigrationServerJob.progress` while the identically-bodied `progress_async` stayed uncounted
-  would have put the ratchet's hole exactly where an awaitable caller stands.
-- **A wrapper borrows the declaration of the method it drives.** `@derived_from(callee)` stamps a
-  method with the *same* `PermissionRequirement` the callee carries — read once at import — so a
-  one-line pass-through has no second copy of the rung to drift from, and `help()` names the
-  method whose request the columns describe. The three server-side migration calls are the
-  motivation: `MigrationServerJob.submit`, `submit_encrypted` and `progress` declare nothing
-  themselves, they call `Site.create_migration_ingestion_job`,
-  `create_migration_job_encrypted` and `get_migration_job_progress`. Borrowing *silence* fails at
-  decoration instead of yielding an empty requirement every check would pass. The exactness is
-  not free: it ties `server_job`'s import to the SharePoint model tree, so `MigrationServerJob`
-  and `MigrationJobWait` joined `office365.migration`'s lazy re-exports — that import stays 56
-  modules, none of them SharePoint.
-- **A permission check can read the token itself.** `office365.permissions.TokenClaims`
-  parses a JWT's payload and answers one requirement: the audience says which API the token
-  was issued for, `scp` names the delegated permissions, `roles` the application ones. The
-  signature is never checked - the token this process obtained came over TLS, and one handed
-  in was accepted or refused by whoever took it - so it is a *parse*, and a token it cannot
-  read (opaque, not a JWT, another audience's, the other flow) answers `None` rather than an
-  empty set, because a silence must not be read as "not granted".
-- Both authentication contexts expose `access_token`, acquiring it once if they hold none
-  yet, so a caller can ask what a token proves before sending a request and the answer does
-  not depend on whether a request already ran. That makes a SharePoint-only suite decidable
-  with the one credential it has: measured, the Graph app-only token carries 43 `roles` and
-  the SharePoint app-only token `Sites.FullControl.All`, `Sites.ReadWrite.All` and
-  `TermStore.Read.All`.
-- The convenience methods on `GraphClient` — `has_`/`grant_`/`get_`/`revoke_`, delegated and
-  application — take `resource`, defaulting to Microsoft Graph, and `--grant` passes the one
-  its plan names. `Sites.FullControl.All` is a Graph permission and a SharePoint one, so a
-  helper that assumed Graph could report a SharePoint gap and then grant it to the wrong API.
-- **SharePoint declarations start, and the resource switch is proved end to end.** 20 methods
-  of `Web` and `SecurableObject` now name what they need on `ResourceName.SharePoint` — a read
-  ladder (`Sites.Read.All`, `Sites.ReadWrite.All`, `Sites.Manage.All`, `Sites.FullControl.All`)
-  and a management one — and `tests/sharepoint/test_web.py` derives its preconditions from
-  them: 24 tests pass under an app-only certificate, 1 skips for a reason that has nothing to
-  do with permissions. The package's debt moves 2,238 → 2,228. A method that only builds a
-  path (`Web.get_list` hands back a `List` the caller sends) is still the place to declare:
-  it is the operation with a name, and the general read verb underneath (`Entity.get`)
-  cannot know its type.
-- A live test's skip decision reads that token first and the tenant's grants only where the
-  token cannot speak. A grant read is scoped to one API, so it cannot see a delegated name
-  granted on another: `Mail.Send` lives on Exchange Online and `TermStore.Read.All` on
-  SharePoint, and the grant read reported 7 of 355 requirements as missing that the token
-  says are granted. Measured after the switch: 0 false skips, 0 false passes.
-- **A permission name is checkable with no tenant.** `office365.permissions.catalog(resource)`
-  answers what an API publishes — `Catalog.publishes(name, kind)`,
-  `requires_admin_consent(name, kind)`, and the names themselves — generated by
-  `scripts/gen_permission_catalog.py` from that API's own service principal (`appRoles` for
-  application permissions, `oauth2PermissionScopes` for delegated ones) and committed under
-  `office365/permissions/snapshots/`. Only the facts that decide whether a grant is possible
-  are kept (published, enabled, user-consentable), because a description is edited freely and
-  would be churn in every regeneration. The tree's 89 distinct (API, flow, name) pairs are
-  checked against the 777 + 867 names Microsoft Graph publishes and the 20 + 29 SharePoint
-  does, so a name its API does not publish fails offline. A snapshot is refreshed by re-running
-  the script, which is also the only way to notice a name Microsoft retired: the tenant refuses
-  it and the harness reads the refusal as "not granted", so live nothing distinguishes a typo,
-  a retired name and a real gap. This is what makes the remaining harvest reviewable — a wrong
-  name used to be indistinguishable from a grant that was never given.
-- **SharePoint's ladder is one word per method.** Its eight names are four rungs —
-  `AllSites.Read` → `.Write` → `.Manage` → `.FullControl`, with `Sites.Read.All` →
-  `Sites.ReadWrite.All` → `.Manage.All` → `.FullControl.All` beside them for app-only — where
-  each rung already does what the ones below it do. So `office365.sharepoint.permissions`
-  exports `SiteLevel` and a decorator that fills in both flows and the resource:
-  `@site_access(SiteLevel.WRITE)`. The rung is the *weakest* grant that works, because
-  over-claiming would skip a live test on a tenant that could have run it. `List` declares 88
-  methods this way and `Web` 97 more, and the 20 hand-written declarations were rewritten as
-  the same one-liner — six lines each, still naming the same names by hand. Debt 2,228 →
-  2,043, and 30 live tests across 16 SharePoint suites now derive their precondition from the
-  declaration of the method they call.
-- **The everyday objects carry the rung too.** `File` declares 51 methods, `ListItem` 35 and
-  `ListCollection` 5 — the part of the tree where the rung has to be judged one method at a
-  time rather than read off a name: `File.get_content` reads, `File.recycle` writes,
-  `File.change_content_storage_schema` manages a library's schema, and the three sharing-link
-  calls on an item (`share_link`, `unshare_link`, `delete_link_by_kind`) manage permissions.
-  `ListItem.ensure_type_name` declares `READ` even though it sits on the write path, because
-  all it queues is a read of the target list. Debt 2,043 → 1,952, and 15 live tests across 6
-  suites derive their precondition from the declaration. The one operation left unmarked is
-  the private `ListItem._set_taxonomy_field_value`: a helper that is not an entry point names
-  nothing, so it stays in the debt.
-- **`Site` declares 70 methods, and 31 of them needed a second answer.** 39 stay inside the
-  site collection — `exists`, `open_web`, `get_web_templates` and the four `get_progress_for_*`
-  readers take `READ`, the version-policy and block-download calls `MANAGE` or `WRITE`,
-  `run_upgrade_site_session` and `create_preview_site` `FULL_CONTROL`. The other 31 act on the
-  tenant: the migration API, copy jobs, bring-your-own-key, hub site registration,
-  `update_inactive_site_properties`. No rung grants those on its own — they also want a
-  SharePoint administrator — so `site_access` grew one optional argument and they read
-  `@site_access(SiteLevel.FULL_CONTROL, role="SharePoint Administrator")`, the role declared
-  as the *alternative* it is (`Sites.FullControl.All` still grants provisioning, and an
-  administrator needs no grant at all). The 11 tenant-scope *reads* among them name `READ` and
-  the role, following the same rule as everywhere else: the weakest grant that works. Debt
-  1,952 → 1,882, and 12 live tests across 6 suites derive their precondition from the
-  declaration. This corrected a harness assumption too: a bypass role the client cannot look
-  up — a SharePoint-only suite has no Graph surface to read directory roles from — used to make
-  the whole requirement unverifiable, so four tests skipped for a reason that had nothing to do
-  with the tenant. An alternative that cannot be checked is not a permission that is missing,
-  and the names still decide; a role or SKU the requirement *holds* is part of the answer, so
-  failing to read that is still unverifiable rather than unmet.
-- **A blocker now says which calls asked for it.** The written preflight report gives a
-  requirement a `via` column — the 40 SharePoint tests blocked on `Sites.Read.All` name
-  `Web.get_catalog`, `Site.exists`, `File.copyto` — because a grant twelve tests need and a
-  grant *one endpoint* brings are different decisions: the first is an administrator's
-  problem, the second is a call we could stop making. `@requires_call` stamps the calls as
-  `module:qualname`, the identity `Operation` is keyed by, so a row names an operation the
-  declaration index can be asked about; `--markdown` prints the column and `--json` lists the
-  same names as `calls`. The provenance is kept *beside* the requirement rather than on it:
-  two tests that need the same grant are one row however many methods each of them exercised,
-  and a requirement stated by hand with `@requires_delegated` names no call and shows none.
-- **A checkout can answer "run live" for itself.** An IDE's test runner is handed a path,
-  not a command line, so a suite selected in VS Code's test tree or PyCharm's was skipped
-  with `live tests are opt-in: pass --live to run them` and nowhere to pass it.
-  `OFFICE365_LIVE=1` in `.env` is now that switch: `.env` already reaches the environment,
-  so every runner in the checkout signs in — the test tree, a debugger, a bare `pytest` —
-  and `--offline` still wins for the run that must not. CI has no `.env`, so it stays
-  offline. The skip reason, the session header and `python -m tests.doctor` all name the
-  switch instead of assuming a terminal; the flag itself is unchanged, and a runner that
-  can hold arguments should still use it.
-- **Nothing writes `.env`, nothing generates it, and the wizard is gone.** The program that
-  discovers credentials and grants what the live suites declare used to merge its findings
-  back into the repo-root `.env`, leaving a `.env.bak` and `chmod`-ing both. That writer had
-  in fact stopped working — its merge helper was removed without its call site, so
-  `python -m tests.setup` raised `NameError` before doing anything. Everything it did that is
-  still worth doing lives where the thing it acts on lives: the certificate and the secret
-  come from the example scripts that create them
-  (`examples/entraid/applications/rotate_cert.py` now prints
-  `OFFICE365_CERT_THUMBPRINT`, `rotate_secret.py` already printed the secret once), and the
-  grant loop moved to `python -m tests.preflight --grant` — the module that already computes
-  the plan, and now applies it, asks before changing anything, and re-reads the tenant
-  afterwards. `tests/setup.py` (428 lines) is deleted; `.env.example` is the skeleton, the
-  file holds an app secret and the admin account, and a program that can rewrite a secret
-  file can also truncate one. Flags that existed only to fill a printed block went with it
-  (`--sites`, `--site`, `--username`, `--username-alt`, `--shared-mailbox`, `--with-password`,
-  `--no-password`, `--pick-users`, `--new-app`, `--dry-run`).
-- **Tenant administration declares what it needs.** The
-  three service-wide objects — `Tenant` (284 operations), `SiteMoveService` (86) and
-  `Office365Tenant` (43) — now name a rung and, where the permission alone does not decide,
-  the SharePoint Administrator role: 413 declarations, 183 of them reads and 230 writes, and
-  nothing left undeclared in those modules. This half of the SharePoint harvest needs no
-  per-method judgement, because every operation is tenant-scope: a read takes
-  `Sites.Read.All`, a write `Sites.FullControl.All`, and both take the role. 18 live tests
-  derive their preconditions from those markers, and the package's debt moves 1,882 → 1,469.
-- **A directory role is named once instead of spelled by hand.** `office365.permissions` exports
-  `DirectoryRole`, a `str` enum carrying Entra's own `displayName` for the roles this library
-  and its tests mention — `SharePointAdministrator`, `GlobalAdministrator`,
-  `PrivilegedRoleAdministrator`, `ComplianceAdministrator`, `ComplianceDataAdministrator`,
-  `RecordsManagement`. The declaration side compares that string against the tenant's
-  directory, and a misspelling there does not fail: it names a role nobody holds, so the
-  requirement is simply never met, and on a client that cannot read roles at all the answer
-  is *unprovable*, which passes. Both directions hid the typo. `role=` still takes a plain
-  string for a name the enum does not list, since Entra's catalogue is far larger than the
-  six. The 444 SharePoint declarations that also need the role now use it.
-- **The six page kinds and the workflow task declare.** The publishing package is one
-  operation set worn six ways: `SitePage` (33 operations), `SitePage3D`, `RepostPage`,
-  `TopicSitePage` (23 each), `FeedVideoPage` (27) and `CampaignPublication` (46) all carry the
-  page actions, and all of them live inside the site collection, so they take a rung and no
-  directory role. 175 declarations, 25 reads and 150 writes, judged one name at a time: nine
-  operations that start with `Get` are POST service operations whose answer is data
-  (`AmplifyHistory`, `LoadMailDraft`, `SPSiteValidator`, the publishing statuses) and declare
-  `READ`, while the co-authoring calls (`StartCoAuth`, `SavePageCoAuth`, `ExtendSessionCoAuth`)
-  look like bookkeeping and declare `WRITE`, because each holds or commits a lock.
-  `SPWorkflowTask` adds 31 (6 reads, 25 writes): the three `ValidateUpdate*` calls persist the
-  item with the validation riding along, and the progress readers only report. The two portal
-  managers are tenant-scope like the administration surface, so `GroupSiteManager` (36) and
-  `SPSiteManager` (19) declare 34 reads and 21 writes with the Administrator role as an
-  alternative — they are reached from `ClientContext` and create site collections. Debt
-  1,469 → 1,183, and 1,474 → 1,188 undeclared operations including the 25 the duplicate module
-  had been contributing.
-- **Teams declares its whole surface.** All 21 operations that put a Teams request on the wire
-  now name what Microsoft Graph documents for the endpoint — 15 writes and 6 reads across
-  `Team`/`TeamCollection`, `Channel`/`ChannelCollection`, `ChatCollection`, conversation
-  members, chat hosted content, schedule change requests and the two activity-feed senders —
-  and `teams` leaves the ratchet map with nothing undeclared, as `outlook` did. The name sets
-  are the any-of sets Graph publishes (`Team.Create`, `Directory.ReadWrite.All`,
-  `Group.ReadWrite.All` for a team; `TeamSettings.ReadWrite.All` and its two alternatives for
-  archive), which are the same sets the suites already wrote by hand in `@requires_delegated`;
-  the harvest moved that knowledge onto the methods. Those test markers stay as they are: each
-  also carries `bypass_roles` for the tenant's administrator roles, and a role is a live-run
-  escape hatch rather than a grant, so it belongs in the test and not in the declaration.
-  Three endpoints — the three `getAllMessages` exports — are application-only, so they declare
-  `application=` and no delegated column at all.
-- **Communications declares every operation, and the calls subtree is application-only.**
-  18 methods name what Microsoft Graph documents for the endpoint: the five presence writers
-  (`Presence.ReadWrite` for the signed-in user's own presence, `Presence.ReadWrite.All` for
-  any), `getPresencesByUserId` (`Presence.Read.All`), `createOrGet`
-  (`OnlineMeetings.ReadWrite`), `getAllRecordings` (`OnlineMeetingRecording.Read.All`),
-  `getVirtualAppointmentJoinWebUrl` (`VirtualAppointment.ReadWrite`) and
-  `getDirectRoutingCalls` (`CallRecords.Read.All`). The eight call-control operations —
-  `cancelMediaProcessing`, `reject`, `unmute`, `updateRecordingStatus`, `invite`,
-  `logTeleconferenceDeviceQuality` and the two hold-music calls — have no delegated column at
-  all: the committed snapshot shows Graph publishes `Calls.AccessMedia.All`,
-  `Calls.InitiateGroupCall.All` and `CallRecords.Read.All` as application roles, and the
-  delegated half of that subtree is empty, so a delegated client can neither be granted the
-  name nor honestly be told it lacks it. Checking the names against the snapshot before the
-  edit is what caught this: a plausible `Calls.*` scope would have failed the offline
-  published-name check, which is the whole reason that check exists. Both flows are named per
-  method rather than through a helper, because unlike SharePoint's four rungs these are
-  unrelated grants — one operation wants media access, another a meeting, another a
-  recording. `communications` leaves the ratchet map with nothing undeclared, as `outlook`
-  and `teams` did, and nine live tests derive their precondition from the declaration
-  instead of restating the scope by hand. Debt 1,540 → 1,522.
-- **Directory declares every operation, and seven of them answer a signed-in user.**
-  61 methods across 25 modules: the app-registration writers (`ApplicationCollection.ensure`
-  and the four `ServicePrincipal` credential calls — `addKey`, `addPassword`,
-  `addTokenSigningCertificate`, `removePassword`), the authentication-method writers
-  (`resetPassword`, `enableSmsSignIn`, `disableSmsSignIn`), the two registration reports, the
-  lifecycle-policy membership verbs, `uploadClientCertificate`, `availableProviderTypes` on
-  both provider collections, invitations, the `directoryObjects` functions (`getByIds`,
-  `getAvailableExtensionProperties`, `validateProperties`, `add`, `remove`, the four member
-  queries, `restore`), the authentication-strength policy update and its `usage` report, the
-  risk decisions (`confirmCompromised`, `dismiss`), the backup-protection `activate`/
-  `deactivate`/`run`/`deleteAndUnprotect` verbs, synchronization `pause`/`start`/`functions`,
-  cross-tenant lookup, and fourteen `User` actions. Seven of those name no application role,
-  because no app-only token can satisfy them: `filterByCurrentUser` on app-consent and
-  user-consent requests filters by *the signed-in user*, and `ThreatAssessment.ReadWrite.All`
-  (the four assessment creators) and `UserActivity.ReadWrite.CreatedByApp` (`/me/activities/
-  recent`) are published as delegated scopes with no application role behind them. Where
-  several grants genuinely work the declaration says so instead of picking one: `$ref`
-  membership takes any of `Directory.ReadWrite.All`, `Group.ReadWrite.All`,
-  `GroupMember.ReadWrite.All`, `RoleManagement.ReadWrite.Directory` or
-  `AdministrativeUnit.ReadWrite.All` — the collection being added to decides which — `restore`
-  takes the write grant of whichever object type is being restored, the member queries also
-  accept `GroupMember.Read.All`, the calendar views `Calendars.Read` or `Calendars.ReadWrite`,
-  and `findTenantInformationBy*` accepts `Organization.Read.All` beside
-  `CrossTenantInformation.ReadBasic.All`, which is the gate the suite already passed.
-  `directory` leaves the ratchet map, the fourth package to do so; debt 1,522 → 1,461, and
-  eleven live tests now derive their precondition from the declaration rather than restating
-  the scope by hand.
-- **The drive declares every operation, and a file's grants come as a rung.**
-  62 methods across 26 modules under `office365.onedrive`: `DriveItem` (nine, including
-  `preview`, `getContent`, `getFiles`/`getFolders`, the resumable upload and
-  `extractSensitivityLabels`), `Drive` (`recent`, `search`, `sharedWithMe`, `createBundle`), the
-  two site objects, the web-part position, the sharing calls (`PermissionCollection.add`,
-  `Permission.grant`), the version restore, the container activation, and 36 that belong to the
-  workbook. The item operations do not pick a name each. Graph publishes the file permissions
-  twice — `Files.*` and `Sites.*` — because a drive can be someone's OneDrive or a document
-  library and the same item is reachable through either, so the declaration lists the whole rung
-  (six names for a read, three for a write) and any one of them satisfies it: the shape the tree
-  already used for `DriveItem.get` and `ensure_folder`. The workbook is the opposite case: all 36
-  declare `Files.ReadWrite` (or `Files.ReadWrite.All`), reads included, because a workbook
-  session is opened by a write grant and the reads happen inside it — the four workbook
-  declarations already in the tree say the same, and this batch agrees with them rather than
-  inventing a read rung the endpoint never checks. Two methods reach across the tenant and say
-  so: `getAllSites` takes the read rung and `removeSites` `Sites.FullControl.All`. Two more name
-  something other than a grant: `FileStorageContainer.activate` declares
-  `FileStorageContainer.Selected` with the SharePoint Embedded Administrator role in its note,
-  and `DriveItemCopyResult._resolveItem` — a private helper that does put a request on the wire,
-  to read the item the copy produced — declares the write rung it inherits from the copy. That
-  last one is the rule working rather than an exception to it: a private helper that builds no
-  request names nothing. `onedrive` leaves the ratchet map, the fifth package to do so, and 26
-  live tests derive their precondition from the declaration instead of restating the scope by
-  hand. Debt 1,461 → 1,399.
-- **Tenant configuration and compliance name their grants, and the policy store speaks for
-  Purview.** 126 methods across eight modules: `SPPolicyStoreProxy` (23 — 8 reads, 15 writes),
-  `SPHSite` (18), `SiteScriptUtility` (17) and the two copies of the data-governance insight
-  client (16 each) are tenant-scope, so they declare `FULL_CONTROL` for the writes and `READ`
-  for the readers with the SharePoint Administrator role beside them — the same reading the
-  administration surface got. Two owners do not reach that far: `SiteManagerService` (18 — 7
-  reads, 11 writes) answers for one site collection, so its eleven writers that activate
-  features and provision lists declare `MANAGE` rather than `FULL_CONTROL`, and the two
-  `TemplateAPI` (9 each) live in a content type hub, which is a site again. The policy store is
-  the exception: retention labels, holds and adaptive scopes are administered in Microsoft
-  Purview although the request goes to the site's own `_api/complianceStore`, so it names
-  `DirectoryRole.ComplianceAdministrator` — the first use of that member — as the role that
-  satisfies it. Two of the eight modules are duplicates nothing imports
-  (`contentcenter/template_api.py`, `tenant/administration/datagovernance/insight_client.py`).
-  They are declared anyway: the ratchet counts the code that is there, and a duplicate that
-  can still be called still asks the tenant for a grant. Debt 1,399 → 1,273, and six live tests
-  (the site design and site script suites) derive their precondition from the declaration
-  instead of running against whatever the tenant happens to allow.
-- **Social and site content name their grants, and the brand center is two owners in
-  one class.** 118 methods across six modules: `PeopleManager` (24), `MicrofeedManager`
-  (18), `SocialFeedManager` (17), `SitePageService` (17), `BrandCenter` (26) and the
-  e-sign `DigitalLegacy` (16). Most of them are a site rung — the feed posters and likes
-  declare `WRITE`, the feed readers and profile lookups `READ`, and the publishing
-  service's eight page and image writers stop at `MANAGE` because enabling the categories
-  or creating the asset folder changes one site's pages. `BrandCenter` is not one owner:
-  thirteen of its methods talk about tenant themes and org assets — the `org_assets`
-  lookups, the `*_tenant_theme` reads and writes, the `ensure_*_feature` provisioning —
-  and declare the tenant rung with the SharePoint Administrator role, while the six that
-  add, update, delete or apply a *site* theme and remove a brand font stay on the site.
-  `PeopleManager` splits the same way: `hard_delete_user_profile`, the two OneDrive quota
-  writers and the quota-max read are tenant administration hiding in a profile class.
-  `DigitalLegacy` is a user's own beneficiary settings, so `WRITE`/`READ` and no role.
-  Debt 1,273 → 1,155, and nine live tests (user profile, publishing, client-side
-  components) derive their precondition from the declaration.
-- **Tenant plumbing names its grants, and the flow runners are tenant work.** 115 methods
-  across seven modules: `Automations` (23), `SPMachineLearningHub` (16), `SearchService`
-  (16), `TeamChannelManager` (16), `CatalogManagementCustomPropertiesCollection` (16),
-  `Folder` (14) and the Viva `EmployeeEngagement` (14). Three of them reach past a site
-  collection and declare the tenant rung with the SharePoint Administrator role:
-  `Automations` creates and deletes Power Automate flows and their connections, which
-  belong to the tenant and not to the web that happens to host the proxy;
-  `TeamChannelManager` promotes, demotes and archives the site behind a Teams channel; and
-  the catalog custom-property collection is tenant administration by construction. The
-  machine-learning hub is a Syntex content center — a site again, so `MANAGE` for its six
-  writers. `SearchService` declares one write (`record_page_click`, which records an
-  analytics hit) and fifteen reads, since a query, a suggestion and an export all read.
-  `Folder` is ten writes and four reads, and the Viva surface is eleven reads and the two
-  like/unlike writes plus dashboard personalization. Debt 1,155 → 1,040, and thirteen live
-  tests (folder, search, Viva, teams) derive their precondition from the declaration.
-- **The last nine product packages leave the ratchet map.** 38 methods across 24 modules:
-  Intune's nine remote actions (`wipe`, `retire`, `remote_lock`, `reboot_now`,
-  `locate_device`, `shut_down`, `sync_device`, `set_primary_user`, `remove_primary_user`),
-  device registration, effective permissions, the two audit enumerations and
-  `incidentReport`; the BackupRestore verbs `browse`, `offboard`, `cancel_offboard`,
-  `search` and the two service-app switches, plus the common `RestoreSessionBase.activate`;
-  four report readers and report submission; retention-label creation; the hunting query;
-  the two subscription verbs; four Todo writes; three Planner creates; and two Bookings
-  calls. Two of them corrected a plausible guess. `client.devices` registers a *directory*
-  device (`microsoft.graph.Device`), so it declares `Directory.AccessAsUser.All` delegated
-  and `Device.ReadWrite.All` app-only, not an Intune grant; and `getEffectivePermissions`
-  reads the RBAC configuration, so it declares `DeviceManagementRBAC.Read.All` rather than
-  the trio that governs the audit endpoints. `office365.subscriptions` is the one place the
-  two columns disagree about existence: Graph publishes delegated subscription scopes and no
-  application scope, because an app-only token watches a resource it was already granted, so
-  those two methods declare the delegated column and leave the application one empty with a
-  note saying why. Debt 1,040 → 824, and twelve live tests (todo, planner, intune, booking,
-  defender, Purview) derive their precondition from the declaration instead of restating the
-  scope by hand. `sharepoint` is the only package still carrying debt, so the ratchet map is
-  one line.
-- **The eleven largest SharePoint owners declare their rungs.** 121 methods: the followed
-  content of the current user (13), the publishing video item (12), the workflow deployment
-  service (12), the dynamic-content update service (11), the tenant app catalog accessor
-  (11), the theme manager (11), the personal cache (11), approvals (10), the navigation REST
-  service (10), search settings (10) and `SP.Utilities.Utility` (10). The judgment is
-  per method, not per class: `FollowedContent` reads status and lists with `READ` but
-  `follow_item`, `stop_following`, `set_item_pin_state` and `refresh_followed_item` write;
-  `VideoItem` returns embed codes, playback URLs and view counts with `READ` while the two
-  counters, the owner, the people and the custom thumbnail are writes; the navigation service
-  reads eight values and `MANAGE`s the two that save them, because navigation is a
-  site-collection setting; and `Approvals` splits creating, approving, rejecting and
-  cancelling a request (`WRITE`) from enabling the service, its notifications and its
-  properties (`MANAGE`). Three owners reach past their own site collection and name the
-  SharePoint Administrator role beside the rung: the tenant app catalog accessor, the theme
-  manager (tenant themes are tenant state, and a read of them is still tenant state) and
-  search settings, whose one writer is `setxssearchpolicy`. Debt 824 → 703, and six live
-  utility tests derive their precondition from the declaration.
-- **The eight owners at nine and eight operations each.** 67 methods: the app instance in a
-  site (9), the SharePoint directory provider (9), the tenant administration group (9), the
-  directory helper (8), the crawl-version provider for tenant search administration (8), the
-  two social following managers (8 each) and `MoveCopyUtil` (8). The split is between the
-  tenant's directory and the site's own state: creating an app instance, recycling it,
-  restoring it and upgrading it are `MANAGE` on the site, while `get_app_database_connection_string`
-  only reads; the directory provider and the tenant administration group reach past the site
-  collection and name the SharePoint Administrator role, and the provider's two
-  `get_or_create_unified_group*` calls are directory writes at `FULL_CONTROL`; `SPHelper` reads
-  membership, owners and site availability seven times and `MANAGE`s the one call that removes
-  external members; the two social following managers are one operation set worn twice, as the
-  SharePoint and the REST spelling of the same user's followers; and every `MoveCopyUtil` entry
-  is a write, because copying a file is still writing one. Debt 703 → 636.
-- **The fifteen owners at seven and six operations each.** 94 methods: the business-data
-  catalog of a site (7), the machine-learning model (7), the second navigation service (7),
-  the shared-with-me view (7), the directory session (6), the file version collection (6),
-  the related-item manager (6), the smart wiki library utility (6), the corporate catalog app
-  metadata (6), the microfeed store (6), the site page collection (6), the recycle bin item
-  collection (6), the tenant DDI adapter (6) and the two Copilot agent-insights clients (6
-  each). The interesting splits are the ones where "delete" is not one thing: emptying the
-  recycle bin, emptying its second stage and moving items there are `MANAGE`, while
-  `restore_all` is a `WRITE`; a site page's `add`, `create_app_page` and `update_full_page_app`
-  stop at `MANAGE`, as every other publishing writer does; and the wiki library's
-  `ensure_smart_wiki_library_feature` is the one `FULL_CONTROL`, because activating a feature
-  is a site-collection setting, beside two `MANAGE` batch conversions. The corporate catalog's
-  `deploy`, `remove`, `retract` and `upgrade` touch the tenant app catalog and name the
-  SharePoint Administrator role; `install` and `uninstall` act on a web and stop at `MANAGE`.
-  The tenant DDI adapter and both Copilot agent-insights clients are
-  `Microsoft.Online.SharePoint.TenantAdministration`, so all three carry the role, and their
-  report *creators* are `WRITE`. Debt 636 → 542, and the recycle-bin suite's last test derives
-  its precondition from the declaration.
-- **The sixteen owners at five operations each.** 80 methods, and this tier is where the
-  "one class, one answer" shortcut stops working entirely. Business data splits three ways:
-  `TypeDescriptor` is five reads of BDC metadata, `EntityFieldValueDictionary` reads two and
-  writes the two that build an entity instance, and `AppBdcCatalog` (previous batch) sets
-  connections with `MANAGE`. The list home is three helpers of the signed-in user - favorites,
-  pinned items and recommendations - so each reads one and writes four. `Field` is five
-  `MANAGE`s, because a field's index and its presence on a form are list schema, not content.
-  `ObjectSharingInformation` is five reads: it asks what the current user *may* do and who a
-  thing is shared with, it does not share. `WebPartDefinition` is five `MANAGE`s on a page.
-  `WorkflowSubscriptionService` is five `WRITE`s - unregistering interest is still writing.
-  Three carry the SharePoint Administrator role: `SPOWebAppServicePrincipal` (five
-  `FULL_CONTROL`s of SPFx secrets and third-party app ids), the site properties collection
-  (five tenant reads, so the lock state and the archive check do not invent a write), and
-  `UserProfile`, whose three personal-site creators provision a site collection and stop
-  nowhere short of `FULL_CONTROL`, beside two `WRITE`s of the user's own settings. Debt
-  542 → 462, and two more live tests derive their precondition - the sharing report and the
-  personal-site provision.
-- **The twenty-two owners at four operations each.** 89 methods, and the tier's shape is
-  "one name per verb": `EntityInstance` reads two XML forms and writes the two that build an
-  instance; `FileCollection` writes the three that add a file and reads the published one;
-  `FavoriteListsSubstrate` and `SocialRestThread` read one and write three. Three answers are
-  worth recording. `FieldCollection`, `ViewFieldCollection` and `SiteVersionPolicyManager` are
-  entirely `MANAGE`, because a field, a view's columns and a document's version policy are all
-  list schema rather than content. `DocumentId` stops at `MANAGE` for its resets and reaches
-  `FULL_CONTROL` only to set the site prefix - a site-collection setting, not a library one.
-  `CommunicationSite` creates a site collection, so `create` and `enable` are
-  `FULL_CONTROL` beside the SharePoint Administrator role while the two status reads stay
-  `READ`. Four owners are tenant scope and name the role outright: the migration-center parse
-  result, the catalog management collection (four reads - exporting a catalogue's display
-  names does not write it), the restricted-content-discovery collection and the data-access
-  governability client. `ProfileLoader` reads three profiles and provisions personal sites in
-  bulk at `FULL_CONTROL`. `ActivityLogger` is four writes of telemetry, and
-  `ClientPeoplePickerWebServiceInterface` - both spellings - is five reads of the directory
-  from inside a site. Debt 462 → 373, and three more live tests derive their precondition:
-  the communication site that the suite then operates on, three view-field edits, and the
-  profile loader.
-- **The thirty-nine owners at three operations each.** 117 methods, and the tier is where
-  the site's own furniture is separated from the tenant's. The site's: a content type
-  collection is three `MANAGE`s, the navigation nodes and the view's schema are `MANAGE`, the
-  two principal collections and the role definitions are `MANAGE`, and the web part manager
-  reads two exports but `MANAGE`s an import. A time zone `set_id` is `MANAGE` - a regional
-  setting of the web. Deleting or updating any SharePoint `Entity` is `WRITE`, declared once on
-  the base class instead of on the four hundred subclasses. The tenant's, with the SharePoint
-  Administrator role: the app-service principal public surface, the content security policy
-  configuration, `TenantSettings` (two catalogue switches at `FULL_CONTROL`, one report config
-  read), the search administration providers (recycle-bin discoverability, content-processing
-  status, ranking judgments, semantic enqueue), and the log export, which is
-  `Microsoft.Online.*` and therefore reads with the role. Three answers that could have gone
-  either way: `DocumentSharingManager.update_document_sharing_info` stops at `MANAGE` because
-  the documentation asks for `ManagePermissions`, while `RichSharing`'s three email shares are
-  `WRITE`; `Campaign` and the portal launch waves are publishing objects, so they `MANAGE`;
-  and the portal navigation cache wrapper is three `MANAGE`s that mirror the structural
-  navigation one. Debt 373 → 256, and three more live tests derive their precondition: adding
-  a user to a site group, reading a role definition, and the sharing report capabilities.
-- **The sixty-three owners at two operations each.** 126 methods, and the pair is usually one
-  word apart: `like`/`unlike` on a comment, `restore`/`move_to_second_stage` in the recycle
-  bin, `get`/`set` on a site logo, a news-distribution setting, a spotlight configuration or a
-  workflow's external variable. The tenant keeps naming the role where it reaches past a site
-  collection - hub sites, tenant admin settings, the site-collection management service, site
-  properties, tenant CDN, tenant insights reports, and the two copies of the data-governance
-  SAR client that the same class is published under twice. `GeoExperience` is two
-  `FULL_CONTROL`s of a multi-geo tenant mode switch. The migration-center storage and the
-  performance data read with the role and the storage does not read at all. Four answers worth
-  keeping: a query's `SortCollection` is two reads because a sort shapes a read;
-  `DocumentId`-style site furniture is not the only `MANAGE` family - custom actions, role
-  assignments, content-type field links, multilingual settings and hosted-app web part data
-  are all `MANAGE` too, while a user's own first-run experience, their followed items and
-  their AI tokens are `WRITE`; `RecycleBinItem.restore` is a `WRITE` and
-  `move_to_second_stage` a `MANAGE`, the split the collection already had; and
-  `SharingUtility`, `ThemeInfo`, `WorkflowServicesManager` and `PeopleCollection` are pure
-  reads. Debt 256 → 130, and two more live tests derive their precondition: the recycle-bin
-  restore and the webhook subscription.
-- **The last owner on the list, and the end of the debt.** 130 methods in 128 modules - one
-  each, which is where a harvest stops being a judgment and starts being a spelling: a site
-  group owner, a feature activation, an event receiver, a custom action, a view, a subweb, a
-  document set, an alert, an event receiver registration, a list template read, a term store
-  search. The tenant's remaining surface names the role: `HubSite.delete`, the third-party
-  AAD permission grants, the web-app service principal's permission requests, the malware
-  stream, the ODB license enforcement sweep, the tenant app flag, the SharePoint home
-  acronyms and the copilot insights reports. Four families answer the same way every time -
-  every `Microsoft.Online.SharePoint.MultiGeo` job stop is a `WRITE` with the role and the
-  two site read-only-state setters are `FULL_CONTROL` with it, the four consumer quota
-  migrations are `WRITE` with it, the download-operation plans are three `READ`s that share
-  one method name, and the two pairs of duplicate modules (`DfDeprecationJob`,
-  `MoveSiteROState`) are declared rather than deleted. The ledger is empty: `PENDING` is
-  `{}`, `index(office365).debt()` returns nothing, and every one of the 2,224 public
-  request-issuing operations under `office365/sharepoint` names the grant it needs. Twenty-three
-  commits from the first `SiteLevel` to the last dot-notation read, and the two offline
-  permission tests now guard the whole surface instead of a shrinking remainder.
-- **A securable object's ACL is read through the type, not through a spelled-out `$expand`.**
-  `SecurableObject.get_role_assignments()` expands what
-  `TypeSchema.of(RoleAssignment).expansions` declares — `Member`, `RoleDefinitionBindings` — and queues the read like every other
-  builder: run `execute_query()` and read the collection it returns. The migration layer
-  and two examples had each spelled that navigation pair, one of them in a helper that
-  also had to know that a `$select` on the parent narrows *later* reads of it.
-  `ensure_properties(names, refresh=True)` is the other half: a value held from an earlier
-  read is a snapshot, and whether an object has its own ACL decides whether an ACL is
-  replayed or compared at all, so the flag is re-read instead of trusted.
-- **A type can say which of its members name the object.** `@odata(identity=...)` is a
-  second kind of role next to `facet=`: a facet says what a member *means* (authorship,
-  permissions, moderation), an identity says what it *names*. `Web.url` and
-  `Web.server_relative_url` are one address in two spellings — whole, and inside its own
-  site collection — so `TypeSchema.of(web).identities` answers `("Url",
-  "ServerRelativeUrl")`, ranked by reach. Three modules in `migration` had each spelled
-  that pair by hand, twice with a context fallback and once with a typed one, because a
-  caller that has to say *which site* a web is has no other way to learn the two names.
-  The principals keep no role: nothing in `office365/migration` reads a principal property
-  by OData name any more — `LoginName`, `AadObjectId` and `Id` are all reached through
-  typed getters — so the role would have had no reader; the CSV header aliases in
-  `migration.identity` stay ours, as the plan already said.
-
-
+- The migration layer names what it needs: the 54 public request-issuing operations under
+  `office365.migration` declare their grant, the 37 SharePoint ones as a `@site_access` rung
+  (`capture_*`/`read*` are `READ`, `apply_*`/`provision_*` are `WRITE`). No package is left
+  to exempt: `migration` left `UNTRACKED`, so `index(office365).debt()` is `{}` for every
+  package.
+- `@derived_from(callee)` stamps a wrapper with the same `PermissionRequirement` the callee
+  carries, read once at import, so a pass-through cannot drift from the method it drives.
+  The request detector now counts `execute_query_async` and `execute_batch_async`.
+- `office365.permissions.TokenClaims` parses a JWT's payload and answers one requirement:
+  the audience says which API issued it, `scp` names the delegated permissions, `roles` the
+  application ones. The signature is not checked — the token came over TLS.
+- Both authentication contexts expose `access_token`, acquiring it once if they hold none,
+  so a caller can ask what a token proves before sending a request. A live test's skip
+  decision reads that token first and the tenant's grants only where the token cannot speak.
+- `office365.permissions.catalog(resource)` answers what an API publishes —
+  `Catalog.publishes(name, kind)`, `requires_admin_consent(name, kind)` and the names
+  themselves — generated from that API's own service principal.
+- The convenience methods on `GraphClient` (`has_`/`grant_`/`get_`/`revoke_`, delegated and
+  application) take `resource`, defaulting to Microsoft Graph.
+- SharePoint's eight names are four rungs — `AllSites.Read` → `.Write` → `.Manage` →
+  `.FullControl`, with `Sites.Read.All` → `.FullControl.All` beside them for app-only —
+  declared on `Web` and `SecurableObject` (20 methods), on the everyday objects (`File` 51,
+  `ListItem` 35, `ListCollection` 5), on `Site` (70, of which 31 act outside the site
+  collection) and on every remaining owner.
+- Tenant administration declares what it needs: `Tenant` (284 operations),
+  `SiteMoveService` (86) and `Office365Tenant` (43) name a rung and, where the permission
+  alone does not decide, the SharePoint Administrator role — 413 declarations. The six page
+  kinds, the workflow task, all 21 Teams operations, and every Communications, Directory,
+  OneDrive, tenant-configuration, compliance, social and plumbing operation declare too.
+- `office365.permissions` exports `DirectoryRole`, a `str` enum carrying Entra's own
+  display name, and `@odata(identity=...)` lets a type say which members name the object, so
+  a securable's ACL is read through the type rather than a spelled-out `$expand`.
+- A blocker says which calls asked for it: the preflight report gives a requirement a `via`
+  column. An IDE's test runner gets `OFFICE365_LIVE=1` in `.env` as its switch, and nothing
+  writes `.env` any more — the wizard that merged its findings back into it is gone.
 
 ### Changed
 
-- **A created type says which of its columns it does not send.** `ListItem` and `Folder`
-  already answered that question, and `File`, `Field`, `ContentType` and `SitePage` answer
-  it for most of their columns. `List`, `Web` and the SharePoint principal types did not,
-  so whether a `POST` payload could carry a column was left to the caller remembering it.
-  Their undeclared columns are now counted and pinned (97, 117, 16, 16), which makes the
-  gap a number that may only fall: a column that arrives with nobody deciding its direction
-  fails the suite instead of silently reading as writable. Dropping one `readonly=True`
-  from `SecurableObject.has_unique_role_assignments` fails with
-  `{'List': 98, 'Web': 118}`.
-- **A list stops sending the columns the service will not keep.** 41 of `List`'s 98 columns
-  are now declared read-only, taken from a write-and-read-back probe rather than from a
-  reading of the docs: a scratch list and a scratch library were created, each column was
-  written with a different value through a one-property `MERGE`, read back, restored if it
-  stuck, and deleted. 41 columns kept their old value on both objects -- `Id`, `Created`,
-  `BaseTemplate`, `ItemCount`, `SchemaXml`, the `LastItem*` stamps, `ParentWebUrl` and the
-  feature flags behind them -- so `to_json` no longer offers them to a caller whose value
-  the service would silently drop. The columns that stay undeclared are the ones the probe
-  could not settle: `DraftVersionVisibility` is refused only until content approval is on,
-  `EnableMinorVersions` only until versioning is, and `ValidationFormula` bounces anything
-  that does not parse. Reading the same refusal as "read-only" would have taken a working
-  migration setting out of the payload.
-- **A site and a group say which of their columns they do not send either.** The same
-  write-and-read-back probe, run against a throwaway subsite and a scratch cross-site group
-  (both deleted afterwards): `Web` gains 62 read-only declarations (`Id`, `Created`,
-  `WebTemplate`, `Configuration`, `UIVersion`, `LastItemModifiedDate`, the
-  `*ForCurrentUser` permissions and the feature flags behind them) and `Group` gains 5
-  (`ContainsCurrentUser`, the three `CanCurrentUser*` and `OwnerTitle`), leaving 55 and 11
-  columns undecided. Three things the probe could not settle are worth naming, because each
-  one would have become a silent regression: `AlternateCssUrl` was refused only because the
-  stylesheet in the probe did not exist, and `migration.sharepoint.branding` writes it;
-  `AutoAcceptRequestToJoinLeave` was refused only until the group accepted join requests,
-  and `migration.sharepoint.security` carries it; `WelcomePage` is genuinely ignored on the
-  web -- the write that works goes to the root folder, as `apply_home_page` already did.
-  `User` is untouched: there is no scratch account, and a wrong write lands on a real one.
-- **A caller asks for a role, not for a name.** A member can now declare the role it
-  plays — `facet=AUTHORSHIP`, `facet=PERMISSIONS`, `facet=MODERATION` — and
-  `TypeSchema.columns_of_facet(AUTHORSHIP)` answers the columns of that role the way
-  `.columns` answers every column. The migration layer reads its "always projected system
-  metadata", its author/editor exclusion set and its moderation columns off the model
-  instead of spelling them, and drops a non-scalar key silently only when the item's own
-  declarations say it is a navigation. The vocabulary is closed: an unknown `facet=` is
-  a `ValueError`, and `generator verify` reports one that is not spelled with a role
-  constant.
-- **A declaration carries no fact nobody reads.** `ODataPropertyMeta` and
-  `@odata(...)` accepted `filterable`, `sortable`, `searchable`, `nullable` and
-  `description`; of the 4,883 declarations in the tree, not one set any of them, and
-  no code read them. Four of the five have a different owner anyway — whether a name
-  is legal in `$filter`/`$orderby`/`$search` is a *product's* answer
-  (`QueryCapabilities`, a deny-list per product, because Graph states it in prose and
-  neither snapshot states it as a capability: the `searchable` matches in `Graph.xml`
-  are properties named `isSearchable`), a description is the getter's docstring,
-  written from the same OpenAPI summary, and `nullable` would describe a request rule
-  nothing enforces. Passing one now raises instead of being accepted and ignored.
-- **An export is a projection of the type, not of the response.** Every writer that
-  goes through `records.iter_records` (CSV, TSV, JSON, NDJSON, Excel, Parquet, ORC,
-  Feather, SQL, DuckDB, dataframe) used to derive its columns from the page it had
-  just read, sorted — so an item carrying an extra field reordered every header, a
-  declared column the service left out of a page vanished instead of arriving empty,
-  and the column set differed between two pages of the same query. The columns are now
-  the type's declared ones, in declaration order, spoken in the client's own service
-  root: `Message` exports 31 columns to a v1.0 client and 34 to a beta one, and a
-  preview-only name the page happened to carry is dropped rather than exported. A name
-  the metadata does not describe — a list item's site columns — still follows, sorted,
-  so nothing the service sent is lost; `.select(...)` still means exactly what it names.
-- **A list item's own columns are declared on the item.** `ListItem` declares
-  `AuthorId`, `EditorId`, `Created`, `Modified`, `FileRef` and `FileLeafRef` as
-  `system=True`; `file_system_object_type` answers the enum instead of the wire's
-  number, and `is_file` / `is_folder` read that column rather than the presence of
-  an expanded `File` part.
-- **A navigation node answers the flags the service sends.** `is_visible` and
-  `is_external` read `IsVisible`/`IsExternal` (they read `isVisible`, so every node
-  on every site answered `None` and the migrator's "copied visible" warning could
-  never fire). The node declares nine projectable columns and two navigations,
-  six of them `readonly` because the service assigns them; `Navigation` declares
-  `UseShared` and both bars as navigations. `add()` sends the two fields that are
-  the whole create contract. Measured live: a node created or merged with
-  `IsVisible: false` reads back `true`, so a hidden node cannot be copied hidden.
-- **A securable declares the ACL flag it has always read.**
-  `has_unique_role_assignments` is `readonly=True`, so a response reports it and a
-  request never carries it; `FirstUniqueAncestorSecurableObject` and
-  `RoleAssignments` are navigations, so they leave `TypeSchema.columns`.
-- **`Field` answers what a column holds**, so a reader need not parse its schema:
-  `is_taxonomy`, `is_lookup`, `is_person`, `is_multi_valued`, `is_multi_choice`,
-  `is_value_object`, over the two named facts `schema_property(schema_xml, name)`
-  and `is_taxonomy_column(type_as_string, schema_xml)`. The classification is keyed
-  by `TypeAsString`, not by the Python class — a `Type="Note"` replayed from a
-  schema is still a term column — and `AllowMultipleValues` stays declared on the
-  types the metadata gives it to (`FieldLookup`, and so `FieldUser`) while
-  `is_multi_valued` reads the row, because a column created from a
-  `Mult="TRUE"` schema keeps the single-value spelling.
-- The runtime now owns the spelling facts the migrator had duplicated: `iso_z` /
-  `wall_clock_text` own the two date spellings a SharePoint write takes,
-  `normalize_guid` asks `uuid.UUID` (so a braced, 32-hex or `urn:uuid:` id keys
-  the same and never travels as a request payload), and `checksum(data)` is the
-  one byte-identity helper beside `digest()` for meaning.
-- The calendar's spelling, document and record are three modules
-  (`calendar_profile`, `calendar_codec`, `calendar_models`), so a Graph enum that
-  gains a member is a table row and a test fails if a row names a member the enum
-  does not declare. One `SidecarRecord` base carries the on-disk contract for all
-  three families (`model`, `provenance` — exactly three keys, asserted at class
-  definition —, `legacy_keys`, `identity`, `columns`, `options_class`), with
-  `ServiceSource`/`SidecarTreeSource`/`SidecarTreeTarget` owning the two seams;
-  `sidecar_required` is the one legitimate family difference (`False` for mail,
-  since RFC 822 bytes are complete on their own).
-- The bundled transports bound the read and write phases as well as connect
-  (`(10 s connect, 300 s read)`; httpx adds write and pool). A server that stops
-  responding mid-response now fails as a transient transport error, which
-  `with_auto_retry` retries, instead of blocking the caller forever. The read bound
-  is a per-byte gap, so a transfer that keeps moving is unaffected.
-- `MigrationJob.plan()` fails fast on a fidelity flag the adapter pair cannot
-  honour, one phase before the first write.
-- `LongRunningOperationResult.monitor_url` is `str | None`, so "no monitor URL" is
-  a state rather than an empty string; the ingestion-job monitor counts its
-  deadline on the clock instead of adding `interval` per iteration;
-  `PollableOperation.wait(sleep=None)` can be woken by `cancel()`.
-- **A published row answers the type that spends it.** `limits_of(DriveItem)` returned
-  nothing while `onedrive/quotas.py` published nine rows for it, because a catalog registers
-  a product and `limits_of` reads a class. `BaseItem` and `Permission` now declare
-  `FILES_QUOTAS` (a drive item, a drive and a permission operation spend the same
-  resource-unit budget), `ChatMessage` declares
-  `CHAT_MESSAGES_READ` and `CHAT_MESSAGES_WRITE` (the two calls a message makes, not the
-  whole Teams table), and `MailFolder` and `Calendar` declare `OUTLOOK_MAILBOX_BUDGETS`,
-  which `OutlookItem` already carried for the item hierarchy. No new numbers: a test holds
-  each of them to answering rows a catalog actually published.
+- A created type says which of its columns it does not send: `List`, `Web` and the SharePoint
+  principal types answer the question `ListItem`, `Folder`, `File`, `Field`, `ContentType`
+  and `SitePage` already did.
+- A list stops sending the columns the service will not keep: 41 of `List`'s 98 columns are
+  declared read-only from a write-and-read-back probe, not from a reading of the docs.
+- A site and a group do the same: `Web` gains 62 read-only declarations, `Group` 8.
+- A caller asks for a role, not for a name: a member can declare `facet=AUTHORSHIP`,
+  `facet=PERMISSIONS` or `facet=MODERATION`, and `TypeSchema.columns_of_facet(...)` answers
+  the columns of that role.
+- A declaration carries no fact nobody reads: `filterable`, `sortable`, `searchable`,
+  `nullable` and `description` are gone from `ODataPropertyMeta` and `@odata(...)`; not one
+  of the 4,883 declarations set any of them.
+- An export is a projection of the type, not of the response: every writer that goes through
+  `records.iter_records` derives its columns from the model, so an item carrying an extra
+  field no longer reorders every header.
+- A list item's own columns are declared on the item: `AuthorId`, `EditorId`, `Created`,
+  `Modified`, `FileRef` and `FileLeafRef` are `system=True`, and `is_file` / `is_folder` read
+  `file_system_object_type` rather than the presence of something else.
+- A navigation node answers the flags the service sends: `is_visible` and `is_external` read
+  `IsVisible`/`IsExternal`, so every node no longer answers `None`.
+- A securable declares the ACL flag it has always read: `has_unique_role_assignments` is
+  `readonly`, and `FirstUniqueAncestorSecurableObject` and `RoleAssignments` are navigations.
+- `Field` answers what a column holds — `is_taxonomy`, `is_lookup`, `is_person`,
+  `is_multi_valued`, `is_multi_choice`, `is_value_object` — over `schema_property(...)` and
+  `is_taxonomy_column(...)`, so a reader need not parse the schema.
+- The runtime owns the spelling facts the migrator had duplicated: `iso_z` and
+  `wall_clock_text` for the two date spellings a SharePoint write takes, `normalize_guid`
+  over `uuid.UUID`, and `checksum(data)`.
+- The calendar's spelling, document and record are three modules (`calendar_profile`,
+  `calendar_codec`, `calendar_models`), so an enum that gains a member is a table row.
+- The bundled transports bound the read and write phases as well as connect (`(10 s connect,
+  300 s read)`, with write and pool bounds on httpx), so a server that stops responding
+  mid-response fails as a transient error instead of blocking the caller.
+- `MigrationJob.plan()` fails fast on a fidelity flag the adapter pair cannot honour, one
+  phase before the first write.
+- `LongRunningOperationResult.monitor_url` is `str | None`; the ingestion-job monitor counts
+  its deadline on the clock; `PollableOperation.wait(sleep=None)` can be woken by `cancel()`.
+- A published row answers the type that spends it: `BaseItem` and `Permission` declare
+  `FILES_QUOTAS`, so `limits_of(DriveItem)` no longer returns nothing while
+  `office365/onedrive/quotas.py` publishes nine rows for it.
 
 ### Fixed
 
-- **`order_by` never reached the service.** `QueryOptions` emitted its Python attribute names as query
-  keys, so a sorted read asked for `$order_by` — which Graph answers `200` to and *ignores*: no error,
-  no ordering, the default order coming back. Every standard option is now spelled as the
-  specification spells it (`order_by` → `$orderby`), and a `custom` key is still the caller's own.
-  Sorting was the only option whose spelling was wrong, and the only one whose mistake is invisible in
-  the answer — `$filter`, `$select`, `$expand`, `$top` and `$skip` were already right.
-- **A small file was never attached to a message that already exists.** `Message.upload_attachment`
-  sends anything under 3 MB inline, and that path only registered a child on the message's
-  `attachments` collection — a child that rides the *message create*. On a message that already
-  existed nothing was queued, so the attachment was dropped without an error, and the same
-  happened for a message addressed by key (`client.me.messages[id]`), which carries its key in
-  the path and no `id` property to branch on. Both now post to `messages/{id}/attachments`, and
-  a path answers `has_key`, so an entity addressed by key is not mistaken for a draft.
-- **A multi-value column could be created but not updated.** A bare array is refused
-  on *both* writes — `MERGE` answers `InvalidClientQueryException` ("a `StartArray`
-  was read … when trying to read a value of a property") for Choice, Lookup, User,
-  LookupMulti and UserMulti alike — so `{"results": [...]}` is the column's shape, not
-  a create-time quirk. Only the create path wrapped it, so an upsert of an existing
-  item carrying a multi-value column failed, as did a document library folder's
-  column values (written as an update). One reshape now covers every write, and the
-  wrapper that existed to distinguish the two paths is gone.
-- **A `$select` read narrowed every later read of the object it was made on.**
-  `ReadEntityQuery` appended the properties it wanted to the object's own `query_options`,
-  so the first `ensure_property(...)` on an object turned that object's projection into the
-  one property for the rest of its life — a `SecurableObject` asked once for
-  `HasUniqueRoleAssignments` answered `None` for its title afterwards. The query now builds
-  its options on a copy (`replace` with fresh `list`/`dict`), so a read asks for what it
-  needs and leaves the object's declaration as its caller made it.
-- **A team site was returned before it existed, and at a url the alias does not spell.**
-  `create_team_site` answered `Provisioning` with `SiteUrl = None` on this tenant, and the
-  library filled the gap with `{base}/teams/{alias}` — a guess: the tenant served the site at
-  `/sites/TeamSite<hex>`, so every follow-up request went to a 404, and a caller had no way to
-  ask whether provisioning had finished. `CreateGroupEx` does return the group id, though, so
-  `GroupSiteManager.await_site` polls `GetSiteStatus` by that id (5 s apart, 300 s bound) —
-  measured ready in 5.7 s — and `create_team_site` now waits there and sets the *tenant's* url,
-  raising `OperationTimeoutError` when the bound passes. The wait is inside the call because
-  the method reads as synchronous; the site it returns answers a request.
-
-- **A page's web parts were requested without the cast that names the type.** `SitePage.web_parts` asked
-  for `pages/{id}/webParts` and the service answered `Resource not found for the segment 'webParts'`.
-  The navigation is declared on the derived `sitePage`, so the path has to say so:
-  `pages/{id}/microsoft.graph.sitePage/webParts` returns the collection. `canvas_layout` beside it is
-  still unverified — the cast alone does not make that one answer.
-- **A permission name the API does not publish was counted as a grant.** A directory records whatever
-  string a grant names, so this tenant holds `BackupRestore.Read.All` — a name Microsoft Graph never
-  minted — and a token can be minted carrying it; every request declared against it answered 403
-  while the preflight counted the requirement as met. `Requirement` now asks the committed catalogue
-  and reports such a name as unmeetable (`… is not a name Microsoft Graph publishes`) instead of
-  matching it against the tenant's grant list, and the seven live suites that declared one — plus
-  `SecureScore.Read.All`, which Graph does not publish either — now name the published scope.
+- `order_by` never reached the service. `QueryOptions` emitted its Python attribute names as
+  query keys, so a sorted read asked for `$order_by` — which Graph answers `200` to and
+  ignores. Every standard option is now spelled as the specification spells it
+  (`order_by` → `$orderby`), and a `custom` key is still the caller's own.
+- A small file was never attached to a message that already exists.
+  `Message.upload_attachment` sends anything under 3 MB inline, and that path only
+  registered a child on the message's `attachments` collection — a child that rides the
+  message create.
+- A multi-value column could be created but not updated. A bare array is refused on both
+  writes (`InvalidClientQueryException`), so `{"results": [...]}` is the column's shape.
+- A `$select` read narrowed every later read of the object it was made on:
+  `ReadEntityQuery` appended its properties to the object's own `query_options`.
+- A team site was returned before it existed, and at a url the alias does not spell:
+  `{base}/teams/{alias}` was a guess, and this tenant served the site at `/sites/TeamSite…`.
+- A page's web parts were requested without the cast that names the type. `SitePage.web_parts`
+  asked for `pages/{id}/webParts` and the service answered `Resource not found for the
+  segment 'webParts'`; it asks for `pages/{id}/microsoft.graph.sitePage/webParts` now.
+- A permission name the API does not publish was counted as a grant: a directory records
+  whatever string a grant names, so a token can carry a name Microsoft Graph never minted.
+  `Requirement` now asks the committed catalogue.
 
 **Model**
 
-- **The term store refused every type cast the payload carried.** `/termStore` is served by
-  SharePoint's own model, and it answers `[termSetModel] The specified type named
-  microsoft.graph.termStore.localizedName is not recognized` for a set, `[termModel] …` for a
-  term and `[termGroupModel] …` for a group — in either case, with or without the leading “#”,
-  while the plain object is accepted (`201`). `LocalizedName` and `LocalizedLabel` no longer
-  declare a type name, so creating a set, a term or a group sends what the service takes.
-- **A flags combination is a value the enum cannot spell, and the collection dropped it.** Graph
-  returns one `authenticationMethodModes` item as `"password,softwareOath"` — a combination no member
-  names — so `ClientValueCollection.add` refused it and reading a strength policy raised `TypeError`
-  with the response lost. The collection keeps the wire spelling now (`parse_enum` already answers a
-  combination with the string it was given) and serialises it back byte-identical; a value that is
-  neither a member nor a combination of members is still refused.
-- **A Teams schedule entity sent the service's timestamps back.** `ChangeTrackedEntity` declares
-  `id` and `lastModifiedBy` readonly, but `createdDateTime` and `lastModifiedDateTime` were still
-  writable, while the CSDL marks both `Org.OData.Core.V1.Computed` — so a shift, a time-off or an
-  open-shift update could carry the two stamps it had just been told.
-- **Three upload sessions sent a range the service refuses.** Graph requires every
-  upload-session range to be a positive multiple of 320 KiB; `AttachmentCollection.resumable_upload`
-  defaulted to `chunk_size=1000000` and `Message.upload_attachment` to `1000000 * 3`, and
-  `Task.upload_attachment` to 4 MiB — none is a multiple, and neither of the first two validated the
-  value at all. All three now default to 10 MiB (32 x 320 KiB) and raise `ValueError` before the
-  session is created, from one module (`office365.runtime.transfer`) that also owns the 3 MiB
-  threshold at which a mail or To Do attachment stops being posted in a single request.
-- **Activating a directory role was refused for the type name in its own payload.**
-  `DirectoryRole` extends `DirectoryObject` and inherited the base `entity_type_name`, so the
-  `POST directoryRoles` every activation builds announced itself as
-  `#microsoft.graph.DirectoryObject` and the server answered "Invalid payload '@odata.type':
-  'microsoft.graph.directoryObject' is not a subtype of 'microsoft.graph.directoryRole'" — a
-  message about the payload, naming nothing the caller passed. It now says
-  `#microsoft.graph.DirectoryRole`. Nothing had ever activated a role, which is why the wrong
-  type could sit there unnoticed.
-- **`DirectoryRoleCollection.assign` failed with no subject.** Activating a role the tenant has
-  never held means posting the id of its template, and a name with no template left the lookup
-  `None` and asserted from inside a response listener — an `AssertionError` naming neither the
-  role nor the caller. It raises `ValueError("this directory publishes no role template named
-  ...")` instead. Found the hard way: `preflight --grant` planned `Records Management`, a Purview
-  portal role with no Entra template, and died on it.
-- **`Team.messaging_settings` read the guest settings.** The getter spelled
-  `guestSettings` in its body, so a team that had messaging settings answered as if it
-  had none, and writing it back put the guest settings on the wire under a name they
-  were not read from.
-- **`SignIn.location` read the status.** The sign-in's city, state and country came
-  back as an empty `SignInLocation` for every audit record, because the getter spelled
-  `status` — the name a neighbouring getter already owned.
-- **`FileStorageContainer.entity_type_name` named no namespace.** It answered
-  `graph.fileStorageContainer`, the only entity type name in the tree that does not
-  start with `microsoft.graph.`, so a payload it serialised carried a type name the
-  service has never heard of.
-- **A team listed from the group collection answered a string for `visibility`.**
-  `TeamCollection.get_all()` lists `GET /groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')`
-  and copies each group into a `Team`, and the two endpoints spell one value set two
-  ways: `GET /teams/{id}` sends `public`, `GET /groups/{id}` sends `Public`. `parse_enum`
-  matched by value and by exact member name only, so `'Public'` named no
-  `TeamVisibilityType` member and — an unfamiliar value being kept as sent — the getter
-  answered the string, where `team.visibility.value` raised `AttributeError`. A name that
-  differs from a member only in case is now that member, once the exact value and exact
-  name lookups have failed; the Teams examples read `.name`, the spelling the service
-  accepts back, instead of `.value`.
-- **An enum column kept the wire string.** The generator writes a getter's type as a
-  function-local import plus an `if TYPE_CHECKING:` entry, and both are invisible to
-  `typing.get_type_hints`, which `declared_type` uses: the annotation raised
-  `NameError`, the declaration resolved to `None`, and `coerce_value` had no reason to
-  call `parse_enum` — so `set_property("sourceEnvironment", "2")` stored `'2'` where
-  the snapshot says `both`. The imports are now where the generator's own rule
-  (`needs_runtime_import`, an enum default evaluated at class creation) always said
-  they belonged: a one-time codemod moved them there — 978 imports in 481 modules over
-  both slices — refusing an edge that would close an import cycle or redefine a name
-  the module already binds, and was deleted once the tree had converged. The two sites
-  a hoist cannot fix stay lazy and resolve through the getter's own import instead.
-  `tests/unit/test_getter_annotations.py` holds the outcome: every column states a
-  type, and for every column whose annotation resolves the declaration is that
-  annotation.
-- **A `timedelta` column held the ISO string.** Sixteen columns declare `timedelta` —
-  `BookingAppointment.duration`, `ManagedAppProtection.period_before_pin_reset`,
-  `LearningContent.duration` — and `_SCALAR_CONVERTERS` had no entry for it, so a read
-  gave `'PT30M'`. `parse_duration` reads the ISO 8601 forms (`PT30M`, `P1DT2H`, `PT0S`,
-  negatives) and `serialize_value` writes a `timedelta` back through `Duration.parse`,
-  which no longer drops the seconds: 90 seconds was `PT1M` and is `PT1M30S`. A form with
-  no `timedelta` equivalent — `P1M` names a month, not thirty days — is kept as the
-  service sent it, like an unrecognized boolean.
-- **A cyclic type's declaration was lost.** `ChatInfo` and
-  `ConditionalAccessGrantControls` cannot be imported at module level — the edge would
-  close an import cycle — so the getter imports them for itself, and `get_type_hints`
-  saw a bare `NameError` where the module binds nothing. `declared_type` now re-reads
-  the annotation with the getter's own imports: the source is parsed, not run, so
-  learning what a getter declares never calls it. `OnlineMeeting.chatInfo` arrives as a
-  `ChatInfo` instead of the dict the service sent, and `coerce_records` keeps the column
-  instead of warning `Skipping unknown column 'chatInfo'`.
-- **A column whose getter stated no type was a column the runtime could not read.**
-  The last 120 — `Call.call_routes`, `SPActivityEntity.times`, `Field.indexed` — were
-  hand-written getters whose only mention of a type was the fallback they passed to
-  `properties.get`, and a fallback value is not a declaration. So
-  `coerce_records(Call, [{"callRoutes": …}])` warned `Skipping unknown column
-  'callRoutes'` and returned a record without it, and `set_property` stored the wire
-  value verbatim. All 120 now state their return type, in 53 modules, taken from the
-  CSDL property each getter reads (`Edm.String` → `str`, `Edm.DateTime` → `datetime`,
-  `Collection(graph.callRoute)` → `ClientValueCollection[CallRoute]`) and checked
-  against the default the getter builds. `Call.call_routes` is a
-  `ClientValueCollection[CallRoute]` and `Field.indexed` a `bool` rather than the
-  service's own text. Every one of the 13,205 columns `TypeSchema.columns` returns
-  now declares a type, and the next test pins it by name: the first getter that states
-  none fails `test_every_column_states_the_type_it_holds`.
-- **`SharingInformation.domain_restriction_settings` read the anonymous-link
-  expiry.** The getter spelled `anonymousLinkExpirationRestrictionDays` — the name its
-  neighbour already owns — so the domain restriction settings a sharing report carries
-  were never read, and its own value was read as an `int`. It reads
-  `domainRestrictionSettings` now, the name the CSDL gives it.
+- Four `ClientValue` fields defaulted to a value *instance* (`trigger: WorkflowExecutionTrigger
+  = WorkflowExecutionTrigger()`), so every value ever constructed aliased it; they use
+  `field(default_factory=...)`.
+- The term store refused every type cast the payload carried: `/termStore` is served by
+  SharePoint's own model and answers `The specified type named microsoft.graph… is not
+  recognized`, with or without the leading `#`.
+- A flags combination is a value the enum cannot spell, and the collection dropped it: Graph
+  returns `"password,softwareOath"`, which no member names, so reading a strength policy
+  raised `TypeError`. The collection keeps the wire spelling.
+- A Teams schedule entity sent the service's timestamps back: `ChangeTrackedEntity` declares
+  `createdDateTime` and `lastModifiedDateTime` `readonly`, as the CSDL marks them computed.
+- Three upload sessions sent a range the service refuses: Graph requires a positive multiple
+  of 320 KiB, and the defaults were `1000000`, `1000000 * 3` and 4 MiB.
+- Activating a directory role was refused for the type name in its own payload:
+  `DirectoryRole` inherited the base `entity_type_name` and announced itself as
+  `#microsoft.graph.DirectoryObject`.
+- `DirectoryRoleCollection.assign` failed with no subject: a name with no template left the
+  lookup `None` and raised `AssertionError` from inside a response listener. It raises
+  `ValueError` naming the role.
+- `Team.messaging_settings` read the guest settings, because the getter spelled
+  `guestSettings` in its body.
+- `SignIn.location` read the status: the city, state and country came back empty because the
+  getter spelled `status`, the name a neighbouring getter already owned.
+- `FileStorageContainer.entity_type_name` named no namespace: it answered
+  `graph.fileStorageContainer` where every other type name starts with `microsoft.graph.`.
+- A team listed from the group collection answered a string for `visibility`: `GET
+  /groups/{id}` sends `Public` where `GET /teams/{id}` sends `public`.
+- An enum column kept the wire string: the generator writes a getter's type as a
+  function-local import plus a `TYPE_CHECKING` entry, both invisible to
+  `typing.get_type_hints`, so the declaration resolved to `None`.
+- A `timedelta` column held the ISO string: sixteen columns declare `timedelta` and
+  `_SCALAR_CONVERTERS` had no entry, so a read gave `'PT30M'`.
+- A cyclic type's declaration was lost: `ChatInfo` and `ConditionalAccessGrantControls`
+  cannot be imported at module level, so the getter imports them for itself and
+  `get_type_hints` saw a `NameError`.
+- A column whose getter stated no type was a column the runtime could not read: the last
+  120 were hand-written getters whose only mention of a type was the fallback they passed to
+  `properties.get`.
+- `SharingInformation.domain_restriction_settings` read the anonymous-link expiry, the name
+  its neighbour already owned.
 
 **Runtime**
 
-- **The two retention feeds reject every query option they are offered.** A bare `GET
-  security/triggerTypes/retentionEventTypes` is refused by Exchange's data-insights
-  service before any option matters, and the same request with `$top`, `$skip`,
-  `$orderby`, `$filter`, `$select` or `$count` answers 400 *"Query option 'Top' is not
-  allowed. To allow it, set the 'AllowedQueryOptions' property on
-  EnableQueryAttribute"* — an ASP.NET knob no client can turn. Both collections now
-  declare the refusal with `@query_capabilities(...)`, so `.top(...)` and `.filter(...)`
-  raise `QueryOptionNotSupportedError` with the documented reason instead of spending a
-  round trip on a validation error that reads like a client bug.
-- **The library imports on Python 3.11 again.** `TypeSchema` gave five `Mapping` fields
-a `mappingproxy` instance as their dataclass default; 3.11 rejects an unhashable
-default at class creation — 3.12 relaxed the check back to `list`/`dict`/`set` — so
-`from office365.sharepoint.listitems.listitem import ListItem` raised `ValueError:
-mutable default <class 'mappingproxy'> for field properties is not allowed`, and
-with it every model, on a version `pyproject.toml` claims and that CI never ran.
-The defaults are now `field(default_factory=...)`, the test matrix runs 3.10–3.13,
-and `tests/unit/test_dataclass_field_defaults.py` fails on any interpreter when a
-dataclass under `office365.runtime` defaults to an unhashable instance.
-- **A throttled request waits the interval the service asked for.**
-  `execute_query_retry` retried a `429`/`503` on its own backoff and ignored
-  `Retry-After`, so the entry point the docs recommend for polite retries re-sent a
-  throttled request at the worst moment, while the parallel paths honoured the
-  header — the same library answering two ways. The default policy is now
-  `Retry-After` with the backoff as fallback, and `max_delay` bounds *any* delay,
-  so a caller's ceiling holds even when the service asks for an hour.
-- **A timestamp with seven fractional digits is read on every supported
-  interpreter.** `.NET` stamps carry seven, `datetime.fromisoformat` accepted more
-  than six only from 3.11, so `parse_datetime` truncates and falls back to
-  `fromisoformat` for the shapes the fixed format list does not spell — and
-  `OperationStatus.last_action_date_time` no longer answers `None` on 3.10.
-- **`to_json()` no longer emits `__`-prefixed bookkeeping** (`__etag`,
-  `__deferred`, `__odata_type`): they describe the response, not the entity, and a
-  plain-dict `to_json()` used to put them in a payload. `serialize_value` descends
-  into a plain `dict`/`list`/`tuple`, so a hand-assembled payload is JSON-safe by
-  construction rather than by `default=str`.
-- **`DateTimeTimeZone.parse()` reads what callers pass.** A Graph `dict` raised
-  `AttributeError` (so `EventCollection.add(start={...})` was unusable) and an
-  aware `datetime` was flattened to UTC. It accepts a `datetime`, a Graph dict, a
-  string or `None`, keeps a named zone, and emits Graph's documented wire form;
-  `as_datetime()` reads the wall clock back, deliberately naive.
-- `str()` on a scalar collection renders the list (`[freeBusyRead, read]`) where it
-  used to print the internal type name, and `repr()` is quoted and type-qualified
-  (`StringCollection([...])`); collection subclasses keep their own `__repr__`.
-- **A limit prints what it measures.** A window that is a whole number of hours
-  renders as hours (`200 requests / 24h`, not `/ 86,400s`), a byte budget prints as
-  bytes wherever it appears (`150 MB / 300s`), a singular value takes a singular
-  unit (`1 request`), and a line names its request type and the dimension it is
-  counted against (`… (write on team, channel or chat)`).
+- `to_json()` is 62% faster on a payload of built-in scalars: `serialize_value` answers a
+  `str`, `int`, `bool`, `float` or `None` before asking whether the value is an object.
+- `parse_datetime` tries ISO parsing first — 15.6× faster — and still reads a `.NET` stamp
+  with seven fractional digits on every supported interpreter.
+- A path is 17.8% cheaper to build: `ODataPathBuilder` skips a special-character replacement
+  the value does not contain.
+- Snapshot emission is 7.7% cheaper: `Progress` is built positionally on the hot path.
+- The two retention feeds reject every query option they are offered, so a bare `GET` is
+  what they get.
+- The library imports on Python 3.11 again: `TypeSchema` gave five `Mapping` fields a
+  `default_factory` a type checker reads as one shared instance.
+- A throttled request waits the interval the service asked for: `execute_query_retry`
+  retried on its own backoff and ignored `Retry-After`.
+- `to_json()` no longer emits `__`-prefixed bookkeeping (`__etag`, `__deferred`,
+  `__odata_type`): they describe the response, not the entity.
+- `DateTimeTimeZone.parse()` reads what callers pass: a Graph `dict`, an aware `datetime`, a
+  string. A `dict` used to raise `AttributeError`, so `EventCollection.add(start={...})` was
+  unusable.
+- `str()` on a scalar collection renders the list (`[freeBusyRead, read]`) instead of the
+  internal type name, and `repr()` is quoted and type-qualified.
+- A limit prints what it measures: `200 requests / 24h` rather than `/ 86,400s`.
 
 **SharePoint (client)**
 
-- **`List.export()` exports files.** The loop tested
-  `item.file_system_object_type == FileSystemObjectType.File`, but the getter
-  handed out the wire's number and `0 == FileSystemObjectType.File` is `False`, so
-  every item was skipped.
-- **A query bound to a subweb addresses the subweb.** `ClientQuery.url` pasted the
-  query's own path onto the service root, so anything reached through a subweb read
-  the root web's collection; the URL now derives from the bound object's own
-  address.
-- **`FeatureCollection.add(verify_if_activated=True)` activates a feature the
-  collection does not list.** The guard asked `GetById('<guid>')`, which answers
-  `{"d":{"GetById":null}}` at site scope even for an activated feature — and a dict
-  holding one `None` is truthy, so it queued nothing. It now reads the collection
-  the operation already fetches.
-- **`Utility.resolve_principal_in_current_context` accepts its flags as enums:**
-  `scopes` and `sources` are `Edm.Int32` bit flags, and the call sent the enum's
-  repr, so every input came back `null`.
-- **A `SitePage` projection is one the service accepts:** `TemplateScope`
-  answers `400 NotSupported`, and a `$select` is all-or-nothing, so the getter that
-  declares the name declares the refusal too (`@odata(..., selectable=False)`).
-- **A page's canvas is one property, not two.** `SitePage` declared
-  `canvas_content` twice — a read-only twin shadowed the writable one, so
-  a projection could not name it and `TypeSchema.name_of("canvas_content")` raised.
-  The duplicate is deleted, and a differential over the columns, the expansions and a
-  hydrated `to_json()` is byte-identical.
-- **A copy job addresses its objects by absolute URL, and reports progress only for a real
-  job.** `create_copy_jobs` wrapped `exportObjectUris` in the `{"results": [...]}` envelope
-  the collection types serialize to, which the service rejects, and typed
-  `CopyMigrationInfo.SourceListItemUniqueIds` as a plain list, so the ids it answered parsed
-  to nothing — both round-trip now, and `get_copy_job_progress` takes the job
-  `create_copy_jobs` returned instead of defaulting to an empty one: without it the service
-  answers *"The copy or move job queue URI is not supported."* `CreateCopyJob` is retired
-  server-side (*"obsoleted, please use CreateCopyJobs instead"*) and its docstring says so;
-  `CopyJobProgress.JobState` is the `Edm.Int32` the service sends, not a string.
-- Two endpoints that cannot work over REST say so: `UserProfilePropertiesForUser`
-  is CSOM-only (`PeopleManager.get_user_profile_properties` is the reader), and
-  `Tenant.get_site_subscription_id` raises `System.NotSupportedException`.
+- `List.export()` exports files: the loop compared the wire's number against
+  `FileSystemObjectType.File` and `0 == File` is `False`.
+- A query bound to a subweb addresses the subweb: `ClientQuery.url` pasted the query's own
+  path onto the service root.
+- `FeatureCollection.add(verify_if_activated=True)` activates a feature the collection does
+  not list: the guard asked `GetById('<guid>')`, which answers `null` at site scope.
+- `Utility.resolve_principal_in_current_context` accepts its flags as enums: `scopes` and
+  `sources` are `Edm.Int32` bit flags and the call sent the enum's repr.
+- A `SitePage` projection is one the service accepts: `TemplateScope` answers `400
+  NotSupported`, so the getter declares `selectable=False`.
+- A page's canvas is one property, not two: a read-only twin shadowed the writable
+  `canvas_content`, so `TypeSchema.name_of("canvas_content")` raised.
+- A copy job addresses its objects by absolute URL and reports progress only for a real job:
+  `create_copy_jobs` wrapped `exportObjectUris` in a `{"results": [...]}` envelope the
+  service rejects.
+- Two endpoints that cannot work over REST say so: `PeopleManager.get_user_profile_properties`
+  is the reader for `UserProfilePropertiesForUser`, and `Tenant.get_site_subscription_id`
+  raises `System.NotSupportedException`.
+- A page payload no longer carries an emptied nested value: `SitePageFieldsData(Title="x")`
+  serialises as `{"Title": "x"}`, not `{"Title": "x", "CoAuthState": {}}`, so a farm that
+  never had that property does not refuse the create.
 
 **Migration (client-side)**
 
-- **The fidelity quartet is one verb, and its grammar is the item's.** The list target
-  and the library target each carried the same three hooks — `apply_timestamps`,
-  `apply_authorship`, `finalize_fidelity` — over one form payload: one built
-  `{"Created": iso_z(...), "Modified": ..., **pending}`, another merged the approval dict
-  in at two different points, and the library target kept its own UTC→local converter
-  with a per-value cache that the list target did not need. Both targets now resolve authors and approval into a pending record and hand it
-  to `ListItem.restore_fidelity`, once, with `web_local_dates=True` on the library side
-  — so which grammar an item speaks is one flag at one call site instead of two copies
-  of the payload that happen to agree. `_utc_to_local` (with its `_time_zone` memo and
-  `_local_cache`) is gone; `_web_local_texts` converts every instant of a write in one
-  server-side `TimeZone.UTCToLocalTime` request. Live-verified on a moderated list, a
-  file and a folder: one write restores the exact instant together with the resolved
-  `Author`/`Editor` and the approval status, a document refuses every `...Z` date with
-  "You must specify a valid date within the range of 1/1/1900 and 12/31/8900." and keeps
-  its wall clock, and a value the service refuses discards the rest of the same write.
-- **The SharePoint assessment reads a list item's columns through the item**
-  (`item.file_ref`, `is_file`, `has_unique_role_assignments`) instead of the JSON
-  bag, through one named projection per load. A request-level differential over 252
-  live assessment requests shows the widened projection as the only difference.
-- **The list migration classifies a column once, through the column.** Five
-  per-run caches over one `fields` read are replaced by `_source_fields()` and the
-  column's own predicates, and the target reads the same ones, so the two halves of
-  the pipeline can no longer disagree about what a column is. Both `$select` lists
-  are byte-identical.
-- **A file's current version no longer appears twice in its history.**
-  `File.Versions` includes the current version and the read passed it through as an
-  older one, so the ordinary case (current version is the newest label) listed that
-  label twice in `Manifest.xml`.
-- **A plain list is no longer routed to the server-side package.** `Manifest.xml`
-  has no `<List>` object, so a list record became a `<File>` whose content was the
-  record's `dict` repr, silently; a list task now falls back to the REST adapters
-  and says so, and the package target refuses any item that is not a file or a
-  folder.
-- A replayed view is created with the columns the target list has, and the drop is
-  reported rather than failing the whole replay with
-  `Column 'LinkTitle' does not exist`.
-- A re-run of `configure()` writes nothing, and whatever a structure replay cannot
-  reproduce is reported on `target.warnings` instead of assumed.
+- The list target and the library target carried the same three hooks over one form payload:
+  one built the `Created`/`Modified` dict, another merged the approval dict at two points,
+  and the library kept its own UTC→local converter with a per-value cache. Both resolve
+  authors and approval into a pending record and hand it to `ListItem.restore_fidelity`
+  once, with `web_local_dates=True` on the library side.
+- The SharePoint assessment reads a list item's columns through the item (`item.file_ref`,
+  `is_file`, `has_unique_role_assignments`) instead of the JSON bag.
+- The list migration classifies a column once, through the column: five per-run caches over
+  one `fields` read became `_source_fields()` and the column's own predicates.
+- A file's current version no longer appears twice in its history: `File.Versions` includes
+  the current version, which the read passed through as an older one.
+- A plain list is no longer routed to the server-side package: `Manifest.xml` has no `<List>`
+  object, so a list record became a `<File>` whose content was the record's `dict` repr.
+- A replayed view is created with the columns the target list has, and a column it drops is
+  reported rather than failing the whole replay.
+- A re-run of `configure()` writes nothing, and whatever a structure replay cannot reproduce
+  is reported on `target.warnings`.
 
 **Migration (server-side package path)**
 
-- **A resumed package run re-attaches to the job it already submitted.** The job id
-  lived only in memory, so the runner's resume drove `commit()` again and submitted a
-  *second* ingestion job for the same package: the service ingests the same content
-  twice, and neither job's outcome is attributable to a run. The id is now recorded
-  with the package's paperwork — `FileSystemStaging` writes `job.json` beside
-  `Manifest.xml`, `BlobStaging` uploads the same record (encrypted) to the manifest
-  container — and `commit()` adopts it instead of submitting, unless
-  `resubmit=True` says the recorded job is known-failed. The record names its
-  destination (web id + list title), so a second library reusing the directory does
-  not adopt the first one's job.
+- A resumed package run re-attaches to the job it already submitted: the job id lived only in
+  memory, so `commit()` submitted a second ingestion job for the same package.
 
 **Migration (Outlook)**
 
-- **Calendar and contact exports derive their projection from the model**
-  (`TypeSchema.of(Event).columns` / `TypeSchema.of(Contact).columns`). The hand-kept
-  list omitted
-  `isCancelled`, which the export filters on — and `$select` answers only the names
-  it lists — so a cancelled event was exported with `is_cancelled: false`.
-- **`iCalUId` is read as the service spells it.** The envelope asked
-  `get_property("iCalUid")` — one capital short — so every sidecar carried
-  `"ical_uid": null` and the `.ics` `UID` fell back to the tenant-local Graph id
-  instead of the identifier other calendar clients match on.
-- A recurring event's sidecar carries JSON, not `repr` text: `recurrence` is
-  flattened through `to_json()` instead of reaching `json.dumps` as a typed value,
-  which no import could replay.
-- **Verification compares in the source's timezone.** Exchange renders times in the
-  signed-in mailbox's zone, so a migration into a differently-zoned mailbox
-  reported every event as a mismatch while the instants were identical; the read
-  now asks for the item's own zone with `Prefer: outlook.timezone`
-  (`prefer_outlook_timezone`).
+- Calendar and contact exports derive their projection from the model
+  (`TypeSchema.of(Event).columns`, `TypeSchema.of(Contact).columns`).
+- `iCalUId` is read as the service spells it: the envelope asked for `iCalUid`, so every
+  sidecar carried `"ical_uid": null` and the `.ics` `UID` fell back to the Graph id.
+- A recurring event's sidecar carries JSON, not `repr` text: `recurrence` is flattened
+  through `to_json()` instead of reaching `json.dumps` as a typed value.
+- Verification compares in the source's timezone: Exchange renders times in the signed-in
+  mailbox's zone, so an event copied into a differently-zoned mailbox reported a mismatch
+  while the instants were identical.
 
 **Permissions**
 
-- **Three live suites were skipped for a licence the tenant already had.** They declared four
-  retail E5 SKU part numbers and nothing else, and a SKU part number is packaging rather than
-  capability: the test user's seat is `DEVELOPERPACK_E5`, a developer pack that carries
-  `RECORDS_MANAGEMENT` and `PURVIEW_DISCOVERY` (both `Success`), so the licence group answered
-  "not licensed" for a user who could make every call and 13 tests never ran. The licence fact
-  now reads `me/licenseDetails` for the SKU part number *and* the service plans inside it, and
-  the marker names the plan. Same rule as the catalog: declare the fact the call depends on, not
-  the label it is usually sold under.
-- **The preflight report dropped a whole flow instead of resolving it.** A requirement was
-  looked up with a client built for the auth flow the suite uses, and `--verify` could build
-  one only for the password and secret flows: every SharePoint suite signs in with the
-  certificate, so its requirements came out "unverified" and a report of what a tenant grants
-  said nothing about the package that owes 2,238 declarations. The same certificate is a
-  Graph credential, so the report now signs in with it and asks the app that will run the
-  tests. Measured on the tenant: 3 unverified rows became 3 met.
-- **`ServicePrincipal.get_application_permissions` reported a subset of the client's
-  grants.** It read the resource's `appRoleAssignedTo` navigation property, which was
-  expanded into the request; Graph answers an expanded collection with one truncated
-  page. Measured on a tenant where the client app holds 43 application permissions on
-  Microsoft Graph: `$expand=appRoleAssignedTo` returned 21, the paged collections
-  returned 44 assignments (43 of them the client's, 43 distinct roles, set-equal to the
-  43 `roles` in its token). Every reader believed the truncated answer — a skip decision
-  in a live test, a permission report, and the "already granted" check that makes
-  granting idempotent. `appRoleAssignedTo` accepts no `$filter` at all (`principalId`
-  answers `Links to EntitlementGrant are not supported between specified entities`,
-  `appRoleId` answers `Invalid filter clause appRoleId: System.Guid`), so the reader now
-  asks the same relationship from the client's side — paged
-  `servicePrincipals/{client}/appRoleAssignments`, filtered by `resourceId`. Measured
-  after: 43 of 43.
-- **`ServicePrincipal.grant_application_permissions` granted twice.** Its idempotency
-  check read the same truncated collection, so a role the client already held was
-  posted again; Graph rejects the duplicate and the caller saw a `ClientRequestException`
-  it could only read as a missing `AppRoleAssignment.ReadWrite.All` scope. Granting and
-  revoking now read the assignment list the reader above reads.
-- **`ServicePrincipal.get_delegated_permissions` answered from one grant.** It took
-  `next(g for g in grants if g.resource_id == self.id)` and split that grant's `scope`,
-  so a resource holding a tenant-wide grant plus per-user ones reported only the first
-  one found. It reads every grant for the resource now, and takes `consent_type`
-  (`"AllPrincipals"` by default, `"Principal"`, or `None` for both) rather than
-  silently mixing two different facts — a per-user consent makes a call work for that
-  user alone. Measured on the same tenant: 47 tenant-wide scopes, 2 per-user scopes
-  (`User.Read.All`, `UserAuthenticationMethod.ReadWrite`), 49 for both.
-- `ServicePrincipal.revoke_delegated_permissions` removes the scope from grants on *this*
-  resource only. It deleted every grant of the client app whose `scope` mentioned the
-  name, including grants on other resources that happen to spell it the same way
-  (`Mail.Send` is granted separately on Graph and on Exchange Online).
-- **Ten application permissions were declared that Microsoft Graph does not publish.** The
-  first thing the catalog did was disagree with the tree: the eight workbook methods that open,
-  refresh and close an Excel session and the two `/search/query` methods named `Files.ReadWrite`
-  and `People.Read` for the *application* flow, where Graph publishes only `Files.ReadWrite.All`
-  and `People.Read.All` — the delegated names are real, so nothing looked wrong. A declaration
-  of a name the API does not publish cannot be granted, cannot be satisfied by a token, and
-  cannot be refused by a live test in a way that reads as an error, so the wrong name was
-  invisible; `--grant` would have failed on it, and the preflight line named a permission that
-  does not exist. Both now name the published form.
-- **A live suite named a permission Microsoft Graph does not publish, and `--grant` died on
-  it.** `tests/directory/test_governance.py` listed `Approve.AppConsentRequests.Read.All`
-  beside `EntitlementManagement.Read.All` as an any-of, which is harmless while the group is
-  merely read: the second name answers. Granting it is where it stopped being harmless — the
-  directory accepts any string, so the planner asked for it, and `app_roles[...]` answered
-  `KeyError` from inside a response listener, which aborted the whole pass after two grants
-  and reported nothing about the other forty. Three changes: the marker names the one
-  permission that exists; `grant_plan` prefers a name its API publishes and keeps an
-  unpublished one only when a group offers nothing else, so the group stays visible instead
-  of vanishing; and `apply_plan` reports a name the API does not publish instead of
-  attempting it — a recorded grant for such a name is one the token never carries, which the
-  next `verify` would call met. `AppRoleCollection.__getitem__` now says what it looked for
-  (`this API publishes no app role named 'Approve.AppConsentRequests.Read.All'`) rather than
-  raising the bare key from a listener, where it read as a crash with no subject.
+- Three live suites were skipped for a licence the tenant already had: they declared retail
+  E5 SKU part numbers, and the test user's seat is `DEVELOPERPACK_E5`.
+- The preflight report dropped a whole flow instead of resolving it: `--verify` could build a
+  client only for the password and secret flows.
+- `ServicePrincipal.get_application_permissions` reported a subset of the client's grants: it
+  read `appRoleAssignedTo`, which Graph answers truncated even when expanded.
+- `ServicePrincipal.grant_application_permissions` granted twice, because its idempotency
+  check read the same truncated collection.
+- `ServicePrincipal.get_delegated_permissions` answered from one grant: a resource holding a
+  tenant-wide grant plus per-user ones reported only the first.
+- `ServicePrincipal.revoke_delegated_permissions` removes the scope from grants on this
+  resource only, not from every grant of the client app that spells the name.
+- Ten application permissions were declared that Microsoft Graph does not publish: the eight
+  workbook methods that open, refresh and close an Excel session and the two `/search/query`
+  methods named `Files.ReadWrite`.
+- A live suite named a permission Microsoft Graph does not publish, and `--grant` died on it:
+  `tests/directory/test_governance.py` listed `Approve.AppConsentRequests.Read.All` beside
+  `EntitlementManagement.Read.All` as an any-of.
 
 ## [3.3.0] - 2026-10-18
 
