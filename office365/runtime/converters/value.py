@@ -84,6 +84,11 @@ def serialize_value(  # noqa: PLR0911 - one return per stored-value kind
     ``to_json`` is consulted *before* the container branches: a collection type may
     subclass ``dict``/``list`` and still need its own serialization.
     """
+    if value is None:
+        return value
+    value_type = type(value)
+    if value_type is str or value_type is int or value_type is bool or value_type is float:
+        return value
     if isinstance(value, Enum):
         return _serialize_enum(value, profile)
     if isinstance(value, uuid.UUID):
