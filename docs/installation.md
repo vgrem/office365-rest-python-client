@@ -1,7 +1,8 @@
 # Installation
 
-`office365-rest-python-client` supports Python 3.8+ and has a single runtime
-dependency: [`requests`](https://requests.readthedocs.io/).
+`office365-rest-python-client` supports Python 3.10+ and has four runtime
+dependencies: [`requests`](https://requests.readthedocs.io/), `msal`, `pytz` and
+`typing-extensions`.
 
 ## From PyPI
 

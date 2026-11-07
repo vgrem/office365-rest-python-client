@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Breaking changes
+
+- **Python 3.10 is the floor.** `requires-python` moves from `>=3.8` to `>=3.10`,
+  which is what the library has actually needed: models annotate `Type | None`, and the
+  declared type is resolved at runtime, so 3.9 failed on the first schema read and 3.8
+  stopped importing altogether in 3.3.1 (`functools.cache`). An older interpreter now
+  gets a resolver error instead of a traceback.
+
 ## [3.3.1] - 2026-11-07
 
 Two changes shape this line. Model types now declare what they read: every getter names

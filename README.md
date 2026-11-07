@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/vgrem/office365-rest-python-client/blob/master/LICENSE)
 [![Sponsor](https://img.shields.io/badge/sponsor-vgrem-ea4aaa.svg?logo=github-sponsors)](https://github.com/sponsors/vgrem)
 
-**Python 3.8+** · typed models · fluent queries · deferred execution · 700+ runnable examples
+**Python 3.10+** · typed models · fluent queries · deferred execution · 700+ runnable examples
 
 - **Two clients, one library** — `ClientContext` speaks the SharePoint REST API; `GraphClient` speaks Microsoft Graph.
 - **Fluent and deferred** — chain `.select()`, `.filter()`, `.expand()`, `.top()`, `.order_by()` and only hit the wire when you call `execute_query()`.

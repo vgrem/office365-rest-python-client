@@ -469,8 +469,8 @@ into the awaiting coroutine. The async terminals leave the context consistent:
 - A streamed `export_to_async()` flushes and closes its target even on
   cancellation.
 
-Wrap long transfers in a timeout when you want a hard bound (`asyncio.wait_for`
-keeps a Python 3.8 floor):
+Wrap long transfers in a timeout when you want a hard bound (`asyncio.timeout` is
+3.11+, and the library keeps a 3.10 floor):
 
 ```python
 try:

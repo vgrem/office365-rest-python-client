@@ -94,6 +94,33 @@ jobs:
       - name: Report live-suite prerequisites
         run: uv run python -m tests.preflight
 
+  floor:
+    # `requires-python >=3.10` is a claim until an interpreter that old runs the
+    # suite. The lockfile resolves for >=3.11 only (see [tool.uv] in
+    # pyproject.toml), so this leg installs the package and its test harness by
+    # resolution instead of by lock.
+    runs-on: ubuntu-latest
+    needs:
+      - ruff
+      - pyright
+      - generator
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Install Requirements
+        run: |
+          uv venv --python 3.10 .floor
+          uv pip install --python .floor/bin/python -e ".[azure,duckdb,examples,excel,httpx,notebooks,ntlm,pandas,parquet,progress,sql]" pytest pyyaml faker cryptography adal types-requests
+      - name: Run offline tests
+        run: .floor/bin/python -m pytest -q
+
   docs:
     runs-on: ubuntu-latest
     needs:

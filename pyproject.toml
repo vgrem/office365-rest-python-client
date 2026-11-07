@@ -14,8 +14,10 @@ maintainers = [
 authors = [
   { name = "Vadim Gremyachev", email = "vvgrem@gmail.com" },
 ]
-# With Python 3.10 we get support for "Type | None", instead of Optional[Type]
-requires-python = ">=3.8.0"
+# The floor is measured, not preferred: models annotate "Type | None", and the
+# declared type is resolved at runtime, so 3.9 failed on the first schema read and
+# 3.8 fails to import at all (functools.cache).
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
@@ -23,8 +25,6 @@ classifiers = [
   "Programming Language :: Python",
 
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -89,7 +89,6 @@ urls.repository = "https://github.com/vgrem/office365-rest-python-client"
 [dependency-groups]
 dev = [
   "adal~=1.2.4",
-  "configparser>=5.0.2,<7.3",
   "cryptography>=44",
   "faker>=4.1.2,<40.42",
   "pre-commit>=4",
@@ -103,21 +102,20 @@ dev = [
   "types-requests",
 ]
 docs = [
-  "mkdocs~=1.6; python_version>='3.9'",
-  "mkdocs-awesome-pages-plugin~=2.9; python_version>='3.9'",
-  "mkdocs-gen-files~=0.5; python_version>='3.9'",
-  "mkdocs-material~=9.5; python_version>='3.9'",
-  "mkdocstrings[python]>=0.28,<2; python_version>='3.9'",
-  "pygments>=2.17; python_version>='3.9'",
+  "mkdocs~=1.6",
+  "mkdocs-awesome-pages-plugin~=2.9",
+  "mkdocs-gen-files~=0.5",
+  "mkdocs-material~=9.5",
+  "mkdocstrings[python]>=0.28,<2",
+  "pygments>=2.17",
 ]
 
 [tool.uv]
-# Resolve/lock only for interpreters we actually develop and test against.
-# The package still declares `requires-python >=3.8` (see [project]) so this
-# does not change what consumers may install; it only keeps the universal
-# lockfile from retaining unpatched pins that can no longer be upgraded on
-# EOL interpreters (3.8/3.9, and 3.10 since 2026-10-31). Remove this once
-# requires-python is raised (planned for 4.0).
+# The lockfile resolves for >=3.11 while the package declares 3.10: two transitive
+# pins (filelock, tornado) have no patched release for 3.10, so a lock that covered
+# it would hold the unpatched versions forever. This changes nothing for consumers;
+# the declared floor is exercised by the `floor` CI job, which installs by
+# resolution instead of by lock. Remove this when the floor reaches 3.11.
 environments = [ "python_full_version >= '3.11'" ]
 build-backend.module-name = "office365"
 build-backend.module-root = ""

@@ -22,7 +22,7 @@ Thank you for your interest in contributing to the `office365-rest-python-client
 
 ### Prerequisites
 
-- Python 3.8+ (CI tests 3.11 to 3.14; the lockfile and dev tooling need 3.11+)
+- Python 3.10+ (CI tests 3.10 through 3.14; the lockfile and dev tooling need 3.11+)
 - Git
 - [uv](https://docs.astral.sh/uv/) for dependency management
 - A Microsoft 365 tenant is **recommended but not required** — most contributions
@@ -82,7 +82,7 @@ uv run pytest -q
 
 A plain `pytest` never signs in: live suites are opt-in with `--live` (or
 `OFFICE365_LIVE=1` in `.env`, which is how an IDE's test runner gets one), because they
-write to a real tenant. This runs the offline suites and is what CI runs on Python 3.11
+write to a real tenant. This runs the offline suites and is what CI runs on Python 3.10
 to 3.14. It is the fastest way to validate a change, and where new tests should go.
 
 The offline tests are split by what they describe:
