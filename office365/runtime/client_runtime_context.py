@@ -691,7 +691,7 @@ class ClientRuntimeContext(ABC):
                     on_error=lambda _task, error: error,
                 )
 
-                for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                for index, ((qry, _options), response) in enumerate(zip(prepared, responses, strict=True)):
                     if isinstance(response, BaseException):
                         if on_error is not None:
                             on_error(qry, response)
@@ -805,7 +805,7 @@ class ClientRuntimeContext(ABC):
                     jitter=jitter,
                 )
 
-                for index, ((qry, _options), response) in enumerate(zip(prepared, responses)):
+                for index, ((qry, _options), response) in enumerate(zip(prepared, responses, strict=True)):
                     if isinstance(response, BaseException):
                         if on_error is not None:
                             on_error(qry, response)

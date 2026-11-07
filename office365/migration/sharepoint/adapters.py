@@ -807,7 +807,7 @@ class SharePointListSource:
         records = self._project_records(loaded)
         result: list[MigrationItem] = []
         pending_attachments: list[tuple[str, Any]] = []
-        for item, record in zip(loaded, records):
+        for item, record in zip(loaded, records, strict=True):
             item_id = str(item.id)
             self._records[item_id] = record
             self._items[item_id] = item
@@ -1442,7 +1442,7 @@ class SharePointListTarget:
         """
         records: list[dict] = []
         attachments: list[tuple[MigrationItem, object]] = []
-        for item, payload in zip(items, payloads):
+        for item, payload in zip(items, payloads, strict=True):
             if item.item_type == "attachment":
                 attachments.append((item, payload))
             else:
@@ -2804,12 +2804,12 @@ class SharePointLibraryTarget:
                         failures.append((folder.dest_path, str(e)))
         # A folder's column values can only be written once its item exists, so they
         # follow the (batched) folder creation.
-        for item, payload in zip(items, payloads):
+        for item, payload in zip(items, payloads, strict=True):
             if item.item_type == "folder" and isinstance(payload, dict):
                 self._apply_folder_values(item, payload)
         files = [
             (item.dest_path, payload if isinstance(payload, bytes) else str(payload).encode("utf-8"))
-            for item, payload in zip(items, payloads)
+            for item, payload in zip(items, payloads, strict=True)
             if item.item_type != "folder"
         ]
         if files:

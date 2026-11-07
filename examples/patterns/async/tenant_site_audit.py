@@ -79,7 +79,7 @@ async def find_inactive_sites(
     results = await asyncio.gather(*(inspect(s) for s in sites), return_exceptions=True)
 
     rows: list[dict] = []
-    for site, result in zip(sites, results):
+    for site, result in zip(sites, results, strict=True):
         if isinstance(result, BaseException):
             print(f"  skipped {site.url}: {result}")
         elif result is not None:

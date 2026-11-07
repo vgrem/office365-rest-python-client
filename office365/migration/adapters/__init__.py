@@ -125,7 +125,7 @@ class DataTarget(ABC):
         Targets that support true parallel writes (e.g. the SharePoint library
         target) override this. Returns a list of ``(path, error)`` failures.
         """
-        for item, payload in zip(items, payloads):
+        for item, payload in zip(items, payloads, strict=True):
             self.write(item, payload)
         return []
 

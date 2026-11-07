@@ -587,7 +587,7 @@ def _report_verification(session, source_ctx, ctx, preserve_permissions: bool, s
     print("\nVerifying…", flush=True)
     statuses = session.show()
     width = _label_width(status["target"] for status in statuses)
-    for status, report in zip(statuses, session.verify()):
+    for status, report in zip(statuses, session.verify(), strict=True):
         print(f"  {_fit(_short_label(status['target']), width)}  {report.summary()}")
         for path in report.missing[:5]:
             print(f"      missing: {path}")

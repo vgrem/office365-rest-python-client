@@ -209,7 +209,7 @@ class ContactRecord(SidecarRecord):
                 lines.append(f"EMAIL;TYPE=INTERNET:{_vcard_escape(email['address'])}")
         for im_address in contact.get("imAddresses") or []:
             lines.append(f"X-MS-IMADDRESS:{_vcard_escape(im_address)}")
-        for side, kind in zip(_ADDRESS_KEYS, ("WORK", "HOME", "OTHER")):
+        for side, kind in zip(_ADDRESS_KEYS, ("WORK", "HOME", "OTHER"), strict=True):
             address = contact.get(side) or {}
             if any(address.get(part) for part in _ADR_PARTS):
                 # The two empty leading components are ``pobox`` and ``extended``, which

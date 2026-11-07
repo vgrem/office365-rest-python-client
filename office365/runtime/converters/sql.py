@@ -53,7 +53,7 @@ def duckdb_chunks(source: Any, query: str, chunksize: int) -> Iterator[List[Dict
         rows = result.fetchmany(chunksize)
         if not rows:
             break
-        yield [dict(zip(columns, row)) for row in rows]
+        yield [dict(zip(columns, row, strict=True)) for row in rows]
 
 
 def write_duckdb(records: List[Dict[str, Any]], target: Any, *, table: str, **opts: Any) -> None:

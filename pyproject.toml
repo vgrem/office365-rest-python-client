@@ -123,7 +123,7 @@ build-backend.module-name = "office365"
 build-backend.module-root = ""
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py310"
 line-length = 121
 src = [ "examples", "generator", "office365", "tests" ]
 format.line-ending = "lf"
@@ -154,7 +154,7 @@ lint.pylint.max-branches = 16
 lint.pylint.max-statements = 60
 
 [tool.pyright]
-pythonVersion = "3.8"
+pythonVersion = "3.10"
 # Third-party imports resolve from the project venv, so the optional extras have to
 # be installed (`uv sync --all-extras`, see README-dev.md). A hardcoded
 # `.venv/lib/python3.11/site-packages` used to sit here and pointed at nothing.

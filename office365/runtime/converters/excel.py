@@ -41,4 +41,4 @@ def read_excel(path: Union[str, PathLike]) -> List[Dict[str, Any]]:
     headers = next(rows, None)
     if headers is None:
         return []
-    return [dict(zip(headers, row)) for row in rows if any(value is not None for value in row)]
+    return [dict(zip(headers, row, strict=True)) for row in rows if any(value is not None for value in row)]

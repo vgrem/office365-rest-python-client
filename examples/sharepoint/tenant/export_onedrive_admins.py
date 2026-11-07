@@ -50,7 +50,7 @@ def main():
     ctx.execute_batch()
 
     records = []
-    for s, result in zip(onedrives, results):
+    for s, result in zip(onedrives, results, strict=True):
         for info in result.value:
             records.append(
                 {

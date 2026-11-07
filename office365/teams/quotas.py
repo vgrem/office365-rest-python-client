@@ -50,7 +50,7 @@ _DEFAULTS = tuple(
         request_type=request_type,
     )
     for request_type, *values in _DEFAULT_ROWS
-    for scope, value in zip(_SCOPES, values)
+    for scope, value in zip(_SCOPES, values, strict=True)
 )
 
 

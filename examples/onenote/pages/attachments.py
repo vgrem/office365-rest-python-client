@@ -70,9 +70,12 @@ def main() -> None:
 
     # Part name in the HTML -> file on disk. The files' names drive their MIME
     # types (an image/jpeg part for the <img>, application/pdf, docx, ...).
-    with (DATA_DIR / "Sample.html").open("rb") as html, (DATA_DIR / "office-logo-icon.jpg").open("rb") as image, (
-        DATA_DIR / "Sample.pdf"
-    ).open("rb") as pdf, (DATA_DIR / "SharePoint User Guide.docx").open("rb") as word:
+    with (
+        (DATA_DIR / "Sample.html").open("rb") as html,
+        (DATA_DIR / "office-logo-icon.jpg").open("rb") as image,
+        (DATA_DIR / "Sample.pdf").open("rb") as pdf,
+        (DATA_DIR / "SharePoint User Guide.docx").open("rb") as word,
+    ):
         attachments = {"imageBlock1": image, "fileBlock1": pdf, "fileBlock2": word}
         page = section.pages.add(presentation_file=html, attachment_files=attachments).execute_query()
 
