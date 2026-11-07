@@ -72,27 +72,54 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["is_migratable_list", "resolve_site_task", "resolve_task"]
+__all__ = ["LIST_SCOPE_SELECT", "is_migratable_list", "resolve_site_task", "resolve_task"]
 
 #: ``SPListTemplateType.WebPageLibrary`` — the modern pages library.
 _WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
+
+#: What a scope decision reads off a list handle. The default list read omits
+#: ``AllowDeletion`` and ``IsSystemList``, so a read that wants
+#: :func:`is_migratable_list` to mean anything has to name them. ``Title``, ``Id``,
+#: ``BaseType``, ``BaseTemplate``, ``Description`` and ``ContentTypesEnabled`` ride
+#: along because the same handles go on to structure capture.
+LIST_SCOPE_SELECT = (
+    "Title",
+    "Id",
+    "Hidden",
+    "AllowDeletion",
+    "IsSystemList",
+    "BaseType",
+    "BaseTemplate",
+    "Description",
+    "ContentTypesEnabled",
+)
 
 
 def is_migratable_list(sp_list: SPList) -> bool:
     """Whether a list/library takes part in a whole-site migration.
 
-    Skips hidden lists and the ones the service refuses to delete: that is how SharePoint
-    marks the lists it provisions for itself (user information, the galleries, the
-    taxonomy list), whatever template each came from. The Site Pages library is skipped by
+    Skips hidden lists, and the ones the service protects from deletion and itself marks as
+    holding no end-user data (``AllowDeletion`` + ``IsSystemList``): that pair is how
+    SharePoint marks the lists it provisions for itself (user information, the galleries,
+    the taxonomy list), whatever template each came from. Deletion protection alone is not
+    That pair is not the same as deletion protection on its own: the service also protects
+    the default document library, which holds the site's own files (253 items on the tenant
+    this was measured against, and the service reports ``IsSystemList`` false for it).
+    The Site Pages library is skipped by
     name — a page row copied as a list item carries no canvas, so pages travel through
     :func:`~office365.migration.sharepoint.pages.copy_site_pages` instead. A business-data
     (BCS) external list is skipped too: it is a view over a BDC model that a copy cannot
     provision, so :func:`~office365.migration.sharepoint.handoff.detect_handoff` reports it
     instead of the structure replay creating a hollow list.
+
+    The verdict is only as good as the read behind it: the default list read omits
+    ``AllowDeletion`` and ``IsSystemList``, so a handle fetched without
+    :data:`LIST_SCOPE_SELECT` answers ``True`` for a list the service provisions for
+    itself.
     """
     if sp_list.hidden:
         return False
-    if sp_list.allow_deletion is False:
+    if sp_list.allow_deletion is False and sp_list.is_system_list:
         return False
     if sp_list.base_template in (EXTERNAL_LIST_TEMPLATE, _WEB_PAGE_LIBRARY):
         return False
@@ -380,7 +407,7 @@ def _resolve_web(
             warnings.append(f"navigation replication failed for {_web_url(source_context.web)}: {e}")
     _apply_web_settings(source_context.web, target_context.web, preserve_site_settings, warnings)
     _report(progress, 0, None, "lists")
-    source_lists: Iterable[SPList] = source_context.web.lists.get().execute_query()
+    source_lists: Iterable[SPList] = source_context.web.lists.select(LIST_SCOPE_SELECT).get().execute_query()
     # Modern and classic wiki pages are copied; web part data bindings, wiki markup
     # that addresses the source site, workflows, InfoPath forms, BCS external lists
     # and pages with no copyable body are outside what a client-side copy can carry —
