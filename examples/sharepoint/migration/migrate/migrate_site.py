@@ -118,7 +118,7 @@ from office365.migration.sharepoint.pages import (
     capture_site_pages,
     is_page_library,
 )
-from office365.migration.sharepoint.resolvers import is_document_library, is_migratable_list
+from office365.migration.sharepoint.resolvers import is_migratable_list
 from office365.migration.tasks import MigrationTask
 from office365.runtime.http.throttling import RateLimiter
 from office365.sharepoint.client_context import ClientContext
@@ -377,7 +377,7 @@ class _PlanPrinter:
         print(f"target  {args.target_site}")
         print(f"\nLists ({len(lists)})")
         for entry in lists:
-            kind = "library" if is_document_library(entry) else "list"
+            kind = "library" if entry.is_document_library else "list"
             print(f"  {kind:<7}  {entry.title}")
         if not lists:
             print("  (none)")

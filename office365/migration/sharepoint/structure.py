@@ -72,6 +72,7 @@ from office365.sharepoint.fields.field import (
     is_taxonomy_column,
     schema_property,
 )
+from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -225,7 +226,9 @@ def comparable_schema(schema_xml: Optional[str]) -> Dict[str, Any]:
 
 def _setting_names(base_type: Optional[int]) -> List[str]:
     """The container settings worth capturing for a list of this base type."""
-    return [name for name in _LIST_SETTING_ORDER if base_type == 1 or name not in _LIBRARY_SETTING_NAMES]
+    if is_document_library(base_type):
+        return list(_LIST_SETTING_ORDER)
+    return [name for name in _LIST_SETTING_ORDER if name not in _LIBRARY_SETTING_NAMES]
 
 
 @dataclass
@@ -352,8 +355,8 @@ class ListStructure:
 
     @property
     def is_document_library(self) -> bool:
-        """Whether the captured list is a document library (``BaseType`` 1)."""
-        return self.base_type == 1
+        """Whether the captured list is a document library, read off its ``BaseType``."""
+        return is_document_library(self.base_type)
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON-friendly dict (nested dataclasses are expanded)."""
@@ -974,7 +977,7 @@ def _apply_list_settings(sp_list: SPList, structure: ListStructure, warnings: Li
         name: value
         for name, value in structure.settings.items()
         if (name in _VALIDATION_SETTING_NAMES) is validation
-        and not (name in _LIBRARY_SETTING_NAMES and structure.base_type != 1)
+        and not (name in _LIBRARY_SETTING_NAMES and not structure.is_document_library)
         and _setting_is_expressible(name, structure.settings)
     }
     if not wanted:

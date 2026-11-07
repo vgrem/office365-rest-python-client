@@ -56,6 +56,7 @@ from office365.sharepoint.listitems.creation_information_using_path import (
 )
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
 from office365.sharepoint.listitems.listitem import ListItem
+from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.lists.bloom_filter import ListBloomFilter
 from office365.sharepoint.lists.creatables_info import CreatablesInfo
 from office365.sharepoint.lists.data_source import ListDataSource
@@ -1548,6 +1549,15 @@ class List(SecurableObject):
         It MUST be one of the following values: GenericList, DocumentLibrary, DiscussionBoard, Survey, or Issue.
         """
         return self.properties.get("BaseType", None)
+
+    @property
+    def is_document_library(self) -> bool:
+        """Whether this list holds files rather than records, read off its ``BaseType``.
+
+        Derived rather than declared: ``BaseType`` is what the service reports, and this
+        is the question every caller asks of it.
+        """
+        return is_document_library(self.base_type)
 
     @odata(name="BrowserFileHandling", readonly=True)
     @property

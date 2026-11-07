@@ -53,7 +53,6 @@ from office365.migration.sharepoint.structure import (
 from office365.migration.tasks import FILE_SHARE, SHAREPOINT, MigrationTask
 from office365.runtime.converters.scalars import normalize_guid
 from office365.runtime.operations import Progress
-from office365.sharepoint.lists.base_type import BaseType
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.webs.creation_information import WebCreationInformation
 from office365.sharepoint.webs.templates.type import WebTemplateType
@@ -73,19 +72,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["is_document_library", "is_migratable_list", "resolve_site_task", "resolve_task"]
-
-#: ``SPBaseType.DocumentLibrary`` — libraries hold files; everything else is a
-#: record list.
-_DOCUMENT_LIBRARY = BaseType.DocumentLibrary.value
+__all__ = ["is_migratable_list", "resolve_site_task", "resolve_task"]
 
 #: ``SPListTemplateType.WebPageLibrary`` — the modern pages library.
 _WEB_PAGE_LIBRARY = ListTemplateType.WebPageLibrary.value
-
-
-def is_document_library(sp_list: SPList) -> bool:
-    """Whether a SharePoint list is a document library (holds files, not records)."""
-    return sp_list.base_type == _DOCUMENT_LIBRARY
 
 
 def is_migratable_list(sp_list: SPList) -> bool:
@@ -581,7 +571,7 @@ def _list_adapters(
     source_list: SPList, target_list: SPList, *, content_type_map: ContentTypeMap | None = None
 ) -> tuple[Source, Target]:
     """Build the source/target adapter pair for one resolved list/library."""
-    if is_document_library(source_list):
+    if source_list.is_document_library:
         source = SharePointLibrarySource(source_list.root_folder, sp_list=source_list)
         folder = target_list.root_folder.get().execute_query()
         target = SharePointLibraryTarget(folder, sp_list=target_list, content_type_map=content_type_map)
@@ -644,7 +634,7 @@ def _template_type(source_list: SPList) -> ListTemplateType:
             return ListTemplateType(value)
         except ValueError:
             pass
-    return ListTemplateType.DocumentLibrary if is_document_library(source_list) else ListTemplateType.GenericList
+    return ListTemplateType.DocumentLibrary if source_list.is_document_library else ListTemplateType.GenericList
 
 
 def _shape_refusal(source_title: "str | None", source_holds_files: bool, target_title: "str | None") -> str:
@@ -677,7 +667,7 @@ def _file_share(
     source = FileSystemSource(task.file_share_source)
     target_context = _context_for(context, task.target_site_url)
     target_list, folder = _target_folder(target_context, task)
-    if not is_document_library(target_list):
+    if not target_list.is_document_library:
         raise ValueError(_shape_refusal(task.file_share_source, True, target_list.title))
     return source, _build_target(task, target_context, settings, target_list, folder)
 
@@ -694,8 +684,8 @@ def _sharepoint(
     source_list = source_context.web.get_list_by_title(task.source_list).get().execute_query()
     source = _list_source(source_list)
     target_list, folder = _target_folder(target_context, task)
-    if is_document_library(source_list) != is_document_library(target_list):
-        raise ValueError(_shape_refusal(source_list.title, is_document_library(source_list), target_list.title))
+    if source_list.is_document_library != target_list.is_document_library:
+        raise ValueError(_shape_refusal(source_list.title, source_list.is_document_library, target_list.title))
     # Always replay structure over REST. The server-side package path does not
     # emit columns/content types/views yet, so skipping this would silently drop
     # them from the target (the package builder only carries the library, folders,
@@ -711,7 +701,7 @@ def _sharepoint(
 
 
 def _list_source(source_list: SPList) -> Source:
-    if is_document_library(source_list):
+    if source_list.is_document_library:
         return SharePointLibrarySource(source_list.root_folder, sp_list=source_list)
     return SharePointListSource(source_list)
 
@@ -751,7 +741,7 @@ def _build_target(
     content_type_map: ContentTypeMap | None = None,
 ) -> Target:
     if settings is not None and settings.use_migration_api:
-        if is_document_library(target_list):
+        if target_list.is_document_library:
             return _package_target(task, context, target_list)
         # A package can express a file, a folder and a file's list item — nothing
         # else: there is no ``<List>`` provisioning object, so a record has no
@@ -767,7 +757,7 @@ def _build_target(
             ],
         )
         return target
-    if is_document_library(target_list):
+    if target_list.is_document_library:
         return SharePointLibraryTarget(folder, sp_list=target_list, content_type_map=content_type_map)
     return SharePointListTarget(target_list, content_type_map=content_type_map)
 
