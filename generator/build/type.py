@@ -301,8 +301,16 @@ class TypeBuilder(ast.NodeTransformer):
 
         ``a/b.py`` and ``a/b/__init__.py`` cannot coexist: imports resolve to the
         package, so a class defined in the module is unreachable.
+
+        A module whose *parent* package does not exist yet raises
+        ``ModuleNotFoundError`` from ``find_spec`` rather than returning ``None``.
+        That is a module this run has not created yet, not a shadow, so the
+        answer is ``False`` rather than an exception out of a dry run.
         """
-        spec = importlib.util.find_spec(module_name)
+        try:
+            spec = importlib.util.find_spec(module_name)
+        except (ImportError, ValueError):
+            return False
         return spec is not None and spec.submodule_search_locations is not None
 
     def _method_is_resolvable(self, method_schema) -> bool:
