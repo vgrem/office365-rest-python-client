@@ -26,7 +26,9 @@ class ExchangeAdminClient(ExchangeCmdlets, ClientRuntimeContext):
     """Exchange Online Admin API client (preview REST surface; cmdlet-style POSTs, no OData).
 
     Inherits retry, rate limiting, hooks, async and parallel execution from ``ClientRuntimeContext``.
-    ``anchor`` is the default ``X-AnchorMailbox``: the admin UPN (delegated) or the system mailbox (app-only).
+    ``anchor`` sets the default ``X-AnchorMailbox`` routing key, and is optional: the cmdlets
+    this preview exposes route by their own parameters, and the mailbox-scoped helpers set the
+    key themselves. ``tenant`` is only for when the address and the authority disagree.
     """
 
     def __init__(
@@ -50,7 +52,12 @@ class ExchangeAdminClient(ExchangeCmdlets, ClientRuntimeContext):
 
     @staticmethod
     def system_mailbox_anchor(organization: str) -> str:
-        """Routing key for app-only calls that target no mailbox; ``organization`` is a tenant ID or domain."""
+        """Routing key for app-only calls that target no mailbox; ``organization`` is a tenant ID or domain.
+
+        Optional: it exists for cmdlets that name no mailbox of their own. Measured against a
+        tenant, ``Get-OrganizationConfig``, ``Get-Mailbox`` and ``Get-MailboxFolderPermission``
+        all answer without any anchor.
+        """
         return f"APP:SystemMailbox{{{SYSTEM_MAILBOX_GUID}}}@{organization}"
 
     @property

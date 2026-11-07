@@ -4,7 +4,7 @@ Run Exchange admin calls from Python and read the results as dictionaries —
 mailboxes, mailbox folder permissions, and organisation configuration.
 
 ```python
-from office365.admin.exchange import ExchangeAdminClient
+from office365.exchange import ExchangeAdminClient
 ```
 
 ## Install
@@ -24,36 +24,38 @@ pip install office365-rest-python-client
 
 ## Sign in
 
-**App-only, with a secret.** An app has no mailbox of its own, so every call carries a
-routing key naming the mailbox it is about (`anchor`). For calls that are not about any
-particular mailbox, use the system mailbox:
+The client takes your tenant id and nothing else — the same ``with_*`` methods Graph has, with
+the Exchange audience, so the credential is the only thing that changes between them.
+
+**App-only, with a secret:**
 
 ```python
 import os
 
-from office365.admin.exchange import ExchangeAdminClient
+from office365.exchange import ExchangeAdminClient
 
-tenant_id = os.environ["O365_TENANT_ID"]
-
-client = ExchangeAdminClient(
-    tenant_id,
-    anchor=ExchangeAdminClient.system_mailbox_anchor(tenant_id),
-).with_client_secret(os.environ["O365_CLIENT_ID"], os.environ["O365_CLIENT_SECRET"])
-```
-
-**App-only, with a certificate:**
-
-```python
-client = ExchangeAdminClient(tenant_id, anchor=ExchangeAdminClient.system_mailbox_anchor(tenant_id)).with_certificate(
-    client_id, thumbprint=thumbprint, private_key=private_key_path
+client = ExchangeAdminClient(os.environ["O365_TENANT_ID"]).with_client_secret(
+    os.environ["O365_CLIENT_ID"], os.environ["O365_CLIENT_SECRET"]
 )
 ```
 
-**Delegated, as the signed-in admin** — the anchor is that admin's address:
+**App-only, with a certificate** — no shared secret, so this is the flow production daemons use:
 
 ```python
-client = ExchangeAdminClient(tenant_id, anchor="AAD-UPN:admin@contoso.com").with_device_flow(client_id)
+from pathlib import Path
+
+client = ExchangeAdminClient(tenant_id).with_certificate(client_id, thumbprint, Path(key_path).read_text())
 ```
+
+**Delegated, as a signed-in administrator:**
+
+```python
+client = ExchangeAdminClient(tenant_id).with_device_flow(client_id)
+```
+
+Delegated access needs the ``Exchange.ManageV2`` scope consented on the app. Measured: without
+it the tenant still issues a token — right audience, no admin scope — and the API answers
+``401`` with an empty body, which reads like a broken sign-in rather than a missing grant.
 
 Also available: `with_token_interactive()` (browser window), `with_username_and_password()`
 (test tenants only — it fails under MFA). If you already hold a token:
@@ -62,7 +64,13 @@ Also available: `with_token_interactive()` (browser window), `with_username_and_
 client.pending_request().with_access_token(lambda: {"access_token": token, "token_type": "Bearer"})
 ```
 
-### Choosing the mailbox (`anchor`)
+### `anchor` — when the call has no mailbox of its own
+
+A call may carry an `X-AnchorMailbox` header, the routing key that names the mailbox it is
+about. It is optional: measured against a tenant, `Get-OrganizationConfig`, `Get-Mailbox` and
+`Get-MailboxFolderPermission` all answer without it, and a folder-permission read without it
+still returns the permissions of the mailbox its `Identity` names. The mailbox-scoped helpers
+below set it themselves, so you never have to pass one.
 
 | Value | Targets |
 |---|---|
@@ -71,7 +79,9 @@ client.pending_request().with_access_token(lambda: {"access_token": token, "toke
 | `MBX:<mailbox-guid>@<tenant>` | same, by Exchange mailbox GUID |
 | `APP:SystemMailbox{bb558c35-97f1-4cb9-8ff7-d53741dc928c}@<tenant>` | no particular mailbox |
 
-Set it once on the client, or override it on a single call with `anchor=`.
+Set it on the client when a whole session is about one mailbox, or override it on a single call
+with `anchor=`. `ExchangeAdminClient.system_mailbox_anchor(tenant_id)` builds the app-only value
+for a call that is about none.
 
 ## Use it
 

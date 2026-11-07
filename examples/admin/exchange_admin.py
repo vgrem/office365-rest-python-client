@@ -23,10 +23,7 @@ from tests.settings import client_id, client_secret, tenant
 
 
 def main() -> None:
-    # An app has no mailbox of its own, so a call that is about no particular mailbox carries
-    # the system mailbox as its routing key.
-    client = ExchangeAdminClient(tenant, anchor=ExchangeAdminClient.system_mailbox_anchor(tenant))
-    client.with_client_secret(client_id, client_secret)
+    client = ExchangeAdminClient(tenant).with_client_secret(client_id, client_secret)
 
     config = client.get_organization_config().execute_query().value
     print(f"Organisation: {config.get('Name')} (Id: {config.get('Id')})")
