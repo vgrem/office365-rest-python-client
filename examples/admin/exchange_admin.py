@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from itertools import islice
 
-from office365.admin.exchange import ExchangeAdminClient
+from office365.exchange import ExchangeAdminClient
 from tests.settings import client_id, client_secret, tenant
 
 

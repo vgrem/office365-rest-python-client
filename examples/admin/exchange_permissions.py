@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import argparse
 
-from office365.admin.exchange import ExchangeAdminClient
+from office365.exchange import ExchangeAdminClient
 from office365.graph_client import GraphClient
 from office365.permissions import ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
