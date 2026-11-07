@@ -1751,12 +1751,13 @@ class SharePointListTarget:
     def _remap_taxonomies(self, records: list[dict]) -> None:
         """Write taxonomy terms in the form SharePoint accepts on the target.
 
-        A single-value column takes a typed ``SP.Taxonomy.TaxonomyFieldValue``
-        object; a multi-value column only accepts the hidden note companion's text
-        form ``-1;#Label|guid;#...`` (typed-collection JSON is rejected server-side).
-        The term id is authoritative — the label can be left blank. A column with no
-        target counterpart is dropped and reported rather than sent as an unknown
-        property.
+        A single-value column takes :class:`TaxonomyFieldValue` itself — the library
+        type, not a dictionary spelled like one — so its declared type name and
+        ``WssId = -1`` default are answered by the value. A multi-value column only
+        accepts the hidden note companion's text form ``-1;#Label|guid;#...``
+        (typed-collection JSON is rejected server-side). The term id is authoritative,
+        so the label is left unset. A column with no target counterpart is dropped and
+        reported rather than sent as an unknown property.
         """
         columns = self._taxonomy_columns()
         unresolved: set[str] = set()
@@ -1782,12 +1783,7 @@ class SharePointListTarget:
                     record.pop(internal_name, None)
                     unresolved.add(internal_name)
                 else:
-                    record[internal_name] = {
-                        "__metadata": {"type": "SP.Taxonomy.TaxonomyFieldValue"},
-                        "Label": "",
-                        "TermGuid": guids[0],
-                        "WssId": -1,
-                    }
+                    record[internal_name] = TaxonomyFieldValue(TermGuid=guids[0])
         if unresolved:
             self.warnings.append(
                 f"taxonomy column(s) not available on the target, values left empty: {', '.join(sorted(unresolved))}"

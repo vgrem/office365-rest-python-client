@@ -22,6 +22,7 @@ class TestSPTaxonomy(SPTestCase):
     """Test SharePoint taxonomy features."""
 
     target_field: ClassVar[Optional[Field]] = None
+    single_field: ClassVar[Optional[TaxonomyField]] = None
     target_list: ClassVar[Optional[List]] = None
     target_term: ClassVar[Optional[Term]] = None
     target_term_group: ClassVar[Optional[TermGroup]] = None
@@ -85,6 +86,9 @@ class TestSPTaxonomy(SPTestCase):
         self.assertIsNotNone(tax_field.resource_path)
         # self.assertTrue(tax_field.properties.get('IsTermSetValid'))
         TestSPTaxonomy.target_field = tax_field
+        TestSPTaxonomy.single_field = TestSPTaxonomy.target_list.fields.create_taxonomy_field(
+            name=create_unique_name("Single"), term_set=target_term_set, allow_multiple_values=False
+        ).execute_query()
 
     def test_07_get_tax_field(self):
         """Get and verify the created taxonomy field."""
@@ -133,7 +137,31 @@ class TestSPTaxonomy(SPTestCase):
         set_term(label)
         self.assertEqual(label, stored_label())
 
-    def test_09_delete_tax_field(self):
+    def test_09_a_single_value_term_is_carried_as_the_library_value(self):
+        """A queued record carries a ``TaxonomyFieldValue``, and the column keeps the term.
+
+        The single-value form is the library's own value, not a dict spelled like one,
+        written through the create path a migration uses. The service accepts a nested
+        value with or without its type marker (measured: dropping ``entity_type_name``
+        and re-running this test leaves it green), so what is pinned here is the round
+        trip, not the marker — that one is pinned offline in
+        ``tests/unit/test_converters.py``.
+        """
+        target_list = TestSPTaxonomy.target_list
+        single_field = TestSPTaxonomy.single_field
+        target_term = TestSPTaxonomy.target_term
+        if not (target_list and single_field and target_term):
+            self.skipTest("No single-value taxonomy field from previous test")
+        name = single_field.internal_name
+        title = "single-value-term"
+        target_list.items.queue_records(
+            [{"Title": title, name: TaxonomyFieldValue(TermGuid=target_term.id)}]
+        ).execute_query()
+        items = target_list.get_items().select(["Title", name]).filter(f"Title eq '{title}'").get().execute_query()
+        self.assertEqual(1, len(items))
+        self.assertEqual(target_term.id, items[0].properties[name]["TermGuid"])
+
+    def test_10_delete_tax_field(self):
         """Delete the created taxonomy field."""
         target_field = TestSPTaxonomy.target_field
         if not target_field:
