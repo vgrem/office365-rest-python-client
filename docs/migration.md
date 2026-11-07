@@ -746,8 +746,12 @@ session.start()
 The registered `context` is the **target**; a source on a different site
 collection in the **same tenant** is reached through an authenticated clone
 (`ClientContext.clone`), reusing the registered credentials. Document libraries
-use the file adapters, other lists use the record adapters. Hidden lists,
-SharePoint infrastructure templates, and non-deletable system lists are skipped.
+use the file adapters, other lists use the record adapters. Hidden lists and the
+lists the service marks as its own -- protected from deletion *and* flagged
+`IsSystemList`, which is how the galleries, the user information list and the
+taxonomy list are spelled -- are skipped. The site path reads the source lists
+through `LIST_SCOPE_SELECT`, because the default list read carries neither of
+those two facts and a scope decision taken on one would keep every service list.
 
 **Subsites are not migrated by default.** They are detected and named in
 `session.warnings()`, so a whole-site run never quietly ignores them. Pass
