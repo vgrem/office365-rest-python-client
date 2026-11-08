@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import csv
-from typing import IO, Any, List, Optional
+from typing import IO, Any, Iterable, List, Optional
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters.records import iter_records
@@ -41,15 +41,20 @@ def write_csv(collection: ClientObjectCollection, file: IO[str], delimiter: str 
     write_records(iter_records(collection), file, delimiter=delimiter)
 
 
-def write_records(records: list[dict], file: IO[str], columns: Optional[List[str]] = None, delimiter: str = ",") -> None:
+def write_records(
+    records: Iterable[dict], file: IO[str], columns: Optional[List[str]] = None, delimiter: str = ","
+) -> None:
     """Write a list of dict records to CSV.
 
     Args:
-        records: Rows as dicts (one dict per line).
+        records: Rows as dicts (one dict per line), or any iterable of them — a
+            generator that walks the tenant is materialized here so the column
+            order can be read off the rows.
         file: Writable text stream.
         columns: Explicit column order; defaults to the union of record keys
             in first-appearance order.
     """
+    records = list(records)
     if not records:
         return
     if columns is None:

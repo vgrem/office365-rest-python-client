@@ -17,11 +17,9 @@ https://learn.microsoft.com/en-us/graph/api/user-assignlicense
 """
 
 import argparse
-import csv
-from collections import defaultdict
 
 from office365.directory.licenses.assigned_license import AssignedLicense
-from office365.directory.licenses.plan import LicenceChange, plan_licences
+from office365.directory.licenses.plan import LicenceChange, plan_licences, read_assignments
 from office365.directory.licenses.subscribed_sku import SubscribedSku
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
@@ -51,15 +49,6 @@ def describe(change: LicenceChange, parts_by_id: dict[str, str]) -> str:
     return ", ".join(added + [f"-{parts_by_id.get(sku_id, sku_id)}" for sku_id in change.remove])
 
 
-def read_rows(path: str) -> dict[str, list[tuple[str, list[str]]]]:
-    wanted: dict[str, list[tuple[str, list[str]]]] = defaultdict(list)
-    with open(path, newline="", encoding="utf-8") as stream:
-        for row in csv.DictReader(stream):
-            names = [name for name in (row.get("disabled_plans") or "").split(",") if name]
-            wanted[row["user_principal_name"]].append((row["sku"], names))
-    return wanted
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("path", help="CSV written by export_licences.py")
@@ -70,7 +59,7 @@ def main() -> None:
     skus = client.subscribed_skus.get().execute_query()
     parts_by_id = {str(sku.sku_id): sku.sku_part_number or "" for sku in skus}
 
-    for upn, rows in read_rows(args.path).items():
+    for upn, rows in read_assignments(args.path).items():
         try:
             asked = asked_licences(rows, {sku.sku_part_number or "": sku for sku in skus})
         except LookupError as error:

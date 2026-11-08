@@ -2,7 +2,8 @@
 
 One row per user and SKU, with the plans disabled inside that SKU written by name. A SKU id is
 only meaningful next to the tenant that issued it, and a plan id less so; the names are what
-``import_licences.py`` accepts back.
+``import_licences.py`` accepts back. The columns and the naming are
+``office365.directory.licenses.plan.assignments``; this script only picks the output.
 
     python export_licences.py > licences.csv
 
@@ -12,10 +13,11 @@ https://learn.microsoft.com/en-us/graph/api/user-list-licensedetails
 """
 
 import argparse
-import csv
 import sys
 
+from office365.directory.licenses.plan import assignments
 from office365.graph_client import GraphClient
+from office365.runtime.converters.csv_writer import write_records
 from tests.settings import client_id, client_secret, tenant
 
 
@@ -24,17 +26,7 @@ def main() -> None:
     parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    catalogue = {str(sku.sku_id): sku for sku in client.subscribed_skus.get().execute_query()}
-    holders = client.users.select(["userPrincipalName", "assignedLicenses"]).get_licensed()
-    holders.get_all().execute_query()
-
-    writer = csv.writer(sys.stdout)
-    writer.writerow(["user_principal_name", "sku", "disabled_plans"])
-    for user in holders:
-        for licence in user.assigned_licenses:
-            sku = catalogue.get(str(licence.skuId))
-            sku_name = sku.sku_part_number if sku else str(licence.skuId)
-            writer.writerow([user.user_principal_name, sku_name, ",".join(sorted(licence.disabled_plan_names(sku)))])
+    write_records(assignments(client), sys.stdout)
 
 
 if __name__ == "__main__":
