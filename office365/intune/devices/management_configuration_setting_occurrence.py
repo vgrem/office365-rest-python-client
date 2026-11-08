@@ -1,0 +1,12 @@
+from __future__ import annotations
+
+from office365.runtime.client_value import ClientValue
+
+
+class DeviceManagementConfigurationSettingOccurrence(ClientValue):
+    maxDeviceOccurrence: int | None = None
+    minDeviceOccurrence: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DeviceManagementConfigurationSettingOccurrence"

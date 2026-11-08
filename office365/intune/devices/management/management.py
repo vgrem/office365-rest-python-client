@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
+
+from typing_extensions import Self
 
 from office365.common.intune_brand import IntuneBrand
 from office365.directory.rolemanagement.roles.permission import RolePermission
@@ -30,10 +33,20 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.common.group_policy_category import GroupPolicyCategory
+    from office365.common.group_policy_configuration import GroupPolicyConfiguration
+    from office365.common.group_policy_definition import GroupPolicyDefinition
+    from office365.common.group_policy_definition_file import GroupPolicyDefinitionFile
+    from office365.common.group_policy_migration_report import GroupPolicyMigrationReport
+    from office365.common.group_policy_object_file import GroupPolicyObjectFile
+    from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
     from office365.common.role_definition import RoleDefinition
+    from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
     from office365.intune.devices.and_app_management_role_assignment import (
         DeviceAndAppManagementRoleAssignment,
     )
@@ -62,6 +75,7 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
     from office365.intune.devices.management.managed.device_overview import ManagedDeviceOverview
+    from office365.intune.devices.management.managed.managed import ManagedDevice
     from office365.intune.devices.management.mobile_threat_defense_connector import (
         MobileThreatDefenseConnector,
     )
@@ -150,6 +164,9 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_work_from_anywhere_model_performance import (  # noqa: E501
         UserExperienceAnalyticsWorkFromAnywhereModelPerformance,
     )
+    from office365.intune.devices.management.windows_autopilot_deployment_profile import (
+        WindowsAutopilotDeploymentProfile,
+    )
     from office365.intune.devices.management.windows_autopilot_device_identity import (
         WindowsAutopilotDeviceIdentity,
     )
@@ -160,10 +177,23 @@ if TYPE_CHECKING:
         WindowsInformationProtectionNetworkLearningSummary,
     )
     from office365.intune.devices.management.windowsmalware.windows_malware_information import WindowsMalwareInformation
+    from office365.intune.devices.management_compliance_policy import DeviceManagementCompliancePolicy
+    from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
+    from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
+    from office365.intune.devices.management_configuration_policy_template import (
+        DeviceManagementConfigurationPolicyTemplate,
+    )
+    from office365.intune.devices.management_configuration_setting_definition import (
+        DeviceManagementConfigurationSettingDefinition,
+    )
+    from office365.intune.devices.management_configuration_setting_template import (
+        DeviceManagementConfigurationSettingTemplate,
+    )
     from office365.intune.devices.management_exchange_connector import (
         DeviceManagementExchangeConnector,
     )
     from office365.intune.devices.management_partner import DeviceManagementPartner
+    from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
     from office365.intune.devices.management_troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
@@ -1164,5 +1194,418 @@ class DeviceManagement(Entity):
 
         return_type = ClientResult(self.context, UserExperienceAnalyticsWorkFromAnywhereDevicesSummary())
         qry = FunctionQuery(self, "userExperienceAnalyticsSummarizeWorkFromAnywhereDevices", None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    @odata(name="deviceComplianceReportSummarizationDateTime", beta=True, readonly=True)
+    @property
+    def device_compliance_report_summarization_date_time(self) -> Optional[datetime]:
+        """Gets the deviceComplianceReportSummarizationDateTime property"""
+        return self.properties.get("deviceComplianceReportSummarizationDateTime", None)
+
+    @odata(name="lastReportAggregationDateTime", beta=True, readonly=True)
+    @property
+    def last_report_aggregation_date_time(self) -> Optional[datetime]:
+        """Gets the lastReportAggregationDateTime property"""
+        return self.properties.get("lastReportAggregationDateTime", None)
+
+    @odata(name="legacyPcManangementEnabled", beta=True, readonly=True)
+    @property
+    def legacy_pc_manangement_enabled(self) -> Optional[bool]:
+        """Gets the legacyPcManangementEnabled property"""
+        return self.properties.get("legacyPcManangementEnabled", None)
+
+    @odata(name="maximumDepTokens", beta=True)
+    @property
+    def maximum_dep_tokens(self) -> Optional[int]:
+        """Gets the maximumDepTokens property"""
+        return self.properties.get("maximumDepTokens", None)
+
+    @odata(name="unlicensedAdminstratorsEnabled", beta=True, readonly=True)
+    @property
+    def unlicensed_adminstrators_enabled(self) -> Optional[bool]:
+        """Gets the unlicensedAdminstratorsEnabled property"""
+        return self.properties.get("unlicensedAdminstratorsEnabled", None)
+
+    @odata(name="accountMoveCompletionDateTime", beta=True)
+    @property
+    def account_move_completion_date_time(self) -> Optional[datetime]:
+        """Gets the accountMoveCompletionDateTime property"""
+        return self.properties.get("accountMoveCompletionDateTime", None)
+
+    @odata(name="assignmentFilters", beta=True, navigation=True)
+    @property
+    def assignment_filters(self) -> EntityCollection[DeviceAndAppManagementAssignmentFilter]:
+        """Gets the assignmentFilters property"""
+        from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
+
+        return self.properties.get(
+            "assignmentFilters",
+            EntityCollection[DeviceAndAppManagementAssignmentFilter](
+                self.context,
+                DeviceAndAppManagementAssignmentFilter,
+                ResourcePath("assignmentFilters", self.resource_path),
+            ),
+        )
+
+    @odata(name="complianceCategories", beta=True, navigation=True)
+    @property
+    def compliance_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
+        """Gets the complianceCategories property"""
+        from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
+
+        return self.properties.get(
+            "complianceCategories",
+            EntityCollection[DeviceManagementConfigurationCategory](
+                self.context,
+                DeviceManagementConfigurationCategory,
+                ResourcePath("complianceCategories", self.resource_path),
+            ),
+        )
+
+    @odata(name="compliancePolicies", beta=True, navigation=True)
+    @property
+    def compliance_policies(self) -> EntityCollection[DeviceManagementCompliancePolicy]:
+        """Gets the compliancePolicies property"""
+        from office365.intune.devices.management_compliance_policy import DeviceManagementCompliancePolicy
+
+        return self.properties.get(
+            "compliancePolicies",
+            EntityCollection[DeviceManagementCompliancePolicy](
+                self.context, DeviceManagementCompliancePolicy, ResourcePath("compliancePolicies", self.resource_path)
+            ),
+        )
+
+    @odata(name="complianceSettings", beta=True, navigation=True)
+    @property
+    def compliance_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
+        """Gets the complianceSettings property"""
+        from office365.intune.devices.management_configuration_setting_definition import (
+            DeviceManagementConfigurationSettingDefinition,
+        )
+
+        return self.properties.get(
+            "complianceSettings",
+            EntityCollection[DeviceManagementConfigurationSettingDefinition](
+                self.context,
+                DeviceManagementConfigurationSettingDefinition,
+                ResourcePath("complianceSettings", self.resource_path),
+            ),
+        )
+
+    @odata(name="configurationCategories", beta=True, navigation=True)
+    @property
+    def configuration_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
+        """Gets the configurationCategories property"""
+        from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
+
+        return self.properties.get(
+            "configurationCategories",
+            EntityCollection[DeviceManagementConfigurationCategory](
+                self.context,
+                DeviceManagementConfigurationCategory,
+                ResourcePath("configurationCategories", self.resource_path),
+            ),
+        )
+
+    @odata(name="configurationPolicies", beta=True, navigation=True)
+    @property
+    def configuration_policies(self) -> EntityCollection[DeviceManagementConfigurationPolicy]:
+        """Gets the configurationPolicies property"""
+        from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
+
+        return self.properties.get(
+            "configurationPolicies",
+            EntityCollection[DeviceManagementConfigurationPolicy](
+                self.context,
+                DeviceManagementConfigurationPolicy,
+                ResourcePath("configurationPolicies", self.resource_path),
+            ),
+        )
+
+    @odata(name="configurationPolicyTemplates", beta=True, navigation=True)
+    @property
+    def configuration_policy_templates(self) -> EntityCollection[DeviceManagementConfigurationPolicyTemplate]:
+        """Gets the configurationPolicyTemplates property"""
+        from office365.intune.devices.management_configuration_policy_template import (
+            DeviceManagementConfigurationPolicyTemplate,
+        )
+
+        return self.properties.get(
+            "configurationPolicyTemplates",
+            EntityCollection[DeviceManagementConfigurationPolicyTemplate](
+                self.context,
+                DeviceManagementConfigurationPolicyTemplate,
+                ResourcePath("configurationPolicyTemplates", self.resource_path),
+            ),
+        )
+
+    @odata(name="configurationSettings", beta=True, navigation=True)
+    @property
+    def configuration_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
+        """Gets the configurationSettings property"""
+        from office365.intune.devices.management_configuration_setting_definition import (
+            DeviceManagementConfigurationSettingDefinition,
+        )
+
+        return self.properties.get(
+            "configurationSettings",
+            EntityCollection[DeviceManagementConfigurationSettingDefinition](
+                self.context,
+                DeviceManagementConfigurationSettingDefinition,
+                ResourcePath("configurationSettings", self.resource_path),
+            ),
+        )
+
+    @odata(name="reusablePolicySettings", beta=True, navigation=True)
+    @property
+    def reusable_policy_settings(self) -> EntityCollection[DeviceManagementReusablePolicySetting]:
+        """Gets the reusablePolicySettings property"""
+        from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
+
+        return self.properties.get(
+            "reusablePolicySettings",
+            EntityCollection[DeviceManagementReusablePolicySetting](
+                self.context,
+                DeviceManagementReusablePolicySetting,
+                ResourcePath("reusablePolicySettings", self.resource_path),
+            ),
+        )
+
+    @odata(name="reusableSettings", beta=True, navigation=True)
+    @property
+    def reusable_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
+        """Gets the reusableSettings property"""
+        from office365.intune.devices.management_configuration_setting_definition import (
+            DeviceManagementConfigurationSettingDefinition,
+        )
+
+        return self.properties.get(
+            "reusableSettings",
+            EntityCollection[DeviceManagementConfigurationSettingDefinition](
+                self.context,
+                DeviceManagementConfigurationSettingDefinition,
+                ResourcePath("reusableSettings", self.resource_path),
+            ),
+        )
+
+    @odata(name="templateSettings", beta=True, navigation=True)
+    @property
+    def template_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingTemplate]:
+        """Gets the templateSettings property"""
+        from office365.intune.devices.management_configuration_setting_template import (
+            DeviceManagementConfigurationSettingTemplate,
+        )
+
+        return self.properties.get(
+            "templateSettings",
+            EntityCollection[DeviceManagementConfigurationSettingTemplate](
+                self.context,
+                DeviceManagementConfigurationSettingTemplate,
+                ResourcePath("templateSettings", self.resource_path),
+            ),
+        )
+
+    @odata(name="comanagedDevices", beta=True, navigation=True)
+    @property
+    def comanaged_devices(self) -> EntityCollection[ManagedDevice]:
+        """Gets the comanagedDevices property"""
+        from office365.intune.devices.management.managed.managed import ManagedDevice
+
+        return self.properties.get(
+            "comanagedDevices",
+            EntityCollection[ManagedDevice](
+                self.context, ManagedDevice, ResourcePath("comanagedDevices", self.resource_path)
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsDeviceMetricHistory", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_device_metric_history(self) -> EntityCollection[UserExperienceAnalyticsMetricHistory]:
+        """Gets the userExperienceAnalyticsDeviceMetricHistory property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_metric_history import (  # noqa: E501
+            UserExperienceAnalyticsMetricHistory,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsDeviceMetricHistory",
+            EntityCollection[UserExperienceAnalyticsMetricHistory](
+                self.context,
+                UserExperienceAnalyticsMetricHistory,
+                ResourcePath("userExperienceAnalyticsDeviceMetricHistory", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsAutopilotDeploymentProfiles", beta=True, navigation=True)
+    @property
+    def windows_autopilot_deployment_profiles(self) -> EntityCollection[WindowsAutopilotDeploymentProfile]:
+        """Gets the windowsAutopilotDeploymentProfiles property"""
+        from office365.intune.devices.management.windows_autopilot_deployment_profile import (
+            WindowsAutopilotDeploymentProfile,
+        )
+
+        return self.properties.get(
+            "windowsAutopilotDeploymentProfiles",
+            EntityCollection[WindowsAutopilotDeploymentProfile](
+                self.context,
+                WindowsAutopilotDeploymentProfile,
+                ResourcePath("windowsAutopilotDeploymentProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="groupPolicyMigrationReports", beta=True, navigation=True)
+    @property
+    def group_policy_migration_reports(self) -> EntityCollection[GroupPolicyMigrationReport]:
+        """Gets the groupPolicyMigrationReports property"""
+        from office365.common.group_policy_migration_report import GroupPolicyMigrationReport
+
+        return self.properties.get(
+            "groupPolicyMigrationReports",
+            EntityCollection[GroupPolicyMigrationReport](
+                self.context, GroupPolicyMigrationReport, ResourcePath("groupPolicyMigrationReports", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyObjectFiles", beta=True, navigation=True)
+    @property
+    def group_policy_object_files(self) -> EntityCollection[GroupPolicyObjectFile]:
+        """Gets the groupPolicyObjectFiles property"""
+        from office365.common.group_policy_object_file import GroupPolicyObjectFile
+
+        return self.properties.get(
+            "groupPolicyObjectFiles",
+            EntityCollection[GroupPolicyObjectFile](
+                self.context, GroupPolicyObjectFile, ResourcePath("groupPolicyObjectFiles", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyCategories", beta=True, navigation=True)
+    @property
+    def group_policy_categories(self) -> EntityCollection[GroupPolicyCategory]:
+        """Gets the groupPolicyCategories property"""
+        from office365.common.group_policy_category import GroupPolicyCategory
+
+        return self.properties.get(
+            "groupPolicyCategories",
+            EntityCollection[GroupPolicyCategory](
+                self.context, GroupPolicyCategory, ResourcePath("groupPolicyCategories", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyConfigurations", beta=True, navigation=True)
+    @property
+    def group_policy_configurations(self) -> EntityCollection[GroupPolicyConfiguration]:
+        """Gets the groupPolicyConfigurations property"""
+        from office365.common.group_policy_configuration import GroupPolicyConfiguration
+
+        return self.properties.get(
+            "groupPolicyConfigurations",
+            EntityCollection[GroupPolicyConfiguration](
+                self.context, GroupPolicyConfiguration, ResourcePath("groupPolicyConfigurations", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyDefinitionFiles", beta=True, navigation=True)
+    @property
+    def group_policy_definition_files(self) -> EntityCollection[GroupPolicyDefinitionFile]:
+        """Gets the groupPolicyDefinitionFiles property"""
+        from office365.common.group_policy_definition_file import GroupPolicyDefinitionFile
+
+        return self.properties.get(
+            "groupPolicyDefinitionFiles",
+            EntityCollection[GroupPolicyDefinitionFile](
+                self.context, GroupPolicyDefinitionFile, ResourcePath("groupPolicyDefinitionFiles", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyDefinitions", beta=True, navigation=True)
+    @property
+    def group_policy_definitions(self) -> EntityCollection[GroupPolicyDefinition]:
+        """Gets the groupPolicyDefinitions property"""
+        from office365.common.group_policy_definition import GroupPolicyDefinition
+
+        return self.properties.get(
+            "groupPolicyDefinitions",
+            EntityCollection[GroupPolicyDefinition](
+                self.context, GroupPolicyDefinition, ResourcePath("groupPolicyDefinitions", self.resource_path)
+            ),
+        )
+
+    @odata(name="groupPolicyUploadedDefinitionFiles", beta=True, navigation=True)
+    @property
+    def group_policy_uploaded_definition_files(self) -> EntityCollection[GroupPolicyUploadedDefinitionFile]:
+        """Gets the groupPolicyUploadedDefinitionFiles property"""
+        from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
+
+        return self.properties.get(
+            "groupPolicyUploadedDefinitionFiles",
+            EntityCollection[GroupPolicyUploadedDefinitionFile](
+                self.context,
+                GroupPolicyUploadedDefinitionFile,
+                ResourcePath("groupPolicyUploadedDefinitionFiles", self.resource_path),
+            ),
+        )
+
+    def enable_android_device_administrator_enrollment(self) -> Self:
+        """enableAndroidDeviceAdministratorEnrollment operation."""
+        qry = ServiceOperationQuery(self, "enableAndroidDeviceAdministratorEnrollment", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_endpoint_privilege_management(self) -> Self:
+        """enableEndpointPrivilegeManagement operation."""
+        qry = ServiceOperationQuery(self, "enableEndpointPrivilegeManagement", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_legacy_pc_management(self) -> Self:
+        """enableLegacyPcManagement operation."""
+        qry = ServiceOperationQuery(self, "enableLegacyPcManagement", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def enable_unlicensed_adminstrators(self) -> Self:
+        """enableUnlicensedAdminstrators operation."""
+        qry = ServiceOperationQuery(self, "enableUnlicensedAdminstrators", None, {}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    def send_custom_notification_to_company_portal(
+        self, notification_title: str, notification_body: str, groups_to_notify: list[str]
+    ) -> Self:
+        """sendCustomNotificationToCompanyPortal operation.
+
+        Args:
+            notification_title (str):
+                notificationTitle parameter
+            notification_body (str):
+                notificationBody parameter
+            groups_to_notify (list[str]):
+                groupsToNotify parameter
+        """
+        qry = ServiceOperationQuery(
+            self,
+            "sendCustomNotificationToCompanyPortal",
+            None,
+            {
+                "notificationTitle": notification_title,
+                "notificationBody": notification_body,
+                "groupsToNotify": StringCollection(groups_to_notify),
+            },
+            None,
+            None,
+        )
+        self.context.add_query(qry)
+        return self
+
+    def scoped_for_resource(self, resource: str) -> ClientResult[bool]:
+        """scopedForResource operation.
+
+        Args:
+            resource (str):
+                resource parameter
+        """
+        return_type = ClientResult(self.context, bool())
+        qry = FunctionQuery(self, "scopedForResource", {"resource": resource}, return_type)
         self.context.add_query(qry)
         return return_type

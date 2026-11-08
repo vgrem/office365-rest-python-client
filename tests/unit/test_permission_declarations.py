@@ -38,16 +38,20 @@ LIBRARY = index(office365)
 #: The detector counts a method that *submits* a query (``add_query``, ``execute_query``,
 #: ``execute_batch``) and skips one that merely builds a query and returns it, so these are a
 #: floor: the real number is higher, never lower.
+#: ``common`` and ``intune`` moved together: the beta Settings Catalog pass generated 14
+#: operations under ``office365/intune`` and 8 under ``office365/common``, and every one of
+#: them submits a request no permission is declared on yet. The rest of the tree is
+#: unchanged, so the debt grew by exactly the operations that pass added.
 PENDING: dict[str, int] = {
     "admin": 2,
     "backuprestore": 1,
     "booking": 3,
-    "common": 6,
+    "common": 14,
     "communications": 23,
     "copilot": 4,
     "directory": 74,
     "exchange": 1,
-    "intune": 77,
+    "intune": 91,
     "onedrive": 413,
     "onenote": 5,
     "outlook": 11,

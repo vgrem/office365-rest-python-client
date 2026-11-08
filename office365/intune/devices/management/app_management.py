@@ -23,6 +23,8 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
+    from office365.common.policy_set import PolicySet
     from office365.intune.devices.management.managed.app.protections.android import (
         AndroidManagedAppProtection,
     )
@@ -288,3 +290,29 @@ class DeviceAppManagement(Entity):
         qry = ServiceOperationQuery(self, "syncMicrosoftStoreForBusinessApps", None, {}, None, None)
         self.context.add_query(qry)
         return self
+
+    @odata(name="enterpriseCodeSigningCertificates", beta=True, navigation=True)
+    @property
+    def enterprise_code_signing_certificates(self) -> EntityCollection[EnterpriseCodeSigningCertificate]:
+        """Gets the enterpriseCodeSigningCertificates property"""
+        from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
+
+        return self.properties.get(
+            "enterpriseCodeSigningCertificates",
+            EntityCollection[EnterpriseCodeSigningCertificate](
+                self.context,
+                EnterpriseCodeSigningCertificate,
+                ResourcePath("enterpriseCodeSigningCertificates", self.resource_path),
+            ),
+        )
+
+    @odata(name="policySets", beta=True, navigation=True)
+    @property
+    def policy_sets(self) -> EntityCollection[PolicySet]:
+        """Gets the policySets property"""
+        from office365.common.policy_set import PolicySet
+
+        return self.properties.get(
+            "policySets",
+            EntityCollection[PolicySet](self.context, PolicySet, ResourcePath("policySets", self.resource_path)),
+        )
