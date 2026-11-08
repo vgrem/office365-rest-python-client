@@ -33,6 +33,7 @@ class FunctionQuery(ClientQuery[ReturnT]):
                 (e.g. file download) rather than parsed as OData JSON.
         """
         super().__init__(binding_type.context, binding_type, None, None, return_type)
+        self._require_declared_member(method_name)
         self._path = ServiceOperationPath(method_name or "", method_params, binding_type.resource_path)
         self._return_raw_content = return_raw_content
 

@@ -32,6 +32,7 @@ class ServiceOperationQuery(ClientQuery[ReturnT]):
         self._method_name = method_name
         self._method_params = method_params
         self.static = is_static
+        self._require_declared_member(method_name)
 
     def __repr__(self) -> str:
         return f"ServiceOperationQuery(name={self.path.name}, static={self.static}"

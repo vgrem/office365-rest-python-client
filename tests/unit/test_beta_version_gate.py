@@ -14,7 +14,11 @@ from office365.entity import Entity
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
 from office365.outlook.mail.messages.message import Message
+from office365.runtime.client_result import ClientResult
+from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import NotSupportedInVersion, odata
+from typing_extensions import Self
 
 TENANT = "contoso.onmicrosoft.com"
 
@@ -74,3 +78,56 @@ def test_a_client_that_states_no_version_is_not_gated_by_one():
     assert _PreviewMember._schema.wire_name("preview", None) == "preview"
     with pytest.raises(NotSupportedInVersion):
         _PreviewMember._schema.wire_name("preview", GraphVersion.V1.value)
+
+
+class _PreviewOperations(Entity):
+    """Two operations only the preview root declares -- one of each query kind.
+
+    An operation has no payload key a root could refuse: its name *is* the URL, and the
+    query is the first place that name exists. So the gate sits there, and both query
+    kinds are here because they reach it by different constructors.
+    """
+
+    @odata(name="previewAction", beta=True, selectable=False)
+    def preview_action(self) -> Self:
+        query = ServiceOperationQuery(self, "previewAction", None, {}, None, None)
+        self.context.add_query(query)
+        return self
+
+    @odata(name="previewFunction", beta=True, selectable=False)
+    def preview_function(self) -> ClientResult[bool]:
+        return FunctionQuery(self, "previewFunction", None, bool)
+
+    def stable_action(self) -> Self:
+        query = ServiceOperationQuery(self, "stableAction", None, {}, None, None)
+        self.context.add_query(query)
+        return self
+
+
+def test_a_stable_client_refuses_a_preview_only_operation():
+    preview = _PreviewOperations(_stable())
+    with pytest.raises(NotSupportedInVersion) as raised:
+        preview.preview_action()
+
+    assert "previewAction" in str(raised.value)
+    assert "v1.0" in str(raised.value)
+
+    with pytest.raises(NotSupportedInVersion):
+        preview.preview_function()
+
+
+def test_a_beta_client_calls_the_same_operations():
+    preview = _PreviewOperations(_beta())
+    assert preview.preview_action() is preview
+    assert preview.preview_function() is not None
+
+
+def test_an_operation_no_marker_declares_is_not_gated():
+    """The snapshots never disagreed about it, so no root has anything to refuse."""
+    assert _PreviewOperations(_stable()).stable_action() is not None
+
+
+def test_an_operation_is_not_a_column():
+    """``selectable=False``: the type has the member, its resource has no such property."""
+    assert "previewAction" not in _PreviewOperations._schema.columns
+    assert "previewFunction" not in _PreviewOperations._schema.columns

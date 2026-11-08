@@ -8,6 +8,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
+from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
@@ -60,6 +61,25 @@ class ClientQuery(Generic[ReturnT]):
         self.context.pending_request().beforeExecute(request)
         self.context.pending_request().apply_client_request_id(request)
         return request
+
+    def _require_declared_member(self, name: str | None) -> None:
+        """Refuse to call an operation the client's API version does not declare.
+
+        A property's version gate sits where its name reaches the wire -- a projection or
+        a payload -- so nothing has to be said twice. An operation has no payload key: its
+        name *is* the URL, and the query is the first place that name exists. A member the
+        client cannot name is refused here, before the request is built, which is the
+        difference between a local error naming the member and a 404 naming a segment.
+
+        An operation no marker declares is not gated: ``wire_name`` answers the name it
+        was asked about, so only a member the snapshot pair disagreed about is refused.
+        """
+        if name is None or self._binding_type is None:
+            return
+        schema = getattr(self._binding_type, "_schema", None)
+        if schema is None:
+            return
+        schema.wire_name(name, request_version(self._context))
 
     def execute_query(self, request: "ClientRequest") -> None:
         """Run this query via the given request.

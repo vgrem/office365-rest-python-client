@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
+from generator.build.naming import to_snake_case
 from generator.tools.beta_markers import STABLE_ONLY, MarkerEdits, MemberMarker, VersionMarker
 
 #: ``, beta=True`` / ``, beta="otherName"`` / ``, beta=False`` -- with any spacing.
@@ -45,6 +46,9 @@ VERSION = "version"
 
 #: The same, for the identity a type declares above the class.
 KEY = "key"
+
+#: The decorator a member's wire name is declared with.
+ODATA = "odata"
 
 ADDED = "added"
 CHANGED = "changed"
@@ -194,12 +198,12 @@ def apply_markers(edits: MarkerEdits, files: TypeFiles, *, dry_run: bool = False
     report = ApplyReport(edits=[], skipped=[])
     rewrites: List[Tuple[Path, int, int, int, Optional[bool | str], MemberMarker, object]] = []
     ops: List[Tuple[Path, int, int, List[str]]] = []
-    for marker in edits.added + edits.changed:
-        _collect(report, rewrites, files, marker, marker.beta)
-    for marker in edits.removed:
-        _collect(report, rewrites, files, marker, None)
-
     lines_of: Dict[Path, List[str]] = {}
+    for marker in edits.added + edits.changed:
+        _collect(report, rewrites, ops, lines_of, files, marker, marker.beta)
+    for marker in edits.removed:
+        _collect(report, rewrites, ops, lines_of, files, marker, None)
+
     for marker in edits.types_added:
         _queue_version(report, files, ops, lines_of, marker)
     for marker in edits.types_removed:
@@ -562,13 +566,15 @@ def _version_decorator(marker: VersionMarker) -> str:
 def _collect(
     report: ApplyReport,
     rewrites: List,
+    ops: List,
+    lines_of: Dict[Path, List[str]],
     files: TypeFiles,
     marker: MemberMarker,
     value: Optional[bool | str],
 ) -> None:
     """Queue one decorator rewrite, or record why it cannot be made."""
     if marker.kind == "method":
-        report.skipped.append((marker, "methods are not generated (generate_methods is false)"))
+        _collect_method(report, ops, lines_of, files, marker, value)
         return
     located = _locate(files, marker)
     if located is None:
@@ -576,6 +582,102 @@ def _collect(
         return
     path, lineno, start, end, declared = located
     rewrites.append((path, lineno, start, end, value, marker, declared))
+
+
+def _collect_method(
+    report: ApplyReport,
+    ops: List,
+    lines_of: Dict[Path, List[str]],
+    files: TypeFiles,
+    marker: MemberMarker,
+    value: Optional[bool | str],
+) -> None:
+    """Declare an operation, which has no ``@odata`` of its own to extend.
+
+    A property's gate is written into the declaration its getter already carries; an
+    operation carries none, because a method's OData name was, until now, only the string
+    its query was built with -- which is exactly the argument for declaring it here. The
+    row a request reads is a name and a version, and the query asks the schema the same
+    question a projection asks: does this root declare this name?
+
+    ``selectable=False`` keeps the operation out of ``$select``: it is a member of the
+    type, not a column of its resource.
+    """
+    located = _method_for(files, marker)
+    if located is None:
+        report.skipped.append((marker, "no method of that name is generated"))
+        return
+    path, function = located
+    lines = lines_of.setdefault(path, path.read_text(encoding="utf-8").splitlines())
+    declared_at = _method_decorator_line(function)
+    if value is None:
+        # The snapshots stop justifying the gate: the declaration goes whole, because an
+        # operation the two roots agree about has nothing to say about which one it is.
+        if declared_at is None:
+            return
+        before = lines[declared_at]
+        ops.append((path, declared_at, declared_at + 1, []))
+        _drop_import(ops, path, lines, name=ODATA)
+        report.edits.append(
+            AppliedEdit(
+                path=str(path),
+                type_name=marker.type_name,
+                member=marker.member,
+                action=REMOVED,
+                before=before,
+                after="",
+            )
+        )
+        return
+    wanted = _method_decorator(marker.member, value)
+    if declared_at is None:
+        # Directly above the ``def``, below whatever else decorates it -- where a getter
+        # says its own name, and the last thing a reader meets before the signature.
+        at = function.decorator_list[0].lineno - 1 if function.decorator_list else function.lineno - 1
+        ops.append((path, at, at, [" " * function.col_offset + wanted]))
+        action = ADDED
+        before = ""
+    else:
+        before = lines[declared_at]
+        ops.append((path, declared_at, declared_at + 1, [" " * function.col_offset + wanted]))
+        action = CHANGED if before.strip() != wanted else None
+        if action is None:
+            return
+    _declare_import(ops, path, lines, name=ODATA)
+    report.edits.append(
+        AppliedEdit(
+            path=str(path),
+            type_name=marker.type_name,
+            member=marker.member,
+            action=action,
+            before=before,
+            after=wanted,
+        )
+    )
+
+
+def _method_for(files: TypeFiles, marker: MemberMarker) -> Optional[Tuple[Path, ast.FunctionDef]]:
+    """The generated ``def`` that submits ``marker``'s operation, on the chain."""
+    python_name = to_snake_case(marker.member)
+    for path, class_node in files.class_chain(marker.type_name):
+        for node in class_node.body:
+            if isinstance(node, ast.FunctionDef) and node.name == python_name:
+                return path, node
+    return None
+
+
+def _method_decorator_line(function: ast.FunctionDef) -> Optional[int]:
+    """The 0-based line of an ``@odata(...)`` already above ``function``, if any."""
+    for decorator in function.decorator_list:
+        if isinstance(decorator, ast.Call) and getattr(decorator.func, "id", None) == ODATA:
+            return decorator.lineno - 1
+    return None
+
+
+def _method_decorator(member: str, value: Optional[bool | str]) -> str:
+    """The declaration an operation carries: its wire name, one root, and no column."""
+    literal = "True" if value is True else "False" if value is False else json.dumps(value)
+    return f"@odata(name={json.dumps(member)}, beta={literal}, selectable=False)"
 
 
 def _locate(files: TypeFiles, marker: MemberMarker) -> Optional[Tuple[Path, int, int, int, object]]:
