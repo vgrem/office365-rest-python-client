@@ -33,7 +33,7 @@ from generator.model_index.collector import TypeReferenceCollector
 from generator.model_index.resolution import TypeRegistry
 from generator.odata.type_information import TypeInformation
 from generator.odata.type_system import TypeRef
-from generator.planning.placement import Placement, TypePlanner
+from generator.planning.placement import Placement, TypePlanner, defines_class, module_file
 from generator.tools.type_identity import (
     entity_type_name_literal,
     entity_type_name_return,
@@ -279,11 +279,18 @@ class TypeBuilder(ast.NodeTransformer):
             seen_methods.add(method_key)
 
     def _is_resolvable(self, type_name: Optional[str]) -> bool:
-        """Whether a referenced OData type can be imported.
+        """Whether a referenced OData type can be imported from this run's output.
 
-        A member is only generated when every type it names is a primitive, an
-        existing class, or a type this run will create. Otherwise the annotation
-        would reference an undefined name (e.g. an ``ignored_types`` namespace).
+        A member is only generated when every type it names is a primitive, a class
+        the model already carries, or a type this run will create. Otherwise the
+        annotation would reference an undefined name (e.g. an ``ignored_types``
+        namespace).
+
+        Placement alone does not answer it: a reference to a type that is in scope for
+        no run yet still has a computable module, and importing from a file nobody
+        wrote is a dangling import. Answering from placement alone let a
+        ``--type``-filtered pass rewrite ``deviceManagement`` with 109 imports of
+        modules it was not creating.
         """
         if not type_name:
             return True
@@ -293,7 +300,12 @@ class TypeBuilder(ast.NodeTransformer):
         if ref.is_primitive:
             return True
         module = self._resolver.module_for(type_name)
-        return module is not None and not self._is_shadowed(module)
+        if module is None:
+            return False
+        if type_name in self._known_types:
+            return not self._is_shadowed(module)
+        path = module_file(module)
+        return path is not None and defines_class(path, python_name(type_name))
 
     @staticmethod
     def _is_shadowed(module_name: str) -> bool:

@@ -121,13 +121,27 @@ class PlanBuilder:
 
     @staticmethod
     def build(
-        model: ODataModel, options: GeneratorOptions, type_filter: TypeFilter, context: BuilderContext
+        model: ODataModel,
+        options: GeneratorOptions,
+        type_filter: TypeFilter,
+        context: BuilderContext,
+        only_types: frozenset[str] = frozenset(),
     ) -> GenerationPlan:
+        """The plan for one pass.
+
+        ``only_types`` is what a ``--type``-filtered run will actually write. Without it
+        the plan describes the whole metadata, so ``known_types`` -- documented above as
+        "types this run will generate" -- claimed every routed type, and a builder asking
+        whether a reference was importable answered yes for a file nobody was writing.
+        A whole-metadata pass leaves it empty and is unaffected.
+        """
         router = Router.from_options(context)
         registry = TypeRegistry(options.modules.split(","), namespace=options.namespace)
         known_types: set[str] = set()
         type_modules: dict[str, str] = {}
         for name, schema in model.types.items():
+            if only_types and name not in only_types:
+                continue
             if not type_filter.in_scope(name, schema):
                 continue
             module = planned_module(name, schema, registry, router, options.output_path)

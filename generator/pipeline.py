@@ -61,7 +61,7 @@ class GeneratorPipeline:
         self._previous = Manifest.load(options.metadata_path, base_dir)
         self._filter = TypeFilter.from_options(options)
         context = options.builder_context()
-        self._plan = PlanBuilder.build(model, options, self._filter, context)
+        self._plan = PlanBuilder.build(model, options, self._filter, context, frozenset(self._only_types))
         self._builder_context = self._plan.apply(context)
         self._output_root = Path(options.output_path).resolve()
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)
