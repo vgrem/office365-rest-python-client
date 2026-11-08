@@ -10,10 +10,10 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.cross_tenant_access_policy_configuration_default import (
+    from office365.directory.policies.crosstenant.access_policy_configuration_default import (
         CrossTenantAccessPolicyConfigurationDefault,
     )
-    from office365.common.cross_tenant_access_policy_configuration_partner import (
+    from office365.directory.policies.crosstenant.access_policy_configuration_partner import (
         CrossTenantAccessPolicyConfigurationPartner,
     )
 
@@ -45,7 +45,7 @@ class CrossTenantAccessPolicy(PolicyBase):
     @property
     def default(self) -> CrossTenantAccessPolicyConfigurationDefault:
         """Gets the default property"""
-        from office365.common.cross_tenant_access_policy_configuration_default import (
+        from office365.directory.policies.crosstenant.access_policy_configuration_default import (
             CrossTenantAccessPolicyConfigurationDefault,
         )
 
@@ -58,7 +58,7 @@ class CrossTenantAccessPolicy(PolicyBase):
     @property
     def partners(self) -> EntityCollection[CrossTenantAccessPolicyConfigurationPartner]:
         """Gets the partners property"""
-        from office365.common.cross_tenant_access_policy_configuration_partner import (
+        from office365.directory.policies.crosstenant.access_policy_configuration_partner import (
             CrossTenantAccessPolicyConfigurationPartner,
         )
 
