@@ -8,6 +8,11 @@ from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
+#: What a licence question needs from every user: who they are, and what they hold.
+#: ``assignedLicenses`` is absent from any projection that does not name it, so a
+#: caller who then read ``user.assigned_licenses`` would see nothing at all.
+_LICENCE_COLUMNS = ["userPrincipalName", "assignedLicenses"]
+
 
 class UserCollection(CountCollection[User]):
     """User's collection"""
@@ -47,11 +52,11 @@ class UserCollection(CountCollection[User]):
         (``$filter=assignedLicenses/$count eq 0``); that advanced query needs
         ``ConsistencyLevel: eventual``, which :meth:`consistency_level` sets.
         """
-        return self.consistency_level().filter("assignedLicenses/$count eq 0")
+        return self.select(_LICENCE_COLUMNS).consistency_level().filter("assignedLicenses/$count eq 0")
 
     def get_licensed(self) -> Self:
         """Get users holding at least one licence; see :meth:`get_unlicensed`."""
-        return self.consistency_level().filter("assignedLicenses/$count ne 0")
+        return self.select(_LICENCE_COLUMNS).consistency_level().filter("assignedLicenses/$count ne 0")
 
     @require_permission(
         delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"],

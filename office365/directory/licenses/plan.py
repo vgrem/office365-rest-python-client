@@ -9,18 +9,14 @@ The preconditions Graph itself checks are decided here too — a user with no ``
 SKU this tenant does not subscribe to, a SKU with no seat left — so a batch run can name the row
 it will not send instead of catching the refusal afterwards.
 
-The tabular form of an assignment lives here as well, one definition for both directions:
-:func:`assignments` writes what the tenant holds, :func:`read_assignments` reads it back, and
-both use the same three columns. A CSV is the contract of a fan-out that spans two types — a
-user and the SKUs inside it — so neither the shape nor the naming is left to a script.
+The tabular form of an assignment is not made here: a licence is a child of the user, so
+``to_csv(..., rows_from="assignedLicenses")`` writes the rows and the caller reads them back.
 """
 
 from __future__ import annotations
 
-import csv
 from dataclasses import dataclass
-from os import PathLike
-from typing import TYPE_CHECKING, Iterable, Iterator, Mapping, Tuple, Union
+from typing import TYPE_CHECKING, Iterable, Mapping
 
 from office365.directory.licenses.assigned_license import AssignedLicense
 from office365.runtime.types.collections import StringCollection
@@ -28,7 +24,6 @@ from office365.runtime.types.collections import StringCollection
 if TYPE_CHECKING:
     from office365.directory.licenses.subscribed_sku import SubscribedSku
     from office365.directory.users.user import User
-    from office365.graph_client import GraphClient
 
 
 @dataclass(frozen=True)
@@ -152,52 +147,6 @@ def _inherited(user: User) -> dict[str, str]:
 
 def _named(sku_id: str, catalogue: Mapping[str, tuple[str, int]]) -> str:
     return catalogue.get(sku_id, (sku_id, 0))[0]
-
-
-# ── The tabular form ─────────────────────────────────────────────
-
-
-def assignments(client: GraphClient) -> Iterator[dict[str, str]]:
-    """Every user's licences as one record per user and SKU.
-
-    ``assignedLicenses`` is derived and absent from a user's default projection, so the holders
-    are read with it selected — and asked for by number, not by page
-    (``$filter=assignedLicenses/$count ne 0``). A SKU id means nothing outside the tenant that
-    issued it and a plan id less, so a record carries the part number and the plan names, as
-    ``user_principal_name``, ``sku``, ``disabled_plans``. A SKU the tenant no longer subscribes
-    to is still reported, by id, rather than dropped: a row that vanished would read as a
-    licence nobody has. The walk loads every holder before yielding, so a tenant too large for
-    that wants the paged exporter instead of this generator.
-
-    >>> from office365.runtime.converters.csv_writer import write_records
-    >>> write_records(assignments(client), sys.stdout)
-    """
-    catalogue = {str(sku.sku_id): sku for sku in client.subscribed_skus.get().execute_query()}
-    holders = client.users.select(["userPrincipalName", "assignedLicenses"]).get_licensed()
-    holders.get_all().execute_query()
-    for user in holders:
-        for licence in user.assigned_licenses:
-            sku = catalogue.get(str(licence.skuId))
-            yield {
-                "user_principal_name": user.user_principal_name or "",
-                "sku": (sku.sku_part_number if sku else None) or str(licence.skuId),
-                "disabled_plans": ",".join(sorted(licence.disabled_plan_names(sku))),
-            }
-
-
-def read_assignments(source: Union[str, PathLike[str]]) -> dict[str, list[Tuple[str, list[str]]]]:
-    """Read an assignment list: user principal name -> ``(SKU part number, disabled plans)``.
-
-    The shape :func:`assignments` writes, in file order, with the plans still named. Resolving
-    a name to an id is the tenant's job (``SubscribedSku.plan_id``), so a list written by one
-    tenant reads against another without an id table in between.
-    """
-    wanted: dict[str, list[Tuple[str, list[str]]]] = {}
-    with open(source, encoding="utf-8", newline="") as stream:
-        for row in csv.DictReader(stream):
-            plans = [name for name in (row.get("disabled_plans") or "").split(",") if name]
-            wanted.setdefault(row["user_principal_name"], []).append((row["sku"], plans))
-    return wanted
 
 
 def _catalogue(skus: Iterable[SubscribedSku]) -> dict[str, tuple[str, int]]:

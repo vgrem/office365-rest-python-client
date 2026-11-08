@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typing import Any, List
 
+import pytest
 from office365.directory.users.user import User
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_object_collection import ClientObjectCollection
@@ -81,3 +82,38 @@ def test_the_columns_are_the_ones_the_projection_reports() -> None:
     page = _collection([{"id": "1"}], Message, _Client())
 
     assert declared_columns(list(page)) == list(iter_records(page)[0])
+
+
+def test_rows_from_makes_one_record_per_child_of_a_complex_collection() -> None:
+    """A licence is a child, not a cell — and Graph will not project one.
+
+    ``$expand=assignedLicenses`` is refused ("not a navigation property or complex
+    property") and ``$select=assignedLicenses/skuId`` is refused ("invalid property"),
+    so the child's own properties have to become the columns.
+    """
+    page = _collection(
+        [
+            {
+                "userPrincipalName": "a@example.com",
+                "assignedLicenses": [
+                    {"skuId": "sku-1", "disabledPlans": ["plan-1"]},
+                    {"skuId": "sku-2", "disabledPlans": ["plan-2"]},
+                ],
+            }
+        ]
+    )
+    page.query_options.select = ["userPrincipalName", "assignedLicenses"]
+
+    assert iter_records(page, rows_from="assignedLicenses") == [
+        {"userPrincipalName": "a@example.com", "skuId": "sku-1", "disabledPlans": ["plan-1"]},
+        {"userPrincipalName": "a@example.com", "skuId": "sku-2", "disabledPlans": ["plan-2"]},
+    ]
+
+
+def test_rows_from_needs_a_column_that_says_whose_row_it_is() -> None:
+    """Fanning out over the only selected column would write rows nobody can attribute."""
+    page = _collection([{"assignedLicenses": [{"skuId": "sku-1"}]}])
+    page.query_options.select = ["assignedLicenses"]
+
+    with pytest.raises(ValueError, match="whose row"):
+        iter_records(page, rows_from="assignedLicenses")

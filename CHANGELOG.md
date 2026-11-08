@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Breaking changes
 
+- **`select()` adds to the projection instead of replacing it.** Calling it twice used to
+  keep only the second set of names; it now keeps both, so a method that selects a property
+  it depends on (a filter's identity, a child to fan out over, the key a read addresses)
+  cannot be silently undone by the caller naming its own columns.
 - **Python 3.10 is the floor.** `requires-python` moves from `>=3.8` to `>=3.10`,
   which is what the library has actually needed: models annotate `Type | None`, and the
   declared type is resolved at runtime, so 3.9 failed on the first schema read and 3.8
@@ -17,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **An export can put one row per child.** `to_csv(..., rows_from="assignedLicenses")` (and
+  `export_to`/`to_records`/`to_ndjson`) emits one record per child of a collection-valued
+  property, with the child's own fields as the columns. It exists for the case no projection
+  can express: Graph refuses `$expand` on a complex collection and refuses to name its fields
+  in `$select`, so a licence is a child of a user and never a column of one.
 - **A Graph type carries the operations its CSDL declares.** Generation of operations was
   off for Graph, so `assign()`, `retire()`, `get_oma_setting_plain_text_value()` and the
   workbook functions existed only where someone had written them by hand. 157 types gain

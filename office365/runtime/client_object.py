@@ -446,6 +446,11 @@ class ClientObject:
         """
         Specifies which properties to include in the response.
 
+        The names are *added* to the projection, so a method that selects a
+        property it depends on is not silently undone by the caller adding its
+        own columns — an export asks for the key column, a filter asks for the
+        property it filters on, and both end up in ``$select``.
+
         Args:
             names: Property names to select, as a list or a schema's
                 :attr:`~office365.runtime.schema.TypeSchema.columns`
@@ -453,7 +458,8 @@ class ClientObject:
         Returns:
             The current instance for method chaining
         """
-        self.query_options.select = list(names)
+        projection = self.query_options.select
+        projection.extend(name for name in names if name not in projection)
         return self
 
     def get_property(self, name: str, default_value: Any = None) -> Any:

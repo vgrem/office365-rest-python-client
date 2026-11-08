@@ -1,7 +1,7 @@
 """Give the users a CSV names the licences it asks for — and say what each row needs first.
 
-The CSV is the shape ``export_licences.py`` writes: one row per user and SKU, with the plans
-disabled inside that SKU written by name. Every row is planned before anything is sent, so
+The CSV is the shape ``export_licences.py`` writes: one row per user and SKU, the columns after
+the user being the licence's own. Every row is planned before anything is sent, so
 "already held", "blocked" and "needs a call" are different answers rather than a failed call.
 ``--dry-run`` stops at the plan.
 
@@ -17,30 +17,29 @@ https://learn.microsoft.com/en-us/graph/api/user-assignlicense
 """
 
 import argparse
+import csv
 
 from office365.directory.licenses.assigned_license import AssignedLicense
-from office365.directory.licenses.plan import LicenceChange, plan_licences, read_assignments
-from office365.directory.licenses.subscribed_sku import SubscribedSku
+from office365.directory.licenses.plan import LicenceChange, plan_licences
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.types.collections import StringCollection
 from tests.settings import client_id, client_secret, tenant
 
 
-def asked_licences(rows: list[tuple[str, list[str]]], catalogue: dict[str, SubscribedSku]) -> list[AssignedLicense]:
-    """The rows of one user as ``assignLicense`` wants them — names resolved against the SKU."""
-    licences = []
-    for part_number, names in rows:
-        sku = catalogue.get(part_number)
-        if sku is None:
-            raise LookupError(f"this tenant subscribes to no SKU named {part_number}")
-        plan_ids = {name: sku.plan_id(name) for name in names}
-        unknown = [name for name, plan_id in plan_ids.items() if plan_id is None]
-        if unknown:
-            raise LookupError(f"{part_number} has no plan named {', '.join(unknown)}")
-        disabled = StringCollection([plan_id for plan_id in plan_ids.values() if plan_id])
-        licences.append(AssignedLicense(skuId=sku.sku_id, disabledPlans=disabled))
-    return licences
+def read_rows(path: str) -> dict[str, list[tuple[str, list[str]]]]:
+    """User principal name -> what the file asks for them: ``[(SKU id, disabled plan ids)]``."""
+    wanted: dict[str, list[tuple[str, list[str]]]] = {}
+    with open(path, encoding="utf-8", newline="") as stream:
+        for row in csv.DictReader(stream):
+            disabled = [plan for plan in row["disabledPlans"].split("; ") if plan]
+            wanted.setdefault(row["userPrincipalName"], []).append((row["skuId"], disabled))
+    return wanted
+
+
+def asked_licences(rows: list[tuple[str, list[str]]]) -> list[AssignedLicense]:
+    """The rows of one user as ``assignLicense`` wants them — the ids the file carries."""
+    return [AssignedLicense(skuId=sku_id, disabledPlans=StringCollection(disabled)) for sku_id, disabled in rows]
 
 
 def describe(change: LicenceChange, parts_by_id: dict[str, str]) -> str:
@@ -59,12 +58,8 @@ def main() -> None:
     skus = client.subscribed_skus.get().execute_query()
     parts_by_id = {str(sku.sku_id): sku.sku_part_number or "" for sku in skus}
 
-    for upn, rows in read_assignments(args.path).items():
-        try:
-            asked = asked_licences(rows, {sku.sku_part_number or "": sku for sku in skus})
-        except LookupError as error:
-            print(f"{upn}: {error}")
-            continue
+    for upn, rows in read_rows(args.path).items():
+        asked = asked_licences(rows)
         try:
             user = client.users.get_by_principal_name(upn)
             user.select(["id", "userPrincipalName", "usageLocation", "assignedLicenses", "licenseAssignmentStates"])

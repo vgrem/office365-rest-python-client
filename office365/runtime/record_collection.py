@@ -70,7 +70,24 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
     # ── Export ───────────────────────────────────────────────────
 
-    def export_to(self, target: Any, *, format: str = "csv", page_size: Optional[int] = None, **opts: Any) -> Self:  # noqa: A002
+    def _select_row_property(self, rows_from: Optional[str]) -> Optional[str]:
+        """Project the child property a fan-out reads, which a caller's own select may omit.
+
+        ``select`` adds rather than replaces, so this cannot drop the caller's columns.
+        """
+        if rows_from:
+            self.select([rows_from])
+        return rows_from
+
+    def export_to(
+        self,
+        target: Any,
+        *,
+        format: str = "csv",  # noqa: A002
+        page_size: Optional[int] = None,
+        rows_from: Optional[str] = None,
+        **opts: Any,
+    ) -> Self:
         """Deferred export of the loaded items to ``target`` in ``format``.
 
         The writer is resolved from the format registry, so formats are pluggable.
@@ -84,7 +101,17 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             >>> col.execute_query()
             >>> col.to_csv(f)
             >>> lst.items.export_to("out.csv", page_size=2000).execute_query()
+
+        Pass ``rows_from`` to emit one record per child of a collection-valued
+        property instead of one per item — the property is added to ``$select``,
+        because no projection can name its fields:
+
+            >>> client.users.get_licensed().select(["userPrincipalName"]) \\
+            ...     .export_to(f, rows_from="assignedLicenses") \\
+            ...     .execute_query()
         """
+        if rows_from:
+            opts["rows_from"] = self._select_row_property(rows_from)
         if page_size:
             return self._export_paged(target, format, page_size, opts)
         writer = registry.writer_for(format)
@@ -99,10 +126,11 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         from office365.runtime.converters.records import records_from_items
 
         factory = streamers.streamer_for(format)
-        if factory is None:  # not appendable — write the whole collection at once
+        if factory is None:  # not appendable — one writer call over the whole collection
             writer = registry.writer_for(format)
             return self.after_execute(lambda _: writer(self, target, **opts))
 
+        rows_from = opts.pop("rows_from", None)
         stream = factory(target, **opts)
         state = {"start": 0}
 
@@ -112,7 +140,9 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             # callback, defeating the bounded-memory streaming.
             items = col._data[state["start"] :]
             state["start"] = len(col._data)
-            stream.write(records_from_items(items, col.query_options.select, col.query_options.expand))
+            stream.write(
+                records_from_items(items, col.query_options.select, col.query_options.expand, rows_from=rows_from)
+            )
             if not col.has_next:
                 stream.close()
 
@@ -125,6 +155,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         *,
         format: str = "csv",  # noqa: A002
         page_size: Optional[int] = None,
+        rows_from: Optional[str] = None,
         **opts: Any,
     ) -> Self:
         """Async twin of :meth:`export_to`.
@@ -138,6 +169,8 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             >>> await client.users.export_to_async("users.csv", page_size=2000)
             >>> await lst.items.export_to_async("out.ndjson", format="ndjson", page_size=2000)
         """
+        if rows_from:
+            opts["rows_from"] = self._select_row_property(rows_from)
         if page_size:
             return await self._export_paged_async(target, format, page_size, opts)
 
@@ -155,17 +188,20 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
         executor = get_offload_executor()
         factory = streamers.streamer_for(format)
-        if factory is None:  # not appendable — write the whole collection at once
+        if factory is None:  # not appendable — one writer call over the whole collection
             writer = registry.writer_for(format)
             await run_offloaded(writer, self, target, executor=executor, **opts)
             return self
 
+        rows_from = opts.pop("rows_from", None)
         stream = await run_offloaded(factory, target, executor=executor, **opts)
         start = 0
         closed = False
 
         def _project(items: List[Any]) -> None:
-            stream.write(records_from_items(items, self.query_options.select, self.query_options.expand))
+            stream.write(
+                records_from_items(items, self.query_options.select, self.query_options.expand, rows_from=rows_from)
+            )
 
         async def _append_page() -> None:
             nonlocal start
@@ -194,7 +230,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             await _close()
         return self
 
-    def to_records(self, raw: bool = False) -> List[Dict[str, Any]]:
+    def to_records(self, raw: bool = False, rows_from: Optional[str] = None) -> List[Dict[str, Any]]:
         """Project loaded items into plain dict records — the neutral export form.
 
         The projection shared by every exporter: ``.select()``/``.expand()``
@@ -203,56 +239,70 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
         Args:
             raw: When True, keep native property values (no JSON coercion).
+            rows_from: Emit one record per child of this collection-valued
+                property instead of one per item.
         """
         from office365.runtime.converters.records import iter_records
 
-        return iter_records(self, raw=raw)
+        return iter_records(self, raw=raw, rows_from=rows_from)
 
-    def to_csv(self, target: Union[str, PathLike, IO[str]]) -> Self:
+    def to_csv(self, target: Union[str, PathLike, IO[str]], *, rows_from: Optional[str] = None) -> Self:
         """Export the items to CSV — a path or an already-open text stream.
 
         Written when a queued read resolves, or immediately when nothing is
         pending (an already-loaded collection).
+
+        Args:
+            rows_from: Emit one row per child of this collection-valued property
+                (e.g. ``"assignedLicenses"``) instead of one row per item; the
+                property is added to ``$select`` and the child's own properties
+                become the columns.
         """
-        return self.export_to(target, format="csv")
+        return self.export_to(target, format="csv", rows_from=rows_from)
 
-    def to_ndjson(self, target: Union[str, PathLike, IO[str]]) -> Self:
+    def to_ndjson(self, target: Union[str, PathLike, IO[str]], *, rows_from: Optional[str] = None) -> Self:
         """Export the items as NDJSON — one record per line (path or open stream)."""
-        return self.export_to(target, format="ndjson")
+        return self.export_to(target, format="ndjson", rows_from=rows_from)
 
-    def to_excel(self, target: Union[str, PathLike]) -> Self:
+    def to_excel(self, target: Union[str, PathLike], *, rows_from: Optional[str] = None) -> Self:
         """Export loaded items to an Excel (.xlsx) worksheet (deferred).
 
         Requires the optional dependency (``pip install
         office365-rest-python-client[excel]``).
         """
-        return self.export_to(target, format="excel")
+        return self.export_to(target, format="excel", rows_from=rows_from)
 
-    def to_parquet(self, target: Any) -> Self:
+    def to_parquet(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
         """Export loaded items to Parquet (deferred; requires the ``[parquet]`` extra)."""
-        return self.export_to(target, format="parquet")
+        return self.export_to(target, format="parquet", rows_from=rows_from)
 
-    def to_orc(self, target: Any) -> Self:
+    def to_orc(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
         """Export loaded items to ORC (deferred; requires the ``[parquet]`` extra)."""
-        return self.export_to(target, format="orc")
+        return self.export_to(target, format="orc", rows_from=rows_from)
 
-    def to_feather(self, target: Any) -> Self:
+    def to_feather(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
         """Export loaded items to Feather (deferred; requires the ``[parquet]`` extra)."""
-        return self.export_to(target, format="feather")
+        return self.export_to(target, format="feather", rows_from=rows_from)
 
-    def to_sql(self, target: Any, *, table: str, **opts: Any) -> Self:
+    def to_sql(self, target: Any, *, table: str, rows_from: Optional[str] = None, **opts: Any) -> Self:
         """Write loaded items to a SQL table (deferred; requires the ``[sql]`` extra)."""
         from office365.runtime.converters.records import iter_records
         from office365.runtime.converters.sql import write_sql
 
-        return self.after_execute(lambda _: write_sql(iter_records(self), target, table=table, **opts))
+        self._select_row_property(rows_from)
+        return self.after_execute(
+            lambda _: write_sql(iter_records(self, rows_from=rows_from), target, table=table, **opts)
+        )
 
-    def to_duckdb(self, target: Any, *, table: str, **opts: Any) -> Self:
+    def to_duckdb(self, target: Any, *, table: str, rows_from: Optional[str] = None, **opts: Any) -> Self:
         """Write loaded items to a DuckDB table (deferred; requires the ``[duckdb]`` extra)."""
         from office365.runtime.converters.records import iter_records
         from office365.runtime.converters.sql import write_duckdb
 
-        return self.after_execute(lambda _: write_duckdb(iter_records(self), target, table=table, **opts))
+        self._select_row_property(rows_from)
+        return self.after_execute(
+            lambda _: write_duckdb(iter_records(self, rows_from=rows_from), target, table=table, **opts)
+        )
 
     def to_dataframe(self) -> "DataFrameResult":
         """Build a pandas DataFrame from the loaded items (deferred result).

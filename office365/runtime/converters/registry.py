@@ -64,7 +64,7 @@ def _write_csv(collection: "ClientObjectCollection", target: Any, **opts: Any) -
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_csv(collection, f, delimiter=opts.get("delimiter", ","))
+        write_csv(collection, f, delimiter=opts.get("delimiter", ","), rows_from=opts.get("rows_from"))
 
 
 def _read_tsv(source: Any, **opts: Any) -> List[dict]:
@@ -89,7 +89,7 @@ def _write_ndjson(collection: "ClientObjectCollection", target: Any, **opts: Any
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_ndjson(iter_records(collection), f)
+        write_ndjson(iter_records(collection, rows_from=opts.get("rows_from")), f)
 
 
 def _read_json_file(source: Any, **opts: Any) -> List[dict]:
@@ -106,7 +106,7 @@ def _write_json_file(collection: "ClientObjectCollection", target: Any, **opts: 
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_json(iter_records(collection), f, indent=opts.get("indent"))
+        write_json(iter_records(collection, rows_from=opts.get("rows_from")), f, indent=opts.get("indent"))
 
 
 def _read_excel(source: Any, **opts: Any) -> List[dict]:
@@ -119,7 +119,7 @@ def _write_excel(collection: "ClientObjectCollection", target: Any, **opts: Any)
     from office365.runtime.converters.excel import write_excel
     from office365.runtime.converters.records import iter_records
 
-    write_excel(iter_records(collection), target)
+    write_excel(iter_records(collection, rows_from=opts.get("rows_from")), target)
 
 
 def _read_dataframe(df: Any, **opts: Any) -> List[dict]:
@@ -144,7 +144,7 @@ def _write_parquet(collection: "ClientObjectCollection", target: Any, **opts: An
     from office365.runtime.converters.parquet import write_parquet
     from office365.runtime.converters.records import iter_records
 
-    write_parquet(iter_records(collection), target)
+    write_parquet(iter_records(collection, rows_from=opts.get("rows_from")), target)
 
 
 def _read_orc(source: Any, **opts: Any) -> List[dict]:
@@ -157,7 +157,7 @@ def _write_orc(collection: "ClientObjectCollection", target: Any, **opts: Any) -
     from office365.runtime.converters.parquet import write_orc
     from office365.runtime.converters.records import iter_records
 
-    write_orc(iter_records(collection), target)
+    write_orc(iter_records(collection, rows_from=opts.get("rows_from")), target)
 
 
 def _read_feather(source: Any, **opts: Any) -> List[dict]:
@@ -170,7 +170,7 @@ def _write_feather(collection: "ClientObjectCollection", target: Any, **opts: An
     from office365.runtime.converters.parquet import write_feather
     from office365.runtime.converters.records import iter_records
 
-    write_feather(iter_records(collection), target)
+    write_feather(iter_records(collection, rows_from=opts.get("rows_from")), target)
 
 
 register("csv", reader=_read_csv, writer=_write_csv)

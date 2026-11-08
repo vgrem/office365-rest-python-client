@@ -22,7 +22,9 @@ def _cell(value: Any) -> str:
     return str(value)
 
 
-def write_csv(collection: ClientObjectCollection, file: IO[str], delimiter: str = ",") -> None:
+def write_csv(
+    collection: ClientObjectCollection, file: IO[str], delimiter: str = ",", rows_from: Optional[str] = None
+) -> None:
     """Write collection items to CSV using the shared record projection.
 
     The projection (``records.iter_records``) asks the type for its columns: when no
@@ -31,14 +33,22 @@ def write_csv(collection: ClientObjectCollection, file: IO[str], delimiter: str 
     produce one column; dotted select fields (e.g. ``"members/displayName"``) walk
     into an expanded navigation property — one CSV row is emitted per child item.
 
+    ``rows_from`` fans out over a collection-valued property instead — one row per
+    child, the child's own properties as columns. Graph offers no projection for it:
+    a complex collection cannot be ``$expand``-ed and its fields cannot be named in
+    ``$select``, so the row unit has to be stated.
+
     Usage:
         >>> collection.get_all() \\
         ...     .select(["displayName", "members/displayName", "members/email"]) \\
         ...     .expand(["members"]) \\
         ...     .to_csv(f) \\
         ...     .execute_query()
+        >>> client.users.get_licensed().select(["userPrincipalName"]).get_all() \\
+        ...     .to_csv(f, rows_from="assignedLicenses") \\
+        ...     .execute_query()
     """
-    write_records(iter_records(collection), file, delimiter=delimiter)
+    write_records(iter_records(collection, rows_from=rows_from), file, delimiter=delimiter)
 
 
 def write_records(

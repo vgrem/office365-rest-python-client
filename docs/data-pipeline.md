@@ -42,12 +42,40 @@ type's declared ones (`TypeSchema.of(T).columns`), in declaration order, spelled
 way the client's service root spells them — so a stable client exports no preview column, and
 every format, every page and every run answer the same headers. A name only the page
 carries (a SharePoint list item's site columns, which no CSDL describes) follows,
-sorted. `.select(...)` replaces that with exactly the names you gave.
+sorted. `.select(...)` replaces that with the names you name — and *adds* to them, so a method
+that selects a property it depends on (the identity a filter reads, the child to fan out over)
+is not undone by the caller naming its own columns.
 
 ```python
 lst.to_csv("items.csv").execute_query()  # the type's columns, then the rest
 lst.select(["Title", "Modified"]).to_csv("s.csv")  # exactly these two
 ```
+
+### One row per child
+
+A collection-valued property is a table inside a row, and `rows_from` states it: the property
+is added to `$select`, and each child becomes a row whose columns are the child's own fields.
+
+```python
+client.users.get_licensed().select(["userPrincipalName"]).get_all().to_csv(
+    sys.stdout, rows_from="assignedLicenses"
+).execute_query()
+# userPrincipalName, skuId, disabledPlans
+```
+
+It exists because no projection can name a child: Graph refuses
+`$expand=assignedLicenses` ("not a navigation property or complex property") and
+`$select=assignedLicenses/skuId` ("Invalid property 'skuId' specified in $select"). Dotted
+select fields (`members/displayName`) cover the other case — children the service does
+expand — one record per child too, and the two cannot be combined.
+
+A child's columns are the fields its type declares, in declaration order, so a child with an
+empty collection writes an empty cell rather than a shorter row. Select at least one column of
+the parent, or the rows say nothing about whose they are.
+
+Every exporter takes it — `to_csv`, `to_ndjson`, `to_excel`, `to_parquet`, `to_orc`,
+`to_feather`, `to_sql`, `to_duckdb` — and `to_records(rows_from=...)` returns the rows to a
+caller instead of writing them.
 
 A type states its identity above the class — `@key("tenantId")` — and a read always
 asks for it even when `.select(...)` omitted it, because that column is what the next

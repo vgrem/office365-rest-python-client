@@ -37,6 +37,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Iterable, Iterator, Tuple
 
+from office365.permissions import require_permission
+
 if TYPE_CHECKING:
     from office365.directory.licenses.details import LicenseDetails
     from office365.directory.licenses.subscribed_sku import SubscribedSku
@@ -56,11 +58,13 @@ class Licences:
         self._items: Tuple[LicenseDetails | SubscribedSku, ...] = tuple(i for i in items if i.sku_part_number)
 
     @classmethod
+    @require_permission(delegated=["User.Read.All"], application=["User.Read.All"])
     def of_user(cls, client: GraphClient) -> Licences:
         """The SKUs assigned to the signed-in identity (``me/licenseDetails``)."""
         return cls(client.me.license_details.get().execute_query())
 
     @classmethod
+    @require_permission(delegated=["Organization.Read.All"], application=["Organization.Read.All"])
     def of_tenant(cls, client: GraphClient) -> Licences:
         """The SKUs the tenant bought (``subscribedSkus``), assigned to users or not."""
         return cls(client.subscribed_skus.get().execute_query())

@@ -331,22 +331,27 @@ held.names  # SKU part numbers and provisioned plan names
   discovered this way, so "does the tenant own it" and "is this seat entitled to it" stay
   two questions.
 
-An assignment is not a user projection, so it is not a `to_csv()` on the user collection: one
-row is a user **and** a SKU, the SKU's part number and the plan names come from a second query
-(`subscribedSkus`), and neither `$expand=assignedLicenses` nor `$expand=licenseDetails` is a
-supported way to fetch them. `office365.directory.licenses.plan` owns that shape in both
-directions — `assignments(client)` yields the records, `read_assignments(path)` reads them back,
-and `plan_licences` decides what each one needs before anything is sent:
+An assignment is a child of the user, not a column of it, and Graph will not project it:
+`$expand=assignedLicenses` answers *"not a navigation property or complex property"* and
+`$select=assignedLicenses/skuId` answers *"Invalid property 'skuId' specified in $select"*.
+So the export takes the row unit itself — `rows_from` writes one row per child of the named
+property, and the child's own fields become the columns:
 
 ```python
-from office365.directory.licenses.plan import assignments, read_assignments
-from office365.runtime.converters.csv_writer import write_records
-
-write_records(assignments(client), sys.stdout)  # user_principal_name, sku, disabled_plans
-wanted = read_assignments("licences.csv")  # {upn: [(sku_part_number, [disabled plan names])]}
+client.users.get_licensed().select(["userPrincipalName"]).get_all().to_csv(
+    sys.stdout, rows_from="assignedLicenses"
+).execute_query()
+# userPrincipalName, skuId, disabledPlans
 ```
 
-A part number travels between tenants; a SKU id or a plan id does not.
+The file carries SKU **ids**, because the projection is the type's and not a join: a part
+number lives on `subscribedSkus`, and `SubscribedSku.plan_name(plan_id)` is how a reader turns
+a plan id back into the name a person recognises. For the same reason the file is worth
+reading back only in the tenant that wrote it.
+`office365.directory.licenses.plan.plan_licences` decides what each row needs — a seat left, a
+SKU this tenant subscribes to, a `usageLocation` before an add, a licence inherited from a
+group before a remove — so a batch run reports the rows it will not send instead of catching
+the refusal.
 
 ## Error handling
 
