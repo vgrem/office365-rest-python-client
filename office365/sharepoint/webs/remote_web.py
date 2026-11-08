@@ -52,19 +52,19 @@ class RemoteWeb(Entity):
         """Gets the SPWeb."""
         return self.properties.get("Web", Web(self.context, ResourcePath("Web", self.resource_path)))
 
-    @odata(name="CanSendEmail")
+    @odata(name="CanSendEmail", beta=True)
     @property
     def can_send_email(self) -> Optional[bool]:
         """Gets the CanSendEmail property"""
         return self.properties.get("CanSendEmail", None)
 
-    @odata(name="ShareByEmailEnabled")
+    @odata(name="ShareByEmailEnabled", beta=True)
     @property
     def share_by_email_enabled(self) -> Optional[bool]:
         """Gets the ShareByEmailEnabled property"""
         return self.properties.get("ShareByEmailEnabled", None)
 
-    @odata(name="ShareByLinkEnabled")
+    @odata(name="ShareByLinkEnabled", beta=True)
     @property
     def share_by_link_enabled(self) -> Optional[bool]:
         """Gets the ShareByLinkEnabled property"""

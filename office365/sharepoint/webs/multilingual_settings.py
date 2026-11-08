@@ -39,7 +39,7 @@ class MultilingualSettings(Entity):
         self.context.add_query(qry)
         return self
 
-    @odata(name="Recipients", navigation=True)
+    @odata(name="Recipients", navigation=True, beta=True)
     @property
     def recipients(self) -> EntityCollection[TranslationNotificationRecipientUsers]:
         return self.properties.get(
@@ -51,7 +51,7 @@ class MultilingualSettings(Entity):
             ),
         )
 
-    @odata(name="FollowLangPreference")
+    @odata(name="FollowLangPreference", beta=True)
     @property
     def follow_lang_preference(self) -> Optional[bool]:
         """Gets the FollowLangPreference property"""
