@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from functools import lru_cache
 
 # Built-in SharePoint field titles that collide with a user column of the same
 # name. ``FieldCollection.ensure`` looks fields up by *display name*
@@ -36,6 +37,7 @@ _RESERVED_FIELD_TITLES = frozenset(
 )
 
 
+@lru_cache(maxsize=None)
 def internal_field_name(name: str) -> str:
     """Sanitize a display/column name into a SharePoint field internal name.
 
