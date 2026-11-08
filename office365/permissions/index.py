@@ -27,7 +27,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from types import CodeType, ModuleType
-from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional, Sequence, cast
 
 if TYPE_CHECKING:
     from office365.permissions.declaration import PermissionRequirement
@@ -168,6 +168,11 @@ def _function(member: object) -> Optional[Callable[..., Any]]:
     if isinstance(member, property):
         member = member.fget
     unwrapped = getattr(member, "__func__", member)
+    if not inspect.isfunction(unwrapped):
+        # A member only one service root declares is a descriptor, so that naming it answers
+        # for the client (``hasattr``) before it is called; the function it carries is still
+        # the operation, reached through ``__wrapped__``.
+        unwrapped = inspect.unwrap(cast(Callable[..., Any], unwrapped))
     return unwrapped if inspect.isfunction(unwrapped) else None
 
 

@@ -37,8 +37,8 @@ from office365.runtime.types.odata_property import (
     _ODATA_MARKER,
     IDENTITIES,
     PREVIEW,
-    NotSupportedInVersion,
     ODataPropertyMeta,
+    require_declared_member,
 )
 
 _EMPTY_MAP: Mapping = MappingProxyType({})
@@ -347,14 +347,26 @@ class TypeSchema:
         declared = self.properties.get(name)
         if declared is None or version is None:
             return name
-        preview = version == PREVIEW
-        if declared.beta is True and not preview:
-            raise NotSupportedInVersion(name, version, PREVIEW)
-        if declared.beta is False and preview:
-            raise NotSupportedInVersion(name, version)
-        if preview and isinstance(declared.beta, str):
+        require_declared_member(name, declared.beta, version)
+        if version == PREVIEW and isinstance(declared.beta, str):
             return declared.beta
         return name
+
+    def hidden(self, version: Optional[str]) -> frozenset[str]:
+        """The python names ``version`` does not declare -- what the instance must not offer.
+
+        A member is named twice: as a key the service spells (``properties``) and as the
+        attribute a caller writes (``by_attr``). ``dir()`` asks the second question, so
+        the answer is spelled the second way, and only the members whose declaration
+        states a version are candidates -- one model tree serves both roots, and a member
+        both roots declare is not hidden from either.
+        """
+        if version is None:
+            return frozenset()
+        excluded = self.stable_only if version == PREVIEW else self.beta_only
+        if not excluded:
+            return frozenset()
+        return frozenset(attr for attr, name in self.by_attr.items() if name in excluded)
 
     def projection(self, names: Iterable[str], version: Optional[str]) -> List[str]:
         """The names of ``names`` that ``version`` declares, spelled as it spells them.

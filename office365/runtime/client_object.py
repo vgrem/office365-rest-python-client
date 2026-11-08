@@ -32,7 +32,12 @@ from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 from office365.runtime.schema import EMPTY, TypeSchema
-from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, request_version
+from office365.runtime.types.odata_property import (
+    PREVIEW,
+    NotSupportedInVersion,
+    addresses_version,
+    request_version,
+)
 
 
 def require_declared_version(name: str, declared: Collection[str], context: Any) -> None:
@@ -369,6 +374,24 @@ class ClientObject:
         """
         return len(self._properties) > 0
 
+    def __dir__(self) -> list[str]:
+        """The members this client can address, which is the class minus another root's.
+
+        One class serves both service roots, so a preview-only member is an attribute of
+        the class the *stable* client instantiates: holding it is not the error, naming it
+        is. Reading one raises (:data:`@odata` guards every member whose declaration
+        states a version), and ``dir`` answers the same question up front, so completion,
+        ``inspect`` and a caller's own listing see exactly what this instance can use.
+        Nothing on the request path asks for ``dir()``, which is why the per-instance
+        answer costs nothing that is sent.
+        """
+        names = list(super().__dir__())
+        schema = getattr(type(self), "_schema", None)
+        if schema is None or not addresses_version(self):
+            return names
+        hidden = schema.hidden(request_version(getattr(self, "context", None)))
+        return names if not hidden else [name for name in names if name not in hidden]
+
     def __str__(self) -> str:
         """Return the object's natural label (``displayName``/``name``/``title``).
 
@@ -452,7 +475,14 @@ class ClientObject:
         if default_value is None:
             meta = type(self)._schema.properties.get(name)
             if meta is not None:
-                return getattr(self, meta.attr)
+                try:
+                    return getattr(self, meta.attr)
+                except NotSupportedInVersion:
+                    # The member exists in the model but not on this client's root, and
+                    # this method's contract is "the value, or the default": a member the
+                    # root does not declare reads as absent here rather than raising, so a
+                    # response or sidecar holding one still serializes whole.
+                    return self._properties.get(name, None)
             normalized_name = name[0].lower() + name[1:]
             default_value = getattr(self, normalized_name, None)
             if default_value is None:

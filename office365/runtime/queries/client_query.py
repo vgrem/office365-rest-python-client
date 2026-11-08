@@ -8,7 +8,7 @@ from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value import ClientValue
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import request_version
+from office365.runtime.types.odata_property import addresses_version, request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
@@ -72,9 +72,11 @@ class ClientQuery(Generic[ReturnT]):
         difference between a local error naming the member and a 404 naming a segment.
 
         An operation no marker declares is not gated: ``wire_name`` answers the name it
-        was asked about, so only a member the snapshot pair disagreed about is refused.
+        was asked about, so only a member the snapshot pair disagreed about is refused,
+        and only on a model of the versioned service -- a SharePoint object handed a Graph
+        context does not inherit that context's version.
         """
-        if name is None or self._binding_type is None:
+        if name is None or self._binding_type is None or not addresses_version(self._binding_type):
             return
         schema = getattr(self._binding_type, "_schema", None)
         if schema is None:

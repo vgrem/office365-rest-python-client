@@ -1,10 +1,12 @@
 """A preview-only type is a member of the one tree, but not of every service root.
 
 The model is one tree on purpose: the version picks the root a request is addressed to,
-not the surface the model offers. That leaves exactly one hole -- a stable client can hold
-a class only the preview root declares, and the request it would build names a path the
-stable root has no entity for. The gate closes that hole at the two places the tree is
-entered: constructing the object, and naming the collection item type.
+not the surface the model offers. That leaves one hole -- a stable client can hold a class,
+or a member, only the preview root declares, and the request it would build names a path or
+a key the stable root has no schema for. The gate closes it wherever the tree is *named*:
+constructing the object, naming the collection item type, selecting or sending a member,
+calling an operation -- and, for a caller asking rather than sending, ``dir()``/``hasattr``:
+a member this client's root does not declare is absent from it, not merely refused later.
 """
 
 import pytest
@@ -65,12 +67,22 @@ def test_a_type_with_no_gate_is_never_refused():
 
 
 class _PreviewMember(Entity):
-    """One member only the preview root declares -- the shape SharePoint also uses."""
+    """One member only each root declares -- the shape SharePoint also uses."""
 
     @odata(name="preview", beta=True)
     @property
     def preview(self):
         return self.properties.get("preview", None)
+
+    @odata(name="retired", beta=False)
+    @property
+    def retired(self):
+        return self.properties.get("retired", None)
+
+    @odata(name="rename", beta="renamed")
+    @property
+    def renamed(self):
+        return self.properties.get("rename", None)
 
 
 def test_a_client_that_states_no_version_is_not_gated_by_one():
@@ -78,6 +90,60 @@ def test_a_client_that_states_no_version_is_not_gated_by_one():
     assert _PreviewMember._schema.wire_name("preview", None) == "preview"
     with pytest.raises(NotSupportedInVersion):
         _PreviewMember._schema.wire_name("preview", GraphVersion.V1.value)
+
+
+def test_a_member_one_root_does_not_declare_is_not_on_that_client():
+    """Holding it is not the error; naming it is -- and a name that is not there is absent."""
+    stable = _PreviewMember(_stable())
+    assert "preview" not in dir(stable)
+    assert not hasattr(stable, "preview")
+    with pytest.raises(NotSupportedInVersion):
+        _ = stable.preview
+    assert stable.get_property("preview", "absent") == "absent"
+
+
+def test_the_same_member_is_on_the_root_that_declares_it():
+    beta = _PreviewMember(_beta())
+    assert "preview" in dir(beta)
+    assert beta.preview is None
+
+
+def test_the_absence_is_symmetric():
+    """A member the preview root dropped is absent from a beta client, by the same rule."""
+    assert not hasattr(_PreviewMember(_beta()), "retired")
+    assert _PreviewMember(_stable()).retired is None
+    assert "retired" not in dir(_PreviewMember(_beta()))
+
+
+def test_a_member_both_roots_declare_is_never_gated():
+    """Under another name it is still declared by both, so both clients answer for it."""
+    assert _PreviewMember(_stable()).renamed is None
+    assert _PreviewMember(_beta()).renamed is None
+    assert "renamed" in dir(_PreviewMember(_stable()))
+
+
+def test_a_preview_operation_cannot_even_be_named_by_a_stable_client():
+    """A method that gated only *when called* would still answer ``hasattr``."""
+    stable = _PreviewOperations(_stable())
+    assert "preview_action" not in dir(stable)
+    assert not hasattr(stable, "preview_action")
+    assert hasattr(stable, "stable_action")
+
+
+def test_a_model_of_the_unversioned_service_keeps_a_marker_as_provenance():
+    """A SharePoint page on the offline Graph stand-in must not inherit its version.
+
+    ``SitePage`` carries preview markers from its own document, and the offline helper is
+    a ``GraphClient`` because a model object cannot exist without a context. Reading the
+    page must not be refused for a version the page's service never stated -- which is
+    what the OData type name decides: ``SP.Publishing.SitePage``, not ``microsoft.graph.*``.
+    """
+    from office365.migration.offline import offline_context
+    from office365.sharepoint.publishing.pages.page import SitePage
+
+    page = SitePage(offline_context()).hydrate({"CanvasContent1": "<div/>"})
+    assert "canvas_content" in dir(page)
+    assert page.canvas_content == "<div/>"
 
 
 class _PreviewOperations(Entity):

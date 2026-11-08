@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, TypeVar, Union
+from functools import update_wrapper, wraps
+from typing import Any, Callable, Optional, TypeVar, Union, cast
 
 _ODATA_MARKER = "__odata__"
+_GRAPH_NAMESPACE = "microsoft.graph."
 _T = TypeVar("_T")
 
 PREVIEW = "beta"
@@ -49,8 +51,53 @@ def request_version(context: Any) -> Optional[str]:
     return getattr(version, "value", version)
 
 
-class NotSupportedInVersion(ValueError):
+def addresses_version(model: Any) -> bool:
+    """Whether a service root's version decides what ``model`` offers.
+
+    One version switch exists -- Graph's stable and preview roots -- and it governs the
+    models that say they are Graph's. The OData type name is where a model states which
+    schema it describes (``microsoft.graph.User`` against ``SP.ListItem``), so it is also
+    where the question is answered.
+
+    A SharePoint model carries the same kind of marker about its own document, but this
+    library reaches SharePoint through one root: ``wire_name`` says so, and those markers
+    are provenance. Which means a SharePoint object handed a *Graph* context -- the offline
+    stand-in a model object needs to exist at all -- must not inherit that context's
+    version. Markers gate models of the versioned service, and nothing else.
+    """
+    name = getattr(model, "entity_type_name", None)
+    return isinstance(name, str) and name.startswith(_GRAPH_NAMESPACE)
+
+
+def require_declared_member(member: str, declared: Union[bool, str, None], version: Optional[str]) -> None:
+    """Refuse ``member`` on a client whose service root does not declare it.
+
+    ``declared`` is what ``@odata(beta=...)`` recorded: ``True`` for a member only the
+    preview root declares, ``False`` for one it dropped, a string for one it spells
+    otherwise, ``None`` for a member both roots agree about. A client that states no
+    version is not gated by one.
+
+    The answer is the one :meth:`~office365.runtime.schema.TypeSchema.wire_name` gives,
+    and both call this so the rule is stated once: a member is asked about either as a
+    name to send (`wire_name`) or as an attribute being read (`@odata`'s guard).
+    """
+    if declared is None or version is None:
+        return
+    preview = version == PREVIEW
+    if declared is True and not preview:
+        raise NotSupportedInVersion(member, version, PREVIEW)
+    if declared is False and preview:
+        raise NotSupportedInVersion(member, version)
+
+
+class NotSupportedInVersion(ValueError, AttributeError):
     """A member the model holds, but the client's API version does not declare.
+
+    Both bases are deliberate. It is a ``ValueError`` because the caller named a member
+    of the wrong root, which is a disagreement about a name; and an ``AttributeError``
+    because the instance does not *have* that member on this client -- one model tree,
+    two roots -- so ``hasattr``, ``getattr(obj, name, None)`` and every duck-typing probe
+    answer as they would for an attribute that was never there.
 
     There is one model tree for both service roots, so a preview member is an
     attribute of the class a stable client instantiates. Holding it is not the error
@@ -252,7 +299,54 @@ class odata(dict):
     def __call__(self, method: _T) -> _T:
         target = method.fget if isinstance(method, property) else method  # type: ignore[attr-defined]
         setattr(target, _ODATA_MARKER, self.meta)
-        return method
+        if self.meta.beta is None or isinstance(self.meta.beta, str):
+            # Both roots declare it -- as itself, or under a name of its own -- so there is
+            # nothing to refuse and nothing to pay for. The guard is wrapped around the
+            # members only one of the two roots declares.
+            return method
+        guarded = self._guarded(target)
+        return property(guarded) if isinstance(method, property) else _GuardedMember(target)  # type: ignore[return-value]
+
+    def _guarded(self, func: Any) -> Any:
+        """``func``, refusing to run until it is read by a client whose root declares it.
+
+        The declaration already states which roots declare the member, so the guard needs
+        nothing but the client's version, and a member both roots declare keeps the plain
+        function -- the request path pays for a version only where one exists.
+        """
+        meta = self.meta
+
+        @wraps(func)
+        def guard(self: Any, *args: Any, **kwargs: Any) -> Any:
+            if addresses_version(self):
+                require_declared_member(meta.name, meta.beta, request_version(getattr(self, "context", None)))
+            return func(self, *args, **kwargs)
+
+        return guard
+
+
+class _GuardedMember:
+    """A method whose name one service root does not declare, gated where it is *named*.
+
+    A property can refuse inside its getter, because reading the attribute runs the getter;
+    a method would only refuse when called, so ``hasattr(obj, "scopedForResource")`` would
+    still answer ``True`` on a client that can never call it. ``__get__`` is the access, so
+    the refusal lands there and a duck-typing probe answers as it would for a member the
+    class never had -- while ``type(obj).member`` still answers the function, which is what
+    the schema and the marker pass read.
+    """
+
+    def __init__(self, func: Any) -> None:
+        self._func = func
+        update_wrapper(cast(Any, self), func)  # carries ``__odata__``; ``__wrapped__`` keeps the signature
+
+    def __get__(self, instance: Any, owner: Any = None) -> Any:
+        if instance is None:
+            return self._func
+        if addresses_version(instance):
+            declared = self.__odata__  # type: ignore[attr-defined]
+            require_declared_member(declared.name, declared.beta, request_version(getattr(instance, "context", None)))
+        return self._func.__get__(instance, owner)
 
 
 _Cls = TypeVar("_Cls", bound=type)
