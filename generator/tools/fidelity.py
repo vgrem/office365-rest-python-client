@@ -34,6 +34,8 @@ MISSING = "missing"
 UNDECLARED = "undeclared"
 #: The model declares a name the service does not.
 EXTRA = "extra"
+#: The service's base type is a model class this class does not derive from.
+BASE = "base"
 #: The metadata marks the member preview and the declaration does not.
 BETA = "beta"
 #: The metadata marks the member service-assigned and the declaration does not.
@@ -41,15 +43,16 @@ READONLY = "readonly"
 #: The member is one the generator's own filters skip -- accounted for, not a gap.
 IGNORED = "ignored"
 
-KINDS = (MISSING, UNDECLARED, EXTRA, BETA, READONLY, IGNORED)
+KINDS = (MISSING, UNDECLARED, EXTRA, BASE, BETA, READONLY, IGNORED)
 #: The kinds a model is expected to have none of. :data:`IGNORED` is the opposite: the
 #: report lists it so a member the configuration drops is seen, not silently absent.
-GAPS = (MISSING, UNDECLARED, EXTRA, BETA, READONLY)
+GAPS = (MISSING, UNDECLARED, EXTRA, BASE, BETA, READONLY)
 
 _WHAT = {
     MISSING: "a column the service declares, absent from the model",
     UNDECLARED: "a field the model holds, with no declaration of its own",
     EXTRA: "a name the model declares, absent from the metadata",
+    BASE: "a base type the metadata names, whose class the model does not derive from",
     BETA: "a preview member the model does not mark",
     READONLY: "a service-assigned member the model sends",
     IGNORED: "a member the configured filters skip (not a gap)",
@@ -116,6 +119,8 @@ class DeclaredModel:
     #: when the module declares it itself -- so a member it inherits is still a member it
     #: serves: ``SP.Web`` answers a select with its base's columns.
     bases: Tuple[Tuple[Optional[Path], str], ...] = ()
+    #: The models the class derives from, nearest first, filled in by :func:`_inherit`.
+    ancestors: Tuple["DeclaredModel", ...] = ()
 
 
 @dataclass(frozen=True)
@@ -127,13 +132,18 @@ class _Fact:
     readonly: bool = False
 
 
-def read_models(root: Path, prefix: str = "") -> List[DeclaredModel]:
+def read_models(root: Path, prefix: str = "", generated: Optional[Path] = None) -> List[DeclaredModel]:
     """Every class under ``root``, the OData type it states, and the module it bases on.
 
     A class that states no type name is read too, with an empty one: ``Entity`` computes
     its name at runtime, and every Graph model answers ``id`` from it. Skipping it would
     make the whole of ``id`` a column the model does not serve.
+
+    ``prefix`` stands in for the name such a class computes at runtime, and applies only
+    under ``generated`` (default: ``root``) -- the packages the generator writes. A
+    hand-written class called ``User`` is not ``SP.User`` and is not judged as one.
     """
+    named_under = generated if generated is not None else root
     models: List[DeclaredModel] = []
     for path in sorted(root.rglob("*.py")):
         try:
@@ -148,13 +158,18 @@ def read_models(root: Path, prefix: str = "") -> List[DeclaredModel]:
                 DeclaredModel(
                     path=path,
                     name=node.name,
-                    type_name=_odata_type_name(node) or (f"{prefix}.{node.name}" if prefix else ""),
+                    type_name=_odata_type_name(node) or (_prefix(prefix, node.name, path, named_under)),
                     members={declared.name: declared for declared in _members(node)},
                     bases=tuple((imported.get(_call_name(base)), _call_name(base)) for base in node.bases),
                 )
             )
     _inherit(models)
     return models
+
+
+def _prefix(prefix: str, name: str, path: Path, generated: Path) -> str:
+    """The name a class computes at runtime, when the class is one the generator wrote."""
+    return f"{prefix}.{name}" if prefix and generated in path.parents else ""
 
 
 def _imports(tree: ast.Module, root: Path) -> Dict[str, Path]:
@@ -193,7 +208,7 @@ def _inherit(models: Sequence[DeclaredModel]) -> None:
     by_name: Dict[str, List[DeclaredModel]] = {}
     for model in models:
         by_name.setdefault(model.name, []).append(model)
-    resolved: Dict[int, Dict[str, Declared]] = {}
+    resolved: Dict[int, Tuple[Dict[str, Declared], Tuple[DeclaredModel, ...]]] = {}
 
     def _base_of(module: Optional[Path], name: str) -> Optional[DeclaredModel]:
         if module is not None:
@@ -201,20 +216,25 @@ def _inherit(models: Sequence[DeclaredModel]) -> None:
         candidates = by_name.get(name, []) if name else []
         return candidates[0] if len(candidates) == 1 else None
 
-    def _members_of(model: DeclaredModel, seen: frozenset) -> Dict[str, Declared]:
+    def _resolve(model: DeclaredModel, seen: frozenset) -> Tuple[Dict[str, Declared], Tuple[DeclaredModel, ...]]:
         if id(model) in resolved:
             return resolved[id(model)]
         members: Dict[str, Declared] = {}
+        ancestors: Dict[int, DeclaredModel] = {}
         for module, name in model.bases:
             base = _base_of(module, name)
-            if base is not None and id(base) not in seen:
-                members.update(_members_of(base, seen | {id(base)}))
+            if base is None or id(base) in seen:
+                continue
+            base_members, base_ancestors = _resolve(base, seen | {id(base)})
+            members.update(base_members)
+            for ancestor in (*base_ancestors, base):
+                ancestors.setdefault(id(ancestor), ancestor)
         members.update(model.members)
-        resolved[id(model)] = members
-        return members
+        resolved[id(model)] = (members, tuple(ancestors.values()))
+        return resolved[id(model)]
 
     for model in models:
-        model.members = _members_of(model, frozenset({id(model)}))
+        model.members, model.ancestors = _resolve(model, frozenset({id(model)}))
 
 
 def audit(
@@ -228,11 +248,15 @@ def audit(
     exact_ignored, prefix_ignored = split_ignored(list(ignored_types))
     ignored_props = frozenset(ignored_properties)
     declared_facts = declared_members(csdl)
+    holders = _by_type(models)
     findings: List[Finding] = []
     for model in models:
         facts = declared_facts.get(model.type_name)
         if facts is None:
             continue
+        base = _uninherited_base(model, csdl, holders)
+        if base is not None:
+            findings.append(base)
         for name, fact in facts.items():
             if name in ignored_props:
                 findings.append(_ignored(model, name, "ignored_properties"))
@@ -242,6 +266,38 @@ def audit(
                 findings.extend(_disagreements(model, name, fact))
         findings.extend(_extras(model, facts))
     return findings
+
+
+def _by_type(models: Iterable[DeclaredModel]) -> Dict[str, List[DeclaredModel]]:
+    """The models that declare each OData type, so a metadata base can be named."""
+    holders: Dict[str, List[DeclaredModel]] = {}
+    for model in models:
+        if model.type_name:
+            holders.setdefault(model.type_name, []).append(model)
+    return holders
+
+
+def _uninherited_base(
+    model: DeclaredModel, csdl: ODataModel, holders: Mapping[str, List[DeclaredModel]]
+) -> Optional[Finding]:
+    """The class the metadata's base names and this class does not derive from.
+
+    A generated subclass keeps its base line -- it is source the generator preserves --
+    so a base that was unrouted when the file was first written stays ``Entity``, and
+    every column the base declares is a column the subclass answers nothing to.
+    """
+    schema = csdl.types.get(model.type_name)
+    base_name = schema.BaseTypeName if schema is not None else None
+    if not base_name:
+        return None
+    candidates = holders.get(base_name) or ()
+    # Two models claiming one type is a disagreement of its own, and neither is the base.
+    if len(candidates) != 1:
+        return None
+    expected = candidates[0]
+    if any(ancestor is expected for ancestor in model.ancestors):
+        return None
+    return Finding(BASE, model.name, model.type_name, expected.name, base_name, str(model.path))
 
 
 def declared_members(csdl: ODataModel) -> Dict[str, Dict[str, _Fact]]:

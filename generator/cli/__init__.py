@@ -256,7 +256,9 @@ def audit_model(
     root = Path(package).resolve() if package else model_root / session.definition.model_package
     # The whole tree, then the package: a member can be inherited from a class in
     # another package, and the audit has to see it to know the subclass serves it.
-    models = [model for model in read_models(model_root, DEFAULT_PREFIX.get(service, "")) if root in model.path.parents]
+    generated = model_root / session.definition.model_package
+    read = read_models(model_root, DEFAULT_PREFIX.get(service, ""), generated)
+    models = [model for model in read if root in model.path.parents]
     findings = audit(
         models,
         session.read_model(),

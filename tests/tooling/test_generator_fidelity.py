@@ -1,11 +1,13 @@
 """What the fidelity report answers, over a model small enough to have one of each.
 
-The report is only as good as its reading of the source, and three readings are easy to
+The report is only as good as its reading of the source, and four readings are easy to
 get wrong in ways that stay quiet: a name stated by ``name=`` keyword rather than
-positionally, a member inherited from a class in another package (the subclass serves
-it), and a class that states no type name at all (SharePoint derives it from the class
-name). Each has a case here, and the gaps assertion pins what the report does *not*
-count: a member the configured filters skip is reported, and is not a defect.
+positionally, a member inherited from a class in *another file* (the subclass serves
+it), a class that states no type name at all (SharePoint derives it from the class
+name), and a subclass whose base line names nothing in particular -- the base the
+metadata declares, then, is a class it does not derive from. Each has a case here, and
+the gaps assertion pins what the report does *not* count: a member the configured
+filters skip is reported, and is not a defect.
 """
 
 from __future__ import annotations
@@ -59,6 +61,53 @@ class Silent(Base):
 
     Kept: Optional[str] = None
 '''
+
+
+_JOB = """
+from office365.runtime.types.odata_property import odata
+
+
+class MoveJob:
+    _odata_type_name = "Demo.MoveJob"
+
+    @odata(name="BatchId")
+    @property
+    def batch_id(self): ...
+"""
+
+_JOBS = '''
+from demo.job import MoveJob
+
+
+class Inheriting(MoveJob):
+    _odata_type_name = "Demo.Inheriting"
+
+
+class Transitive(Inheriting):
+    _odata_type_name = "Demo.Transitive"
+
+
+class Unrouted:
+    """The base line a generated file keeps from the run that first wrote it."""
+
+    _odata_type_name = "Demo.Unrouted"
+'''
+
+
+def _job_metadata() -> ODataModel:
+    """A job type, two subclasses that inherit it, and one that lost it."""
+    return (
+        ODataModel()
+        .add_type(
+            TypeInformation(
+                FullName="Demo.MoveJob",
+                Properties={"BatchId": PropertyInformation(Name="BatchId", TypeName="Edm.Guid")},
+            )
+        )
+        .add_type(TypeInformation(FullName="Demo.Inheriting", BaseTypeName="Demo.MoveJob"))
+        .add_type(TypeInformation(FullName="Demo.Transitive", BaseTypeName="Demo.Inheriting"))
+        .add_type(TypeInformation(FullName="Demo.Unrouted", BaseTypeName="Demo.MoveJob"))
+    )
 
 
 def _metadata() -> ODataModel:
@@ -126,6 +175,21 @@ def test_a_skip_the_configuration_asks_for_is_not_a_gap(tmp_path: Path) -> None:
     )
 
     assert {finding.member for finding in gaps(findings)} == {"Inherited", "Plain", "Novel", "Overseas", "Invented"}
+
+
+def test_a_subclass_that_kept_the_wrong_base_line_is_named_with_the_base_it_lost(tmp_path: Path) -> None:
+    package = tmp_path / "demo"
+    package.mkdir()
+    (package / "job.py").write_text(_JOB, encoding="utf-8")
+    (package / "jobs.py").write_text(_JOBS, encoding="utf-8")
+
+    findings = audit(read_models(package), _job_metadata())
+
+    assert [(finding.model, finding.member, finding.detail) for finding in findings if finding.kind == "base"] == [
+        ("Unrouted", "MoveJob", "Demo.MoveJob")
+    ]
+    # The columns the base declares are the ones the subclass answers nothing to.
+    assert {finding.model for finding in findings if finding.kind == "missing"} == {"Unrouted"}
 
 
 def test_a_class_that_states_no_type_name_is_named_the_way_the_service_names_it(tmp_path: Path) -> None:
