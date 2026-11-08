@@ -1136,7 +1136,7 @@ class File(AbstractFile):
         self.context.add_query(qry)
         return self
 
-    @odata(name="ActivityCapabilities", readonly=True)
+    @odata(name="ActivityCapabilities", readonly=True, beta=True)
     @property
     def activity_capabilities(self) -> ActivityCapabilities:
         """"""
@@ -1175,7 +1175,7 @@ class File(AbstractFile):
     def check_out_type(self) -> Optional[int]:
         return self.properties.get("CheckOutType", None)
 
-    @odata(name="ExpirationDate", readonly=True)
+    @odata(name="ExpirationDate", readonly=True, beta=True)
     @property
     def expiration_date(self) -> Optional[datetime]:
         """Specifies the date and time when the file expires."""
@@ -1194,7 +1194,7 @@ class File(AbstractFile):
             ),
         )
 
-    @odata(name="EffectiveInformationRightsManagementSettings", navigation=True)
+    @odata(name="EffectiveInformationRightsManagementSettings", navigation=True, beta=True)
     @property
     def effective_information_rights_management_settings(
         self,
@@ -1212,7 +1212,7 @@ class File(AbstractFile):
             EffectiveInformationRightsManagementSettings(self.context, path),
         )
 
-    @odata(name="InformationRightsManagementSettings", navigation=True)
+    @odata(name="InformationRightsManagementSettings", navigation=True, beta=True)
     @property
     def information_rights_management_settings(
         self,
@@ -1235,7 +1235,7 @@ class File(AbstractFile):
             ListItem(self.context, ResourcePath("listItemAllFields", self.resource_path)),
         )
 
-    @odata(name="VersionExpirationReport", navigation=True)
+    @odata(name="VersionExpirationReport", navigation=True, beta=True)
     @property
     def version_expiration_report(self) -> FileVersionCollection:
         """"""
@@ -1298,7 +1298,7 @@ class File(AbstractFile):
         """Specifies whether the file exists."""
         return self.properties.get("Exists", None)
 
-    @odata(name="IrmEnabled", readonly=True)
+    @odata(name="IrmEnabled", readonly=True, beta=True)
     @property
     def irm_enabled(self) -> Optional[bool]:
         """Specifies whether or not Information Rights Management (IRM) is enabled at the file level.
@@ -1433,7 +1433,7 @@ class File(AbstractFile):
         """Gets the CheckInComment property"""
         return self.properties.get("CheckInComment", None)
 
-    @odata(name="ComplianceInfo", readonly=True)
+    @odata(name="ComplianceInfo", readonly=True, beta=True)
     @property
     def compliance_info(self) -> ListItemComplianceInfo:
         """Gets the ComplianceInfo property"""
@@ -1457,7 +1457,7 @@ class File(AbstractFile):
         """Gets the ExistsWithException property"""
         return self.properties.get("ExistsWithException", None)
 
-    @odata(name="HasAlternateContentStreams", readonly=True)
+    @odata(name="HasAlternateContentStreams", readonly=True, beta=True)
     @property
     def has_alternate_content_streams(self) -> Optional[bool]:
         """Gets the HasAlternateContentStreams property"""
@@ -1469,19 +1469,19 @@ class File(AbstractFile):
         """Gets the LinkingUrl property"""
         return self.properties.get("LinkingUrl", None)
 
-    @odata(name="PageRenderType", readonly=True)
+    @odata(name="PageRenderType", readonly=True, beta=True)
     @property
     def page_render_type(self) -> Optional[int]:
         """Gets the PageRenderType property"""
         return self.properties.get("PageRenderType", None)
 
-    @odata(name="ServerRedirectedUrl", readonly=True)
+    @odata(name="ServerRedirectedUrl", readonly=True, beta=True)
     @property
     def server_redirected_url(self) -> Optional[str]:
         """Gets the ServerRedirectedUrl property"""
         return self.properties.get("ServerRedirectedUrl", None)
 
-    @odata(name="SuppressExpirationNotification", readonly=True)
+    @odata(name="SuppressExpirationNotification", readonly=True, beta=True)
     @property
     def suppress_expiration_notification(self) -> Optional[bool]:
         """Gets the SuppressExpirationNotification property"""
@@ -1505,13 +1505,13 @@ class File(AbstractFile):
         """Gets the UIVersionLabel property"""
         return self.properties.get("UIVersionLabel", None)
 
-    @odata(name="VroomDriveID", readonly=True)
+    @odata(name="VroomDriveID", readonly=True, beta=True)
     @property
     def vroom_drive_id(self) -> Optional[str]:
         """Gets the VroomDriveID property"""
         return self.properties.get("VroomDriveID", None)
 
-    @odata(name="VroomItemID", readonly=True)
+    @odata(name="VroomItemID", readonly=True, beta=True)
     @property
     def vroom_item_id(self) -> Optional[str]:
         """Gets the VroomItemID property"""
@@ -1527,7 +1527,7 @@ class File(AbstractFile):
             "ListItemAllFields", ListItem(self.context, ResourcePath("ListItemAllFields", self.resource_path))
         )
 
-    @odata(name="Web", navigation=True)
+    @odata(name="Web", navigation=True, beta=True)
     @property
     def web(self) -> Web:
         """Gets the Web property"""
