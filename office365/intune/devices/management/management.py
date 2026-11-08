@@ -11,7 +11,7 @@ from office365.directory.rolemanagement.roles.permission import RolePermission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.audit.event_collection import AuditEventCollection
-from office365.intune.devices.category import DeviceCategory
+from office365.intune.devices.category_collection import DeviceCategoryCollection
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
@@ -251,13 +251,12 @@ class DeviceManagement(Entity):
 
     @odata(name="deviceCategories", navigation=True)
     @property
-    def device_categories(self) -> EntityCollection[DeviceCategory]:
+    def device_categories(self) -> DeviceCategoryCollection:
         """"""
         return self.properties.get(
             "deviceCategories",
-            EntityCollection(
+            DeviceCategoryCollection(
                 self.context,
-                DeviceCategory,
                 ResourcePath("deviceCategories", self.resource_path),
             ),
         )

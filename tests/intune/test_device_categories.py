@@ -9,12 +9,14 @@ identities — need ``DeviceManagementConfiguration.ReadWrite.All`` or
 those are covered in ``test_device_management.py`` by reading what the tenant has.
 
 The test removes what it created even when an assertion fails, so a bad run
-leaves the tenant as it found it.
+leaves the tenant as it found it. Its name carries a per-run suffix: a shared
+tenant must not make ``find_by_display_name`` ambiguous.
 """
 
 from __future__ import annotations
 
-from office365.intune.devices.category import DeviceCategory
+from uuid import uuid4
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -29,29 +31,22 @@ class TestDeviceCategories(GraphDelegatedTestCase):
     def test_01_a_category_can_be_created_renamed_and_removed(self):
         """Create, read back, rename, and delete a device category."""
         categories = self.client.device_management.device_categories
-        category = categories.add(displayName="SDK Test Category")
+        name = f"SDK Test Category {uuid4().hex[:8]}"
+        renamed = f"{name} (renamed)"
+        category = categories.add(displayName=name)
         try:
             category.execute_query()
             self.assertIsNotNone(category.id)
-            self.assertEqual(category.display_name, "SDK Test Category")
+            self.assertEqual(category.display_name, name)
             self.assertTrue(str(category.resource_path).endswith(f"/deviceCategories/{category.id}"))
 
-            category.set_property("displayName", "SDK Test Category (renamed)")
+            category.set_property("displayName", renamed)
             category.update().execute_query()
-            self.assertEqual(category.display_name, "SDK Test Category (renamed)")
 
-            reloaded = self._find(category.id)
-            self.assertIsNotNone(reloaded, "a category the service accepted must come back in the list")
-            self.assertEqual(reloaded.get_property("displayName"), "SDK Test Category (renamed)")
+            found = categories.find_by_display_name(renamed, required=True).execute_query()
+            self.assertEqual(found.id, category.id, "the service must list the category under its new name")
         finally:
             if category.resource_path:
                 category.delete_object().execute_query()
 
-        self.assertIsNone(self._find(category.id))
-
-    def _find(self, category_id: str) -> DeviceCategory | None:
-        """The category with this id, as the service lists it — not the object we hold."""
-        for category in self.client.device_management.device_categories.get().execute_query():
-            if category.id == category_id:
-                return category
-        return None
+        self.assertFalse(categories.find_by_display_name(renamed).execute_query().is_loaded)
