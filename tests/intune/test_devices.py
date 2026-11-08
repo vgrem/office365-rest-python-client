@@ -1,27 +1,31 @@
-"""Devices — listing, delta, creating, registered owners, and deletion.
+"""Devices — listing, delta, properties, and registered owners.
 
 Tests cover:
   - Listing all devices
   - Getting device delta (changes)
-  - Creating a new device
-  - Adding a registered owner to a device
-  - Listing registered owners
-  - Deleting a device
   - Device property assertions (displayName, operatingSystem)
+  - Listing registered owners of an existing device
+
+Note: a device object cannot be created through Microsoft Graph by a third-party
+app. ``POST /devices`` requires ``alternativeSecurityIds``, and writing that
+property is reserved for first-party applications — Graph answers
+``Authorization_RequestDenied: Only first-party applications can write
+alternative security identifiers on devices`` no matter which licence or
+permission the caller holds. Devices exist because they were enrolled, so these
+tests read a device the tenant already has.
 """
 
 from __future__ import annotations
 
 from typing import ClassVar, Optional
 
-from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.device import Device
-from tests.decorators import requires_call, requires_delegated
+from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
 
 class TestDevices(GraphDelegatedTestCase):
-    """Device CRUD, ownership, and delta."""
+    """Device reads and ownership."""
 
     device: ClassVar[Optional[Device]] = None
 
@@ -47,46 +51,20 @@ class TestDevices(GraphDelegatedTestCase):
         result = self.client.devices.delta.get().execute_query()
         self.assertIsNotNone(result.resource_path)
 
-    @requires_call(
-        DeviceCollection.add,
-        flow="delegated",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_03_create_device(self):
-        """Creating a new device should succeed."""
-        result = self.client.devices.add("SDK Test Device", "linux", "1").execute_query()
-        self.assertIsNotNone(result.resource_path)
-        self.assertIsNotNone(result.id)
-        self.assertEqual(result.get_property("displayName"), "SDK Test Device")
-        TestDevices.device = result
-
     @requires_delegated(
         "Device.Read.All",
         "Directory.Read.All",
-        "Directory.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
-    def test_04_device_has_expected_properties(self):
-        """A device entry exposes displayName, operatingSystem, and isManaged."""
-        device = TestDevices.device
-        if not device:
-            self.skipTest("No device created from previous test")
+    def test_03_device_has_expected_properties(self):
+        """A listed device exposes displayName, operatingSystem, and deviceId."""
+        device = self._first_device()
+        if device is None:
+            self.skipTest("The tenant holds no device object")
 
         self.assertIsNotNone(device.get_property("displayName"))
         self.assertIsNotNone(device.get_property("operatingSystem"))
-
-    @requires_delegated(
-        "Directory.AccessAsUser.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_05_add_registered_owner(self):
-        """Adding a registered owner to a device should succeed."""
-        device = TestDevices.device
-        if not device:
-            self.skipTest("No device created from previous test")
-
-        result = device.registered_owners.add(self.client.me).execute_query()
-        self.assertIsNotNone(result.resource_path)
+        self.assertIsNotNone(device.get_property("deviceId"))
 
     @requires_delegated(
         "Device.Read.All",
@@ -94,33 +72,19 @@ class TestDevices(GraphDelegatedTestCase):
         "Directory.ReadWrite.All",
         bypass_roles=["Intune Administrator", "Global Administrator"],
     )
-    def test_06_list_registered_owners(self):
+    def test_04_list_registered_owners(self):
         """Listing registered owners of a device returns a valid collection."""
-        device = TestDevices.device
-        if not device:
-            self.skipTest("No device created from previous test")
+        device = self._first_device()
+        if device is None:
+            self.skipTest("The tenant holds no device object")
 
         owners = device.registered_owners.get().execute_query()
         self.assertIsNotNone(owners.resource_path)
 
-    @requires_delegated(
-        "Directory.AccessAsUser.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_07_delete_device(self):
-        """Deleting a device should succeed."""
-        device = TestDevices.device
-        if not device:
-            self.skipTest("No device created from previous test")
-
-        device.delete_object().execute_query()
-        TestDevices.device = None
-
     @classmethod
-    def tearDownClass(cls):
-        device = cls.device
-        if device and device.resource_path:
-            try:
-                device.delete_object().execute_query()
-            except Exception:
-                pass
+    def _first_device(cls) -> Optional[Device]:
+        """The device every read below starts from, listed once."""
+        if cls.device is None:
+            devices = cls.client.devices.top(1).get().execute_query()
+            cls.device = devices[0] if len(devices) else None
+        return cls.device
