@@ -30,7 +30,7 @@ class RoleDefinition(Entity):
         base = self.properties.get("BasePermissions")
         return str(base.value) if isinstance(base, BasePermissions) else None
 
-    @odata(name="Id")
+    @odata(name="Id", readonly=True)
     @property
     def id(self) -> Optional[int]:
         """Specifies the identifier of the role definition.

@@ -1,4 +1,4 @@
-"""Five ratchets that walk the whole package and fail on *this* tree.
+"""Six ratchets that walk the whole package and fail on *this* tree.
 
 The first is ``Compare`` rules: each must say something its field's type can bear
 (see ``runtime/compare_check.py``). The second is a dataclass field default: it
@@ -8,7 +8,9 @@ its own name list is only served if the projections stay a partition of what the
 declarations say. The fourth is the schema a model stores: it is only an answer if
 it is the one its declarations describe. The fifth is the write direction of a type
 the migration layer creates: a column nobody has said the service owns is a name a
-caller may still send, so the count of those may only fall.
+caller may still send, so the count of those may only fall. The sixth states that
+the third's walk reaches models that project both kinds of member, or a projection
+with nothing in it proves nothing.
 """
 
 from __future__ import annotations
@@ -27,12 +29,15 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.compare_check import _fields, compare_problems
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.attachments.attachment import Attachment
 from office365.sharepoint.contenttypes.content_type import ContentType
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.files.file import File
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.lists.list import List as SharePointList
+from office365.sharepoint.navigation.nodes.node import NavigationNode
+from office365.sharepoint.permissions.roles.definitions.definition import RoleDefinition
 from office365.sharepoint.principal.groups.group import Group
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.publishing.pages.page import SitePage
@@ -165,7 +170,21 @@ def test_no_runtime_dataclass_default_is_an_unhashable_instance() -> None:
 #: ``to_json`` drops them and the question is closed; where they are not, the caller has to
 #: know which ones those are, so the count is measured here instead of being guessed at a
 #: call site.
-_CREATED = (SharePointList, Web, User, Group, Field, ContentType, Folder, File, ListItem, SitePage)
+_CREATED = (
+    SharePointList,
+    Web,
+    User,
+    Group,
+    Field,
+    ContentType,
+    Folder,
+    File,
+    ListItem,
+    SitePage,
+    NavigationNode,
+    RoleDefinition,
+    Attachment,
+)
 
 #: Created types whose write direction was probed live (a ``MERGE`` per column): most of
 #: their columns are declared, and extending that is a probe, not an edit -- so the pin
@@ -210,7 +229,22 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: ``IsSiteAdmin``, and ``LoginName``, the name a create is posted under) plus the three names
 #: nothing describes: ``Expiration``, which ``expire()`` sets through an action and no document
 #: says a ``MERGE`` may, and ``HexCid``/``UserIdentityType``. A name is not evidence.
-_UNDECLARED = {"List": 52, "Web": 50, "User": 7, "Group": 8}
+#: Three types the migration layer also creates, which no ``MERGE`` can probe because the
+#: create is the only write they have. A ``NavigationNode`` is posted from a creation-information
+#: object, and its three sendable columns are exactly that object's fields. A ``RoleDefinition``
+#: is posted with its four fields as parameters, so the only column the service answers with is
+#: the ``Id`` -- which is declared. And SharePoint has no update for an attachment at all:
+#: ``attachments/add`` takes the name as a parameter and answers with the name and both paths,
+#: so all four of its columns are declared.
+_UNDECLARED = {
+    "List": 52,
+    "Web": 50,
+    "User": 7,
+    "Group": 8,
+    "NavigationNode": 3,
+    "RoleDefinition": 6,
+    "Attachment": 0,
+}
 
 
 def _undeclared(model: type) -> int:
