@@ -21,9 +21,7 @@ class TestAShadowCheckSurvivesAMissingParent(TestCase):
         self.assertFalse(TypeBuilder._is_shadowed("office365.security.dlp.name_value_pair"))
         self.assertFalse(TypeBuilder._is_shadowed("office365.security.securitycopilot.plugin_setting"))
 
-    def test_02_a_real_package_is_still_reported_as_a_shadow(self):
+    def test_02_a_name_that_does_exist_is_answered_from_the_filesystem(self):
         """`office365.security` is a package, so `office365.security.py` cannot exist."""
         self.assertTrue(TypeBuilder._is_shadowed("office365.security"))
-
-    def test_03_a_real_module_is_not_a_shadow(self):
         self.assertFalse(TypeBuilder._is_shadowed("office365.entity"))

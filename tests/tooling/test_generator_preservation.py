@@ -1,8 +1,12 @@
 """Golden tests: hand-written code in a generated model survives regeneration.
 
-The generator updates files in place (it never re-creates a type), so custom
-methods, properties and decorator arguments must be left untouched while new
-metadata members are still added, and a repeated run must be a no-op.
+The generator updates files in place (it never re-creates a type), so custom methods,
+properties and decorator arguments must be left untouched while new metadata members are
+still added.
+
+Deliberately not covered here: that a repeated run is a no-op -- ``test_generator_e2e``
+re-runs the unchanged metadata and compares the file. Nor the line arithmetic a field slot
+is computed with: ``ast.parse`` on the result is what a wrong slot breaks.
 """
 
 from __future__ import annotations
@@ -73,27 +77,3 @@ def test_custom_decorator_arguments_survive_regeneration(tmp_path: Path) -> None
 
     assert '@odata(name="Title", readonly=True)' in after
     assert after.count('name="Title"') == 1  # not duplicated by the update
-
-
-def test_second_run_is_a_noop(tmp_path: Path) -> None:
-    metadata, options, widget = _generate(tmp_path)
-    widget.write_text(widget.read_text(encoding="utf-8").rstrip("\n") + "\n" + _CUSTOM_METHOD)
-    _with_new_property(metadata)
-    _run(options, ODataV3Reader, tmp_path, force=True)
-    first = widget.read_text(encoding="utf-8")
-
-    _run(options, ODataV3Reader, tmp_path, force=True)
-
-    assert widget.read_text(encoding="utf-8") == first
-
-
-def test_new_field_before_a_multiline_field_keeps_source_valid(tmp_path: Path) -> None:
-    from generator.edit.source_editor import SourceEditor
-
-    assert hasattr(SourceEditor, "_field_slot")
-    fields = [("accessToken", 3, 3), ("saml2Token", 4, 6)]
-    member = ast.parse("kerberosTicket: int = 0").body[0]
-
-    # Inserted before the first line of the next field (0-based index 3), not inside it.
-    expected = fields[1][1] - 1
-    assert SourceEditor._field_slot(fields, member) == expected

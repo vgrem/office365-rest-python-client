@@ -1,8 +1,10 @@
 """End-to-end test: synthetic CSDL -> reader -> pipeline -> generated files.
 
-Exercises the whole flow (v3 and v4) for **every** kind (complex, entity, enum)
-plus generated operation methods, idempotency on unchanged metadata, and
-additions-only behaviour when a type gains a member.
+Exercises the whole flow (v3 and v4) for **every** kind (complex, entity, enum) plus
+generated operation methods and idempotency on unchanged metadata.
+
+Deliberately not covered here: that an update is additions-only while hand-written code
+survives -- ``test_generator_preservation`` pins that with custom members in the file.
 """
 
 from __future__ import annotations
@@ -122,31 +124,6 @@ def test_sharepoint_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     _run(options, ODataV3Reader, tmp_path, force=True)
     assert _source(tmp_path, "widget.py") == entity
     assert _source(tmp_path, "widget_settings.py") == complex_type
-
-
-def test_sharepoint_end_to_end_is_additions_only(tmp_path: Path) -> None:
-    metadata = tmp_path / "metadata.xml"
-    metadata.write_text(_V3_CSDL, encoding="utf-8")
-    options = _options(tmp_path, graph=False, namespace="SP", kinds=["EntityType"], prefix="SP")
-    _run(options, ODataV3Reader, tmp_path)
-    widget = tmp_path / "office365" / "widget.py"
-    before = widget.read_text(encoding="utf-8")
-
-    # The metadata gains a property: the existing content must be preserved.
-    metadata.write_text(
-        _V3_CSDL.replace(
-            '<Property Name="Title"', '<Property Name="Note" Type="Edm.String" />\n        <Property Name="Title"'
-        ),
-        encoding="utf-8",
-    )
-    _run(options, ODataV3Reader, tmp_path, force=True)
-    after = widget.read_text(encoding="utf-8")
-    ast.parse(after)
-
-    assert '"Note"' in after  # new member added
-    for line in before.splitlines():
-        if line.strip():
-            assert line in after  # nothing existing was dropped
 
 
 def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:

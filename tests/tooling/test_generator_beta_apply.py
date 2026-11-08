@@ -85,33 +85,16 @@ def _decorators(path: Path, kind: str) -> dict:
     return found
 
 
-def test_a_stable_only_operation_is_declared_as_stable(tmp_path):
-    """The other direction: the preview root dropped it, so a preview client must not call it."""
-    root = _tree(tmp_path)
-    path = root / "office365" / "widget.py"
-
-    report = _apply(root, _marker("stableAction", beta=False))
-
-    assert [edit.action for edit in report.edits] == ["added"]
-    assert _decorators(path, "stable_action") == {
-        "name": "stableAction",
-        "beta": False,
-        "selectable": False,
-    }
-
-
 def test_an_operation_is_declared_where_it_had_no_declaration(tmp_path):
+    """Both directions, because a direction is the marker's flag, not another code path."""
     root = _tree(tmp_path)
     path = root / "office365" / "widget.py"
 
-    report = _apply(root, _marker("previewAction"))
+    report = _apply(root, _marker("previewAction"), _marker("stableAction", beta=False))
 
-    assert [edit.action for edit in report.edits] == ["added"]
-    assert _decorators(path, "preview_action") == {
-        "name": "previewAction",
-        "beta": True,
-        "selectable": False,
-    }
+    assert [edit.action for edit in report.edits] == ["added", "added"]
+    assert _decorators(path, "preview_action") == {"name": "previewAction", "beta": True, "selectable": False}
+    assert _decorators(path, "stable_action") == {"name": "stableAction", "beta": False, "selectable": False}
 
 
 def test_an_operation_that_already_states_its_name_is_rewritten_in_place(tmp_path):
