@@ -43,6 +43,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Tuple
 
+from office365.formats.text import escape_text, fold_line
 from office365.migration.outlook.records import SidecarRecord
 from office365.migration.outlook.restore import restores, withheld
 from office365.outlook.contacts.contact import Contact
@@ -73,14 +74,8 @@ _ADR_PARTS = ("street", "city", "state", "postalCode", "countryOrRegion")
 _ADDRESS_KEYS = ("businessAddress", "homeAddress", "otherAddress")
 
 
-#: RFC 6350 §3.1 caps a content line at 75 octets; a continuation starts with a space.
-_MAX_LINE_OCTETS = 75
-
 #: Digits in a vCard ``REV`` stamp: ``YYYYMMDD`` + ``HHMMSS``.
 _REV_DIGITS = 14
-
-_VCARD_ESCAPED = re.compile(r"([\\;,])")
-_NEWLINES = re.compile(r"\r?\n")
 
 
 @dataclass
@@ -187,48 +182,48 @@ class ContactRecord(SidecarRecord):
         lines = [
             "BEGIN:VCARD",
             "VERSION:3.0",
-            "N:" + ";".join(_vcard_escape(part) for part in name),
-            "FN:" + _vcard_escape(contact.get("displayName")),
-            "UID:" + _vcard_escape(contact.get("id")),
+            "N:" + ";".join(escape_text(part) for part in name),
+            "FN:" + escape_text(contact.get("displayName")),
+            "UID:" + escape_text(contact.get("id")),
         ]
         _add(lines, "NICKNAME", contact.get("nickName"))
         _add(lines, "TITLE", contact.get("jobTitle"))
         _add(lines, "ROLE", contact.get("profession"))
         if contact.get("companyName") or contact.get("department"):
             org = [contact.get("companyName"), contact.get("department")]
-            lines.append("ORG:" + ";".join(_vcard_escape(part) for part in org))
+            lines.append("ORG:" + ";".join(escape_text(part) for part in org))
         _add(lines, "X-MS-OFFICE-LOCATION", contact.get("officeLocation"))
         for number in contact.get("businessPhones") or []:
-            lines.append(f"TEL;TYPE=WORK,VOICE:{_vcard_escape(number)}")
+            lines.append(f"TEL;TYPE=WORK,VOICE:{escape_text(number)}")
         for number in contact.get("homePhones") or []:
-            lines.append(f"TEL;TYPE=HOME,VOICE:{_vcard_escape(number)}")
+            lines.append(f"TEL;TYPE=HOME,VOICE:{escape_text(number)}")
         if contact.get("mobilePhone"):
-            lines.append(f"TEL;TYPE=CELL:{_vcard_escape(contact['mobilePhone'])}")
+            lines.append(f"TEL;TYPE=CELL:{escape_text(contact['mobilePhone'])}")
         for email in contact.get("emailAddresses") or []:
             if email.get("address"):
-                lines.append(f"EMAIL;TYPE=INTERNET:{_vcard_escape(email['address'])}")
+                lines.append(f"EMAIL;TYPE=INTERNET:{escape_text(email['address'])}")
         for im_address in contact.get("imAddresses") or []:
-            lines.append(f"X-MS-IMADDRESS:{_vcard_escape(im_address)}")
+            lines.append(f"X-MS-IMADDRESS:{escape_text(im_address)}")
         for side, kind in zip(_ADDRESS_KEYS, ("WORK", "HOME", "OTHER"), strict=True):
             address = contact.get(side) or {}
             if any(address.get(part) for part in _ADR_PARTS):
                 # The two empty leading components are ``pobox`` and ``extended``, which
                 # Graph does not model.
-                adr = ["", ""] + [_vcard_escape(address.get(part)) for part in _ADR_PARTS]
+                adr = ["", ""] + [escape_text(address.get(part)) for part in _ADR_PARTS]
                 lines.append(f"ADR;TYPE={kind}:" + ";".join(adr))
         birthday = FORMATS["date"](str(contact.get("birthday") or "").strip())
         if birthday:
             lines.append("BDAY:" + birthday)
         if contact.get("personalNotes"):
-            lines.append("NOTE:" + _vcard_escape(contact["personalNotes"]))
+            lines.append("NOTE:" + escape_text(contact["personalNotes"]))
         if contact.get("categories"):
-            lines.append("CATEGORIES:" + ",".join(_vcard_escape(label) for label in contact["categories"]))
+            lines.append("CATEGORIES:" + ",".join(escape_text(label) for label in contact["categories"]))
         _add(lines, "URL", contact.get("businessHomePage"))
         stamp = _vcard_stamp(contact.get("lastModifiedDateTime"))
         if stamp:
             lines.append("REV:" + stamp)
         lines.append("END:VCARD")
-        return "".join(_vcard_fold(line) + "\r\n" for line in lines).encode("utf-8")
+        return "".join(fold_line(line) + "\r\n" for line in lines).encode("utf-8")
 
 
 def _vcard_stamp(value: Any) -> str:
@@ -241,32 +236,10 @@ def _vcard_stamp(value: Any) -> str:
     return stamp + "Z" if len(stamp) == _REV_DIGITS else ""
 
 
-def _vcard_escape(value: Any) -> str:
-    """Escape a vCard TEXT value (RFC 6350 §3.4): backslash, comma, semicolon, newline."""
-    text = _VCARD_ESCAPED.sub(r"\\\1", str(value if value is not None else ""))
-    return _NEWLINES.sub(r"\\n", text)
-
-
-def _vcard_fold(line: str) -> str:
-    """Fold a content line at 75 octets without splitting a UTF-8 sequence."""
-    if len(line.encode("utf-8")) <= _MAX_LINE_OCTETS:
-        return line
-    chunks: List[str] = []
-    current = ""
-    for char in line:
-        if len((current + char).encode("utf-8")) > _MAX_LINE_OCTETS:
-            chunks.append(current)
-            current = " " + char  # a continuation starts with a space and counts toward the octets
-        else:
-            current += char
-    chunks.append(current)
-    return "\r\n".join(chunks)
-
-
 def _add(lines: List[str], name: str, value: Any) -> None:
     """Append ``NAME:value`` when the value is set."""
     if value:
-        lines.append(f"{name}:{_vcard_escape(value)}")
+        lines.append(f"{name}:{escape_text(value)}")
 
 
 __all__ = [

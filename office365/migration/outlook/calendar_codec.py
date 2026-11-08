@@ -1,7 +1,8 @@
 """The ``.ics`` codec: one sidecar record, one iCalendar document, and back again.
 
-The codec owns RFC 5545 and nothing else: escaping, folding, the line-per-field layout
-of a ``VEVENT``, and the ``RRULE`` an event's recurrence object becomes. *Which* token a
+The codec owns the line-per-field layout of a ``VEVENT`` and the ``RRULE`` an event's
+recurrence object becomes; escaping, folding and parameter quoting are
+:mod:`office365.formats.text`, shared with the ``.vcf`` writer. *Which* token a
 Graph value is spelled with is a table in :mod:`calendar_profile`, so this module has no
 vocabulary of its own — every ``CLASS``/``PRIORITY``/``TRANSP``/``PARTSTAT`` it writes is
 a lookup.
@@ -19,68 +20,9 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
+from office365.formats.text import MAX_LINE_OCTETS, escape_text, fold_line, quote_param
 from office365.migration.outlook.calendar_profile import ICALENDAR, IcsDialect, display_name
 from office365.runtime.converters.scalars import wall_clock
-
-#: RFC 5545 §3.1 caps a content line at 75 octets; a continuation starts with a space.
-MAX_LINE_OCTETS = 75
-
-
-def escape_text(value: Any) -> str:
-    """Escape an iCalendar TEXT value (RFC 5545 §3.3.11)."""
-    if value is None:
-        return ""
-    text = str(value)
-    text = text.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,")
-    return text.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")
-
-
-#: RFC 6868's caret escapes: the three characters a parameter value cannot hold. The
-#: caret itself goes first, so an escape is never re-escaped by a later pass.
-_CARET_ESCAPES = (("^", "^^"), ("\r\n", "^n"), ("\r", "^n"), ("\n", "^n"), ('"', "^'"))
-
-
-def quote_param(value: Any) -> str:
-    """A parameter value: caret-encoded, quoted, and free of control characters.
-
-    ``CN=`` used to be built by interpolation, which is a content-line injection: a
-    display name of ``Bob "Bobby"`` closed the quoted-string early, and a name carrying a
-    line break started a line of its own — an ``ATTENDEE`` line the reader would honour as
-    an ``X-EVIL`` one. :func:`escape_text` cannot help: a parameter is not a TEXT field and
-    takes no backslashes, and a quoted-string may not contain a DQUOTE at all. RFC 6868's
-    carets carry the three casualties — ``^'`` is a DQUOTE, ``^^`` a caret, ``^n`` a line
-    break — so a reader without the escapes shows ``^'`` where a reader without quoting
-    showed a truncated name and a forged property.
-
-    Any other control character is dropped — a tab is legal inside a quoted-string but is
-    not a name — and the sidecar keeps the name exactly as the service sent it.
-    """
-    text = "" if value is None else str(value)
-    for raw, escaped in _CARET_ESCAPES:
-        text = text.replace(raw, escaped)
-    text = "".join(char for char in text if char >= " " and char != "\x7f")
-    return f'"{text}"'
-
-
-def fold_line(line: str) -> str:
-    """Fold a content line at 75 octets, continuing with a leading space (RFC 5545 §3.1)."""
-    encoded = line.encode("utf-8")
-    if len(encoded) <= MAX_LINE_OCTETS:
-        return line
-    limit = MAX_LINE_OCTETS - 1  # the continuation's leading space is part of its octets
-    chunks: list[str] = []
-    current: list[str] = []
-    size = 0
-    for char in line:
-        width = len(char.encode("utf-8"))
-        if size + width > limit:
-            chunks.append("".join(current))
-            current, size = [char], width
-        else:
-            current.append(char)
-            size += width
-    chunks.append("".join(current))
-    return "\r\n ".join(chunks)
 
 
 def date_time_line(name: str, value: Mapping[str, Any], is_all_day: bool) -> str | None:

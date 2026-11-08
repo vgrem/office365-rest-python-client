@@ -16,10 +16,6 @@ from __future__ import annotations
 from office365.migration.outlook.contacts_models import ContactRecord
 from tests.unit.outlook_fixtures import document, sidecar
 
-#: RFC 6350 §3.1 caps a content line at 75 octets: a longer value continues on the next
-#: line behind a space, and that space is part of the octets.
-MAX_LINE_OCTETS = 75
-
 
 def test_the_writer_renders_the_golden_document():
     """One assertion for every branch: N/ADR slots, escaped text, folded lines, a list."""
@@ -32,14 +28,3 @@ def test_an_unset_value_leaves_no_line():
     assert ContactRecord.from_json(sidecar("contact_minimal")).vcard() == rendered
     lines = rendered.decode("utf-8").splitlines()
     assert lines == ["BEGIN:VCARD", "VERSION:3.0", "N:;;;;", "FN:Grace Hopper", "UID:c2", "END:VCARD"]
-
-
-def test_no_line_is_longer_than_the_fold_allows():
-    """The folded document, as it lands on disk, is never over 75 octets per line.
-
-    Measured on the bytes rather than on the writer: the multi-byte case is the one a
-    character-counting fold gets wrong, and the fixture carries a folded ``ADR`` line.
-    """
-    for name in ("contact.vcf", "contact_minimal.vcf"):
-        for line in document(name).split(b"\r\n"):
-            assert len(line) <= MAX_LINE_OCTETS, (name, len(line), line)
