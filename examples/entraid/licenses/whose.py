@@ -1,10 +1,12 @@
 """Who holds a licence, or what one person holds.
 
-``--sku`` starts from ``get_licensed()`` — the collection filters itself to users holding
-anything — and keeps the users whose assigned SKU id matches. ``--user`` reads that person's
-``licenseDetails``, where every plan carries a provisioning status: a plan that is not
+``--user`` defaults to ``OFFICE365_USERNAME``, so the script with no arguments answers "what do
+I hold". ``--sku`` starts from ``get_licensed()`` — the collection filters itself to users
+holding anything — and keeps the users whose assigned SKU id matches. ``--user`` reads that
+person's ``licenseDetails``, where every plan carries a provisioning status: a plan that is not
 ``Success`` is bought but not usable yet.
 
+    python whose.py
     python whose.py --sku SPE_E5
     python whose.py --user ada@contoso.com
 
@@ -17,15 +19,17 @@ import argparse
 
 from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
-from tests.settings import client_id, client_secret, tenant
+from tests.settings import client_id, client_secret, tenant, user_principal
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Who holds a SKU, or what one user holds")
-    who = parser.add_mutually_exclusive_group(required=True)
+    who = parser.add_mutually_exclusive_group()
     who.add_argument("--sku", help="SKU part number, e.g. SPE_E5")
-    who.add_argument("--user", help="User principal name")
+    who.add_argument("--user", default=user_principal, help="User principal name (default: OFFICE365_USERNAME)")
     args = parser.parse_args()
+    if not args.sku and not args.user:
+        raise SystemExit("--user, or set OFFICE365_USERNAME")
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     if args.sku:
