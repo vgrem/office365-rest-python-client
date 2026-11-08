@@ -6,10 +6,13 @@ structural (``office365.runtime.serialization``): what a consumer calls is what 
 
 from __future__ import annotations
 
+from typing import Optional
+
 from office365.graph_client import GraphClient
 from office365.outlook.calendar.email_address import EmailAddress
 from office365.outlook.calendar.events.event import Event
 from office365.runtime.client_result import ClientResult
+from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 
@@ -45,3 +48,18 @@ def test_hydrate_chains_and_its_default_profile_reads_what_to_json_wrote():
     value = EmailAddress().hydrate({"address": "a@x.com"})
     assert EmailAddress().hydrate(value.to_json()).to_json() == value.to_json()
     assert ClientResult(_CONTEXT, EmailAddress()).hydrate({"address": "a@x.com"}).value.address == "a@x.com"
+
+
+class _City(ClientValue):
+    name: Optional[str] = None
+
+
+class _Holder(ClientValue):
+    title: Optional[str] = None
+    city: Optional[_City] = None
+
+
+def test_a_nested_value_with_nothing_to_send_is_omitted():
+    # SharePoint 2019 refused the empty nested object an older serializer sent.
+    assert _Holder(title="T", city=_City()).to_json() == {"title": "T"}
+    assert _Holder(title="T", city=_City(name="Oslo")).to_json() == {"title": "T", "city": {"name": "Oslo"}}

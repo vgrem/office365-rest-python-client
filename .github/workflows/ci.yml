@@ -71,6 +71,23 @@ jobs:
           uv run python -m generator graph --dry-run --fail-on-write
           uv run python -m generator sharepoint --dry-run --fail-on-write
 
+  deps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Audit what a user installs
+        run: |
+          uv export --frozen --no-dev --no-emit-project --format requirements-txt --no-hashes -q > "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit -r "$RUNNER_TEMP/requirements.txt"
+
   pytest:
     runs-on: ubuntu-latest
     needs:
