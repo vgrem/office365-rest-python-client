@@ -2,7 +2,8 @@
 
 Six examples, in the order the questions are asked: what the tenant owns, what one person
 holds, whether a call may rely on it, who has what, how to change it, and what the change did
-to the plans.
+to the plans. Two more carry that state as a list: `export_licences.py` writes it,
+`import_licences.py` plans every row before sending one.
 
 ---
 
@@ -23,6 +24,8 @@ to the plans.
 | [`assign.py`](./assign.py) | ✓ | Add or `--remove` one licence, refusing the calls Graph would refuse: no `usageLocation`, no seat left, already assigned. `--dry-run` stops before the write |
 | [`group_license.py`](./group_license.py) | ✓ | Licence a group once and let Graph keep its members licensed |
 | [`plans.py`](./plans.py) | ✓ | List the service plans of a SKU, or `--plan-off EXCHANGE_S_ENTERPRISE` for one user |
+| [`export_licences.py`](./export_licences.py) | — | Every user's SKUs and disabled plans as CSV — the input the next script reads |
+| [`import_licences.py`](./import_licences.py) | ✓ | Set each user to what a row asks, printing `already held`, `blocked — …` or the change it makes. `--dry-run` stops at the plan |
 
 Every script is runnable and documents itself:
 
@@ -55,6 +58,13 @@ Only a plan whose `provisioningStatus` is `Success` counts, and nothing is cache
 changes the answer, and the library is not the level that knows when.
 
 ---
+
+## A list, both ways
+
+`export_licences.py > licences.csv` writes the state; `import_licences.py licences.csv --dry-run`
+answers what the other tenant would need. Graph's own preconditions are decided before a row is
+sent, and a licence a group grants is reported rather than removed — the group owns it. For a
+population, group-based licensing is the way round; a per-user fan-out is for a one-off list.
 
 ## Official docs
 

@@ -77,6 +77,17 @@ class SubscribedSku(Entity):
         """Information about the service plans that are available with the SKU. Not nullable"""
         return self.properties.get("servicePlans", ClientValueCollection(ServicePlanInfo))
 
+    def plan_name(self, plan_id: str) -> str:
+        """The name of a service plan inside this SKU, or the id when the SKU does not carry it."""
+        for plan in self.service_plans:
+            if plan.servicePlanId == plan_id:
+                return plan.servicePlanName or plan_id
+        return plan_id
+
+    def plan_id(self, name: str) -> Optional[str]:
+        """The id of the service plan named ``name``, or ``None`` when this SKU has no such plan."""
+        return next((plan.servicePlanId for plan in self.service_plans if plan.servicePlanName == name), None)
+
     @odata(name="subscriptionIds")
     @property
     def subscription_ids(self) -> StringCollection:
