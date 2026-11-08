@@ -26,6 +26,9 @@ from generator.tools.entity_keys import KeyPlan, plan_keys
 from generator.tools.entity_keys import write_report as write_key_report
 from generator.tools.metadata_diff import diff_metadata, write_report
 
+#: The repository root: what a report's file paths are shown relative to.
+REPO_ROOT = GENERATOR_DIR.parent
+
 
 def generate(
     service: str,
@@ -234,6 +237,38 @@ def verify_model(package: Optional[str] = None) -> int:
     return 0 if report.ok else 1
 
 
+def audit_model(
+    service: str,
+    package: Optional[str] = None,
+    report_path: Optional[str] = None,
+    fail: bool = False,
+) -> int:
+    """Measure the rendered model against the metadata it was generated from.
+
+    ``package`` is the tree to read (default: the service's own sub-package), so the
+    same report answers for one directory while it is being filled and for the whole
+    model once it is.
+    """
+    from generator.tools.fidelity import DEFAULT_PREFIX, audit, gaps, read_models, render, write_report
+
+    session = Session.open(service)
+    model_root = Path(session.options.output_path).resolve()
+    root = Path(package).resolve() if package else model_root / session.definition.model_package
+    # The whole tree, then the package: a member can be inherited from a class in
+    # another package, and the audit has to see it to know the subclass serves it.
+    models = [model for model in read_models(model_root, DEFAULT_PREFIX.get(service, "")) if root in model.path.parents]
+    findings = audit(
+        models,
+        session.read_model(),
+        ignored_types=session.options.ignored_types,
+        ignored_properties=session.options.ignored_properties,
+    )
+    if report_path:
+        write_report(findings, report_path)
+    print(render(findings, REPO_ROOT))
+    return 1 if fail and gaps(findings) else 0
+
+
 def fetch_services() -> None:
     """Fetch the Graph docs service taxonomy and cache it for --suggest-routing."""
     services = fetch_service_map()
@@ -272,6 +307,8 @@ def _run_standalone_command(args) -> Optional[int]:
     if args.suggest_routing:
         suggest_routing(args.service)
         return 0
+    if args.audit is not None:
+        return audit_model(args.service, args.audit or None, args.audit_report, args.audit_fail)
     return None
 
 
@@ -283,6 +320,7 @@ SUBCOMMANDS: dict[str, Optional[str]] = {
     "services": "--fetch-services",
     "keys": "--plan-keys",
     "verify": "--verify",
+    "audit": "--audit",
 }
 
 
@@ -365,6 +403,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         const="",
         metavar="PACKAGE",
         help="check the rendered model's declarations and exit (default: office365)",
+    )
+    parser.add_argument(
+        "--audit",
+        nargs="?",
+        const="",
+        metavar="PACKAGE",
+        help="measure the model against its service metadata and exit (default: the service's own package)",
+    )
+    parser.add_argument(
+        "--audit-report",
+        dest="audit_report",
+        metavar="PATH",
+        help="with --audit: write the findings to this JSON file",
+    )
+    parser.add_argument(
+        "--audit-fail",
+        dest="audit_fail",
+        action="store_true",
+        help="with --audit: exit non-zero when the model and the metadata disagree",
     )
     parser.add_argument(
         "--diff-metadata",
