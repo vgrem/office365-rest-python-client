@@ -29,6 +29,10 @@ filters:
     - MS.FileServices.*
   ignored_properties:
     - Id4a81de82eeb94d6080ea5bf63e27023a
+    # Declared on SecurableObject, which every list and web inherits, and the service
+    # answers `$select` with 400 for it on both. It is answered for a list item, so the
+    # one declaration lives there -- written by hand, which is why it survives a run.
+    - ShieldAddRoleAssignmentPushdown
 modules:
   - office365.sharepoint
 routing:

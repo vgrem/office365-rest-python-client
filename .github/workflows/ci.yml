@@ -66,6 +66,10 @@ jobs:
         run: uv sync --frozen --all-extras
       - name: Verify model declarations
         run: uv run python -m generator verify
+      - name: Assert the tree is what the metadata generates
+        run: |
+          uv run python -m generator graph --dry-run --fail-on-write
+          uv run python -m generator sharepoint --dry-run --fail-on-write
 
   pytest:
     runs-on: ubuntu-latest

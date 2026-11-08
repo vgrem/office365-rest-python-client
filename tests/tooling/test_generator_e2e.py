@@ -74,6 +74,9 @@ _V4_CSDL = """<?xml version="1.0" encoding="utf-8"?>
 </edmx:Edmx>
 """
 
+#: The three modules ``_V4_CSDL`` makes: one entity type, one complex type, one enum.
+_V4_MODULES = 3
+
 
 def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], prefix: str) -> GeneratorOptions:
     """Options for the fixture run. ``graph`` picks the seed base class, as the config does."""
@@ -89,9 +92,9 @@ def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], p
     )
 
 
-def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False, **partial) -> None:
+def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False, **partial) -> int:
     model = reader(options.metadata_path).read()
-    GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False, **partial).run()
+    return GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False, **partial).run()
 
 
 def _source(tmp_path: Path, name: str) -> str:
@@ -158,6 +161,21 @@ def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     # Idempotent on an unchanged metadata.
     _run(options, ODataV4Reader, tmp_path, force=True)
     assert _source(tmp_path, "widget.py") == entity
+
+
+def test_a_run_reports_the_files_it_writes(tmp_path: Path) -> None:
+    """The number a gate reads is the write plan, and the plan is what the disk lacks."""
+    (tmp_path / "metadata.xml").write_text(_V4_CSDL, encoding="utf-8")
+    options = _options(
+        tmp_path, graph=True, namespace="", kinds=["EntityType", "ComplexType", "EnumType"], prefix="microsoft.graph"
+    )
+
+    assert _run(options, ODataV4Reader, tmp_path) == _V4_MODULES
+    # Unchanged metadata and unchanged files: nothing to write, whatever the manifest says.
+    assert _run(options, ODataV4Reader, tmp_path, force=True) == 0
+    # A file the tree lost is planned again even though the metadata did not move.
+    (tmp_path / "office365" / "widget_kind.py").unlink()
+    assert _run(options, ODataV4Reader, tmp_path, force=True) == 1
 
 
 _COMPUTED_CSDL = """<?xml version="1.0" encoding="utf-8"?>

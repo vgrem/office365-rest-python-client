@@ -117,6 +117,12 @@ class Group(Entity):
         """Gets the classification property"""
         return self.properties.get("classification", None)
 
+    @odata(name="description")
+    @property
+    def description(self) -> Optional[str]:
+        """Gets the description property"""
+        return self.properties.get("description", None)
+
     @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:

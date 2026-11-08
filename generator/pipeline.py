@@ -67,11 +67,17 @@ class GeneratorPipeline:
         self._reporter = Reporter(self._metadata_path, report_path, options.dry_run)
         self._verifier = PostCommitVerifier(self._output_root, smoke=smoke, check=check)
 
-    def run(self) -> None:
-        """Build, validate and (unless dry-run) commit every in-scope type."""
+    def run(self) -> int:
+        """Build, validate and (unless dry-run) commit every in-scope type.
+
+        Returns the number of files this pass writes -- or, under ``dry_run``, would
+        write. That count is the answer to "is the tree what the metadata generates?":
+        zero means every declared member is already on disk, so a caller may gate on
+        it instead of diffing the tree itself.
+        """
         if self._can_skip():
             log.info("Model is up to date (metadata and config unchanged); nothing to do.")
-            return
+            return 0
         # A request that resolved to nothing is still a targeted run: falling back to
         # the whole metadata would answer a mistyped --type by writing every file.
         targeted = bool(self._requested_types)
@@ -122,6 +128,7 @@ class GeneratorPipeline:
                     run_signature(self._options),
                 ).save()
         self._reporter.write(planned, unrouted, changes)
+        return len(planned)
 
     @property
     def _covers_whole_model(self) -> bool:

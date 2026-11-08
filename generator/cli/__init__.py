@@ -38,13 +38,15 @@ def generate(
     smoke: bool = True,
     check: bool = False,
     metadata: Optional[str] = None,
-) -> None:
+) -> int:
     """Read the service metadata and generate/update the corresponding model files.
 
     ``metadata`` reads a different snapshot than the configured one -- the preview CSDL
     -- while the routing, filters and output tree stay exactly what the service config
     says. That is what makes one model possible: the tree is the union, the snapshot
     decides what is new, and the marker pass records which root declares what.
+
+    Returns how many files the run wrote, or would write under ``dry_run``.
     """
     session = Session.open(service, dry_run=dry_run, metadata=metadata)
     definition, options = session.definition, session.options
@@ -55,10 +57,10 @@ def generate(
         targeted=bool(only_types or report_path),
     ):
         log.info("Model is up to date (metadata and config unchanged); nothing to do.")
-        return
+        return 0
     reader: ODataReader = definition.reader(options.metadata_path)
     documentation = definition.documentation() if definition.documentation else None
-    GeneratorPipeline(
+    return GeneratorPipeline(
         reader.read(),
         options,
         documentation,
@@ -342,6 +344,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="run ruff and pyright on the output after writing (slow)",
     )
     parser.add_argument(
+        "--fail-on-write",
+        dest="fail_on_write",
+        action="store_true",
+        help="with --dry-run, exit non-zero when the run would create or update a file",
+    )
+    parser.add_argument(
         "--suggest-routing",
         action="store_true",
         help="print a proposed routing block for unrouted types and exit",
@@ -421,17 +429,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         handled = _run_standalone_command(args)
         if handled is not None:
             return handled
-        generate(
+        if args.fail_on_write and not args.dry_run:
+            raise ValidationError("--fail-on-write reports what a run would write, so it needs --dry-run")
+        written = generate(
             args.service,
             dry_run=args.dry_run,
             update_only=args.update_only,
             only_types=args.types,
             report_path=args.report_path,
             metadata=args.metadata,
-            force=args.force,
+            # The gate asserts the tree against the snapshot, so it cannot trust the
+            # manifest's "up to date": a stale manifest would pass it silently.
+            force=args.force or args.fail_on_write,
             smoke=args.smoke,
             check=args.check,
         )
+        if args.fail_on_write and written:
+            raise ValidationError(
+                f"{written} file(s) the {args.service} metadata declares are not in the tree; "
+                "run the generator and commit the result"
+            )
     except ValidationError as e:
         log.error(f"error: {e}")
         return 1
