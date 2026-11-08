@@ -1,7 +1,8 @@
 # Licensing
 
-Examples for working with Microsoft 365 licenses via Graph API —
-SKU inventory, license assignment, service plan management, and usage reports.
+Six examples, in the order the questions are asked: what the tenant owns, what one person
+holds, whether a call may rely on it, who has what, how to change it, and what the change did
+to the plans.
 
 ---
 
@@ -9,41 +10,49 @@ SKU inventory, license assignment, service plan management, and usage reports.
 
 | Permission | Description | Reference |
 |---|---|---|
+| `Organization.Read.All` | Read subscribed SKUs and their service plans | [Organization permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#organization-permissions) |
 | `User.Read.All` | Read users and their license assignments | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
-| `Organization.Read.All` | Read subscribed SKUs | [Organization permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#organization-permissions) |
 | `User.ReadWrite.All` | Assign and remove licenses | [User permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#user-permissions) |
+| `Group.ReadWrite.All` | Assign a license to a group | [Group permissions](https://learn.microsoft.com/en-us/graph/permissions-reference#group-permissions) |
+
+| Example | Writes | Question |
+|---|---|---|
+| [`inventory.py`](./inventory.py) | — | What does the tenant own — seats, state, how many are left? `--plans` lists the plans inside each SKU |
+| [`whose.py`](./whose.py) | — | Who holds this SKU (`--sku`), or what does this person hold (`--user`) with each plan's provisioning status? |
+| [`check.py`](./check.py) | — | Is the seat — or the capability inside it — actually held? `--plan RECORDS_MANAGEMENT` |
+| [`assign.py`](./assign.py) | ✓ | Add or `--remove` one licence, refusing the calls Graph would refuse: no `usageLocation`, no seat left, already assigned. `--dry-run` stops before the write |
+| [`group_license.py`](./group_license.py) | ✓ | Licence a group once and let Graph keep its members licensed |
+| [`plans.py`](./plans.py) | ✓ | List the service plans of a SKU, or `--plan-off EXCHANGE_S_ENTERPRISE` for one user |
+
+Every script is runnable and documents itself:
+
+```bash
+python inventory.py --help
+python assign.py --user ada@contoso.com --sku SPE_E5 --dry-run
+```
 
 ---
 
-## Patterns
+## Two questions, not one
 
-| Scenario | File |
-|---|---|
-| **List available licenses (SKUs) with their service plans** | [`list_skus.py`](./list_skus.py) |
-| Ask which product carries a capability (`--carrying RECORDS_MANAGEMENT`) | [`list_skus.py`](./list_skus.py) |
-| License inventory and unlicensed user report | [`report.py`](./report.py) |
-| License assignment and SKU switch | [`assign.py`](./assign.py) |
-| **Bulk assign licenses from CSV** | [`bulk_assign_license.py`](./bulk_assign_license.py) |
-| **Disable a service plan within a license** | [`modify_service_plans.py`](./modify_service_plans.py) |
-| **Remove a license from a user** | [`remove.py`](./remove.py) |
-| **Find all users with a specific SKU** | [`find_licensed.py`](./find_licensed.py) |
-| **Full license usage report** | [`usage_report.py`](./usage_report.py) |
-| **Get the current user's license details** | [`get_licenses.py`](./get_licenses.py) |
-| **Check a required SKU is present (require_license)** | [`check_license.py`](./check_license.py) |
-
----
-
-## Quick start
+`subscribedSkus` says what the tenant **buys**; `licenseDetails` says what one **seat grants**.
+A SKU part number is packaging, a service plan is capability — and a seat may carry a plan no
+retail SKU name suggests:
 
 ```python
+from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
 
 client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
-skus = client.subscribed_skus.get().execute_query()
-for s in skus:
-    print(f"{s.sku_part_number}")
+held = Licences.of_tenant(client)
+print(sorted(held.names))  # SKU part numbers and provisioned plan names
+print(held.holds("RECORDS_MANAGEMENT"))  # True for DEVELOPERPACK_E5
+print([sku.sku_part_number for sku in held.carrying("RECORDS_MANAGEMENT")])
 ```
+
+Only a plan whose `provisioningStatus` is `Success` counts, and nothing is cached: a grant
+changes the answer, and the library is not the level that knows when.
 
 ---
 
@@ -51,4 +60,5 @@ for s in skus:
 
 - [License management API](https://learn.microsoft.com/en-us/graph/api/resources/license)
 - [Subscribed SKU API](https://learn.microsoft.com/en-us/graph/api/resources/subscribedsku)
-- [Assign license API](https://learn.microsoft.com/en-us/graph/api/user-assignlicense)
+- [Assign license to a user](https://learn.microsoft.com/en-us/graph/api/user-assignlicense)
+- [Assign license to a group](https://learn.microsoft.com/en-us/graph/api/group-assignlicense)
