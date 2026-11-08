@@ -12,7 +12,9 @@ what one particular export happened to write:
   option keeps a field out of the verification when the import declines to restore it.
 
 The golden document is the codec's whole contract in one assertion: line order, folding
-at 75 octets, and which token each Graph word became.
+at 75 octets, and which token each Graph word became. It is a file beside its sidecar
+(``fixtures/outlook/``) rather than a literal here, so a change to the writer shows up as a
+line diff in review and not as a rewritten wall of escapes.
 """
 
 from __future__ import annotations
@@ -33,6 +35,7 @@ from office365.outlook.mail.importance import Importance
 from office365.outlook.mail.messages.responsetype import ResponseType
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.outlook.mail.weekindex import WeekIndex
+from tests.unit.outlook_fixtures import document, sidecar
 
 #: The dialect as a table: (the mapping, the generated enum it must agree with, whether
 #: every member carries a token). ``transp``/``status`` are the two that spell only what a
@@ -54,45 +57,7 @@ TABLES = [
 #: writer has: an escaped subject, an HTML body, an attendee with and without a name,
 #: categories, a classification, a reminder, and a join URL long enough to fold. The keys
 #: are the model's own (``Event.to_json()``) plus the export's provenance.
-SIDECAR = {
-    "id": "e1",
-    "iCalUId": "UID-1",
-    "calendar_path": "Calendar",
-    "calendar_display_path": "Calendar",
-    "subject": "Quarterly review; budget, headcount",
-    "body": {"contentType": "html", "content": "<p>Agenda: <b>Q1</b></p>"},
-    "start": {"dateTime": "2026-03-02T09:00:00.0000000", "timeZone": "Europe/Kiev"},
-    "end": {"dateTime": "2026-03-02T10:00:00.0000000", "timeZone": "Europe/Kiev"},
-    "isAllDay": False,
-    "isCancelled": False,
-    "showAs": "tentative",
-    "sensitivity": "private",
-    "importance": "high",
-    "location": {"displayName": "Room 1"},
-    "locations": [{"displayName": "Room 1"}],
-    "organizer": {"emailAddress": {"name": "Alice", "address": "alice@contoso.com"}},
-    "attendees": [
-        {
-            "emailAddress": {"name": "Bob", "address": "bob@contoso.com"},
-            "type": "required",
-            "status": {"response": "accepted"},
-        },
-        {"emailAddress": {"address": "carol@contoso.com"}, "type": "optional", "status": {"response": "none"}},
-    ],
-    "categories": ["Finance", "Q1"],
-    "isReminderOn": True,
-    "reminderMinutesBeforeStart": 15,
-    "createdDateTime": "2026-02-01T08:00:00Z",
-    "lastModifiedDateTime": "2026-02-20T11:30:00Z",
-    "type": "singleInstance",
-    "seriesMasterId": None,
-    "recurrence": None,
-    "isOnlineMeeting": True,
-    "onlineMeetingProvider": "teamsForBusiness",
-    "onlineMeeting": {"joinUrl": "https://teams.microsoft.com/l/meetup-join/1"},
-    "hasAttachments": False,
-    "ics_path": "Calendar/2026-03-02_quarterly_review_12345678.ics",
-}
+SIDECAR = sidecar("quarterly_review")
 
 
 def _digest(envelope, options=None) -> str:
@@ -100,45 +65,9 @@ def _digest(envelope, options=None) -> str:
     return EventRecord.from_json(envelope).digest(options)
 
 
-#: The document :data:`SIDECAR` renders to, byte for byte. Folded lines are written out
-#: with their continuation space, exactly as they land on disk.
-GOLDEN = (
-    "BEGIN:VCALENDAR\r\n"
-    "VERSION:2.0\r\n"
-    "PRODID:-//office365-rest-python-client//migration//EN\r\n"
-    "CALSCALE:GREGORIAN\r\n"
-    "METHOD:PUBLISH\r\n"
-    "BEGIN:VEVENT\r\n"
-    "UID:UID-1\r\n"
-    "DTSTAMP:20260220T113000Z\r\n"
-    "DTSTART;TZID=Europe/Kiev:20260302T090000\r\n"
-    "DTEND;TZID=Europe/Kiev:20260302T100000\r\n"
-    "SUMMARY:Quarterly review\\; budget\\, headcount\r\n"
-    "LOCATION:Room 1\r\n"
-    "X-ALT-DESC;FMTTYPE=text/html:<p>Agenda: <b>Q1</b></p>\r\n"
-    "CATEGORIES:Finance,Q1\r\n"
-    "CLASS:PRIVATE\r\n"
-    "PRIORITY:1\r\n"
-    "STATUS:TENTATIVE\r\n"
-    'ORGANIZER;CN="Alice":mailto:alice@contoso.com\r\n'
-    'ATTENDEE;CN="Bob";ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE:mailto:\r\n'
-    " bob@contoso.com\r\n"
-    "ATTENDEE;ROLE=OPT-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:carol\r\n"
-    " @contoso.com\r\n"
-    "X-MICROSOFT-SKYPETEAMSMEETINGURL:https://teams.microsoft.com/l/meetup-join\r\n"
-    " /1\r\n"
-    "BEGIN:VALARM\r\n"
-    "ACTION:DISPLAY\r\n"
-    "TRIGGER:-PT15M\r\n"
-    "DESCRIPTION:Quarterly review\\; budget\\, headcount\r\n"
-    "END:VALARM\r\n"
-    "END:VEVENT\r\n"
-    "END:VCALENDAR\r\n"
-)
-
-
 def test_the_codec_renders_the_golden_document():
-    assert encode(SIDECAR).decode("utf-8") == GOLDEN
+    """The whole contract in one assertion: order, folding, and every token's spelling."""
+    assert encode(SIDECAR) == document("quarterly_review.ics")
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,60 @@
+{
+  "id": "c1",
+  "displayName": "Ada Lovelace",
+  "givenName": "Ada",
+  "surname": "Lovelace",
+  "middleName": "Augusta",
+  "title": "Ms",
+  "generation": "III",
+  "nickName": "Ada",
+  "jobTitle": "Analyst",
+  "profession": "Mathematician",
+  "companyName": "Analytical Engines Ltd",
+  "department": "Research",
+  "officeLocation": "Building 5, Room 12",
+  "businessPhones": [
+    "+44 20 7946 0001",
+    "+44 20 7946 0002"
+  ],
+  "homePhones": [
+    "+44 20 7946 0003"
+  ],
+  "mobilePhone": "+44 7700 900123",
+  "emailAddresses": [
+    {
+      "name": "Ada Lovelace",
+      "address": "ada@contoso.com"
+    },
+    {
+      "address": "a.lovelace@contoso.com"
+    }
+  ],
+  "imAddresses": [
+    "sip:ada@contoso.com"
+  ],
+  "businessAddress": {
+    "street": "12 St James's Square",
+    "city": "London",
+    "state": "Greater London",
+    "postalCode": "SW1Y 4LB",
+    "countryOrRegion": "United Kingdom"
+  },
+  "homeAddress": {
+    "city": "London"
+  },
+  "otherAddress": {
+    "street": "Somewhere"
+  },
+  "birthday": "1815-12-10T11:59:00Z",
+  "personalNotes": "Wrote the first algorithm;note the comma, and the semicolon",
+  "categories": [
+    "Analysts",
+    "Correspondence"
+  ],
+  "businessHomePage": "https://www.contoso.com/ada",
+  "createdDateTime": "2026-01-05T09:00:00Z",
+  "lastModifiedDateTime": "2026-02-20T11:30:00Z",
+  "folder_path": "Vendors",
+  "folder_display_path": "Contacts/Vendors",
+  "vcf_path": "Contacts/Vendors/ada_lovelace_1.vcf"
+}

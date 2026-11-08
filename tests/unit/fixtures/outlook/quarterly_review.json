@@ -1,0 +1,77 @@
+{
+  "id": "e1",
+  "iCalUId": "UID-1",
+  "calendar_path": "Calendar",
+  "calendar_display_path": "Calendar",
+  "subject": "Quarterly review; budget, headcount",
+  "body": {
+    "contentType": "html",
+    "content": "<p>Agenda: <b>Q1</b></p>"
+  },
+  "start": {
+    "dateTime": "2026-03-02T09:00:00.0000000",
+    "timeZone": "Europe/Kiev"
+  },
+  "end": {
+    "dateTime": "2026-03-02T10:00:00.0000000",
+    "timeZone": "Europe/Kiev"
+  },
+  "isAllDay": false,
+  "isCancelled": false,
+  "showAs": "tentative",
+  "sensitivity": "private",
+  "importance": "high",
+  "location": {
+    "displayName": "Room 1"
+  },
+  "locations": [
+    {
+      "displayName": "Room 1"
+    }
+  ],
+  "organizer": {
+    "emailAddress": {
+      "name": "Alice",
+      "address": "alice@contoso.com"
+    }
+  },
+  "attendees": [
+    {
+      "emailAddress": {
+        "name": "Bob",
+        "address": "bob@contoso.com"
+      },
+      "type": "required",
+      "status": {
+        "response": "accepted"
+      }
+    },
+    {
+      "emailAddress": {
+        "address": "carol@contoso.com"
+      },
+      "type": "optional",
+      "status": {
+        "response": "none"
+      }
+    }
+  ],
+  "categories": [
+    "Finance",
+    "Q1"
+  ],
+  "isReminderOn": true,
+  "reminderMinutesBeforeStart": 15,
+  "createdDateTime": "2026-02-01T08:00:00Z",
+  "lastModifiedDateTime": "2026-02-20T11:30:00Z",
+  "type": "singleInstance",
+  "seriesMasterId": null,
+  "recurrence": null,
+  "isOnlineMeeting": true,
+  "onlineMeetingProvider": "teamsForBusiness",
+  "onlineMeeting": {
+    "joinUrl": "https://teams.microsoft.com/l/meetup-join/1"
+  },
+  "hasAttachments": false,
+  "ics_path": "Calendar/2026-03-02_quarterly_review_12345678.ics"
+}

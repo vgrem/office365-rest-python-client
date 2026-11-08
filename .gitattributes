@@ -1,0 +1,4 @@
+# A golden is compared byte for byte, CRLF and continuation spaces included: no checkout
+# may rewrite the line endings of a rendered document.
+tests/unit/fixtures/outlook/*.ics -text
+tests/unit/fixtures/outlook/*.vcf -text

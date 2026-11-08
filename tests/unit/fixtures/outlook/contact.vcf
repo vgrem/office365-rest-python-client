@@ -1,0 +1,27 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Lovelace;Ada;Augusta;Ms;III
+FN:Ada Lovelace
+UID:c1
+NICKNAME:Ada
+TITLE:Analyst
+ROLE:Mathematician
+ORG:Analytical Engines Ltd;Research
+X-MS-OFFICE-LOCATION:Building 5\, Room 12
+TEL;TYPE=WORK,VOICE:+44 20 7946 0001
+TEL;TYPE=WORK,VOICE:+44 20 7946 0002
+TEL;TYPE=HOME,VOICE:+44 20 7946 0003
+TEL;TYPE=CELL:+44 7700 900123
+EMAIL;TYPE=INTERNET:ada@contoso.com
+EMAIL;TYPE=INTERNET:a.lovelace@contoso.com
+X-MS-IMADDRESS:sip:ada@contoso.com
+ADR;TYPE=WORK:;;12 St James's Square;London;Greater London;SW1Y 4LB;United 
+ Kingdom
+ADR;TYPE=HOME:;;;London;;;
+ADR;TYPE=OTHER:;;Somewhere;;;;
+BDAY:1815-12-10
+NOTE:Wrote the first algorithm\;note the comma\, and the semicolon
+CATEGORIES:Analysts,Correspondence
+URL:https://www.contoso.com/ada
+REV:20260220113000Z
+END:VCARD
