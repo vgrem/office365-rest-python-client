@@ -55,33 +55,48 @@ def coerce_records(
     raises, so a typo cannot silently drop the column it meant to type.
     """
     converters = resolve_converters(item_type, coerce, allow_unknown)
+    warn = warnings.warn
+    set_nested = _set_nested
+
+    def split_list(raw: Any) -> Any:
+        return raw.split(_LIST_SEPARATOR) if isinstance(raw, str) else raw
+
+    def plan_for(key: str) -> tuple:
+        """Resolve how a key's cells are stored: (importable, unknown, path, leaf, convert)."""
+        if not _is_importable(key):
+            return False, False, None, key, None
+        converter = converters.get(key)
+        *path, leaf = key.split("/")
+        declared = declared_type(item_type, path[0] if path else leaf)
+        if declared is None:
+            return True, not allow_unknown, path or None, leaf, converter
+        if not path and converter is None and _is_collection(declared):
+            converter = split_list
+        return True, False, path or None, leaf, converter
+
+    plans: dict[str, tuple] = {}
     coerced: list[dict[str, Any]] = []
+    append = coerced.append
     for record in records:
         item: dict[str, Any] = {}
         for key, raw in record.items():
-            if not _is_importable(key):
-                continue
             if raw is None:
                 continue
-            converter = converters.get(key)
-            if "/" in key:
-                nav = key.split("/", 1)[0]
-                if declared_type(item_type, nav) is None and not allow_unknown:
-                    warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
-                    continue
-                _set_nested(item, key, converter(raw) if converter is not None else raw)
+            try:
+                importable, unknown, path, leaf, convert = plans[key]
+            except KeyError:
+                importable, unknown, path, leaf, convert = plans[key] = plan_for(key)
+            if not importable:
                 continue
-            declared = declared_type(item_type, key)
-            if declared is None and not allow_unknown:
-                warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
+            if unknown:
+                warn(f"Skipping unknown column '{key}'", stacklevel=2)
                 continue
-            if converter is not None:
-                item[key] = converter(raw)
-            elif isinstance(raw, str) and declared is not None and _is_collection(declared):
-                item[key] = raw.split(_LIST_SEPARATOR)
+            value = raw if convert is None else convert(raw)
+            if path is None:
+                item[leaf] = value
             else:
-                item[key] = raw
-        coerced.append(item)
+                set_nested(item, path, leaf, value)
+        append(item)
     return coerced
 
 
@@ -139,10 +154,9 @@ def _is_collection(target_type: Any) -> bool:
     )
 
 
-def _set_nested(record: dict[str, Any], key: str, value: Any) -> None:
-    """Re-nest a dotted header (``a/b/c``) into nested dicts."""
-    parts = key.split("/")
+def _set_nested(record: dict[str, Any], path: list[str], leaf: str, value: Any) -> None:
+    """Re-nest a dotted header (``a/b/c``, pre-split into its path and leaf) into nested dicts."""
     node = record
-    for part in parts[:-1]:
+    for part in path:
         node = node.setdefault(part, {})
-    node[parts[-1]] = value
+    node[leaf] = value
