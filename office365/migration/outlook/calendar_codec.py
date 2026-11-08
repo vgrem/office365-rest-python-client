@@ -35,6 +35,33 @@ def escape_text(value: Any) -> str:
     return text.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")
 
 
+#: RFC 6868's caret escapes: the three characters a parameter value cannot hold. The
+#: caret itself goes first, so an escape is never re-escaped by a later pass.
+_CARET_ESCAPES = (("^", "^^"), ("\r\n", "^n"), ("\r", "^n"), ("\n", "^n"), ('"', "^'"))
+
+
+def quote_param(value: Any) -> str:
+    """A parameter value: caret-encoded, quoted, and free of control characters.
+
+    ``CN=`` used to be built by interpolation, which is a content-line injection: a
+    display name of ``Bob "Bobby"`` closed the quoted-string early, and a name carrying a
+    line break started a line of its own — an ``ATTENDEE`` line the reader would honour as
+    an ``X-EVIL`` one. :func:`escape_text` cannot help: a parameter is not a TEXT field and
+    takes no backslashes, and a quoted-string may not contain a DQUOTE at all. RFC 6868's
+    carets carry the three casualties — ``^'`` is a DQUOTE, ``^^`` a caret, ``^n`` a line
+    break — so a reader without the escapes shows ``^'`` where a reader without quoting
+    showed a truncated name and a forged property.
+
+    Any other control character is dropped — a tab is legal inside a quoted-string but is
+    not a name — and the sidecar keeps the name exactly as the service sent it.
+    """
+    text = "" if value is None else str(value)
+    for raw, escaped in _CARET_ESCAPES:
+        text = text.replace(raw, escaped)
+    text = "".join(char for char in text if char >= " " and char != "\x7f")
+    return f'"{text}"'
+
+
 def fold_line(line: str) -> str:
     """Fold a content line at 75 octets, continuing with a leading space (RFC 5545 §3.1)."""
     encoded = line.encode("utf-8")
@@ -119,7 +146,7 @@ def attendee_line(attendee: Mapping[str, Any], dialect: IcsDialect = ICALENDAR) 
         return None
     parameters = []
     if person.get("name"):
-        parameters.append(f'CN="{person["name"]}"')
+        parameters.append(f"CN={quote_param(person['name'])}")
     role = dialect.role.get(str(attendee.get("type") or "required"))
     if role:
         parameters.append(f"ROLE={role}")
@@ -171,8 +198,8 @@ def encode(envelope: Mapping[str, Any], dialect: IcsDialect = ICALENDAR) -> byte
     lines.extend(f"{name}:{value}" for name, value in mapping if value)
     organizer = (envelope.get("organizer") or {}).get("emailAddress") or {}
     if organizer.get("address"):
-        name = f'CN="{organizer["name"]}"' if organizer.get("name") else ""
-        lines.append(f"ORGANIZER{';' + name if name else ''}:mailto:{organizer['address']}")
+        name = f";CN={quote_param(organizer['name'])}" if organizer.get("name") else ""
+        lines.append(f"ORGANIZER{name}:mailto:{organizer['address']}")
     lines.extend(line for line in (attendee_line(item, dialect) for item in envelope.get("attendees") or []) if line)
     rule = rrule(envelope.get("recurrence"), dialect)
     if rule:
@@ -203,5 +230,6 @@ __all__ = [
     "encode",
     "escape_text",
     "fold_line",
+    "quote_param",
     "rrule",
 ]
