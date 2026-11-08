@@ -36,13 +36,18 @@ from typing import Callable, Iterable, Mapping, Optional
 _QUERY_CAPABILITY_MARKER = "__query_capability__"
 _ON_UNSUPPORTED = ("raise", "warn")
 
-#: Quoted OData string literals (single-quoted, ``''`` escapes a quote).
-_STRING_LITERAL = re.compile(r"'(?:[^']|'')*'")
+#: Quoted OData string literals (single-quoted, ``''`` escapes a quote). Runs of non-quotes are
+#: consumed in one step instead of alternating per character.
+_STRING_LITERAL = re.compile(r"'[^']*(?:''[^']*)*'")
 #: Unquoted ISO-8601 date/time literals (``2020-01-01T00:00:00Z``). Masked because
-#: their ``T``/``Z``/offset fragments look like identifiers to a naive scan.
-_DATETIME_LITERAL = re.compile(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2})?(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?")
-#: A bare identifier (property, function or keyword).
-_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+#: their ``T``/``Z``/offset fragments look like identifiers to a naive scan. Fixed digit
+#: counts are spelled out (``\d\d``) because they match faster than ``\d{n}`` repeats.
+_DATETIME_LITERAL = re.compile(r"\d\d\d\d-\d\d-\d\d(?:T\d\d:\d\d(?::\d\d)?(?:\.\d+)?(?:Z|[+-]\d\d:\d\d)?)?")
+#: A whole bare identifier (property or keyword) not followed by ``(``, so function names never match.
+#: Leading with a character class lets the engine scan straight to candidate starts; the lookbehind
+#: then rejects starts inside a word (only the previous character needs a class test, ``.`` covers the
+#: just-matched one), and two plain lookaheads (cheap one-character test first) avoid alternation branches.
+_IDENTIFIER = re.compile(r"[A-Za-z_](?<![A-Za-z_].)[A-Za-z0-9_]*(?![A-Za-z0-9_(])(?!\s+\()")
 #: OData operators / literals that are never property names.
 _NON_PROPERTY_TOKENS = frozenset(
     {
@@ -86,12 +91,10 @@ def referenced_properties(expression: Optional[str]) -> frozenset[str]:
     """
     if not expression:
         return frozenset()
-    text = _DATETIME_LITERAL.sub("''", _STRING_LITERAL.sub("''", expression))
-    return frozenset(
-        match.group(0)
-        for match in _IDENTIFIER.finditer(text)
-        if match.group(0) not in _NON_PROPERTY_TOKENS and not text[match.end() :].lstrip().startswith("(")
-    )
+    # Skip a masking pass when its literal cannot occur (no quote / no date dash).
+    text = _STRING_LITERAL.sub("''", expression) if "'" in expression else expression
+    text = _DATETIME_LITERAL.sub("''", text) if "-" in text else text
+    return frozenset(_IDENTIFIER.findall(text)) - _NON_PROPERTY_TOKENS
 
 
 def _normalize(option: str) -> str:
