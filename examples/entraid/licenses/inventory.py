@@ -29,7 +29,7 @@ def main() -> None:
         print(f"{sku.sku_part_number}: {used}/{total} seats, {total - used} left, {sku.capability_status}")
         for plan in sku.service_plans if args.plans else ():
             print(f"  {plan.servicePlanName} {plan.provisioningStatus}")
-    print(f"{len(client.users.get_unlicensed().get().execute_query())} users hold no licence")
+    print(f"{client.users.get_unlicensed().count().execute_query().value} users hold no licence")
 
 
 if __name__ == "__main__":

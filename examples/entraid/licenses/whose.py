@@ -1,9 +1,9 @@
 """Who holds a licence, or what one person holds.
 
 ``--user`` defaults to ``OFFICE365_USERNAME``, so the script with no arguments answers "what do
-I hold". ``--sku`` starts from ``get_licensed()`` — the collection filters itself to users
-holding anything — and keeps the users whose assigned SKU id matches. ``--user`` reads that
-person's ``licenseDetails``, where every plan carries a provisioning status: a plan that is not
+I hold". ``--sku`` starts from ``get_licensed()`` — the service answers which users hold anything —
+and keeps the users whose assigned SKU id matches. ``--user`` reads that person's
+``licenseDetails``, where every plan carries a provisioning status: a plan that is not
 ``Success`` is bought but not usable yet.
 
     python whose.py
@@ -34,7 +34,8 @@ def main() -> None:
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     if args.sku:
         sku = client.subscribed_skus.find_by_part_number(args.sku, required=True).execute_query()
-        licensed = client.users.get_licensed().select(["userPrincipalName"]).get().execute_query()
+        licensed = client.users.select(["userPrincipalName", "assignedLicenses"]).get_licensed()
+        licensed.get_all().execute_query()
         holders = [user for user in licensed if any(lic.skuId == sku.sku_id for lic in user.assigned_licenses)]
         print(f"{len(holders)} users hold {sku.sku_part_number}")
         for user in holders:

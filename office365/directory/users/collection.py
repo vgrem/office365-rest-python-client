@@ -40,26 +40,18 @@ class UserCollection(CountCollection[User]):
         return self._find_by_filter(f"mail eq '{escape_odata_string(user_mail)}'", required=required)
 
     def get_unlicensed(self) -> Self:
-        """Get users with no assigned licenses (client-side filter)."""
+        """Get users holding no licence — a server-side filter.
 
-        def _loaded(col: UserCollection):
-            for user in col:
-                if user.assigned_licenses:
-                    self.remove_child(user)
+        ``assignedLicenses`` is derived and no user projection carries it, so filtering it in the
+        client would call every user unlicensed. This asks the service instead
+        (``$filter=assignedLicenses/$count eq 0``); that advanced query needs
+        ``ConsistencyLevel: eventual``, which :meth:`consistency_level` sets.
+        """
+        return self.consistency_level().filter("assignedLicenses/$count eq 0")
 
-        self.ensure_property("assignedLicenses").after_execute(_loaded)
-        return self
-
-    def get_licensed(self):
-        """Get users with assigned licenses (client-side filter)."""
-
-        def _loaded(col: UserCollection):
-            for user in col:
-                if not user.assigned_licenses:
-                    self.remove_child(user)
-
-        self.ensure_property("assignedLicenses").after_execute(_loaded)
-        return self
+    def get_licensed(self) -> Self:
+        """Get users holding at least one licence; see :meth:`get_unlicensed`."""
+        return self.consistency_level().filter("assignedLicenses/$count ne 0")
 
     @require_permission(
         delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"],

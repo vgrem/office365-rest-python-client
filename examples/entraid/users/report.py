@@ -26,7 +26,8 @@ def main() -> None:
     print(users.to_string())
 
     # 2. Users without an assigned license
-    unlicensed = client.users.get_unlicensed().top(10).select(["id", "displayName", "userPrincipalName"]).execute_query()
+    unlicensed = client.users.select(["id", "displayName", "userPrincipalName"]).get_unlicensed()
+    unlicensed.top(10).get().execute_query()
     print(f"\nUnlicensed accounts ({len(unlicensed)}):")
     print(unlicensed.to_string())
 
