@@ -49,7 +49,6 @@ if TYPE_CHECKING:
     from office365.common.play_prompt_operation import PlayPromptOperation
     from office365.common.prompt import Prompt
     from office365.common.record_operation import RecordOperation
-    from office365.common.send_dtmf_tones_operation import SendDtmfTonesOperation
     from office365.common.subscribe_to_tone_operation import SubscribeToToneOperation
     from office365.communications.calls.audio_routing_group import AudioRoutingGroup
     from office365.communications.calls.content_sharing_session import (
@@ -58,6 +57,7 @@ if TYPE_CHECKING:
     from office365.communications.calls.screensharingrole import ScreenSharingRole
     from office365.communications.calls.tone import Tone
     from office365.communications.incoming_call_options import IncomingCallOptions
+    from office365.communications.send_dtmf_tones_operation import SendDtmfTonesOperation
 
 
 @limit(*CALL_QUOTAS)
@@ -509,7 +509,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.send_dtmf_tones_operation import SendDtmfTonesOperation
+        from office365.communications.send_dtmf_tones_operation import SendDtmfTonesOperation
 
         return_type = SendDtmfTonesOperation(self.context)
         qry = ServiceOperationQuery(

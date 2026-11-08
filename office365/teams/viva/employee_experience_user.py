@@ -9,7 +9,7 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.viva.learning.courses.activity import LearningCourseActivity
 
 if TYPE_CHECKING:
-    from office365.common.engagement_role import EngagementRole
+    from office365.teams.engagement_role import EngagementRole
 
 
 class EmployeeExperienceUser(Entity):
@@ -34,7 +34,7 @@ class EmployeeExperienceUser(Entity):
     @property
     def assigned_roles(self) -> EntityCollection[EngagementRole]:
         """Gets the assignedRoles property"""
-        from office365.common.engagement_role import EngagementRole
+        from office365.teams.engagement_role import EngagementRole
 
         return self.properties.get(
             "assignedRoles",

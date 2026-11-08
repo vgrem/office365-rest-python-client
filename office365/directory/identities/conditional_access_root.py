@@ -20,13 +20,13 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.what_if_analysis_result import WhatIfAnalysisResult
     from office365.directory.identities.conditional_access_template import (
         ConditionalAccessTemplate,
     )
     from office365.directory.identities.sign_in_context import SignInContext
     from office365.directory.policies.conditionalaccess.sign_in_conditions import SignInConditions
     from office365.directory.policies.conditionalaccess.sign_in_identity import SignInIdentity
+    from office365.directory.what_if_analysis_result import WhatIfAnalysisResult
 
 
 class ConditionalAccessRoot(Entity):
@@ -121,7 +121,7 @@ class ConditionalAccessRoot(Entity):
             applied_policies_only (bool):
                 appliedPoliciesOnly parameter
         """
-        from office365.common.what_if_analysis_result import WhatIfAnalysisResult
+        from office365.directory.what_if_analysis_result import WhatIfAnalysisResult
 
         return_type = EntityCollection(self.context, WhatIfAnalysisResult)
         qry = ServiceOperationQuery(

@@ -20,6 +20,13 @@ if TYPE_CHECKING:
     from office365.backuprestore.email_notifications_setting import (
         EmailNotificationsSetting,
     )
+    from office365.backuprestore.exchange_protection_policy import ExchangeProtectionPolicy
+    from office365.backuprestore.exchange_restore_session import ExchangeRestoreSession
+    from office365.backuprestore.mailbox_protection_rule import MailboxProtectionRule
+    from office365.backuprestore.mailbox_protection_unit import MailboxProtectionUnit
+    from office365.backuprestore.mailbox_protection_units_bulk_addition_job import (
+        MailboxProtectionUnitsBulkAdditionJob,
+    )
     from office365.backuprestore.onedrive_for_business_browse_session import (
         OneDriveForBusinessBrowseSession,
     )
@@ -38,23 +45,16 @@ if TYPE_CHECKING:
     from office365.backuprestore.sharepoint_restore_session import (
         SharePointRestoreSession,
     )
+    from office365.backuprestore.site_protection_rule import SiteProtectionRule
+    from office365.backuprestore.site_protection_unit import SiteProtectionUnit
+    from office365.backuprestore.site_protection_units_bulk_addition_job import (
+        SiteProtectionUnitsBulkAdditionJob,
+    )
     from office365.common.drive_protection_unit import DriveProtectionUnit
     from office365.common.drive_protection_units_bulk_addition_job import (
         DriveProtectionUnitsBulkAdditionJob,
     )
-    from office365.common.exchange_protection_policy import ExchangeProtectionPolicy
-    from office365.common.exchange_restore_session import ExchangeRestoreSession
-    from office365.common.mailbox_protection_rule import MailboxProtectionRule
-    from office365.common.mailbox_protection_unit import MailboxProtectionUnit
-    from office365.common.mailbox_protection_units_bulk_addition_job import (
-        MailboxProtectionUnitsBulkAdditionJob,
-    )
     from office365.common.restore_session_base import RestoreSessionBase
-    from office365.common.site_protection_rule import SiteProtectionRule
-    from office365.common.site_protection_unit import SiteProtectionUnit
-    from office365.common.site_protection_units_bulk_addition_job import (
-        SiteProtectionUnitsBulkAdditionJob,
-    )
     from office365.directory.protection.policy.base import ProtectionPolicyBase
     from office365.directory.protection.rules.drive import DriveProtectionRule
 
@@ -168,7 +168,7 @@ class BackupRestoreRoot(Entity):
     @property
     def exchange_protection_policies(self) -> EntityCollection[ExchangeProtectionPolicy]:
         """Gets the exchangeProtectionPolicies property"""
-        from office365.common.exchange_protection_policy import ExchangeProtectionPolicy
+        from office365.backuprestore.exchange_protection_policy import ExchangeProtectionPolicy
 
         return self.properties.get(
             "exchangeProtectionPolicies",
@@ -181,7 +181,7 @@ class BackupRestoreRoot(Entity):
     @property
     def exchange_restore_sessions(self) -> EntityCollection[ExchangeRestoreSession]:
         """Gets the exchangeRestoreSessions property"""
-        from office365.common.exchange_restore_session import ExchangeRestoreSession
+        from office365.backuprestore.exchange_restore_session import ExchangeRestoreSession
 
         return self.properties.get(
             "exchangeRestoreSessions",
@@ -194,7 +194,7 @@ class BackupRestoreRoot(Entity):
     @property
     def mailbox_inclusion_rules(self) -> EntityCollection[MailboxProtectionRule]:
         """Gets the mailboxInclusionRules property"""
-        from office365.common.mailbox_protection_rule import MailboxProtectionRule
+        from office365.backuprestore.mailbox_protection_rule import MailboxProtectionRule
 
         return self.properties.get(
             "mailboxInclusionRules",
@@ -207,7 +207,7 @@ class BackupRestoreRoot(Entity):
     @property
     def mailbox_protection_units(self) -> EntityCollection[MailboxProtectionUnit]:
         """Gets the mailboxProtectionUnits property"""
-        from office365.common.mailbox_protection_unit import MailboxProtectionUnit
+        from office365.backuprestore.mailbox_protection_unit import MailboxProtectionUnit
 
         return self.properties.get(
             "mailboxProtectionUnits",
@@ -220,7 +220,7 @@ class BackupRestoreRoot(Entity):
     @property
     def mailbox_protection_units_bulk_addition_jobs(self) -> EntityCollection[MailboxProtectionUnitsBulkAdditionJob]:
         """Gets the mailboxProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.mailbox_protection_units_bulk_addition_job import (
+        from office365.backuprestore.mailbox_protection_units_bulk_addition_job import (
             MailboxProtectionUnitsBulkAdditionJob,
         )
 
@@ -382,7 +382,7 @@ class BackupRestoreRoot(Entity):
     @property
     def site_inclusion_rules(self) -> EntityCollection[SiteProtectionRule]:
         """Gets the siteInclusionRules property"""
-        from office365.common.site_protection_rule import SiteProtectionRule
+        from office365.backuprestore.site_protection_rule import SiteProtectionRule
 
         return self.properties.get(
             "siteInclusionRules",
@@ -395,7 +395,7 @@ class BackupRestoreRoot(Entity):
     @property
     def site_protection_units(self) -> EntityCollection[SiteProtectionUnit]:
         """Gets the siteProtectionUnits property"""
-        from office365.common.site_protection_unit import SiteProtectionUnit
+        from office365.backuprestore.site_protection_unit import SiteProtectionUnit
 
         return self.properties.get(
             "siteProtectionUnits",
@@ -408,7 +408,7 @@ class BackupRestoreRoot(Entity):
     @property
     def site_protection_units_bulk_addition_jobs(self) -> EntityCollection[SiteProtectionUnitsBulkAdditionJob]:
         """Gets the siteProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.site_protection_units_bulk_addition_job import (
+        from office365.backuprestore.site_protection_units_bulk_addition_job import (
             SiteProtectionUnitsBulkAdditionJob,
         )
 

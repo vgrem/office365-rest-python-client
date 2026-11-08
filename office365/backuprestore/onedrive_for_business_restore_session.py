@@ -8,11 +8,11 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.drive_restore_artifact import DriveRestoreArtifact
-    from office365.common.drive_restore_artifacts_bulk_addition_request import (
+    from office365.backuprestore.drive_restore_artifact import DriveRestoreArtifact
+    from office365.backuprestore.drive_restore_artifacts_bulk_addition_request import (
         DriveRestoreArtifactsBulkAdditionRequest,
     )
-    from office365.common.granular_drive_restore_artifact import (
+    from office365.backuprestore.granular_drive_restore_artifact import (
         GranularDriveRestoreArtifact,
     )
 
@@ -22,7 +22,7 @@ class OneDriveForBusinessRestoreSession(RestoreSessionBase):
     @property
     def drive_restore_artifacts(self) -> EntityCollection[DriveRestoreArtifact]:
         """Gets the driveRestoreArtifacts property"""
-        from office365.common.drive_restore_artifact import DriveRestoreArtifact
+        from office365.backuprestore.drive_restore_artifact import DriveRestoreArtifact
 
         return self.properties.get(
             "driveRestoreArtifacts",
@@ -37,7 +37,7 @@ class OneDriveForBusinessRestoreSession(RestoreSessionBase):
         self,
     ) -> EntityCollection[DriveRestoreArtifactsBulkAdditionRequest]:
         """Gets the driveRestoreArtifactsBulkAdditionRequests property"""
-        from office365.common.drive_restore_artifacts_bulk_addition_request import (
+        from office365.backuprestore.drive_restore_artifacts_bulk_addition_request import (
             DriveRestoreArtifactsBulkAdditionRequest,
         )
 
@@ -54,7 +54,7 @@ class OneDriveForBusinessRestoreSession(RestoreSessionBase):
     @property
     def granular_drive_restore_artifacts(self) -> EntityCollection[GranularDriveRestoreArtifact]:
         """Gets the granularDriveRestoreArtifacts property"""
-        from office365.common.granular_drive_restore_artifact import (
+        from office365.backuprestore.granular_drive_restore_artifact import (
             GranularDriveRestoreArtifact,
         )
 

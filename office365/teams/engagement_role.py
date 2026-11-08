@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.engagement_role_member import EngagementRoleMember
+    from office365.directory.engagement_role_member import EngagementRoleMember
 
 
 class EngagementRole(Entity):
@@ -22,7 +22,7 @@ class EngagementRole(Entity):
     @property
     def members(self) -> EntityCollection[EngagementRoleMember]:
         """Gets the members property"""
-        from office365.common.engagement_role_member import EngagementRoleMember
+        from office365.directory.engagement_role_member import EngagementRoleMember
 
         return self.properties.get(
             "members",

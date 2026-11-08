@@ -8,12 +8,12 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.reading_assignment_submission import (
+    from office365.education.reading_assignment_submission import (
         ReadingAssignmentSubmission,
     )
-    from office365.common.reading_coach_passage import ReadingCoachPassage
-    from office365.common.reflect_check_in_response import ReflectCheckInResponse
-    from office365.common.speaker_assignment_submission import (
+    from office365.education.reading_coach_passage import ReadingCoachPassage
+    from office365.education.reflect_check_in_response import ReflectCheckInResponse
+    from office365.education.speaker_assignment_submission import (
         SpeakerAssignmentSubmission,
     )
 
@@ -23,7 +23,7 @@ class ReportsRoot(Entity):
     @property
     def reading_assignment_submissions(self) -> EntityCollection[ReadingAssignmentSubmission]:
         """Gets the readingAssignmentSubmissions property"""
-        from office365.common.reading_assignment_submission import (
+        from office365.education.reading_assignment_submission import (
             ReadingAssignmentSubmission,
         )
 
@@ -40,7 +40,7 @@ class ReportsRoot(Entity):
     @property
     def reading_coach_passages(self) -> EntityCollection[ReadingCoachPassage]:
         """Gets the readingCoachPassages property"""
-        from office365.common.reading_coach_passage import ReadingCoachPassage
+        from office365.education.reading_coach_passage import ReadingCoachPassage
 
         return self.properties.get(
             "readingCoachPassages",
@@ -53,7 +53,7 @@ class ReportsRoot(Entity):
     @property
     def reflect_check_in_responses(self) -> EntityCollection[ReflectCheckInResponse]:
         """Gets the reflectCheckInResponses property"""
-        from office365.common.reflect_check_in_response import ReflectCheckInResponse
+        from office365.education.reflect_check_in_response import ReflectCheckInResponse
 
         return self.properties.get(
             "reflectCheckInResponses",
@@ -66,7 +66,7 @@ class ReportsRoot(Entity):
     @property
     def speaker_assignment_submissions(self) -> EntityCollection[SpeakerAssignmentSubmission]:
         """Gets the speakerAssignmentSubmissions property"""
-        from office365.common.speaker_assignment_submission import (
+        from office365.education.speaker_assignment_submission import (
             SpeakerAssignmentSubmission,
         )
 

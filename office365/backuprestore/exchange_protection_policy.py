@@ -8,9 +8,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.mailbox_protection_rule import MailboxProtectionRule
-    from office365.common.mailbox_protection_unit import MailboxProtectionUnit
-    from office365.common.mailbox_protection_units_bulk_addition_job import (
+    from office365.backuprestore.mailbox_protection_rule import MailboxProtectionRule
+    from office365.backuprestore.mailbox_protection_unit import MailboxProtectionUnit
+    from office365.backuprestore.mailbox_protection_units_bulk_addition_job import (
         MailboxProtectionUnitsBulkAdditionJob,
     )
 
@@ -20,7 +20,7 @@ class ExchangeProtectionPolicy(ProtectionPolicyBase):
     @property
     def mailbox_inclusion_rules(self) -> EntityCollection[MailboxProtectionRule]:
         """Gets the mailboxInclusionRules property"""
-        from office365.common.mailbox_protection_rule import MailboxProtectionRule
+        from office365.backuprestore.mailbox_protection_rule import MailboxProtectionRule
 
         return self.properties.get(
             "mailboxInclusionRules",
@@ -33,7 +33,7 @@ class ExchangeProtectionPolicy(ProtectionPolicyBase):
     @property
     def mailbox_protection_units(self) -> EntityCollection[MailboxProtectionUnit]:
         """Gets the mailboxProtectionUnits property"""
-        from office365.common.mailbox_protection_unit import MailboxProtectionUnit
+        from office365.backuprestore.mailbox_protection_unit import MailboxProtectionUnit
 
         return self.properties.get(
             "mailboxProtectionUnits",
@@ -46,7 +46,7 @@ class ExchangeProtectionPolicy(ProtectionPolicyBase):
     @property
     def mailbox_protection_units_bulk_addition_jobs(self) -> EntityCollection[MailboxProtectionUnitsBulkAdditionJob]:
         """Gets the mailboxProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.mailbox_protection_units_bulk_addition_job import (
+        from office365.backuprestore.mailbox_protection_units_bulk_addition_job import (
             MailboxProtectionUnitsBulkAdditionJob,
         )
 

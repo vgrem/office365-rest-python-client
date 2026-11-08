@@ -11,7 +11,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.microsoft_authenticator_authentication_method_target import (
+    from office365.directory.microsoft_authenticator_authentication_method_target import (
         MicrosoftAuthenticatorAuthenticationMethodTarget,
     )
 
@@ -33,7 +33,7 @@ class MicrosoftAuthenticatorAuthenticationMethodConfiguration(Entity):
     @property
     def include_targets(self) -> EntityCollection[MicrosoftAuthenticatorAuthenticationMethodTarget]:
         """Gets the includeTargets property"""
-        from office365.common.microsoft_authenticator_authentication_method_target import (
+        from office365.directory.microsoft_authenticator_authentication_method_target import (
             MicrosoftAuthenticatorAuthenticationMethodTarget,
         )
 

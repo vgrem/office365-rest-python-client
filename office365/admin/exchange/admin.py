@@ -8,8 +8,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.admin.mailbox import Mailbox
     from office365.admin.message_tracing_root import MessageTracingRoot
-    from office365.common.mailbox import Mailbox
 
 
 class ExchangeAdmin(Entity):
@@ -17,7 +17,7 @@ class ExchangeAdmin(Entity):
     @property
     def mailboxes(self) -> EntityCollection[Mailbox]:
         """Gets the mailboxes property"""
-        from office365.common.mailbox import Mailbox
+        from office365.admin.mailbox import Mailbox
 
         return self.properties.get(
             "mailboxes", EntityCollection[Mailbox](self.context, Mailbox, ResourcePath("mailboxes", self.resource_path))

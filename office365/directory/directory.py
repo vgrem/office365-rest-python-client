@@ -18,7 +18,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.attribute_set import AttributeSet
+    from office365.directory.attribute_set import AttributeSet
     from office365.directory.identities.providers.base import IdentityProviderBase
     from office365.directory.on_premises_directory_synchronization import (
         OnPremisesDirectorySynchronization,
@@ -142,7 +142,7 @@ class Directory(Entity):
     @property
     def attribute_sets(self) -> EntityCollection[AttributeSet]:
         """Gets the attributeSets property"""
-        from office365.common.attribute_set import AttributeSet
+        from office365.directory.attribute_set import AttributeSet
 
         return self.properties.get(
             "attributeSets",

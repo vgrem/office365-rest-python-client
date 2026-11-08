@@ -42,14 +42,20 @@ LIBRARY = index(office365)
 #: operations under ``office365/intune`` and 8 under ``office365/common``, and every one of
 #: them submits a request no permission is declared on yet. The rest of the tree is
 #: unchanged, so the debt grew by exactly the operations that pass added.
+#:
+#: The last move changed the map without touching the total: 85 types that sit in a product
+#: package were moved out of ``office365/common``, so four undeclared operations left it - two
+#: for ``directory`` and two for ``admin``. ``common`` 14 -> 10, ``directory`` 74 -> 76,
+#: ``admin`` 2 -> 4, and every other entry is the same number it was, because the count
+#: follows the file and the file changed address.
 PENDING: dict[str, int] = {
-    "admin": 2,
+    "admin": 4,
     "backuprestore": 1,
     "booking": 3,
-    "common": 14,
+    "common": 10,
     "communications": 23,
     "copilot": 4,
-    "directory": 74,
+    "directory": 76,
     "exchange": 1,
     "intune": 91,
     "onedrive": 413,

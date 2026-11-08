@@ -21,7 +21,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import key, odata
 
 if TYPE_CHECKING:
-    from office365.common.cross_tenant_identity_sync_policy_partner import (
+    from office365.directory.cross_tenant_identity_sync_policy_partner import (
         CrossTenantIdentitySyncPolicyPartner,
     )
     from office365.directory.service_provider_constraints import (
@@ -116,7 +116,7 @@ class CrossTenantAccessPolicyConfigurationPartner(Entity):
     @property
     def identity_synchronization(self) -> CrossTenantIdentitySyncPolicyPartner:
         """Gets the identitySynchronization property"""
-        from office365.common.cross_tenant_identity_sync_policy_partner import (
+        from office365.directory.cross_tenant_identity_sync_policy_partner import (
             CrossTenantIdentitySyncPolicyPartner,
         )
 

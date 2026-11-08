@@ -26,7 +26,7 @@ from office365.security.sensor_candidate_activation_configuration import (
 from office365.security.settings_container import SettingsContainer
 
 if TYPE_CHECKING:
-    from office365.common.custom_authentication_extension import (
+    from office365.directory.custom_authentication_extension import (
         CustomAuthenticationExtension,
     )
     from office365.directory.identities.authentication_events_flow import (
@@ -185,7 +185,7 @@ class IdentityContainer(Entity):
     @property
     def custom_authentication_extensions(self) -> EntityCollection[CustomAuthenticationExtension]:
         """Gets the customAuthenticationExtensions property"""
-        from office365.common.custom_authentication_extension import (
+        from office365.directory.custom_authentication_extension import (
             CustomAuthenticationExtension,
         )
 

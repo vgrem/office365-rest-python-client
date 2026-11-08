@@ -8,11 +8,11 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.granular_site_restore_artifact import (
+    from office365.backuprestore.granular_site_restore_artifact import (
         GranularSiteRestoreArtifact,
     )
-    from office365.common.site_restore_artifact import SiteRestoreArtifact
-    from office365.common.site_restore_artifacts_bulk_addition_request import (
+    from office365.backuprestore.site_restore_artifact import SiteRestoreArtifact
+    from office365.backuprestore.site_restore_artifacts_bulk_addition_request import (
         SiteRestoreArtifactsBulkAdditionRequest,
     )
 
@@ -22,7 +22,7 @@ class SharePointRestoreSession(RestoreSessionBase):
     @property
     def granular_site_restore_artifacts(self) -> EntityCollection[GranularSiteRestoreArtifact]:
         """Gets the granularSiteRestoreArtifacts property"""
-        from office365.common.granular_site_restore_artifact import (
+        from office365.backuprestore.granular_site_restore_artifact import (
             GranularSiteRestoreArtifact,
         )
 
@@ -39,7 +39,7 @@ class SharePointRestoreSession(RestoreSessionBase):
     @property
     def site_restore_artifacts(self) -> EntityCollection[SiteRestoreArtifact]:
         """Gets the siteRestoreArtifacts property"""
-        from office365.common.site_restore_artifact import SiteRestoreArtifact
+        from office365.backuprestore.site_restore_artifact import SiteRestoreArtifact
 
         return self.properties.get(
             "siteRestoreArtifacts",
@@ -52,7 +52,7 @@ class SharePointRestoreSession(RestoreSessionBase):
     @property
     def site_restore_artifacts_bulk_addition_requests(self) -> EntityCollection[SiteRestoreArtifactsBulkAdditionRequest]:
         """Gets the siteRestoreArtifactsBulkAdditionRequests property"""
-        from office365.common.site_restore_artifacts_bulk_addition_request import (
+        from office365.backuprestore.site_restore_artifacts_bulk_addition_request import (
             SiteRestoreArtifactsBulkAdditionRequest,
         )
 

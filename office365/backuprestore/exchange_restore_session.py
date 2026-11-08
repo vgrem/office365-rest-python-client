@@ -8,11 +8,11 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.granular_mailbox_restore_artifact import (
+    from office365.backuprestore.granular_mailbox_restore_artifact import (
         GranularMailboxRestoreArtifact,
     )
-    from office365.common.mailbox_restore_artifact import MailboxRestoreArtifact
-    from office365.common.mailbox_restore_artifacts_bulk_addition_request import (
+    from office365.backuprestore.mailbox_restore_artifact import MailboxRestoreArtifact
+    from office365.backuprestore.mailbox_restore_artifacts_bulk_addition_request import (
         MailboxRestoreArtifactsBulkAdditionRequest,
     )
 
@@ -22,7 +22,7 @@ class ExchangeRestoreSession(RestoreSessionBase):
     @property
     def granular_mailbox_restore_artifacts(self) -> EntityCollection[GranularMailboxRestoreArtifact]:
         """Gets the granularMailboxRestoreArtifacts property"""
-        from office365.common.granular_mailbox_restore_artifact import (
+        from office365.backuprestore.granular_mailbox_restore_artifact import (
             GranularMailboxRestoreArtifact,
         )
 
@@ -39,7 +39,7 @@ class ExchangeRestoreSession(RestoreSessionBase):
     @property
     def mailbox_restore_artifacts(self) -> EntityCollection[MailboxRestoreArtifact]:
         """Gets the mailboxRestoreArtifacts property"""
-        from office365.common.mailbox_restore_artifact import MailboxRestoreArtifact
+        from office365.backuprestore.mailbox_restore_artifact import MailboxRestoreArtifact
 
         return self.properties.get(
             "mailboxRestoreArtifacts",
@@ -54,7 +54,7 @@ class ExchangeRestoreSession(RestoreSessionBase):
         self,
     ) -> EntityCollection[MailboxRestoreArtifactsBulkAdditionRequest]:
         """Gets the mailboxRestoreArtifactsBulkAdditionRequests property"""
-        from office365.common.mailbox_restore_artifacts_bulk_addition_request import (
+        from office365.backuprestore.mailbox_restore_artifacts_bulk_addition_request import (
             MailboxRestoreArtifactsBulkAdditionRequest,
         )
 

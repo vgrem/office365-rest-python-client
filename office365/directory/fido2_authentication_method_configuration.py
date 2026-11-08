@@ -9,10 +9,10 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.passkey_authentication_method_target import (
+    from office365.directory.passkey_authentication_method_target import (
         PasskeyAuthenticationMethodTarget,
     )
-    from office365.common.passkey_profile import PasskeyProfile
+    from office365.directory.passkey_profile import PasskeyProfile
 
 
 class Fido2AuthenticationMethodConfiguration(Entity):
@@ -44,7 +44,7 @@ class Fido2AuthenticationMethodConfiguration(Entity):
     @property
     def include_targets(self) -> EntityCollection[PasskeyAuthenticationMethodTarget]:
         """Gets the includeTargets property"""
-        from office365.common.passkey_authentication_method_target import (
+        from office365.directory.passkey_authentication_method_target import (
             PasskeyAuthenticationMethodTarget,
         )
 
@@ -59,7 +59,7 @@ class Fido2AuthenticationMethodConfiguration(Entity):
     @property
     def passkey_profiles(self) -> EntityCollection[PasskeyProfile]:
         """Gets the passkeyProfiles property"""
-        from office365.common.passkey_profile import PasskeyProfile
+        from office365.directory.passkey_profile import PasskeyProfile
 
         return self.properties.get(
             "passkeyProfiles",

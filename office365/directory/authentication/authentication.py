@@ -9,12 +9,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.external_authentication_method import (
-        ExternalAuthenticationMethod,
-    )
-    from office365.common.software_oath_authentication_method import (
-        SoftwareOathAuthenticationMethod,
-    )
     from office365.directory.authentication.methods.resource_account_key_authentication_method import (
         ResourceAccountKeyAuthenticationMethod,
     )
@@ -26,6 +20,12 @@ if TYPE_CHECKING:
     )
     from office365.directory.authentication.windows_hello_for_business_authentication_method import (
         WindowsHelloForBusinessAuthenticationMethod,
+    )
+    from office365.directory.external_authentication_method import (
+        ExternalAuthenticationMethod,
+    )
+    from office365.directory.software_oath_authentication_method import (
+        SoftwareOathAuthenticationMethod,
     )
     from office365.onedrive.operations.long_running import LongRunningOperation
 
@@ -124,7 +124,7 @@ class Authentication(Entity):
     @property
     def external_authentication_methods(self) -> EntityCollection[ExternalAuthenticationMethod]:
         """Gets the externalAuthenticationMethods property"""
-        from office365.common.external_authentication_method import (
+        from office365.directory.external_authentication_method import (
             ExternalAuthenticationMethod,
         )
 
@@ -171,7 +171,7 @@ class Authentication(Entity):
     @property
     def software_oath_methods(self) -> EntityCollection[SoftwareOathAuthenticationMethod]:
         """Gets the softwareOathMethods property"""
-        from office365.common.software_oath_authentication_method import (
+        from office365.directory.software_oath_authentication_method import (
             SoftwareOathAuthenticationMethod,
         )
 

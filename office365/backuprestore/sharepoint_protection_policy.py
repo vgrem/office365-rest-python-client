@@ -8,9 +8,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.site_protection_rule import SiteProtectionRule
-    from office365.common.site_protection_unit import SiteProtectionUnit
-    from office365.common.site_protection_units_bulk_addition_job import (
+    from office365.backuprestore.site_protection_rule import SiteProtectionRule
+    from office365.backuprestore.site_protection_unit import SiteProtectionUnit
+    from office365.backuprestore.site_protection_units_bulk_addition_job import (
         SiteProtectionUnitsBulkAdditionJob,
     )
 
@@ -20,7 +20,7 @@ class SharePointProtectionPolicy(ProtectionPolicyBase):
     @property
     def site_inclusion_rules(self) -> EntityCollection[SiteProtectionRule]:
         """Gets the siteInclusionRules property"""
-        from office365.common.site_protection_rule import SiteProtectionRule
+        from office365.backuprestore.site_protection_rule import SiteProtectionRule
 
         return self.properties.get(
             "siteInclusionRules",
@@ -33,7 +33,7 @@ class SharePointProtectionPolicy(ProtectionPolicyBase):
     @property
     def site_protection_units(self) -> EntityCollection[SiteProtectionUnit]:
         """Gets the siteProtectionUnits property"""
-        from office365.common.site_protection_unit import SiteProtectionUnit
+        from office365.backuprestore.site_protection_unit import SiteProtectionUnit
 
         return self.properties.get(
             "siteProtectionUnits",
@@ -46,7 +46,7 @@ class SharePointProtectionPolicy(ProtectionPolicyBase):
     @property
     def site_protection_units_bulk_addition_jobs(self) -> EntityCollection[SiteProtectionUnitsBulkAdditionJob]:
         """Gets the siteProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.site_protection_units_bulk_addition_job import (
+        from office365.backuprestore.site_protection_units_bulk_addition_job import (
             SiteProtectionUnitsBulkAdditionJob,
         )
 

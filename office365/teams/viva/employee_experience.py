@@ -11,8 +11,8 @@ from office365.teams.viva.learning.courses.activity import LearningCourseActivit
 from office365.teams.viva.learning.provider import LearningProvider
 
 if TYPE_CHECKING:
-    from office365.common.engagement_async_operation import EngagementAsyncOperation
-    from office365.common.engagement_role import EngagementRole
+    from office365.teams.engagement_async_operation import EngagementAsyncOperation
+    from office365.teams.engagement_role import EngagementRole
 
 
 class EmployeeExperience(Entity):
@@ -61,7 +61,7 @@ class EmployeeExperience(Entity):
     @property
     def engagement_async_operations(self) -> EntityCollection[EngagementAsyncOperation]:
         """Gets the engagementAsyncOperations property"""
-        from office365.common.engagement_async_operation import EngagementAsyncOperation
+        from office365.teams.engagement_async_operation import EngagementAsyncOperation
 
         return self.properties.get(
             "engagementAsyncOperations",
@@ -74,7 +74,7 @@ class EmployeeExperience(Entity):
     @property
     def roles(self) -> EntityCollection[EngagementRole]:
         """Gets the roles property"""
-        from office365.common.engagement_role import EngagementRole
+        from office365.teams.engagement_role import EngagementRole
 
         return self.properties.get(
             "roles",
