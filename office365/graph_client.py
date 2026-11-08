@@ -32,6 +32,7 @@ from office365.directory.identitygovernance.governance import IdentityGovernance
 from office365.directory.internal.paths.me import MePath
 from office365.directory.invitations.collection import InvitationCollection
 from office365.directory.licenses.collection import SubscribedSkuCollection
+from office365.directory.licenses.tenant import Licences
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.permissions.grants.oauth2_collection import OAuth2PermissionGrantCollection
 from office365.directory.permissions.grants.resource_specific import (
@@ -322,11 +323,10 @@ class GraphClient(ClientRuntimeContext):
         """
         if not keywords:
             return self
-        skus = self.subscribed_skus.get().execute_query()
         matched = [
-            s.sku_part_number
-            for s in skus
-            if s.sku_part_number and any(keyword.lower() in s.sku_part_number.lower() for keyword in keywords)
+            sku.sku_part_number
+            for sku in Licences.of_tenant(self)
+            if any(keyword.lower() in (sku.sku_part_number or "").lower() for keyword in keywords)
         ]
         if not matched:
             print(f"Missing required license: no subscribed SKU matches: {', '.join(keywords)}")

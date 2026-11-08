@@ -4,11 +4,13 @@ List every license (subscription SKU) the tenant owns, with its service plans.
 The fastest way to answer "which Microsoft 365 products / add-ons do we have?"
 — for example whether Microsoft 365 Backup, Copilot, or an E5 seat pool is
 present. Every SKU shows seat usage and, with ``--plans``, the individual
-service plans it unlocks.
+service plans it unlocks. ``--carrying`` asks the reverse question — which
+product carries a capability, e.g. which SKU turns on ``RECORDS_MANAGEMENT``.
 
     python list_skus.py
     python list_skus.py --plans
     python list_skus.py --filter backup
+    python list_skus.py --carrying RECORDS_MANAGEMENT
 
 Requires application permission ``Organization.Read.All``.
 
@@ -22,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 
+from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
@@ -30,16 +33,21 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="List tenant licenses (subscribed SKUs)")
     parser.add_argument("--filter", help="Only show SKUs whose part number or a service plan contains this text")
     parser.add_argument("--plans", action="store_true", help="List every service plan of each SKU")
+    parser.add_argument("--carrying", help="Only show SKUs whose provisioned plans include this name")
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     skus = client.subscribed_skus.get().execute_query()
+    licences = Licences(skus)
+    carrying = {sku.sku_part_number for sku in licences.carrying(args.carrying)} if args.carrying else None
 
     needle = args.filter.upper() if args.filter else None
     shown = 0
     for sku in skus:
         part_number = sku.sku_part_number or "?"
         plan_names = [plan.servicePlanName or "" for plan in sku.service_plans]
+        if carrying is not None and part_number not in carrying:
+            continue
         haystack = " ".join([part_number, *plan_names]).upper()
         if needle is not None and needle not in haystack:
             continue
@@ -62,6 +70,8 @@ def main() -> None:
 
     if needle is not None and shown == 0:
         print(f"No SKU or service plan matched {args.filter!r}.")
+    elif carrying is not None and shown == 0:
+        print(f"No SKU carries {args.carrying!r}.")
     else:
         suffix = f" matching {args.filter!r}" if needle is not None else ""
         print(f"Licenses{suffix}: {shown}")

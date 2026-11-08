@@ -302,6 +302,35 @@ capabilities_of(Message.send).declarations["send"].delegated  # ('Mail.Send',)
 - It decides nothing. A missing declaration is reported, not repaired and not refused,
   and the warn-or-raise policy belongs to the caller that knows whether it matters.
 
+### Licensing
+
+`capabilities_of` says what a declaration *asks* for; `Licences` says what an identity or a
+tenant actually *has*. Two licence lists look alike and answer different questions:
+`me/licenseDetails` is what the signed-in user was assigned, `subscribedSkus` is what the
+tenant bought — a bought SKU assigned to nobody appears only in the second.
+
+```python
+from office365.directory.licenses.tenant import Licences
+
+held = Licences.of_user(client)  # or Licences.of_tenant(client)
+held.holds("M365_E5", "SPE_E5")  # one of these seats is enough
+held.names  # SKU part numbers and provisioned plan names
+[sku.sku_part_number for sku in held.carrying("RECORDS_MANAGEMENT")]
+```
+
+- A **SKU part number is packaging, not capability.** `DEVELOPERPACK_E5` carries
+  `RECORDS_MANAGEMENT`, so a check written against the retail SKUs alone reports "not
+  licensed" for a seat that can make the call. `names` returns both spellings, so a
+  requirement names whichever one answers the question it asks.
+- Only a plan whose `provisioningStatus` is `Success` counts. A plan the tenant bought but has
+  not provisioned is not held yet.
+- Nothing is cached: licences change while a program runs, and a memoised answer is the wrong
+  one right after the grant that made it true. Cache where you know when to forget.
+- It reads only what this tenant owns. The public SKU × service-plan catalogue is Microsoft's
+  published data, not something Graph returns: a product nobody has bought cannot be
+  discovered this way, so "does the tenant own it" and "is this seat entitled to it" stay
+  two questions.
+
 ## Error handling
 
 Every failed request raises a `ClientRequestException`, dispatched to the most

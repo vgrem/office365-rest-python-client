@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any, Iterable
 
+from office365.directory.licenses.tenant import Licences
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
     _cached_delegated_permissions,
@@ -35,26 +36,15 @@ from office365.runtime.client_request_exception import ClientRequestException
 
 
 @lru_cache(maxsize=1)
-def _cached_licenses(client: GraphClient) -> tuple[str, ...]:
-    """The license names the signed-in user holds: SKU part numbers, and the plans inside them.
+def _cached_licenses(client: GraphClient) -> frozenset[str]:
+    """The license names the signed-in user holds, memoised for the life of a run.
 
-    A SKU part number is packaging, not capability. ``DEVELOPERPACK_E5`` is a developer seat
-    that carries ``RECORDS_MANAGEMENT`` and ``PURVIEW_DISCOVERY``; a requirement that named only
-    the retail SKUs (``SPE_E5``, ``M365_E5``, ...) answered "not licensed" for a user who could
-    make the call, because the skip decision was built out of a label. Both spellings are
-    returned, so a declaration may name whichever one answers the question it asks - the plan
-    when the fact is a capability, the SKU when the fact is packaging. A plan the tenant has
-    not provisioned is not returned: it is not held yet.
+    The projection is the library's - :attr:`~office365.directory.licenses.tenant.Licences.names`
+    returns SKU part numbers *and* provisioned plan names, which is the vocabulary a declaration
+    may name. Only the cache is the harness's, because the harness is what knows when a grant
+    makes it stale.
     """
-    names: list[str] = []
-    for detail in client.me.license_details.get().execute_query():
-        sku = detail.get_property("skuPartNumber")
-        if sku:
-            names.append(sku)
-        for plan in detail.service_plans:
-            if plan.servicePlanName and plan.provisioningStatus == "Success":
-                names.append(plan.servicePlanName)
-    return tuple(names)
+    return Licences.of_user(client).names
 
 
 def forget_cached_tenant_facts() -> None:
@@ -117,7 +107,7 @@ class TenantState:
             if requirement.roles or requirement.bypass_roles:
                 roles = frozenset(role.display_name for role in _cached_directory_roles(client))
             if requirement.licenses:
-                licenses = frozenset(_cached_licenses(client))
+                licenses = _cached_licenses(client)
         except (AttributeError, ClientRequestException) as exc:
             # Roles and SKUs are the only facts that can be unprovable without making the whole
             # answer unknown, because only they can be stated as an *alternative*: a bypass role
