@@ -1546,30 +1546,35 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @odata(name="enableAndroidDeviceAdministratorEnrollment", beta=True, selectable=False)
     def enable_android_device_administrator_enrollment(self) -> Self:
         """enableAndroidDeviceAdministratorEnrollment operation."""
         qry = ServiceOperationQuery(self, "enableAndroidDeviceAdministratorEnrollment", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @odata(name="enableEndpointPrivilegeManagement", beta=True, selectable=False)
     def enable_endpoint_privilege_management(self) -> Self:
         """enableEndpointPrivilegeManagement operation."""
         qry = ServiceOperationQuery(self, "enableEndpointPrivilegeManagement", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @odata(name="enableLegacyPcManagement", beta=True, selectable=False)
     def enable_legacy_pc_management(self) -> Self:
         """enableLegacyPcManagement operation."""
         qry = ServiceOperationQuery(self, "enableLegacyPcManagement", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @odata(name="enableUnlicensedAdminstrators", beta=True, selectable=False)
     def enable_unlicensed_adminstrators(self) -> Self:
         """enableUnlicensedAdminstrators operation."""
         qry = ServiceOperationQuery(self, "enableUnlicensedAdminstrators", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @odata(name="sendCustomNotificationToCompanyPortal", beta=True, selectable=False)
     def send_custom_notification_to_company_portal(
         self, notification_title: str, notification_body: str, groups_to_notify: list[str]
     ) -> Self:
@@ -1598,6 +1603,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @odata(name="scopedForResource", beta=True, selectable=False)
     def scoped_for_resource(self, resource: str) -> ClientResult[bool]:
         """scopedForResource operation.
 
