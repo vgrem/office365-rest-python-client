@@ -1,18 +1,21 @@
 """Offline tests for the generic long-running-operation (LRO) poller.
 
-Covers :mod:`office365.runtime.lro`: parsing Graph/Azure operation-status
-payloads, terminal-state detection, poll-URL resolution
-(``Operation-Location`` / ``Azure-AsyncOperation`` / ``Location`` /
-``original-url``), ``Retry-After``-driven pacing, throttling retries, failure and
-timeout propagation, continuation-token round-tripping, and the awaitable twin
-driven through a native-async transport.
+Covers :mod:`office365.runtime.lro`: parsing Graph/Azure operation-status payloads,
+classifying them (a permanent HTTP error raises, a partially succeeded job is an
+outcome), poll-URL resolution (``Operation-Location`` / ``Azure-AsyncOperation`` /
+``Location`` / ``original-url``), ``Retry-After``-driven pacing, continuation-token
+round-tripping, the cancel request, and the awaitable twin driven through a
+native-async transport.
+
+The loop itself -- wait, stream, astream, the deadline, jitter, the cancellation
+family -- is :class:`~office365.runtime.operation.Operation`, and is tested once, as
+a base, in ``test_operation.py``. A subclass that inherits it has nothing to add.
 """
 
 from __future__ import annotations
 
 import asyncio
 import threading
-import time
 from datetime import datetime, timezone
 from typing import Any
 
@@ -26,7 +29,6 @@ from office365.runtime.lro import (
     OperationFailedError,
     OperationPoller,
     OperationStatus,
-    OperationTimeoutError,
     resolve_poll_url,
 )
 from office365.sharepoint.client_context import ClientContext
@@ -132,11 +134,10 @@ def test_status_reads_timestamps_and_retry_after():
     assert status.last_action_date_time == datetime(2026, 10, 21, 7, 5, 30, tzinfo=timezone.utc)
     assert status.retry_after == 7.0  # noqa: PLR2004
 
-
-def test_an_unparseable_timestamp_is_absent():
-    status = OperationStatus.from_response(_response(202, {"status": "inProgress", "createdDateTime": "soon"}))
-    assert status.created_date_time is None
-    assert status.retry_after is None
+    # A value the parser cannot read is absent, never a guess.
+    unreadable = OperationStatus.from_response(_response(202, {"status": "inProgress", "createdDateTime": "soon"}))
+    assert unreadable.created_date_time is None
+    assert unreadable.retry_after is None
 
 
 # -- poll-URL resolution ----------------------------------------------------
@@ -165,43 +166,6 @@ def test_from_response_builds_poller():
 # -- synchronous polling ----------------------------------------------------
 
 
-def test_wait_returns_on_completed_status():
-    clock = _Clock()
-    transport = ScriptedTransport(
-        [
-            _lro(202, {"status": "inProgress", "percentageComplete": 10}, {"Retry-After": "1"}),
-            _lro(202, {"status": "completed", "resourceId": "42"}),
-        ]
-    )
-    poller = _poller(transport, clock)
-    seen: list[OperationStatus] = []
-    status = poller.wait(on_progress=seen.append)
-    assert status.is_success and status.resource_id == "42"
-    assert transport.calls == 2  # noqa: PLR2004
-    assert [s.status for s in seen] == ["inProgress", "completed"]
-    assert clock.t == 1.0  # the Retry-After gap was honored
-    assert poller.last_status is status
-
-
-def test_wait_raises_on_failure():
-    transport = ScriptedTransport([_lro(202, {"status": "failed", "error": {"code": "x"}})])
-    poller = _poller(transport, _Clock())
-    with pytest.raises(OperationFailedError) as excinfo:
-        poller.wait()
-    assert excinfo.value.status.status == "failed"
-
-
-def test_wait_times_out():
-    clock = _Clock()
-    transport = ScriptedTransport([_lro(202, {"status": "inProgress"}) for _ in range(10)])
-    poller = _poller(transport, clock, interval=2, timeout=5)
-    with pytest.raises(OperationTimeoutError) as excinfo:
-        poller.wait()
-    assert excinfo.value.timeout == 5  # noqa: PLR2004
-    # two 2s gaps elapse, then the third poll would exceed the deadline
-    assert clock.t == 4.0  # noqa: PLR2004
-
-
 def test_wait_raises_client_exception_on_permanent_error():
     from office365.runtime.client_request_exception import ClientRequestException
 
@@ -211,25 +175,6 @@ def test_wait_raises_client_exception_on_permanent_error():
 
 
 # -- streaming snapshots ----------------------------------------------------
-
-
-def test_stream_yields_every_snapshot():
-    clock = _Clock()
-    transport = ScriptedTransport(
-        [
-            _lro(202, {"status": "inProgress", "percentageComplete": 10}, {"Retry-After": "1"}),
-            _lro(202, {"status": "inProgress", "percentageComplete": 60}),
-            _lro(202, {"status": "completed"}),
-        ]
-    )
-    poller = _poller(transport, clock)
-    seen = list(poller.stream())
-    assert [s.status for s in seen] == ["inProgress", "inProgress", "completed"]
-    assert [s.percentage_complete for s in seen] == [10.0, 60.0, None]
-    assert seen[-1].is_success
-    # The first gap is the server's Retry-After, the second the default interval:
-    # a stream is the same loop, so it paces identically.
-    assert clock.t == 6.0  # noqa: PLR2004
 
 
 def test_stream_returns_a_failed_terminal_status_instead_of_raising():
@@ -343,24 +288,6 @@ def test_wait_async_forwards_cancel_on_task_cancel():
     with pytest.raises(asyncio.CancelledError):
         asyncio.run(poller.wait_async(cancel_on_task_cancel=True))
     assert transport.calls == 2  # noqa: PLR2004 - one poll + one cancel request
-
-
-def test_cancel_wakes_blocking_wait_promptly():
-    clock = _Clock()
-    transport = ScriptedTransport([_lro(202, {"status": "inProgress"}, {"Retry-After": "2"})])
-    poller = OperationPoller(_ctx(), _MONITOR, transport=transport, clock=clock.now, interval=2)
-
-    timer = threading.Timer(0.05, poller.cancel)
-    timer.start()
-    started = time.monotonic()
-    try:
-        with pytest.raises(OperationCancelledError):
-            poller.wait()
-    finally:
-        timer.cancel()
-    # Would take ~2s (the Retry-After) if the wait were not interruptible.
-    assert time.monotonic() - started < 1.0
-    assert transport.calls == 1
 
 
 def test_cancel_async_wakes_wait_async_promptly():

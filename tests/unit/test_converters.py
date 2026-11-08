@@ -22,6 +22,8 @@ from office365.directory.users.password_profile import PasswordProfile
 from office365.directory.users.profile import UserProfile
 from office365.directory.users.user import User
 from office365.migration.offline import offline_context
+from office365.onedrive.operations.long_running import LongRunningOperation
+from office365.onedrive.operations.longrunningoperationstatus import LongRunningOperationStatus
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
@@ -370,6 +372,17 @@ class TestDeclaredType(unittest.TestCase):
         self.assertEqual(declared_type(UserProfile, "userPrincipalName"), str)
         self.assertEqual(declared_type(UserProfile, "accountEnabled"), bool)
         self.assertEqual(declared_type(PasswordProfile, "forceChangePasswordNextSignIn"), bool)
+
+    def test_an_enum_value_the_snapshot_does_not_list_is_kept_as_sent(self):
+        # The engine reports ``completed`` where the entity enum says ``succeeded``.
+        # Coercing an unknown member to ``None`` would write null back over the value
+        # the service reported on the next update.
+        operation = LongRunningOperation(None)
+        operation.set_property("status", "completed")
+        self.assertEqual(operation.properties["status"], "completed")
+
+        operation.set_property("status", "succeeded")
+        self.assertIs(operation.status, LongRunningOperationStatus.succeeded)
 
     def test_entity_reserved_word_getter(self):
         # ``CallRecord.type`` is exposed as ``type_`` (a reserved word), which
