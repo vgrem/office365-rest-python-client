@@ -25,6 +25,7 @@ def record_to_json(payload: Any) -> str:
     """Serialize a record to the canonical JSON text used when persisting it.
 
     Non-JSON values (entity/datetime objects) fall back to ``str`` so the text is
-    stable — source and target checksums both use this form.
+    stable — source and target checksums both use this form. The text is
+    compact (no indentation or whitespace after separators) to keep it small.
     """
-    return json.dumps(payload, indent=2, default=str)
+    return json.dumps(payload, separators=(",", ":"), default=str)
