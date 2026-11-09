@@ -10,7 +10,7 @@ created::
     Event._schema.columns  # the columns $select accepts
     Event._schema.navigations  # what $expand can reach
     Event._schema.readonly  # what a request may not send
-    Event._schema.content_columns  # what a request may send
+    Event._schema.serializable  # what a request serializes
     Event._schema.by_attr  # python attribute -> OData name
     Event._schema.declared_limits()  # the @limit declarations of the type and its members
 
@@ -221,22 +221,29 @@ class TypeSchema:
         return frozenset(name for name, declared in self.properties.items() if declared.readonly)
 
     @cached_property
-    def content_columns(self) -> Tuple[str, ...]:
-        """The columns a request may send: the projection minus the names the service assigns.
+    def serializable(self) -> frozenset[str]:
+        """OData names a request serializes: :attr:`columns` minus :attr:`readonly`.
 
-        A name stays here when nothing declares the service owns it, so the answer is the
-        model's own statement of direction rather than a guess from the name. A navigation
-        is already absent from :attr:`columns`, so a link the service also assigns
-        (``Event.attachments``) is left out once -- subtracting ``readonly`` from the
-        columns instead counts it as a column a request could send, which is what this
-        projection replaces.
+        The mirror of :attr:`readonly`, "a response carries them, a request does not": a
+        name is here unless something declares the service owns it, so the answer is the
+        model's statement of direction rather than a guess from the name. A navigation is
+        already absent from :attr:`columns`, so a link the service also assigns
+        (``Event.attachments``) is left out once.
+
+        Serialized in the direction a request goes, which is what makes the name exact
+        rather than convenient: ``to_json(profile=None)`` -- a response, a hydration, a
+        comparison -- serializes every stored column, readonly ones included, and the
+        restriction lives in the one request branch that drops them (``if k not in
+        readonly``). So the axis is what a payload carries, not what the model accepts: a
+        name the service assigns is still *settable* -- a hydration and ``set_property``
+        both write it -- which is why ``writable`` and ``settable`` were the wrong borrow.
 
         A column the type does not declare is absent here and from :attr:`columns` alike,
         so this answers "may I send this name?" for the model's vocabulary and not "is
-        this key content?" for a payload: a list's site columns exist on the wire and not
-        in the CSDL, and a caller filtering a record by this set would drop them.
+        this field settable?" for one payload: a list's site columns exist on the wire and
+        not in the CSDL, and a caller filtering a record by this set would drop them.
         """
-        return tuple(name for name in self.columns if name not in self.readonly)
+        return frozenset(name for name in self.columns if name not in self.readonly)
 
     @cached_property
     def persistable(self) -> frozenset[str]:

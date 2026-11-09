@@ -19,6 +19,36 @@ Two rules keep the names predictable:
 - Collections use `to_*`/`from_*`; files/folders use `read_*`/`write_*` and act on
   a file's **content** (metadata stays as plain properties).
 
+## Vocabulary
+
+Six words carry the pipeline, and each names something the others are not:
+
+| Word | Is | Is not |
+|---|---|---|
+| **item** | a model instance (`User`, `ListItem`, `DriveItem`) | a dict |
+| **row** | cells as a source delivers them (a CSV line, an Excel or DataFrame row), usually text | a typed value |
+| **record** | a `dict` keyed by the declared OData names, in declaration order | an item |
+| **format** | bytes on a handle: csv, ndjson, json, excel, parquet, orc, feather, sql, dataframe | a record shape |
+| **profile** | how the wire spells a value (`JsonProfile`, `as_held()`, `scoped()`) | a format |
+| **projection** | the set of names one direction carries, and the function that makes it | a `$select` alone |
+
+Direction is a separate axis, and the type states it once:
+
+| Question | Answered by |
+|---|---|
+| What does the type declare? | `schema.columns` |
+| May a request serialize this name? | `schema.serializable` yes, `schema.readonly` no |
+| Did the caller change it? | the item's changes, set by `set_property()` |
+| Must it be sent even when unchanged? | `schema.persistable` — the members a `PATCH` replaces whole (`toRecipients`, `members`, `checklist`) |
+
+A request serializes `serializable ∩ (changed ∪ persistable)` — a delta, not the
+*type*. An export carries `columns`, because a read projection has no direction to lose:
+`id` and `createdDateTime` are part of what the type is. An import sits between the two
+and may only set what a request may carry.
+
+`serialize`/`deserialize` name the *mechanism* — a typed value ↔ its wire spelling — never
+a set of names: a `readonly` column is serialized like any other, it is only not sent.
+
 ## Quick start
 
 ```python

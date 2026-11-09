@@ -231,7 +231,7 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: says a ``MERGE`` may, and ``HexCid``/``UserIdentityType``. A name is not evidence.
 #: Three types the migration layer also creates, which no ``MERGE`` can probe because the
 #: create is the only write they have. A ``NavigationNode`` is posted from a creation-information
-#: object, and its three sendable columns are exactly that object's fields. A ``RoleDefinition``
+#: object, and its three serializable columns are exactly that object's fields. A ``RoleDefinition``
 #: is posted with its four fields as parameters, so the only column the service answers with is
 #: the ``Id`` -- which is declared. And SharePoint has no update for an attachment at all:
 #: ``attachments/add`` takes the name as a parameter and answers with the name and both paths,
@@ -249,7 +249,7 @@ _UNDECLARED = {
 
 def _undeclared(model: type) -> int:
     """The columns of ``model`` that no declaration says the service owns."""
-    return len(TypeSchema.of(model).content_columns)
+    return len(TypeSchema.of(model).serializable)
 
 
 def test_a_created_type_says_which_columns_it_does_not_send() -> None:

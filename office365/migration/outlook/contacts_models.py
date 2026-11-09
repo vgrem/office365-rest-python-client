@@ -65,7 +65,7 @@ CONTACT_COLUMNS = _CONTACT.columns
 #: replay set is a projection of the same declarations the export selects — a column the
 #: model gains is exported, replayed and verified without a function here changing, and the
 #: export's own bookkeeping is excluded for the same reason: not being declared.
-_RESTORED = frozenset(Contact._schema.content_columns)
+_RESTORED = Contact._schema.serializable
 
 #: The five components of a Graph ``physicalAddress`` in the order a vCard ``ADR`` line
 #: renders them — ``pobox;extended;street;locality;region;code;country`` has two empty

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Breaking changes
 
+- **`TypeSchema.content_columns` is now `serializable`.** The old name said *content*,
+  which in SharePoint already means a content type; the property answers one question — does
+  a request serialize this name? — and it is a frozenset for the same reason `.readonly` is:
+  the set is a fact about direction, not an ordered projection (`.columns` carries the
+  order). It reads with its two neighbours on one axis: `readonly` is never serialized,
+  `serializable` may be, `persistable` always is. The word carries the request direction
+  only: `to_json(profile=None)` — a response, a hydration, a comparison — serializes every
+  stored column, and a `readonly` column is still settable.
+
 - **`select()` adds to the projection instead of replacing it.** Calling it twice used to
   keep only the second set of names; it now keeps both, so a method that selects a property
   it depends on (a filter's identity, a child to fan out over, the key a read addresses)
