@@ -9,7 +9,7 @@ explicit type is given. Special values (``Now``/``Today``/``Month``/``UserID``/
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date
 from enum import Enum
 from typing import Any, Optional
 from xml.sax.saxutils import escape, quoteattr
@@ -42,7 +42,7 @@ def infer_value_type(value: Any) -> ValueType:
         return ValueType.Integer
     if isinstance(value, float):
         return ValueType.Number
-    if isinstance(value, (datetime, date)):
+    if isinstance(value, date):  # datetime is a date subclass
         return ValueType.DateTime
     return ValueType.Text
 
@@ -71,19 +71,24 @@ class Value:
         return self._type or infer_value_type(self._value)
 
     def to_xml(self) -> str:
-        attrs = [f"Type={quoteattr(self.value_type.value)}"]
+        # ValueType names never need attribute quoting.
+        attrs = f'Type="{self.value_type.value}"'
         if self._include_time_value:
-            attrs.append('IncludeTimeValue="TRUE"')
+            attrs += ' IncludeTimeValue="TRUE"'
         if self._lookup_id:
-            attrs.append('LookupId="TRUE"')
-        inner = self._child if self._child is not None else escape(self._format(self._value))
-        return f"<Value {' '.join(attrs)}>{inner}</Value>"
+            attrs += ' LookupId="TRUE"'
+        inner = self._child
+        if inner is None:
+            inner = self._format(self._value)
+            if not inner.isdigit():  # digits never need escaping
+                inner = escape(inner)
+        return f"<Value {attrs}>{inner}</Value>"
 
     @staticmethod
     def _format(value: Any) -> str:
-        if isinstance(value, bool):
+        if value is True or value is False:  # bool cannot be subclassed
             return "1" if value else "0"
-        if isinstance(value, (datetime, date)):
+        if isinstance(value, date):  # datetime is a date subclass
             return value.isoformat()
         return str(value)
 
