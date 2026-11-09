@@ -49,6 +49,40 @@ and may only set what a request may carry.
 `serialize`/`deserialize` name the *mechanism* — a typed value ↔ its wire spelling — never
 a set of names: a `readonly` column is serialized like any other, it is only not sent.
 
+### The conversion layer
+
+A value crosses the wire in one of two directions, and each side has its own verb — they
+are not synonyms:
+
+| Verb | Direction | Used by |
+|---|---|---|
+| `serialize_value` | stored → JSON | `to_json()`, a request body, a report |
+| `coerce_value` | raw → declared type | `set_property()`, a CSV cell, a response |
+| `converter_for` | a spec → the callable that coerces with it | `coerce=` on any `from_*` |
+| `parse_*` | one primitive (`parse_date`, `parse_uuid`, ...) | the arms both directions dispatch to |
+
+`coerce` is the inbound *function* word because it is the one already in users' hands
+(`coerce={column: converter}`); `deserialize` names the concept and no public spelling
+carries it, so it survives only in two internal helpers (`deserialize_declared`,
+`deserialize_nested`), and those are the ones that fold into the `coerce_*` family. A spec is a callable, a Python type, a type name, or a SharePoint
+`FieldType` — four spellings of one callable.
+
+One table decides what a declared type means, and both directions read it: a type the
+table names is a scalar; a type it does not name is an object (a `ClientValue`) or is not
+coercible at all. Two tables would drift into two meanings, and they already have.
+
+Gaps, in the order they hurt:
+
+- **`time` crosses neither direction.** No `parse_time`, and `serialize_value` passes it
+  through, so a `Edm.TimeOfDay` property — `Intune/IosUpdateConfiguration.active_hours_start`,
+  eight of them — builds a payload `json.dumps` refuses. `Decimal` has the same
+  serialization hole while coercing only on the import path.
+- **The two tables disagree about coverage.** `date`, `UUID` and `Decimal` coerce through
+  `coerce=` and not through `set_property`, so a property declared `Optional[UUID]` holds
+  a `str` at runtime, and `normalize_guid()` reconciles the two at every call site.
+- **`value.py` learns a declared type by reading a getter's source.** That is a schema
+  question, and it belongs beside `schema.wire_name`.
+
 ## Quick start
 
 ```python
