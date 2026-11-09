@@ -57,15 +57,15 @@ are not synonyms:
 | Verb | Direction | Used by |
 |---|---|---|
 | `serialize_value` | stored → JSON | `to_json()`, a request body, a report |
-| `coerce_value` | raw → declared type | `set_property()`, a CSV cell, a response |
-| `converter_for` | a spec → the callable that coerces with it | `coerce=` on any `from_*` |
+| `deserialize_value` | raw → declared type | `set_property()`, a response, a CSV cell |
+| `converter_for` | a `coerce=` spec → the callable it names | any `from_*` |
 | `parse_*` | one primitive (`parse_date`, `parse_uuid`, ...) | the arms both directions dispatch to |
 
-`coerce` is the inbound *function* word because it is the one already in users' hands
-(`coerce={column: converter}`); `deserialize` names the concept and no public spelling
-carries it, so it survives only in two internal helpers (`deserialize_declared`,
-`deserialize_nested`), and those are the ones that fold into the `coerce_*` family. A spec is a callable, a Python type, a type name, or a SharePoint
-`FieldType` — four spellings of one callable.
+`serialize` and `deserialize` are the mechanism, and they pair by direction. `coerce=`
+is no synonym for either: it is the *user's* per-column instruction, and `converter_for`
+is what turns one into the single-argument callable that deserializes a cell. A spec is a
+callable, a Python type, a type name, or a SharePoint `FieldType` — four spellings of one
+callable.
 
 One table decides what a declared type means, and both directions read it: a type the
 table names is a scalar; a type it does not name is an object (a `ClientValue`) or is not

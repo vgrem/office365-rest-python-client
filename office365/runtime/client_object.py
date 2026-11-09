@@ -19,8 +19,8 @@ from typing_extensions import Self
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.converters.value import (
-    coerce_value,
     declared_type,
+    deserialize_value,
     serialize_value,
     to_snake_case,
 )
@@ -499,7 +499,7 @@ class ClientObject:
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """Set a property, coercing the value to its declared type.
 
-        Uses the shared conversion core (``coerce_value``/``declared_type``) so
+        Uses the shared conversion core (``deserialize_value``/``declared_type``) so
         deserialization and the CSV/JSON pipeline use the same conversions.
 
         Args:
@@ -523,7 +523,7 @@ class ClientObject:
         # would otherwise be discarded).
         if isinstance(current, Enum) and name not in self._properties:
             current = None
-        self._properties[name] = coerce_value(declared_type(type(self), name), value, current, persist_changes)
+        self._properties[name] = deserialize_value(declared_type(type(self), name), value, current, persist_changes)
         return self
 
     def ensure_property(self, name: str) -> Self:

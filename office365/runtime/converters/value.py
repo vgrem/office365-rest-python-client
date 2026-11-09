@@ -2,7 +2,7 @@
 
 The shared conversion layer: ``serialize_value`` maps stored values to their JSON
 form (used by ``ClientObject``/``ClientValue``/``ClientValueCollection``
-``to_json``), and ``coerce_value``/``declared_type`` map raw values to their
+``to_json``), and ``deserialize_value``/``declared_type`` map raw values to their
 declared type (used by ``set_property``). Control information is not this
 layer's business: a profile attaches it (``JsonProfile.wrap``).
 """
@@ -297,7 +297,7 @@ def values_of(value: Any) -> Optional[list[Any]]:
     return items
 
 
-def coerce_value(target_type: Any, value: Any, current: Any, persist_changes: bool) -> Any:
+def deserialize_value(target_type: Any, value: Any, current: Any, persist_changes: bool) -> Any:
     """Coerce a raw value for storage by its declared type, falling back to the current instance.
 
     Declared scalars/enums go through ``deserialize_declared``; declared

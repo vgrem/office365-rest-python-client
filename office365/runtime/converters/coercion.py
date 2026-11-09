@@ -15,7 +15,7 @@ four resolve to the same single-argument callable here:
     {"legacy_room": my_parser}                # a column only you know about
 
 Columns you do not list are typed from the property type the model declares (applied at
-entity construction: ``set_property`` -> ``coerce_value``), and a column the type does
+entity construction: ``set_property`` -> ``deserialize_value``), and a column the type does
 not declare is dropped unless the destination accepts arbitrary columns -- a SharePoint
 list item does, a typed Graph entity does not.
 """

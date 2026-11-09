@@ -6,7 +6,7 @@ from typing import Any, ClassVar, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self, dataclass_transform
 
-from office365.runtime.converters.value import coerce_value, declared_type, serialize_value
+from office365.runtime.converters.value import declared_type, deserialize_value, serialize_value
 from office365.runtime.odata.json_format import JsonProfile, as_held
 from office365.runtime.schema import EMPTY, TypeSchema
 
@@ -83,7 +83,7 @@ class ClientValue:
             setattr(self, key, None)
             return self
         declared = declared_type(type(self), spelled)
-        setattr(self, key, coerce_value(declared, value, getattr(self, key, None), persist_changes))
+        setattr(self, key, deserialize_value(declared, value, getattr(self, key, None), persist_changes))
         return self
 
     def _storage_key(self, name: str) -> str:

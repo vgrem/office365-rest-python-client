@@ -41,7 +41,7 @@ from office365.runtime.converters.scalars import (
     wall_clock,
     wall_clock_text,
 )
-from office365.runtime.converters.value import _declared_cache, coerce_value, declared_type, serialize_value
+from office365.runtime.converters.value import _declared_cache, declared_type, deserialize_value, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.duration import Duration
@@ -396,7 +396,9 @@ class TestDeclaredType(unittest.TestCase):
 class TestCoerceValue(unittest.TestCase):
     def test_nested_client_value(self):
         current = PasswordProfile()
-        result = coerce_value(PasswordProfile, {"password": "x", "forceChangePasswordNextSignIn": "True"}, current, True)
+        result = deserialize_value(
+            PasswordProfile, {"password": "x", "forceChangePasswordNextSignIn": "True"}, current, True
+        )
         self.assertIs(result, current)
         self.assertEqual(current.password, "x")
         self.assertIs(current.forceChangePasswordNextSignIn, True)
