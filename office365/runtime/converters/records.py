@@ -252,34 +252,55 @@ def deserialize_records(
     if format is not None:
         records = reader_for(format)(records)
     resolved = resolve_converters(item_type, converters, allow_unknown)
+    warn = warnings.warn
+
+    def split_members(raw: Any) -> Any:
+        # A member is never empty: ``"p1; p2"`` is two plans, ``"; p1"`` is one.
+        if not isinstance(raw, str):
+            return raw
+        return [part for part in raw.split(LIST_SEPARATOR) if part]
+
+    def plan_for(key: str) -> tuple:
+        """How a column's cells are stored: (importable, unknown, path, leaf, convert).
+
+        Every row of an import shares its columns, so this -- the importable check, the
+        declared-type lookup, the dotted-key split and the collection check -- runs once
+        per column instead of once per cell.
+        """
+        if not _is_importable(key):
+            return False, False, None, key, None
+        convert = resolved.get(key)
+        *path, leaf = key.split("/")
+        declared = declared_type(item_type, path[0] if path else leaf)
+        if declared is None:
+            return True, not allow_unknown, path or None, leaf, convert
+        if not path and convert is None and _is_collection(declared):
+            convert = split_members
+        return True, False, path or None, leaf, convert
+
+    plans: dict[str, tuple] = {}
     deserialized: list[dict[str, Any]] = []
+    append = deserialized.append
     for record in cast("list[dict]", records):
         item: dict[str, Any] = {}
         for key, raw in record.items():
-            if not _is_importable(key):
-                continue
             if raw is None:
                 continue
-            converter = resolved.get(key)
-            if "/" in key:
-                nav = key.split("/", 1)[0]
-                if declared_type(item_type, nav) is None and not allow_unknown:
-                    warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
-                    continue
-                _set_nested(item, key, converter(raw) if converter is not None else raw)
+            try:
+                importable, unknown, path, leaf, convert = plans[key]
+            except KeyError:
+                importable, unknown, path, leaf, convert = plans[key] = plan_for(key)
+            if not importable:
                 continue
-            declared = declared_type(item_type, key)
-            if declared is None and not allow_unknown:
-                warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
+            if unknown:
+                warn(f"Skipping unknown column '{key}'", stacklevel=2)
                 continue
-            if converter is not None:
-                item[key] = converter(raw)
-            elif isinstance(raw, str) and declared is not None and _is_collection(declared):
-                # A member is never empty: ``"p1; p2"`` is two plans, ``"; p1"`` is one.
-                item[key] = [part for part in raw.split(LIST_SEPARATOR) if part]
+            value = raw if convert is None else convert(raw)
+            if path is None:
+                item[leaf] = value
             else:
-                item[key] = raw
-        deserialized.append(item)
+                _set_nested(item, path, leaf, value)
+        append(item)
     return deserialized
 
 
@@ -332,10 +353,9 @@ def _is_collection(target_type: Any) -> bool:
     )
 
 
-def _set_nested(record: dict[str, Any], key: str, value: Any) -> None:
-    """Re-nest a dotted header (``a/b/c``) into nested dicts."""
-    parts = key.split("/")
+def _set_nested(record: dict[str, Any], path: list[str], leaf: str, value: Any) -> None:
+    """Re-nest a dotted header (``a/b/c``, pre-split into its path and leaf) into nested dicts."""
     node = record
-    for part in parts[:-1]:
+    for part in path:
         node = node.setdefault(part, {})
-    node[parts[-1]] = value
+    node[leaf] = value
