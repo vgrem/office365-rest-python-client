@@ -45,7 +45,7 @@ def _permission_identity_ids(permission: Permission) -> set[str]:
     identity_sets += list(permission.granted_to_identities)
     ids: set[str] = set()
     for identity_set in identity_sets:
-        for _, identity in identity_set:
+        for _field, identity, _ in identity_set:
             principal_id = getattr(identity, "id", None)
             if principal_id:
                 ids.add(principal_id)

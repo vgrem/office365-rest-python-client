@@ -233,8 +233,12 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self._data = []
         return self
 
-    def __iter__(self) -> Iterator[ClientObjectT]:
-        """Iterate through all items, automatically handling paged results."""
+    def __iter__(self) -> Iterator[ClientObjectT]:  # pyright: ignore[reportIncompatibleMethodOverride]
+        """Iterate through all items, automatically handling paged results.
+
+        A collection iterates its children; ``ClientObject.__iter__`` iterates the
+        object's own fields, which is the serializer's question, not a container's.
+        """
         yield from self._data
 
         # Handle server-side paging: follow __next, yielding each new page only

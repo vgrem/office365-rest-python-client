@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, Iterator, List, Optional, Union
 
 from typing_extensions import Self
 
@@ -20,7 +20,8 @@ class ViewFieldCollection(Entity):
         items = self.items
         return len(items) if items else 0
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:  # pyright: ignore[reportIncompatibleMethodOverride]
+        """Iterate the field names in this view (a collection, not a field list)."""
         return iter(self.items or [])
 
     def __getitem__(self, index: int) -> str:
