@@ -78,8 +78,7 @@ class TestTenant(SPTestCase):
         target_site = self.client.site.select(["Id"]).get().execute_query()
         self.assertIsNotNone(target_site)
         self.assertIsNotNone(target_site.id)
-        result = self.tenant.get_lock_state_by_id(target_site.id)
-        self.tenant.execute_query()
+        result = self.tenant.get_lock_state_by_id(target_site.id).execute_query()
         self.assertIsNotNone(result.value)
 
     @requires_call(Tenant.get_site_properties_from_sharepoint_by_filters, flow="delegated")

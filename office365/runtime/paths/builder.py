@@ -1,5 +1,6 @@
 import json
 import re
+import uuid
 from datetime import date, datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Union
 from urllib.parse import quote
@@ -106,8 +107,11 @@ class ODataPathBuilder:
         Returns:
             str: The encoded string representation
         """
-        if isinstance(value, str):
-            return ODataPathBuilder._encode_string(value)
+        if isinstance(value, (str, uuid.UUID)):
+            # A guid is an ``Edm.Guid`` *string* literal: without this branch a
+            # ``uuid.UUID`` argument reached ``quote(str(...))`` and was sent bare,
+            # which SharePoint rejects as an invalid expression.
+            return ODataPathBuilder._encode_string(str(value))
         elif isinstance(value, bool):
             return str(value).lower()
         elif isinstance(value, (int, float)):
