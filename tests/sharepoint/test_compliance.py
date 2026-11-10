@@ -58,9 +58,10 @@ class TestCompliance(SPTestCase):
 
         The feature definition has to be installed in the farm first, which is a
         tenant-wide configuration: when it is missing the service refuses the
-        activation, and the library side of the contract (reading the activation
-        state from the collection, not from a null ``GetById``) is pinned offline in
-        ``tests/unit/test_feature_activation.py``.
+        activation. This is also the live evidence for the library side of the
+        contract — ``verify_if_activated`` reads the activation state from the
+        collection, because ``GetById`` answers null at site scope for every
+        feature, activated or not.
         """
         if TestCompliance.tag_name is None:
             self.skipTest("No compliance tags available on this tenant")
