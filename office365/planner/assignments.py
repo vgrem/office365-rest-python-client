@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from typing_extensions import Self
 
 from office365.planner.assignment import PlannerAssignment
 from office365.runtime.client_value import ClientValue
-from office365.runtime.converters.value import deserialize_value, serialize_value
-from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.converters.value import deserialize_value
 
 
 class PlannerAssignments(ClientValue):
@@ -43,7 +42,3 @@ class PlannerAssignments(ClientValue):
         """
         self.set_property(str(user_id), None)
         return self
-
-    def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:
-        """Serializes the assignments, preserving ``null`` entries used to unassign users."""
-        return {k: (None if v is None else serialize_value(v, profile)) for k, v in self}

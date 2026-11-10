@@ -17,21 +17,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, Iterator, Optional, Tuple, Union
 
 from office365.runtime.converters.value import serialize_value
-from office365.runtime.odata.dialect import BY_LEVEL, JsonDialect
+from office365.runtime.odata.dialect import BY_LEVEL, V4_NO_METADATA, JsonDialect
 from office365.runtime.schema import TypeSchema
 from office365.runtime.serialization import PropertyReceiver
-from office365.runtime.types.odata_property import ODataPropertyMeta
+from office365.runtime.types.odata_property import ODataPropertyMeta, request_version
 
 if TYPE_CHECKING:
     from office365.runtime.odata.v3.metadata_level import ODataV3MetadataLevel
     from office365.runtime.odata.v4.metadata_level import ODataV4MetadataLevel
-
-
-def as_held() -> JsonProfile:
-    """The profile that reads what ``to_json()`` writes with no profile: OData V4, no control information."""
-    from office365.runtime.odata.v4.json_format import V4JsonFormat  # local: the profile imports this module
-
-    return V4JsonFormat("none")
 
 
 class JsonProfile:
@@ -48,6 +41,9 @@ class JsonProfile:
 
     _default_dialect: ClassVar[JsonDialect]
     """The row a level this family does not know falls back to."""
+
+    addresses_version: ClassVar[bool] = True
+    """Whether this profile addresses a version of the service root, and is gated by it."""
 
     def __init__(self, metadata_level: Optional[Union[ODataV3MetadataLevel, ODataV4MetadataLevel, str]] = None):
         """
@@ -130,10 +126,11 @@ class JsonProfile:
 
         ``name`` is the property's *spelled* name (the OData one), whether ``owner`` holds
         it as a wire key or declares it on a Python attribute. A request carries what its
-        sender changed (or what a type always sends); a profile that spells something else,
+        sender changed (or what a type always sends) and never what the service assigns: a
+        read-only field is what a response carries. A profile that spells something else,
         such as a comparable form, decides for itself.
         """
-        return changed
+        return changed and not (declared is not None and declared.readonly)
 
     def scoped(self, model: Any, *, only: Optional[Iterable[str]] = None, without: Iterable[str] = ()) -> JsonProfile:
         """This profile, narrowed for one model to some of its properties.
@@ -153,6 +150,23 @@ class JsonProfile:
         """
         return spelled
 
+    def serialize(self, carrier: Any) -> Any:
+        """Spell one carrier -- an entity or a value -- as this profile's payload.
+
+        The carrier states what it holds, under the names its type declares; everything else
+        is the profile's: which fields a payload carries (:meth:`includes`), how their names
+        are spelled (a request addresses a root, which renames and gates them), and the
+        control information around the result (:meth:`wrap`). This is the write half of
+        :meth:`hydrate` -- ``x.hydrate(y.to_json())`` reads back what ``y.to_json()`` wrote.
+        """
+        schema = TypeSchema.of(carrier)
+        version = request_version(getattr(carrier, "context", None)) if self.addresses_version else None
+        spelled: Dict[str, Any] = {}
+        for name, value, changed in carrier:
+            if self.includes(carrier, schema.properties.get(name), name, changed):
+                spelled[schema.wire_name(name, version)] = serialize_value(value, self)
+        return self.wrap(carrier, self.refine(spelled, schema.properties.values()))
+
     def build_payload(self, source: Any) -> Any:
         """Serialize a query's parameters into the body the service will read.
 
@@ -167,13 +181,7 @@ class JsonProfile:
         Returns:
             The JSON-ready body
         """
-        if source is None:
-            return {}
-        if isinstance(source, dict):
-            return {k: self.build_payload(v) for k, v in source.items() if v is not None}
-        if isinstance(source, (list, tuple)):
-            return [self.build_payload(item) for item in source]
-        return serialize_value(source, self)
+        return {} if source is None else serialize_value(source, self, skip_none=True)
 
     def hydrate(
         self, target: PropertyReceiver, payload: Any, wrapper: Optional[str] = None, persist_changes: bool = False
@@ -240,11 +248,6 @@ class JsonProfile:
             yield alias, value
 
 
-def _declared_fields(model: Any) -> Iterable[ODataPropertyMeta]:
-    """The declarations of a model type, whichever carrier it stated them on."""
-    return TypeSchema.of(model).properties.values()
-
-
 class ScopedProfile(JsonProfile):
     """A profile that leaves some properties of one model out of what it spells."""
 
@@ -260,7 +263,7 @@ class ScopedProfile(JsonProfile):
         # ``refine`` is not told which type it is refining, so the narrowing is applied to
         # the one call that was handed exactly this model's own declarations. That is what
         # keeps a nested value sharing an OData name untouched.
-        self._own = frozenset(map(id, _declared_fields(model)))
+        self._own = frozenset(map(id, schema.properties.values()))
 
     @property
     def dialect(self) -> JsonDialect:
@@ -291,6 +294,30 @@ class ScopedProfile(JsonProfile):
 
     def wrap(self, obj: Any, payload: Any) -> Any:
         return self._base.wrap(obj, payload)
+
+
+class HeldProfile(JsonProfile):
+    """Spells a carrier as the model holds it, and reads one back the same way.
+
+    No policy: every field the carrier holds is spelled, including one the service assigns,
+    and nothing is written around the result -- the dialect carries no control information.
+    That is what both verbs fall back to when the caller names no profile.
+    """
+
+    _default_dialect = V4_NO_METADATA
+
+    def __init__(self) -> None:
+        super().__init__("none")
+
+    addresses_version = False
+
+    def includes(self, owner: Any, declared: Optional[ODataPropertyMeta], name: str, changed: bool) -> bool:
+        """Every field: what a carrier holds is what it says."""
+        return True
+
+
+HELD = HeldProfile()
+"""The profile that spells and reads a carrier as the model holds it: see :class:`HeldProfile`."""
 
 
 ODataJsonFormat = JsonProfile

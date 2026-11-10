@@ -6,8 +6,8 @@ from typing import Any, ClassVar, Dict, Iterator, Optional, Tuple
 
 from typing_extensions import Self, dataclass_transform
 
-from office365.runtime.converters.value import declared_type, deserialize_value, serialize_value
-from office365.runtime.odata.json_format import JsonProfile, as_held
+from office365.runtime.converters.value import declared_type, deserialize_value
+from office365.runtime.odata.json_format import HELD, JsonProfile
 from office365.runtime.schema import EMPTY, TypeSchema
 
 
@@ -18,6 +18,26 @@ def _render(self: "ClientValue") -> str:
     return describe(self)
 
 
+def _is_content(value: Any) -> bool:
+    """Whether a field of a value is content.
+
+    A ``None``, ``datetime.min`` or empty collection is what a dataclass default
+    looks like before the model fills it in, and a nested value with nothing in it
+    is the same fact one level down, so none of them is content.
+    """
+    from office365.runtime.client_value_collection import ClientValueCollection
+
+    if value is None:
+        return False
+    if isinstance(value, datetime) and value == datetime.min:
+        return False
+    if isinstance(value, ClientValueCollection) and len(value) == 0:
+        return False
+    if isinstance(value, ClientValue):
+        return any(_is_content(member) for member in vars(value).values())
+    return True
+
+
 @dataclass_transform()
 class ClientValue:
     """Represent complex type.
@@ -25,7 +45,6 @@ class ClientValue:
     containing entity or as a temporary value
     """
 
-    _is_client_value: bool = True
     #: What this value declares, read in ``__init_subclass__`` when the class is complete.
     _schema: ClassVar[TypeSchema] = EMPTY
     #: The OData name this value declares (``"microsoft.graph.DateTimeTimeZone"``).
@@ -73,7 +92,7 @@ class ClientValue:
         round-trips through it; a wire payload needs its own profile (see
         :meth:`ClientObject.hydrate`). Returns this value, so ``Cls().hydrate(payload)`` chains.
         """
-        (profile or as_held()).hydrate(self, payload, persist_changes=True)
+        (profile or HELD).hydrate(self, payload, persist_changes=True)
         return self
 
     def set_property(self, name: str | int, value: Any, persist_changes: bool = True) -> Self:
@@ -110,12 +129,32 @@ class ClientValue:
         """
         return getattr(self, self._storage_key(name), default_value)
 
-    def __iter__(self) -> Iterator[Tuple[str, Any]]:
-        for n, v in vars(self).items():
-            yield n, v
+    def __iter__(self) -> Iterator[Tuple[str, Any, bool]]:
+        """The fields this value holds: the OData name each is sent under, its value, and
+        whether a sender states it.
+
+        A ``_``-prefixed attribute is this client's own state (a form digest's age, an
+        expression AST) and a dataclass default the model never filled is not content
+        (:func:`_is_content`), so neither is a field. A key no column declares is an
+        endpoint-specific field whatever it holds: ``null`` is how an open type removes an
+        entry. A value tracks no changes, so everything it holds is stated.
+
+        Yields:
+            The declared name, the value, and whether the sender states it
+        """
+        schema = self._schema
+        for attr, value in vars(self).items():
+            declared = schema.declared(attr)
+            if attr.startswith("_") or (declared is not None and not _is_content(value)):
+                continue
+            yield (declared.name if declared is not None else attr), value, True
 
     def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:
-        """Serializes the ClientValue to JSON format.
+        """Serialize this value as a payload: ``profile`` spells it, ``None`` spells it as held.
+
+        Nothing is decided here -- see
+        :meth:`~office365.runtime.odata.json_format.JsonProfile.serialize`; what this value
+        states is what it yields when iterated.
 
         Args:
             profile: The profile that spells the payload. ``None`` keeps the value as the
@@ -125,40 +164,7 @@ class ClientValue:
             Dictionary representing the JSON-serialized value (a collection value
             overrides this to answer the list of its members)
         """
-
-        def _is_valid_value(val):
-            from office365.runtime.client_value_collection import ClientValueCollection
-
-            if val is None:
-                return False
-            elif isinstance(val, datetime) and val == datetime.min:
-                return False
-            elif isinstance(val, ClientValueCollection) and len(val) == 0:
-                return False
-            elif isinstance(val, ClientValue):
-                # A nested value with nothing to send (all members unset or empty) is omitted.
-                if not any(_is_valid_value(v) for v in vars(val).values()):
-                    return False
-            return True
-
-        # ``__``-prefixed names are response bookkeeping, not fields of the value.
-        # A declared field may also rename itself and declare who owns its value; a
-        # read-only field is what a response carries and a request must not.
-        schema = TypeSchema.of(type(self))
-        result: Dict[str, Any] = {}
-        for attr, value in self:
-            meta = schema.declared(attr)
-            if attr.startswith("__") or not _is_valid_value(value):
-                continue
-            spelled = meta.name if meta is not None else attr
-            if profile is not None and (
-                (meta is not None and meta.readonly) or not profile.includes(self, meta, spelled, True)
-            ):
-                continue
-            result[spelled] = serialize_value(value, profile)
-        if profile is None:
-            return result
-        return profile.wrap(self, profile.refine(result, schema.properties.values()))
+        return (profile or HELD).serialize(self)
 
     @property
     def entity_type_name(self) -> Optional[str]:

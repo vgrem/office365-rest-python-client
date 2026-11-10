@@ -1,7 +1,7 @@
 """Deferred, streaming, resumable import driver for client-object collections.
 
 An import is expressed as a **stream of chunks** plus a format adapter
-(``to_records``) that turns each chunk into plain dict records, so the same
+(``map``) that turns each chunk into plain dict records, so the same
 driver serves DataFrames, CSV/JSON streams, or any future source. The driver
 carries **no execution knobs** — the caller picks the terminal, mirroring how
 mature SDKs separate a deferred handle (BigQuery ``QueryJob``, Azure
@@ -200,7 +200,7 @@ class ImportResult(ClientResult[ImportStats]):
         collection: The target ``ClientObjectCollection`` (queued via
             ``from_records`` and cleared per chunk).
         chunks: Iterable of source chunks (format-defined).
-        to_records: Turns one chunk into plain dict records.
+        map: Turns one chunk into plain dict records.
         prepare: Optional once-only setup called with the first chunk (e.g.
             schema/field provisioning); it may execute. Skipped when resuming.
         total: Total items when known upfront (drives the progress hook).
@@ -238,7 +238,7 @@ class ImportResult(ClientResult[ImportStats]):
         collection: "RecordSink",
         chunks: Iterable[Any],
         *,
-        to_records: Callable[[Any], list[dict]],
+        map: Callable[[Any], list[dict]],  # noqa: A002
         prepare: Optional[Callable[[Any], None]] = None,
         before_chunk: Optional[Callable[[Any], None]] = None,
         queue: Optional[Callable[[list[dict]], tuple[int, int]]] = None,
@@ -255,7 +255,7 @@ class ImportResult(ClientResult[ImportStats]):
             raise ValueError(f"on_error must be one of {ON_ERROR_MODES}, got {on_error!r}")
         self._collection = collection
         self._chunks = iter(chunks)
-        self._to_records = to_records
+        self._reshape = map
         self._prepare = prepare
         self._before_chunk = before_chunk
         self._queue_fn = queue or self._default_queue
@@ -383,7 +383,7 @@ class ImportResult(ClientResult[ImportStats]):
         key: "str | list[str]",
         format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
-        to_records: Optional[Callable[[Any], list[dict]]] = None,
+        map: Optional[Callable[[Any], list[dict]]] = None,  # noqa: A002
     ) -> "VerificationReport":
         """Reconcile ``source`` against the target (delegates to the collection).
 
@@ -393,9 +393,7 @@ class ImportResult(ClientResult[ImportStats]):
         verify = getattr(self._collection, "verify", None)
         if not callable(verify):
             raise TypeError("the import target does not support verification")
-        return cast(
-            "VerificationReport", verify(source, key=key, format=format, key_field=key_field, to_records=to_records)
-        )
+        return cast("VerificationReport", verify(source, key=key, format=format, key_field=key_field, map=map))
 
     def __iter__(self) -> Iterator["RecordSink"]:
         """Yield the target collection per chunk; the caller executes each chunk.
@@ -566,7 +564,7 @@ class ImportResult(ClientResult[ImportStats]):
         """Yield ``(raw_chunk, records)``, skipping already-committed chunks.
 
         Commits are whole chunks, so resume skips by the checkpoint's ``chunks``
-        count (cheap — no ``to_records`` on committed data). A record-level
+        count (cheap — no ``map`` on committed data). A record-level
         ``cursor`` fallback covers a hand-built checkpoint without a chunk count.
         ``prepare`` runs only on a fresh run (fields already exist when resuming).
         """
@@ -575,7 +573,7 @@ class ImportResult(ClientResult[ImportStats]):
         prepared = skip_chunks > 0 or skip_records > 0
         source = islice(self._chunks, skip_chunks, None) if skip_chunks else self._chunks
         for raw in source:
-            records = self._to_records(raw)
+            records = self._reshape(raw)
             if skip_records:
                 if len(records) <= skip_records:
                     skip_records -= len(records)

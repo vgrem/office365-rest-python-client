@@ -87,11 +87,13 @@ class ComparableProfile(JsonProfile):
         super().__init__("none")
 
     def includes(self, owner: Any, declared: Optional[ODataPropertyMeta], name: str, changed: bool) -> bool:
-        """Every present property that is the sender's to state: not a navigation, and
-        not one a ``Compare`` hands to someone else."""
+        """Every present property that is the sender's to state: not a navigation, not one
+        the service assigns, and not one a ``Compare`` hands to someone else."""
         if declared is None:
             return True
-        return not (declared.navigation or (declared.compare is not None and declared.compare.ignore))
+        return not (
+            declared.navigation or declared.readonly or (declared.compare is not None and declared.compare.ignore)
+        )
 
     def refine(self, spelled: Dict[str, Any], declarations: Iterable[ODataPropertyMeta]) -> Dict[str, Any]:
         rules = {

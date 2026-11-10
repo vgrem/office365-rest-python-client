@@ -1,13 +1,14 @@
-"""CSV exporter — reuses the shared record projection (``records.iter_records``)."""
+"""The CSV sink: records in, a file out (the mirror of ``csv_reader``)."""
 
 from __future__ import annotations
 
 import csv
 from typing import IO, Any, Iterable, List, Optional
 
-from office365.runtime.client_object_collection import ClientObjectCollection
-from office365.runtime.converters.records import iter_records
 from office365.runtime.converters.value import serialize_value
+
+#: How a list is spelled in one cell; the reader splits at the same separator.
+LIST_SEPARATOR = "; "
 
 
 def _cell(value: Any) -> str:
@@ -18,43 +19,34 @@ def _cell(value: Any) -> str:
     if isinstance(value, bool):
         return "True" if value else "False"
     if isinstance(value, (list, tuple)):
-        return "; ".join(str(item) for item in value)
+        return LIST_SEPARATOR.join(str(item) for item in value)
     return str(value)
-
-
-def write_csv(
-    collection: ClientObjectCollection, file: IO[str], delimiter: str = ",", rows_from: Optional[str] = None
-) -> None:
-    """Write collection items to CSV using the shared record projection.
-
-    The projection (``records.iter_records``) asks the type for its columns: when no
-    ``.select()`` is set the declared ones come first, in declaration order, and a
-    name only the page carries follows. Plain select fields (e.g. ``"displayName"``)
-    produce one column; dotted select fields (e.g. ``"members/displayName"``) walk
-    into an expanded navigation property — one CSV row is emitted per child item.
-
-    ``rows_from`` fans out over a collection-valued property instead — one row per
-    child, the child's own properties as columns. Graph offers no projection for it:
-    a complex collection cannot be ``$expand``-ed and its fields cannot be named in
-    ``$select``, so the row unit has to be stated.
-
-    Usage:
-        >>> collection.get_all() \\
-        ...     .select(["displayName", "members/displayName", "members/email"]) \\
-        ...     .expand(["members"]) \\
-        ...     .to_csv(f) \\
-        ...     .execute_query()
-        >>> client.users.get_licensed().select(["userPrincipalName"]).get_all() \\
-        ...     .to_csv(f, rows_from="assignedLicenses") \\
-        ...     .execute_query()
-    """
-    write_records(iter_records(collection, rows_from=rows_from), file, delimiter=delimiter)
 
 
 def write_records(
     records: Iterable[dict], file: IO[str], columns: Optional[List[str]] = None, delimiter: str = ","
 ) -> None:
-    """Write a list of dict records to CSV.
+    """Write records to CSV — the sink of the record flow, shared by every exporter.
+
+    The records come from the type, not from the response: ``iter_records`` asks the
+    model for its columns, so when no ``.select()`` is set the declared ones come
+    first, in declaration order, and a name only the page carries follows. Plain
+    select fields (e.g. ``"displayName"``) produce one column; dotted select fields
+    (e.g. ``"members/displayName"``) walk into an expanded navigation property — one
+    row is emitted per child item. ``rows_from`` fans out over a collection-valued
+    property instead, one row per child with the child's own properties as columns:
+    Graph offers no projection for that (a complex collection cannot be ``$expand``-ed
+    and its fields cannot be named in ``$select``), so the row unit is stated.
+
+    Usage:
+        >>> collection.get_all() \
+        ...     .select(["displayName", "members/displayName", "members/email"]) \
+        ...     .expand(["members"]) \
+        ...     .to_csv(f) \
+        ...     .execute_query()
+        >>> client.users.get_licensed().select(["userPrincipalName"]).get_all() \
+        ...     .to_csv(f, rows_from="assignedLicenses") \
+        ...     .execute_query()
 
     Args:
         records: Rows as dicts (one dict per line), or any iterable of them — a

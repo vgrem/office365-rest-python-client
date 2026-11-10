@@ -140,12 +140,15 @@ def test_a_nested_field_declares_who_owns_its_value():
     assert assignment.to_json(V4JsonFormat("none")) == {"orderHint": " !"}
 
 
-def test_declaring_a_nested_field_is_opt_in():
+def test_a_field_declares_itself_and_a_marker_adds_direction():
+    # A dataclass field is a declaration on its own: its name is the column, its
+    # annotation is the column's type, and ``to_json`` already sends it. ``odata(...)``
+    # adds what a bare field cannot state -- the direction of the value.
     declared = TypeSchema.of(PlannerAssignment).properties
     assert declared["assignedBy"].readonly is True
     assert declared["assignedBy"].name == "assignedBy"
-    assert "orderHint" not in declared  # undeclared fields keep their own name
-    assert TypeSchema.of(IdentitySet).properties == {}  # 2,887 nested types are untouched
+    assert declared["orderHint"].readonly is False
+    assert TypeSchema.of(IdentitySet).serializable == {"application", "device", "user"}
 
 
 def test_a_subclass_answers_with_its_own_declarations():

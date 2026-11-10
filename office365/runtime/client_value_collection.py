@@ -11,7 +11,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.scalars import parse_enum
 from office365.runtime.converters.value import serialize_value
 from office365.runtime.odata.edm import collection_type_name
-from office365.runtime.odata.json_format import JsonProfile
+from office365.runtime.odata.json_format import HELD, JsonProfile
 
 ValueT = TypeVar("ValueT")
 
@@ -179,9 +179,7 @@ class ClientValueCollection(ClientValue, Generic[ValueT]):
             }
         """
         items = [serialize_value(v, profile) for v in self]
-        if profile is None:
-            return items
-        return profile.wrap(self, items)
+        return (profile or HELD).wrap(self, items)
 
     def create_typed_value(self, initial_value: ValueT | None = None) -> ValueT:
         """Creates a new item of the collection's type.

@@ -28,8 +28,8 @@ from office365.runtime.limits import SAFE_PAGE_SIZE
 from office365.runtime.verification import VerificationReport
 
 if TYPE_CHECKING:
-    from office365.runtime.converters.coercion import ConverterSpec
     from office365.runtime.converters.dataframe import DataFrameResult
+    from office365.runtime.converters.named import ConverterSpec
     from office365.runtime.converters.upsert import UpsertTarget
     from office365.runtime.imports import CheckpointStore, ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
@@ -49,15 +49,6 @@ class _UpdatableEntity(Protocol):
     def update(self) -> Any:
         """Queue an update of the changed properties."""
         ...
-
-
-def _apply_mapping(convert: Callable[[Any], list[dict]], mapping: Dict[str, str]) -> Callable[[Any], list[dict]]:
-    """Wrap a chunk converter to rename record keys (``source -> target``)."""
-
-    def mapped(chunk: Any) -> list[dict]:
-        return [{mapping.get(k, k): v for k, v in record.items()} for record in convert(chunk)]
-
-    return mapped
 
 
 class RecordCollection(ClientObjectCollection[ClientObjectT]):
@@ -403,24 +394,24 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         self,
         records: List[dict],
         progress: "ProgressCallback | None" = None,
-        coerce: "Dict[str, ConverterSpec] | None" = None,
+        converters: "Dict[str, ConverterSpec] | None" = None,
     ) -> Self:
         """Queue a create per record (deferred, run with ``execute_query()``).
 
         The neutral queue-all counterpart of :meth:`to_records`. Records are
         normalized to the item type and each becomes an entity queued for
         creation. Use the streaming :meth:`from_records` for large or
-        resumable/idempotent imports (bounded memory). ``coerce`` types a cell the
+        resumable/idempotent imports (bounded memory). ``converters`` types a cell the
         entity's declared property type cannot (see
-        :func:`~office365.runtime.converters.coercion.converter_for`).
+        :func:`~office365.runtime.converters.named.converter_for`).
         """
-        from office365.runtime.converters.csv_reader import coerce_records
+        from office365.runtime.converters.records import deserialize_records
 
         return self._import_records(
-            coerce_records(
+            deserialize_records(
                 self._item_type,
                 records,
-                coerce=coerce,
+                converters=converters,
                 allow_unknown=self._accepts_unknown_columns,
             ),
             progress=progress,
@@ -462,12 +453,11 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         progress: "ProgressCallback | None" = None,
         prepare: "Callable[[Any], None] | None" = None,
         before_chunk: "Callable[[Any], None] | None" = None,
-        to_records: "Callable[[Any], list[dict]] | None" = None,
+        map: "Callable[[list[dict]], list[dict]] | None" = None,  # noqa: A002
         total: Optional[int] = None,
         dry_run: bool = False,
         dead_letter: "str | PathLike | None" = None,
-        mapping: "Dict[str, str] | None" = None,
-        coerce: "Dict[str, ConverterSpec] | None" = None,
+        converters: "Dict[str, ConverterSpec] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this collection, memory-bounded (the streaming entry).
 
@@ -476,22 +466,27 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         batches), or any registered format (read whole). Returns an
         :class:`~office365.runtime.imports.ImportResult`; choose the terminal
         (``execute_query``/``execute_batch``) or iterate it. ``key`` enables
-        idempotent skip/upsert via :meth:`upsert_target`; ``mapping`` renames
-        source columns/keys; ``coerce`` maps a *destination* key (after ``mapping``
-        has renamed it) to a value converter -- a callable, a Python type, a type
-        name such as ``"Edm.DateTimeOffset"``, or a SharePoint ``FieldType`` (see
-        :func:`~office365.runtime.converters.coercion.converter_for`).
+        idempotent skip/upsert via :meth:`upsert_target`.
+
+        ``map`` is the one reshape step: it receives a batch of plain dict records,
+        whatever the format (never the format's own chunk), and returns the records to
+        import -- drop, rename, compute, or fan a row out, one row becoming several or
+        several becoming one. It is the escape hatch, not the schema: a *column's* type
+        and conversion belong to ``converters``, which maps a key (the one ``map`` left
+        it) to a callable, a Python type, a type name such as ``"Edm.DateTimeOffset"``,
+        or a SharePoint ``FieldType`` (see
+        :func:`~office365.runtime.converters.named.converter_for`), and otherwise the
+        key is typed by its declared dtype
+        (:attr:`~office365.runtime.schema.TypeSchema.dtypes`).
         """
-        from office365.runtime.converters.csv_reader import apply_converters, resolve_converters
+        from office365.runtime.converters.records import apply_converters, resolve_converters
         from office365.runtime.imports import ImportResult
 
-        chunks, convert, inferred_total = self._resolve_source(source, format, chunksize, to_records)
+        chunks, convert, inferred_total = self._resolve_source(source, format, chunksize, map)
         if total is None:
             total = inferred_total
-        if mapping:
-            convert = _apply_mapping(convert, mapping)
 
-        converters = resolve_converters(self._item_type, coerce, allow_unknown=self._accepts_unknown_columns)
+        resolved = resolve_converters(self._item_type, converters, allow_unknown=self._accepts_unknown_columns)
         raw_key_columns = [key] if isinstance(key, str) else (list(key) if key else [])
         key_columns = [self._key_column(c) for c in raw_key_columns]
         target = self.upsert_target(key_field=key_field, enforce_unique=enforce_unique) if key_columns else None
@@ -521,11 +516,11 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             keys_loaded = True
 
         def _queue(records: list[dict]) -> tuple[int, int]:
-            # The user's ``coerce`` layer runs here, once, and leaves the shape of the
-            # record alone -- column filtering and declared typing stay in
+            # The user's ``converters`` layer runs here, once, and leaves the shape of
+            # the record alone -- column filtering and declared typing stay in
             # ``queue_records``, where a keyed import never passes (its key columns
             # need not be declared on the model).
-            records = apply_converters(records, converters)
+            records = apply_converters(records, resolved)
             if target is None:
                 if not dry_run:
                     self.queue_records(records)
@@ -546,7 +541,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             self.context,
             self,
             chunks,
-            to_records=convert,
+            map=convert,
             prepare=_prepare,
             before_chunk=before_chunk,
             queue=_queue,
@@ -641,7 +636,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         key: "str | list[str]",
         format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
-        to_records: "Callable[[Any], list[dict]] | None" = None,
+        map: "Callable[[Any], list[dict]] | None" = None,  # noqa: A002
     ) -> VerificationReport:
         """Reconcile a source's natural keys against this collection (bounded).
 
@@ -657,7 +652,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         if target is None:
             raise ValueError("verify requires an upsert-capable collection")
         existing = target.load_keys()
-        chunks, convert, _ = self._resolve_source(source, format, SAFE_PAGE_SIZE, to_records)
+        chunks, convert, _ = self._resolve_source(source, format, SAFE_PAGE_SIZE, map)
         checked = 0
         missing: list[str] = []
         for chunk in chunks:
@@ -684,16 +679,26 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         source: Any,
         format: str,  # noqa: A002
         chunksize: int,
-        to_records: "Callable[[Any], list[dict]] | None",
+        reshape: "Callable[[list[dict]], list[dict]] | None",
     ) -> "tuple[Iterable[Any], Callable[[Any], list[dict]], Optional[int]]":
-        """Resolve ``(chunks, to_records, total)`` for a streaming import."""
-        if format in ("dataframe", "csv"):
+        """Resolve ``(chunks, reshape, total)`` for a streaming import.
+
+        ``chunks`` stays the format's own unit, because ``prepare``/``before_chunk`` read a
+        chunk's schema (field provisioning). ``reshape`` is always ``list[dict] ->
+        list[dict]``: the format's reader decodes first, so a caller's ``map`` reshapes
+        records instead of re-implementing the reader (and stops depending on the format).
+        """
+        then = reshape or (lambda batch: batch)
+        if format == "csv":  # the one streaming reader: a file is read a batch at a time
+            from office365.runtime.converters.csv_reader import csv_batches
+
+            return csv_batches(source, chunksize), then, None
+        if format == "dataframe":  # a frame's own unit is a frame
             from office365.runtime.converters.dataframe import dataframe_chunks, records_from_dataframe
 
             chunks, total = dataframe_chunks(source, chunksize)
-            convert = to_records or (records_from_dataframe)
-            return chunks, convert, total
+            return chunks, (lambda chunk: then(records_from_dataframe(chunk))), total
         if format == "records":
-            return source, (to_records or (lambda batch: batch)), None
+            return source, then, None
         records = registry.reader_for(format)(source)
-        return [records], (to_records or (lambda batch: batch)), len(records)
+        return [records], then, len(records)

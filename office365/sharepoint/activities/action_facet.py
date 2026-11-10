@@ -56,7 +56,8 @@ class ActionFacet(ClientValue):
 
     @property
     def facet_type(self):
-        return next((n for n, v in self if v), None)
+        """The name of the facet this activity carries: the only one that holds anything."""
+        return next((name for name, value, _ in self if value), None)
 
     @property
     def entity_type_name(self):

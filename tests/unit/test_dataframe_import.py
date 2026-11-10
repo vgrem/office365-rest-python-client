@@ -91,7 +91,7 @@ def _batches(*sizes: int) -> list[list[dict]]:
 
 
 def _driver(context, collection, batches, **kwargs) -> ImportResult:
-    return ImportResult(context, collection, batches, to_records=lambda b: b, **kwargs)
+    return ImportResult(context, collection, batches, map=lambda b: b, **kwargs)
 
 
 def test_execute_query_chunks_once_and_bounds_memory():
@@ -299,8 +299,7 @@ def test_from_records_applies_column_mapping():
         collection,
         _batches(1),
         format="records",
-        to_records=lambda b: b,
-        mapping={"n": "value"},
+        map=lambda records: [{"value": record["n"]} for record in records],
     )
 
     result.execute_query()
@@ -357,7 +356,7 @@ def test_import_result_verify_delegates_to_collection():
         cast(Any, collection.context),
         collection,
         [[{"id": 1}, {"id": 2}]],
-        to_records=lambda batch: batch,
+        map=lambda batch: batch,
     )
 
     report = driver.verify([[{"id": 1}, {"id": 2}]], key=["id"], format="records")
@@ -455,7 +454,7 @@ def test_checkpoint_signature_mismatch_rescans_from_start():
     assert [record["id"] for record in collection.created] == [0, 1]  # re-scanned
 
 
-def test_from_records_applies_coerce_converters():
+def test_from_records_applies_converters():
     """A converter wins over the declared property type, and runs exactly once."""
     from office365.directory.users.user import User
     from office365.runtime.record_collection import RecordCollection
@@ -465,7 +464,7 @@ def test_from_records_applies_coerce_converters():
         collection,
         [[{"displayName": "ann"}]],
         format="records",
-        coerce={"displayName": lambda value: value.upper()},
+        converters={"displayName": lambda value: value.upper()},
     )
     driver.execute_query()
 
@@ -482,7 +481,7 @@ def test_a_converter_for_an_undeclared_column_raises():
             collection,
             [[{"n": "2"}]],
             format="records",
-            coerce={"n": int},
+            converters={"n": int},
         )
 
 
@@ -496,7 +495,7 @@ def test_a_target_that_accepts_unknown_columns_keeps_the_coercion():
         collection,
         [[{"n": "30"}]],
         format="records",
-        coerce={"n": "Edm.Int32"},
+        converters={"n": "Edm.Int32"},
     )
     driver.execute_query()
 

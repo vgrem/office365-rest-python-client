@@ -18,7 +18,7 @@ class StoreManager:
     All operations are deferred: queries are queued and run with a single
     ``execute_query()``. ``get_all_terms()`` returns a flattened ``TermCollection``
     with each term's ``children`` attached, so the standard collection pipeline
-    (``write_csv``, or the wire ``to_json()`` payload serializer) can serialize
+    (``write_records`` over ``iter_records``, or the wire ``to_json()`` payload) can serialize
     the full tree.
 
     ``export_tree()`` / ``import_tree()`` handle the *hierarchy* (a nested

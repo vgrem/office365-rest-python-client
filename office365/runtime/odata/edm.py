@@ -23,40 +23,52 @@ from __future__ import annotations
 
 import datetime
 import uuid
+from decimal import Decimal
 from functools import cache
-from typing import Any, Optional, Type
+from typing import Any, Callable, Optional, Type
 
-#: OData primitive type names -> Python types. Several names share a Python type
-#: (``Edm.Int32``/``Edm.Int64`` -> ``int``); the reverse lookup keeps the first row,
-#: so ``int`` -> ``Edm.Int32`` and ``datetime.time`` -> ``Edm.TimeOfDay`` (the v4
-#: spelling; ``Edm.Time`` is its v3 alias).
-PRIMITIVE_PY_TYPES: dict[str, Any] = {
-    "Edm.Boolean": bool,
-    "Edm.Int32": int,
-    "Edm.Int64": int,
-    "Edm.Int16": int,
-    "Edm.Byte": int,
-    "Edm.SByte": int,
-    "Edm.String": str,
-    "Edm.Guid": uuid.UUID,
-    "Edm.Single": float,
-    "Edm.Double": float,
-    "Edm.Decimal": float,
-    "Edm.Binary": bytes,
-    "Edm.Stream": bytes,
-    "Edm.DateTimeOffset": datetime.datetime,
-    "Edm.DateTime": datetime.datetime,
-    "Edm.Duration": datetime.timedelta,
-    "Edm.Date": datetime.date,
-    "Edm.TimeOfDay": datetime.time,
-    "Edm.Time": datetime.time,
-    "Edm.Json": dict,
+from office365.runtime.converters.scalars import (
+    parse_bool,
+    parse_date,
+    parse_datetime,
+    parse_decimal,
+    parse_duration,
+    parse_uuid,
+    try_float,
+    try_int,
+)
+
+#: One row per Python type the wire has: the cell parser the conversion layer uses for it
+#: (``None`` for a type a cell is never read back as) and every EDM name it answers to.
+#: The name order is the spelling order: the first name is the one the runtime writes.
+PRIMITIVES: dict[type, tuple[Optional[Callable[[Any], Any]], tuple[str, ...]]] = {
+    bool: (parse_bool, ("Edm.Boolean",)),
+    int: (try_int, ("Edm.Int32", "Edm.Int64", "Edm.Int16", "Edm.Byte", "Edm.SByte")),
+    str: (None, ("Edm.String",)),
+    uuid.UUID: (parse_uuid, ("Edm.Guid",)),
+    float: (try_float, ("Edm.Single", "Edm.Double")),
+    Decimal: (parse_decimal, ("Edm.Decimal",)),
+    bytes: (None, ("Edm.Binary", "Edm.Stream")),
+    datetime.datetime: (parse_datetime, ("Edm.DateTimeOffset", "Edm.DateTime")),
+    datetime.timedelta: (parse_duration, ("Edm.Duration",)),
+    datetime.date: (parse_date, ("Edm.Date",)),
+    datetime.time: (None, ("Edm.TimeOfDay", "Edm.Time")),
+    dict: (None, ("Edm.Json",)),
 }
 
-#: Python type -> the name the runtime writes for it (first row wins).
-PY_PRIMITIVE_NAMES: dict[type, str] = {}
-for _edm_name, _py_type in PRIMITIVE_PY_TYPES.items():
-    PY_PRIMITIVE_NAMES.setdefault(_py_type, _edm_name)
+#: OData primitive type name -> Python type, and the reverse (the spelled name).
+PRIMITIVE_PY_TYPES: dict[str, Any] = {name: py_type for py_type, (_, names) in PRIMITIVES.items() for name in names}
+PY_PRIMITIVE_NAMES: dict[type, str] = {py_type: names[0] for py_type, (_, names) in PRIMITIVES.items()}
+
+
+def parser_for(py_type: Any) -> Optional[Callable[[Any], Any]]:
+    """The cell parser for a Python type, from the same row that spells the type.
+
+    ``None`` for a type that is not a primitive, or is one a cell is never read back as
+    (text, binary, a JSON object) -- its own constructor is then the conversion.
+    """
+    row = PRIMITIVES.get(py_type)
+    return row[0] if row is not None else None
 
 
 def primitive_type_for(type_name: Optional[str]) -> Optional[Type]:

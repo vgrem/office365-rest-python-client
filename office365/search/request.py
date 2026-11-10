@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import field
-from typing import Dict, cast
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.odata.json_format import JsonProfile
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.types.odata_property import odata
 from office365.search.aggregation_option import AggregationOption
 from office365.search.collapse_property import CollapseProperty
 from office365.search.query import SearchQuery
@@ -29,19 +28,12 @@ class SearchRequest(ClientValue):
     region: str | None = None
     entityTypes: list[str] | None = None
     fields: list[str] | None = None
-    page_from: int | None = None
+    page_from: int | None = field(default=None, metadata=odata(name="from"))
     sortProperties: ClientValueCollection[SortProperty] = field(
         default_factory=lambda: ClientValueCollection(SortProperty)
     )
     contentSources: StringCollection = field(default_factory=StringCollection)
     sharePointOneDriveOptions: SharePointOneDriveOptions = field(default_factory=SharePointOneDriveOptions)
-
-    def to_json(self, profile: JsonProfile | None = None) -> Dict:
-        json_value = cast(Dict, super().to_json(profile))
-        json_value["from"] = json_value.pop("page_from", None)
-        return json_value
-
-    from_: int | None = None
 
     queryAlterationOptions: SearchAlterationOptions = field(default_factory=SearchAlterationOptions)
 

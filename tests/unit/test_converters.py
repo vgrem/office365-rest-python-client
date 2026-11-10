@@ -41,7 +41,7 @@ from office365.runtime.converters.scalars import (
     wall_clock,
     wall_clock_text,
 )
-from office365.runtime.converters.value import _declared_cache, declared_type, deserialize_value, serialize_value
+from office365.runtime.converters.value import declared_type, deserialize_value, serialize_value
 from office365.runtime.odata.v3.json_light_format import JsonLightFormat
 from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.types.duration import Duration
@@ -60,9 +60,6 @@ class _Unannotated(ClientObject):
 
 class TestCyclicDeclaredType(unittest.TestCase):
     """A type too cyclic for a module-level import is still the getter's declared type."""
-
-    def setUp(self):
-        _declared_cache.clear()
 
     def test_a_type_the_getter_imports_for_itself_declares(self):
         # ``ChatInfo``/``ConditionalAccessGrantControls`` can only be imported inside the
@@ -88,7 +85,7 @@ class TestCyclicDeclaredType(unittest.TestCase):
     def test_a_getter_that_states_its_type_in_the_signature_declares_it(self):
         # ``Call.call_routes`` used to name ``CallRoute`` only in the default it passed
         # to ``properties.get``, so ``callRoutes`` was an unknown column to
-        # ``coerce_records`` and the service's routes arrived as plain dicts.
+        # ``deserialize_records`` and the service's routes arrived as plain dicts.
         self.assertEqual(declared_type(Call, "callRoutes"), ClientValueCollection[CallRoute])
 
 
@@ -224,10 +221,10 @@ class TestDecimalAndIdentityParsers(unittest.TestCase):
 
 
 class TestConverterFor(unittest.TestCase):
-    """``coerce=`` accepts four spellings; all of them resolve to one callable."""
+    """A per-column spec accepts four spellings; all of them resolve to one callable."""
 
     def test_a_wire_name_resolves_to_its_parser(self):
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         offset = converter_for("Edm.DateTimeOffset")
         self.assertEqual(offset("2026-01-06T09:00:00Z"), datetime(2026, 1, 6, 9, tzinfo=timezone.utc))
@@ -237,7 +234,7 @@ class TestConverterFor(unittest.TestCase):
         self.assertEqual(converter_for("Edm.Int32")("42"), 42)
 
     def test_a_python_type_is_the_same_answer_as_its_name(self):
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         self.assertEqual(converter_for(bool)("yes"), converter_for("Edm.Boolean")("yes"))
         self.assertEqual(converter_for(datetime)("2026-01-06T09:00:00"), datetime(2026, 1, 6, 9))
@@ -245,7 +242,7 @@ class TestConverterFor(unittest.TestCase):
 
     def test_an_unlisted_type_is_its_own_constructor(self):
         """The general arm: a class the registry does not know is called with the cell."""
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         class Cents(int):
             pass
@@ -253,7 +250,7 @@ class TestConverterFor(unittest.TestCase):
         self.assertEqual(converter_for(Cents)("42"), 42)
 
     def test_a_callable_passes_through_untouched(self):
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         def double(value):
             return value * 2
@@ -262,21 +259,21 @@ class TestConverterFor(unittest.TestCase):
 
     def test_an_unknown_name_raises_instead_of_doing_nothing(self):
         """A typo must not silently mean "no coercion": the column would arrive untyped."""
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         with self.assertRaises(ValueError) as raised:
             converter_for("datetim")
         self.assertIn("datetime", str(raised.exception))  # the known names are listed
 
     def test_a_known_type_without_a_converter_names_the_type(self):
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         with self.assertRaises(ValueError) as raised:
             converter_for("Edm.TimeOfDay")
         self.assertIn("time", str(raised.exception))
 
     def test_a_non_spec_is_refused(self):
-        from office365.runtime.converters.coercion import converter_for
+        from office365.runtime.converters.named import converter_for
 
         with self.assertRaises(TypeError):
             converter_for(42)

@@ -11,14 +11,15 @@ import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
 from office365.migration.offline import offline_context
-from office365.runtime.converters.csv_reader import coerce_records, read_csv_records
-from office365.runtime.converters.csv_writer import write_csv
+from office365.runtime.converters.csv_reader import read_csv_records
+from office365.runtime.converters.csv_writer import write_records
 from office365.runtime.converters.dataframe import (
     DataFrameResult,
     series_kind,
     write_dataframe,
 )
 from office365.runtime.converters.excel import read_excel, write_excel
+from office365.runtime.converters.records import deserialize_records, iter_records
 from office365.runtime.operations import query_progress_hook
 from office365.runtime.record_collection import RecordCollection
 from office365.runtime.schema import TypeSchema
@@ -39,8 +40,8 @@ def _graph_client() -> GraphClient:
 
 
 class TestCsvRecords(unittest.TestCase):
-    def test_coerce_records(self):
-        records = coerce_records(
+    def test_deserialize_records(self):
+        records = deserialize_records(
             User,
             read_csv_records(io.StringIO(CSV_TEXT)),
         )
@@ -50,10 +51,10 @@ class TestCsvRecords(unittest.TestCase):
         self.assertEqual(record["passwordProfile"], {"password": "S3cret!", "forceChangePasswordNextSignIn": "True"})
         self.assertEqual(record["businessPhones"], ["+1-555-0101", "+1-555-0102"])
 
-    def test_coerce_records_strips_non_importable_and_unknown(self):
+    def test_deserialize_records_strips_non_importable_and_unknown(self):
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always")
-            records = coerce_records(
+            records = deserialize_records(
                 User,
                 [
                     {
@@ -100,7 +101,7 @@ class TestImportPipeline(unittest.TestCase):
             "businessPhones",
         ]
         out = io.StringIO()
-        write_csv(col, out)
+        write_records(iter_records(col), out)
 
         client = _graph_client()
         users = next(iter(client.users.from_csv(io.StringIO(out.getvalue()))))

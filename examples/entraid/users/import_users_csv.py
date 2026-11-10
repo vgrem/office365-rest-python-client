@@ -8,25 +8,29 @@ UPN that already exists) are collected instead of aborting the run.
 The sample file lives in ``examples/data/users.csv``; pass ``--path`` to import
 your own. ``--domain`` sets the UPN domain for the ``userName`` column.
 
+The whole CSV-to-payload correspondence is one function: ``map=`` receives a
+chunk's records -- plain dicts, whatever the format -- and returns the records to
+create. It builds the UPN and the mail nickname, enables the account, and nests
+the password under ``passwordProfile``. A column ``map`` does not build is not
+sent, so ``userName`` (which builds the UPN) never reaches the payload. Typing a
+column is a different job: ``converters={column: spec}`` states it, declaratively.
+
 The record-at-a-time counterpart is ``import.py``.
 
-Requires delegated permission ``User.ReadWrite.All`` (and ``pandas``, installed
-via ``office365-rest-python-client[pandas]``).
-
-https://learn.microsoft.com/en-us/graph/api/user-post-users
+Requires delegated permission ``User.ReadWrite.All``.
 """
-
-from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
 from office365.graph_client import GraphClient
-from office365.runtime.converters.dataframe import records_from_dataframe
 from office365.runtime.progress import progress_bar
 from tests.settings import client_id, password, tenant, username
 
 SAMPLE_CSV = Path(__file__).resolve().parents[2] / "data" / "users.csv"
+
+#: Columns copied as-is when the file carries them: the rest is built above.
+PROFILE = ("givenName", "surname", "displayName", "department", "jobTitle", "officeLocation", "city", "country")
 
 
 def main() -> None:
@@ -39,20 +43,23 @@ def main() -> None:
 
     client = GraphClient(tenant=tenant).with_username_and_password(client_id, username, password)
 
-    def to_records(chunk) -> list[dict]:
-        """Turn the CSV columns into user records (build the UPN, enable the account)."""
-        records = records_from_dataframe(chunk)
-        for record in records:
-            record["userPrincipalName"] = f"{record.pop('userName')}@{args.domain}"
-            record["mailNickname"] = record["userPrincipalName"].split("@")[0]
-            record["accountEnabled"] = True
-        return records
+    def payload(rows: list[dict]) -> list[dict]:
+        """Turn a chunk of CSV records into user-create records."""
+        return [
+            {
+                "userPrincipalName": f"{row['userName']}@{args.domain}",
+                "mailNickname": row["userName"],
+                "accountEnabled": True,
+                "passwordProfile/password": row["password"],
+                **{name: row[name] for name in PROFILE if row.get(name)},
+            }
+            for row in rows
+        ]
 
     result = client.users.from_csv(
         args.path,
         chunksize=args.chunk,
-        to_records=to_records,
-        mapping={"password": "passwordProfile/password"},
+        map=payload,
         on_error="collect",
         dry_run=not args.apply,
         progress=progress_bar("Importing users"),

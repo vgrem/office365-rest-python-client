@@ -60,11 +60,12 @@ def _read_csv(source: Any, **opts: Any) -> List[dict]:
 
 
 def _write_csv(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
-    from office365.runtime.converters.csv_writer import write_csv
+    from office365.runtime.converters.csv_writer import write_records
+    from office365.runtime.converters.records import iter_records
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_csv(collection, f, delimiter=opts.get("delimiter", ","), rows_from=opts.get("rows_from"))
+        write_records(iter_records(collection, rows_from=opts.get("rows_from")), f, delimiter=opts.get("delimiter", ","))
 
 
 def _read_tsv(source: Any, **opts: Any) -> List[dict]:

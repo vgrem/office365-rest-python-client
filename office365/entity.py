@@ -77,7 +77,7 @@ class Entity(ClientObject):
         """Sets one or more properties and updates the entity in a single call.
 
         Sugar over repeated :meth:`set_property` calls followed by :meth:`update`:
-        the values are coerced exactly as :meth:`set_property` does, and the
+        the values are deserialized exactly as :meth:`set_property` does, and the
         request stays deferred until ``execute_query()`` runs.
 
         Args:

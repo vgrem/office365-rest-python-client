@@ -12,8 +12,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Iterator, List, Optional, Set, Tuple, get_args, get_origin
 
+from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.converters.value import declared_type, is_client_value_type
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import Compare, ODataPropertyMeta
 
@@ -36,11 +36,16 @@ def _item_type(declared: Any) -> Any:
     return args[0] if args else None
 
 
+def _is_client_value(declared: Any) -> bool:
+    origin = _origin(declared)
+    return isinstance(origin, type) and issubclass(origin, ClientValue)
+
+
 def _fields(model: type) -> Iterator[Tuple[str, ODataPropertyMeta, Any]]:
     """``(label, declaration, resolved type)`` for every declared field of ``model``."""
     for name, meta in TypeSchema.of(model).properties.items():
         if not meta.navigation:
-            yield name, meta, declared_type(model, name)
+            yield name, meta, TypeSchema.of(model).dtypes[name]
 
 
 def _check(model: type, label: str, rule: Compare, declared: Any, siblings: Set[str]) -> List[str]:
@@ -76,6 +81,6 @@ def compare_problems(model: type, _seen: Optional[Set[type]] = None) -> List[str
         if meta.compare is not None:
             problems += _check(model, label, meta.compare, declared, siblings)
         carried = _item_type(declared) if _is_collection(declared) else declared
-        if carried is not None and is_client_value_type(carried) and isinstance(_origin(carried), type):
+        if _is_client_value(carried):
             problems += compare_problems(_origin(carried), seen)
     return problems

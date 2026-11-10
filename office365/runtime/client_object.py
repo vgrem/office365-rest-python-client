@@ -8,6 +8,7 @@ from typing import (
     ClassVar,
     Collection,
     Dict,
+    Iterator,
     Optional,
     Sequence,
     Tuple,
@@ -18,20 +19,15 @@ from typing_extensions import Self
 
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_runtime_context import ClientRuntimeContext
-from office365.runtime.converters.value import (
-    declared_type,
-    deserialize_value,
-    serialize_value,
-    to_snake_case,
-)
+from office365.runtime.converters.value import declared_type, deserialize_value
 from office365.runtime.exceptions import ObjectNotFoundException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import Limit
-from office365.runtime.odata.json_format import JsonProfile, as_held
+from office365.runtime.odata.json_format import HELD, JsonProfile
 from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
-from office365.runtime.schema import EMPTY, TypeSchema
+from office365.runtime.schema import EMPTY, TypeSchema, to_snake_case
 from office365.runtime.types.odata_property import (
     PREVIEW,
     NotSupportedInVersion,
@@ -678,42 +674,41 @@ class ClientObject:
         Returns:
             This object, so reading and spelling chain.
         """
-        (profile or as_held()).hydrate(self, payload, persist_changes=True)
+        (profile or HELD).hydrate(self, payload, persist_changes=True)
         return self
 
     def to_json(self, profile: Optional[JsonProfile] = None) -> Dict[str, Any]:
-        """
-        Serializes the client object to a JSON-compatible dictionary.
+        """Serialize this object as a payload: ``profile`` spells it, ``None`` spells it as held.
+
+        Nothing is decided here -- see
+        :meth:`~office365.runtime.odata.json_format.JsonProfile.serialize` and
+        :meth:`__iter__`, which is the one thing this object states: what it holds.
 
         Args:
             profile: The profile that spells the payload. ``None`` keeps the object as the
-                model holds it — a response or a sidecar — so nothing the service owns is
+                model holds it -- a response or a sidecar -- so nothing the service owns is
                 dropped and nothing is wrapped.
 
         Returns:
             Dictionary representing the serialized object (a collection overrides this to
             answer the list of its members)
         """
-        if profile is None:
-            json = {k: self.get_property(k) for k in self._properties}
-        else:
-            version = request_version(self.context)
-            persistable, readonly = self._schema.persistable, self._schema.readonly
-            declared = self._schema.properties
-            # The payload is spelled the way the client's service root spells it, so a
-            # renamed member goes out under the name that root declares -- and a member
-            # that root does not declare raises instead of being sent into a schema that
-            # has no room for it.
-            json = {
-                self._schema.wire_name(k, version): self.get_property(k)
-                for k in self._properties
-                if k not in readonly
-                and profile.includes(self, declared.get(k), k, k in self._changes or k in persistable)
-            }
-        # ``__``-prefixed keys are this client's own bookkeeping, ingested from a
-        # response (``__etag`` for ``If-Match``, ``__odata_type``, ``__deferred``):
-        # they describe the response, never the entity, so no payload carries them.
-        # A dialect's control marker (``__metadata``) is added *after* this filter.
-        json = {k: serialize_value(v, profile) for k, v in json.items() if not k.startswith("__")}
+        return (profile or HELD).serialize(self)
 
-        return json if profile is None else profile.wrap(self, profile.refine(json, self._schema.properties.values()))
+    def __iter__(self) -> Iterator[Tuple[str, Any, bool]]:
+        """The fields this object holds, under the OData names its payload spells.
+
+        A ``__``-prefixed key is this client's own bookkeeping (``__etag`` for ``If-Match``,
+        ``__odata_type``, ``__deferred``): it describes a response, so no payload carries it.
+        ``True`` is a field a caller stated -- what it set, or what its type always sends
+        (``persist=True``) -- which is what a request carries; a value answers this with
+        every field, because a value tracks no changes.
+
+        Yields:
+            The OData name, the value, and whether the sender states it
+        """
+        persistable = self._schema.persistable
+        for name in self._properties:
+            if name.startswith("__"):
+                continue
+            yield name, self.get_property(name), name in self._changes or name in persistable

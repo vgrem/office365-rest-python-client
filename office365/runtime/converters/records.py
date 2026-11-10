@@ -1,27 +1,31 @@
-"""Record projection — turns a loaded collection into plain dict records.
+"""The plain dict records both directions speak.
 
-This is the shared extension point for every tabular exporter (CSV, pandas,
-future formats). Format-specific writers consume ``iter_records`` and apply
-their own value coercion on top of the native, JSON-safe values produced here.
-
-The column set is the *type's*, not the page's: a row of a model should carry the
-same names the serializer, ``$select`` and the migration imports use, or every
-exporter re-derives them for itself.
+Export: ``iter_records`` turns a loaded collection into records, and every tabular
+writer consumes that. Import: ``deserialize_records`` turns a source -- a path, a
+stream, a DataFrame, or rows already read -- into the payload of a create/update.
+Both answer with the type's names, not the page's or the file's: a row should carry the
+same names the serializer, ``$select`` and the migration imports use, or every format
+re-derives them for itself.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List
+import warnings
+from typing import TYPE_CHECKING, Any, Dict, List, cast, get_origin
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.converters.value import serialize_value
+from office365.runtime.converters.csv_writer import LIST_SEPARATOR
+from office365.runtime.converters.named import Converter, ConverterSpec, converter_for
+from office365.runtime.converters.registry import reader_for
+from office365.runtime.converters.value import declared_type, serialize_value
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import request_version
 
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
+    from office365.runtime.converters.streams import Source
 
 
 def iter_records(
@@ -29,7 +33,7 @@ def iter_records(
 ) -> List[Dict[str, Any]]:
     """Project a loaded collection into plain dict records.
 
-    Mirrors ``csv_writer.write_csv``: plain select fields become columns,
+    Feeds ``csv_writer.write_records``: plain select fields become columns,
     dotted select fields (e.g. ``"members/displayName"``) walk into a single
     expanded navigation property — one record is emitted per child item.
     When no ``.select()`` is set, the type's declared columns are exported, in
@@ -182,16 +186,11 @@ def _child_values(child: Any, raw: bool, rows_from: str) -> Dict[str, Any]:
     if isinstance(child, dict):
         return dict(child)
     if isinstance(child, ClientValue):
-        sent = {} if raw else child.to_json()
-        schema = TypeSchema.of(type(child))
-        values: Dict[str, Any] = {}
-        for attr, value in child:
-            if attr.startswith("__"):
-                continue
-            name = schema.declared(attr)
-            spelled = name.name if name is not None else attr
-            values[spelled] = value if raw else sent.get(spelled)
-        return values
+        columns = TypeSchema.of(type(child)).columns
+        if raw:
+            return {name: child.get_property(name) for name in columns}
+        sent = child.to_json()
+        return {name: sent.get(name) for name in columns}
     if raw:
         return dict(child.properties)
     value = serialize_value(child)
@@ -220,3 +219,123 @@ def _property_value(prop: "dict | ClientObject", field_name: str, raw: bool = Fa
     if isinstance(prop, dict):
         return _value(prop.get(field_name), raw)
     return _value(prop.properties.get(field_name), raw)
+
+
+def deserialize_records(
+    item_type: type,
+    records: "list[dict] | Source",
+    *,
+    format: "str | None" = None,  # noqa: A002
+    converters: "dict[str, ConverterSpec] | None" = None,
+    allow_unknown: bool = False,
+) -> list[dict]:
+    """Normalize plain dict records to the entity's declared property types.
+
+    ``format`` names the reader that turns a *source* -- a path, a URL, a stream, a
+    DataFrame -- into records, so a caller with no collection to hand a source to reads
+    with one call: ``deserialize_records(T, path, format="csv")``. Without it, ``records``
+    is already records.
+
+    Dotted keys (``a/b/c``) are re-nested into dicts; ``"; "``-joined strings are
+    split for collection-typed fields; non-importable keys (``@*``, ``id``) and
+    ``None`` cells are dropped; columns mapping to no known property are skipped
+    with a warning. Pass ``allow_unknown=True`` for schema-flexible targets whose
+    fields are only known at runtime (SharePoint list items). Shared by every
+    import format.
+
+    ``converters`` maps a *record key* (dotted keys included) to one value converter, as a
+    callable, a Python type, a type name or a ``FieldType`` -- see
+    :func:`~office365.runtime.converters.named.converter_for`. A converter wins over
+    the column's declared type; a converter naming a column the type does not declare
+    raises, so a typo cannot silently drop the column it meant to type.
+    """
+    if format is not None:
+        records = reader_for(format)(records)
+    resolved = resolve_converters(item_type, converters, allow_unknown)
+    deserialized: list[dict[str, Any]] = []
+    for record in cast("list[dict]", records):
+        item: dict[str, Any] = {}
+        for key, raw in record.items():
+            if not _is_importable(key):
+                continue
+            if raw is None:
+                continue
+            converter = resolved.get(key)
+            if "/" in key:
+                nav = key.split("/", 1)[0]
+                if declared_type(item_type, nav) is None and not allow_unknown:
+                    warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
+                    continue
+                _set_nested(item, key, converter(raw) if converter is not None else raw)
+                continue
+            declared = declared_type(item_type, key)
+            if declared is None and not allow_unknown:
+                warnings.warn(f"Skipping unknown column '{key}'", stacklevel=2)
+                continue
+            if converter is not None:
+                item[key] = converter(raw)
+            elif isinstance(raw, str) and declared is not None and _is_collection(declared):
+                # A member is never empty: ``"p1; p2"`` is two plans, ``"; p1"`` is one.
+                item[key] = [part for part in raw.split(LIST_SEPARATOR) if part]
+            else:
+                item[key] = raw
+        deserialized.append(item)
+    return deserialized
+
+
+def apply_converters(records: list[dict], converters: dict[str, "Converter"]) -> list[dict]:
+    """Apply resolved converters cell by cell, leaving every other key untouched.
+
+    No filtering and no declared-type work: this is the user's ``converters`` layer alone,
+    so it can run before a keyed import where the key columns need not be declared on
+    the model. ``None`` cells are skipped (an empty cell states nothing).
+    """
+    if not converters:
+        return records
+    return [
+        {
+            key: (converters[key](value) if key in converters and value is not None else value)
+            for key, value in record.items()
+        }
+        for record in records
+    ]
+
+
+def resolve_converters(
+    item_type: type,
+    converters: "dict[str, ConverterSpec] | None",
+    allow_unknown: bool,
+) -> dict[str, "Converter"]:
+    """Resolve every per-column spec once, and reject keys the type cannot store."""
+    if not converters:
+        return {}
+    resolved: dict[str, Converter] = {}
+    for column, spec in converters.items():
+        if declared_type(item_type, column.split("/", 1)[0]) is None and not allow_unknown:
+            raise ValueError(
+                f"converters has no column {column!r} in {item_type.__name__}; "
+                "check the destination key, or pass allow_unknown=True for a target that accepts arbitrary columns"
+            )
+        resolved[column] = converter_for(spec)
+    return resolved
+
+
+def _is_importable(key: str) -> bool:
+    """Decide whether a record key should be imported at all."""
+    return not key.startswith("@") and key != "id"
+
+
+def _is_collection(target_type: Any) -> bool:
+    """Decide whether a declared type represents a list/collection field."""
+    return get_origin(target_type) in (list, tuple, set) or (
+        isinstance(target_type, type) and issubclass(target_type, ClientValueCollection)
+    )
+
+
+def _set_nested(record: dict[str, Any], key: str, value: Any) -> None:
+    """Re-nest a dotted header (``a/b/c``) into nested dicts."""
+    parts = key.split("/")
+    node = record
+    for part in parts[:-1]:
+        node = node.setdefault(part, {})
+    node[parts[-1]] = value

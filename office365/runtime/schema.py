@@ -27,10 +27,28 @@ for a value and for an object alike -- and :meth:`TypeSchema.of` is an attribute
 
 from __future__ import annotations
 
+import ast
+import importlib
+import inspect
+import re
+import types
 from dataclasses import dataclass, field, fields, is_dataclass, replace
 from functools import cached_property
 from types import MappingProxyType
-from typing import Any, Dict, Iterable, Iterator, List, Mapping, Optional, Tuple
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
@@ -88,10 +106,18 @@ def _declarations(model: type) -> Iterator[Tuple[str, ODataPropertyMeta]]:
     names it, which is the one case where the body is the carrier of the name too.
     """
     if is_dataclass(model):
+        inherited = _inherited_properties(model)
         for declared in fields(model):
             metadata = declared.metadata.get(_ODATA_MARKER)
-            if metadata is not None:
-                yield declared.name, metadata
+            if metadata is None:
+                # A field with no ``odata(...)`` still declares itself: its name is the
+                # column and its annotation is the column's type. A base class that
+                # already declared the name keeps the direction it stated, so a
+                # read-only column does not become writable because a subclass restates
+                # the field.
+                inherited_row = inherited.get(declared.name)
+                metadata = replace(inherited_row) if inherited_row is not None else ODataPropertyMeta(name=declared.name)
+            yield declared.name, metadata
     for attr_name, attr in model.__dict__.items():
         metadata = getattr(getattr(attr, "fget", attr), _ODATA_MARKER, None)
         if metadata is not None:
@@ -123,6 +149,9 @@ class TypeSchema:
     properties: Mapping[str, ODataPropertyMeta] = field(default_factory=_empty_map)
     #: The class name, for the one error a schema raises by itself.
     name: str = ""
+    #: The class the schema describes, for the one projection that has to ask it: a
+    #: column's type is resolved from the member that declares it, not from the row.
+    model: Any = field(default=None, compare=False, repr=False)
     #: The ``@limit`` declarations on the type itself, accumulated up the hierarchy: a
     #: subclass is subject to its base class's limits and its own.
     class_limits: Tuple[LimitDecl, ...] = ()
@@ -162,6 +191,7 @@ class TypeSchema:
         return cls(
             properties=MappingProxyType(_collect_properties(model)),
             name=model.__name__,
+            model=model,
             **_class_facts(model),
         )
 
@@ -176,6 +206,20 @@ class TypeSchema:
         value could not do anyway, ``__init_subclass__`` having already read its fields.
         """
         model._schema = replace(model._schema, **_class_facts(model))
+
+    @cached_property
+    def dtypes(self) -> Mapping[str, Any]:
+        """OData name -> the declared (unwrapped) type of that column, or ``None``.
+
+        The second half of a declaration: ``properties`` says which names the type
+        states, this says what one cell of each holds. A column is resolved when it is
+        first asked about -- hydrating a page asks about the columns the payload carries,
+        a reader about the columns it is about to read -- because resolving one can
+        import a module the type needed only for a type checker: a column nobody asks
+        about must cost nothing. A reader that knows a type's columns before it reads a
+        row asks here instead of taking a ``dtypes=`` map from the caller.
+        """
+        return _Dtypes(self)
 
     @cached_property
     def by_attr(self) -> Mapping[str, str]:
@@ -412,3 +456,174 @@ class TypeSchema:
 
 #: The schema of a type that declares nothing.
 EMPTY = TypeSchema()
+
+
+# ── A column's type ──────────────────────────────────────────────
+#
+# A declaration says what a column *is*; its type is the annotation of the member that
+# declares it. Generated annotations are strings in modules that import a cyclic type
+# inside the getter, or only under ``TYPE_CHECKING``, so the annotation is evaluated the
+# way its own module spells it -- never by asking the class as a whole, where one such
+# name would leave every other column of the type untyped.
+
+_NoneType = type(None)
+
+
+def to_snake_case(name: str) -> str:
+    """Convert a camelCase property name to its snake_case Python attribute."""
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
+
+
+def _unwrap_type(target: Any) -> Any:
+    """Strip Optional/Union wrappers from a type annotation."""
+    origin = get_origin(target)
+    if origin in (Union, getattr(types, "UnionType", None)):
+        args = [a for a in get_args(target) if a is not _NoneType]
+        return args[0] if len(args) == 1 else target
+    return target
+
+
+#: Module name -> the names it imports for itself, including its ``TYPE_CHECKING`` block.
+_module_names: Dict[str, Dict[str, Any]] = {}
+
+
+class _Dtypes(Mapping[str, Any]):
+    """A type's column types, each resolved the first time it is asked about.
+
+    A mapping, not a stored dict, because resolving a column can import a module the
+    type named only for a type checker: hydrating a page must pay for the columns the
+    payload carries, and a reader for the columns it reads, never for the rest. Asking
+    twice resolves once; asking for an attribute spelling answers the property it spells.
+    """
+
+    def __init__(self, schema: TypeSchema) -> None:
+        self._schema = schema
+        self._resolved: Dict[str, Any] = {}
+
+    def __getitem__(self, name: str) -> Any:
+        if name not in self._resolved:
+            self._resolved[name] = _resolve_declared_type(self._schema.model, name)
+        return self._resolved[name]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._schema.properties)
+
+    def __len__(self) -> int:
+        return len(self._schema.properties)
+
+
+def _bound_names(source: str) -> Dict[str, Any]:
+    """The names a piece of generated source imports, bound as its body would see them.
+
+    A cyclic type cannot be imported at module level -- the edge would close a cycle --
+    so the generator writes the import inside the getter, or guards it with
+    ``if TYPE_CHECKING:``. Either way the annotation names a type the module does not
+    bind at runtime. The imports are read, not run: nothing is executed.
+    """
+    names: Dict[str, Any] = {}
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return names
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom) and node.module and not node.level:
+            try:
+                module = importlib.import_module(node.module)
+            except ImportError:
+                continue
+            for alias in node.names:
+                value = getattr(module, alias.name, None)
+                if value is not None:
+                    names.setdefault(alias.asname or alias.name, value)
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                try:
+                    names.setdefault(alias.asname or alias.name.split(".")[0], importlib.import_module(alias.name))
+                except ImportError:
+                    continue
+    return names
+
+
+def _resolve_declared_type(cls: type, name: str) -> Any:
+    meta = TypeSchema.of(cls).properties.get(name)
+    if meta is not None:
+        attrs = (meta.attr,)
+    else:
+        # Generated getters rename reserved words with a trailing underscore
+        # (``type`` -> ``type_``), a rename ``to_snake_case`` cannot express.
+        attrs = (to_snake_case(name), to_snake_case(name) + "_")
+    for attr in attrs:
+        member = getattr(cls, attr, None)
+        if member is None:
+            continue
+        target = member.fget if isinstance(member, property) else member
+        declared = _return_hint(target)
+        if declared is not None:
+            return _unwrap_type(declared)
+    if is_dataclass(cls):
+        # A field is resolved on its own, never by resolving the class: one annotation
+        # naming a name the module does not bind (a ``if TYPE_CHECKING:`` import) would
+        # leave every other field of the class untyped -- a reader of 35 columns would
+        # lose 35, not one.
+        for declared in fields(cls):
+            if declared.name in attrs:
+                return _unwrap_type(_field_annotation(cls, declared))
+    return None
+
+
+def _return_hint(target: Any) -> Any:
+    """A getter's return annotation, resolved where its own module does not bind it.
+
+    A cyclic type is imported for a type checker, or inside the getter that returns it,
+    because a module-level import would close the cycle; either way the module's own
+    imports -- read, never run -- are the names ``get_type_hints`` is missing. One parse
+    per module, cached, and only for the members a module does not bind.
+    """
+    try:
+        return get_type_hints(target).get("return")
+    except TypeError:
+        # ``attr`` is not a function (a class constant sharing the OData name).
+        return None
+    except NameError:
+        pass
+    try:
+        return get_type_hints(target, localns=_module_imports(target.__module__)).get("return")
+    except (NameError, TypeError):
+        return None
+
+
+def _module_imports(module_name: str) -> Dict[str, Any]:
+    """The names a module imports for itself, its ``TYPE_CHECKING`` block included.
+
+    An annotation may name a type its module binds only for a type checker, and it is
+    still the declaration a reader needs. Cached by module.
+    """
+    if module_name not in _module_names:
+        try:
+            source = inspect.getsource(importlib.import_module(module_name))
+        except (OSError, TypeError, ImportError):
+            source = ""
+        _module_names[module_name] = _bound_names(source)
+    return _module_names[module_name]
+
+
+def _field_annotation(cls: type, declared: Any) -> Any:
+    """One dataclass field's annotation, evaluated the way its own module spells it.
+
+    The annotation is a string, and the module that wrote it is the one that imported the
+    names in it -- not necessarily this class's module: a field declared on a base class is
+    inherited, and the subclass's module need not import a name the base's annotation
+    uses. So the class that declares the field is found first, and its module is asked.
+    """
+    annotation = declared.type
+    if not isinstance(annotation, str):
+        return annotation
+    declaring = [base for base in cls.__mro__ if declared.name in base.__dict__.get("__annotations__", {})]
+    for base in declaring or [cls]:
+        scope = vars(importlib.import_module(base.__module__))
+        for localns in (None, _module_imports(base.__module__)):
+            try:
+                return eval(annotation, scope, localns)  # noqa: S307 - generated annotations
+            except (NameError, TypeError, SyntaxError, AttributeError):
+                continue
+    return None

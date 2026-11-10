@@ -3,7 +3,8 @@ Export the term store hierarchy to CSV (or JSON).
 
 ``store.get_all_terms()`` queues a deferred traversal (groups -> sets ->
 terms -> children); after ``execute_query()`` the flattened collection can be
-serialized with ``write_csv`` (or use ``store.export_tree()`` for the nested tree).
+serialized with ``write_records`` over ``iter_records`` (or use
+``store.export_tree()`` for the nested tree).
 
 Requires application permission ``TermStore.Read.All``.
 
@@ -13,7 +14,8 @@ https://learn.microsoft.com/en-us/graph/api/termstore-store-list-groups
 import argparse
 
 from office365.graph_client import GraphClient
-from office365.runtime.converters.csv_writer import write_csv
+from office365.runtime.converters.csv_writer import write_records
+from office365.runtime.converters.records import iter_records
 from tests.settings import client_id, client_secret, root_site_url, tenant
 
 
@@ -31,7 +33,7 @@ def main():
 
     terms = store.get_all_terms().execute_query()
     with open(args.output, "w", newline="") as f:
-        write_csv(terms, f)
+        write_records(iter_records(terms), f)
     print(f"✓ Exported {len(terms)} terms to {args.output}")
 
 

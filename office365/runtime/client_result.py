@@ -10,7 +10,7 @@ from typing_extensions import Self
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.value import deserialize_value, serialize_value
 from office365.runtime.http.request_options import RequestOptions
-from office365.runtime.odata.json_format import as_held
+from office365.runtime.odata.json_format import HELD
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ class ClientResult(Generic[ClientValueT]):
 
         What arrives is as received, not a change, so nothing is marked for persistence.
         """
-        (profile or as_held()).hydrate(self, payload, persist_changes=False)
+        (profile or HELD).hydrate(self, payload, persist_changes=False)
         return self
 
     def to_json(self, profile: Optional[JsonProfile] = None) -> Any:
@@ -71,7 +71,7 @@ class ClientResult(Generic[ClientValueT]):
             if isinstance(current, ClientValue) and hasattr(current, "content"):
                 current.set_property("content", value)
                 return self
-            # A declared ``datetime`` / ``Enum`` value is coerced by the branch
+            # A declared ``datetime`` / ``Enum`` value is deserialized by the branch
             # below, so only assign raw values that have no declared type.
             if not isinstance(current, (datetime, Enum)):
                 self._value = value
@@ -82,9 +82,9 @@ class ClientResult(Generic[ClientValueT]):
         elif isinstance(current, dict):
             current[key] = value
         elif isinstance(current, (datetime, Enum)):
-            coerced = deserialize_value(None, value, current, persist_changes)
-            if coerced is not None:
-                self._value = coerced
+            deserialized = deserialize_value(None, value, current, persist_changes)
+            if deserialized is not None:
+                self._value = deserialized
         else:
             self._value = value
         return self

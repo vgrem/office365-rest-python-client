@@ -40,7 +40,8 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Any:
     one is not pedantry: a team's ``visibility`` is a ``TeamVisibilityType``
     (``public``), while the group a team is listed from spells the same setting
     ``Public`` -- one service, one value set, two casings. Reading the case is what lets
-    the enum keep the value the service sent (``_coerce_enum``) and still answer a member.
+    the enum keep the value the service sent (:func:`deserialize_enum`) and still answer a
+    member.
 
     Args:
         enum_type: The Enum class to convert to
@@ -61,6 +62,21 @@ def parse_enum(enum_type: type[Enum], value: str | int) -> Any:
             if member is not None:
                 return member
             return _parse_flags(enum_type, value)
+
+
+def deserialize_enum(enum_type: type[Enum], value: Any) -> Any:
+    """The member naming ``value``, or ``value`` itself when no member does.
+
+    :func:`parse_enum` answers ``None`` for a value the snapshot does not list -- a member
+    the service added since. Storing ``None`` would drop what the service reported and
+    write null back on the next update, so an unfamiliar value is kept as sent, the same
+    way ``parse_bool`` keeps one it cannot read. Every path that turns a raw value into a
+    declared enum goes through here, so a column cannot answer two ways.
+    """
+    parsed = parse_enum(enum_type, value)
+    if parsed is None and value is not None:
+        return value
+    return parsed
 
 
 def _member_spelled_like(enum_type: type[Enum], name: str) -> Optional[Enum]:
@@ -119,7 +135,7 @@ def parse_duration(value: Any) -> Any:
     """Convert an ISO 8601 duration to ``timedelta``, falling back to the raw value.
 
     ``Edm.Duration`` travels as text (``PT30M``), and a column declared
-    ``timedelta`` is coerced by this. A form with no ``timedelta`` equivalent --
+    ``timedelta`` is deserialized by this. A form with no ``timedelta`` equivalent --
     ``P1M`` names a month, not thirty days -- is returned as it arrived, like an
     unrecognized boolean, so an update does not write ``None`` over a value the
     service reported.
@@ -174,7 +190,7 @@ def parse_decimal(value: Any) -> Optional[Decimal]:
     ``Decimal`` is the right type for money and quantities: a float cannot hold
     ``0.1`` exactly, so a currency column round-tripped through ``float`` drifts.
     Thousands separators and currency symbols are *not* stripped -- that is a
-    locale decision, and the caller can pass its own parser via ``coerce``.
+    locale decision, and the caller can pass its own parser via ``converters=``.
     """
     if value is None or isinstance(value, Decimal):
         return value

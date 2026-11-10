@@ -2,32 +2,21 @@
 
 The shared conversion layer: ``serialize_value`` maps stored values to their JSON
 form (used by ``ClientObject``/``ClientValue``/``ClientValueCollection``
-``to_json``), and ``deserialize_value``/``declared_type`` map raw values to their
-declared type (used by ``set_property``). Control information is not this
-layer's business: a profile attaches it (``JsonProfile.wrap``).
+``to_json``), and ``deserialize_value`` maps raw values to their declared type
+(used by ``set_property``). Which type that is, is a schema fact: ``declared_type``
+asks the type's ``dtypes``. Control information is not this layer's business: a
+profile attaches it (``JsonProfile.wrap``).
 """
 
 from __future__ import annotations
 
-import ast
-import importlib
-import inspect
-import re
-import textwrap
-import types
 import uuid
 from datetime import date, datetime, timedelta
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Union, get_args, get_origin, get_type_hints
+from typing import TYPE_CHECKING, Any, Optional, get_origin
 
-from office365.runtime.converters.scalars import (
-    parse_bool,
-    parse_datetime,
-    parse_duration,
-    parse_enum,
-    try_float,
-    try_int,
-)
+from office365.runtime.converters.scalars import deserialize_enum, parse_datetime
+from office365.runtime.odata.edm import parser_for
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.duration import Duration
 
@@ -35,17 +24,6 @@ if TYPE_CHECKING:
     from office365.runtime.odata.json_format import JsonProfile
 
 _UNSET = object()
-_NoneType = type(None)
-
-_SCALAR_CONVERTERS = {
-    bool: parse_bool,
-    int: try_int,
-    float: try_float,
-    datetime: parse_datetime,
-    timedelta: parse_duration,
-}
-
-_declared_cache: Dict[Tuple[type, str], Any] = {}
 
 
 def _serialize_enum(value: Enum, profile: Optional[JsonProfile]) -> Any:
@@ -70,7 +48,7 @@ def _serialize_enum(value: Enum, profile: Optional[JsonProfile]) -> Any:
 
 
 def serialize_value(  # noqa: PLR0911 - one return per stored-value kind
-    value: Any, profile: Optional[JsonProfile] = None
+    value: Any, profile: Optional[JsonProfile] = None, *, skip_none: bool = False
 ) -> Any:
     """Convert a stored value to its JSON representation.
 
@@ -83,6 +61,9 @@ def serialize_value(  # noqa: PLR0911 - one return per stored-value kind
 
     ``to_json`` is consulted *before* the container branches: a collection type may
     subclass ``dict``/``list`` and still need its own serialization.
+
+    ``skip_none`` drops a ``None`` member of a container: a request body states
+    "not provided" by omission, a document does not.
     """
     if value is None:
         return value
@@ -102,149 +83,36 @@ def serialize_value(  # noqa: PLR0911 - one return per stored-value kind
     if hasattr(value, "to_json"):
         return value.to_json(profile)
     if isinstance(value, dict):
-        return {k: serialize_value(item, profile) for k, item in value.items()}
+        return {
+            k: serialize_value(item, profile, skip_none=skip_none)
+            for k, item in value.items()
+            if not (skip_none and item is None)
+        }
     if isinstance(value, (list, tuple)):
-        return [serialize_value(item, profile) for item in value]
+        return [serialize_value(item, profile, skip_none=skip_none) for item in value]
     return value
 
 
-def to_snake_case(name: str) -> str:
-    """Convert a camelCase property name to its snake_case Python attribute."""
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
-
-
-def _unwrap_type(target: Any) -> Any:
-    """Strip Optional/Union wrappers from a type annotation."""
-    origin = get_origin(target)
-    if origin in (Union, getattr(types, "UnionType", None)):
-        args = [a for a in get_args(target) if a is not _NoneType]
-        return args[0] if len(args) == 1 else target
-    return target
-
-
 def declared_type(cls: type, name: str) -> Any:
-    """Resolve the declared (unwrapped) type of a property/field by its OData name.
+    """The type a column of ``cls`` is declared as, as its schema states it.
 
-    Entities resolve the ``@odata``-mapped or snake_case getter's return
-    annotation; ``ClientValue`` dataclasses the field annotation. ``None`` when
-    unresolvable. Cached per ``(cls, name)``.
+    ``None`` when the type declares no such column. Every source of a declaration --
+    a getter's return annotation, a dataclass field -- is read once, by the schema.
     """
-    key = (cls, name)
-    if key in _declared_cache:
-        return _declared_cache[key]
-    declared = _resolve_declared_type(cls, name)
-    _declared_cache[key] = declared
-    return declared
+    return TypeSchema.of(cls).dtypes[name]
 
 
-def _imported_names(func: Any) -> Dict[str, Any]:
-    """The names ``func`` imports for itself, resolved the way its body would.
-
-    A cyclic type cannot be imported at module level -- the edge would close a cycle --
-    so the generator writes the import inside the getter, where the annotation still
-    names a type ``get_type_hints`` cannot see. The imports are read, not run: the
-    getter must not be called to learn what it declares.
-    """
-    try:
-        tree = ast.parse(textwrap.dedent(inspect.getsource(func)))
-    except (OSError, TypeError, SyntaxError):
-        return {}
-    names: Dict[str, Any] = {}
-    for node in ast.walk(tree):
-        if isinstance(node, ast.ImportFrom) and node.module and not node.level:
-            try:
-                module = importlib.import_module(node.module)
-            except ImportError:
-                continue
-            for alias in node.names:
-                value = getattr(module, alias.name, None)
-                if value is not None:
-                    names[alias.asname or alias.name] = value
-        elif isinstance(node, ast.Import):
-            for alias in node.names:
-                try:
-                    names[alias.asname or alias.name.split(".")[0]] = importlib.import_module(alias.name)
-                except ImportError:
-                    continue
-    return names
-
-
-def _resolve_declared_type(cls: type, name: str) -> Any:
-    meta = TypeSchema.of(cls).properties.get(name)
-    if meta is not None:
-        attrs = (meta.attr,)
-    else:
-        # Generated getters rename reserved words with a trailing underscore
-        # (``type`` -> ``type_``), a rename ``to_snake_case`` cannot express.
-        attrs = (to_snake_case(name), to_snake_case(name) + "_")
-    for attr in attrs:
-        member = getattr(cls, attr, None)
-        if member is None:
-            continue
-        target = member.fget if isinstance(member, property) else member
-        try:
-            declared = get_type_hints(target).get("return")
-        except NameError:
-            # A name the module does not bind: either a getter that imports it for
-            # itself (a cycle, so it cannot be module level) or a dead
-            # ``if TYPE_CHECKING:`` entry, which no annotation can resolve.
-            try:
-                declared = get_type_hints(target, localns=_imported_names(target)).get("return")
-            except (NameError, TypeError):
-                declared = None
-        except TypeError:
-            # ``attr`` is not a function (a class constant sharing the OData name).
-            declared = None
-        if declared is not None:
-            return _unwrap_type(declared)
-    try:
-        declared = get_type_hints(cls).get(name)
-    except NameError:
-        declared = None
-    return _unwrap_type(declared) if declared is not None else None
-
-
-def is_client_value_type(target: Any) -> bool:
-    """Whether a type annotation represents a ``ClientValue`` (or generic ``ClientValueCollection``).
-
-    Uses the ``_is_client_value`` class marker so the conversion layer doesn't
-    import ``ClientValue`` (avoiding a cycle). ``get_type_hints`` returns
-    parametrized collections as a ``_GenericAlias``, so the origin is checked too.
-    """
-    cls = target if isinstance(target, type) else get_origin(target)
-    return isinstance(cls, type) and getattr(cls, "_is_client_value", False)
-
-
-def _client_value_origin(target: Any) -> type:
-    """Return the concrete class of a ClientValue type annotation."""
-    return target if isinstance(target, type) else get_origin(target)
-
-
-def _coerce_enum(enum_type: type, value: Any) -> Any:
-    """The member naming ``value``, or ``value`` itself when no member does.
-
-    ``parse_enum`` answers ``None`` for a value the snapshot does not list -- a member
-    the service added since. Storing ``None`` would drop what the service reported and
-    write null back on the next update, so an unfamiliar value is kept as sent, the
-    same way ``parse_bool`` keeps one it cannot read.
-    """
-    parsed = parse_enum(enum_type, value)
-    if parsed is None and value is not None:
-        return value
-    return parsed
-
-
-def deserialize_declared(value: Any, declared_type: Any) -> Any:
-    """Coerce a value to a declared scalar or enum type.
+def deserialize_declared(value: Any, declared: Any) -> Any:
+    """Deserialize a raw value as a declared scalar or enum type.
 
     Returns ``_UNSET`` when the declared type isn't a supported scalar/enum, so
     callers can fall back to their own handling.
     """
-    converter = _SCALAR_CONVERTERS.get(declared_type)
+    converter = parser_for(declared)
     if converter is not None:
         return converter(value)
-    if isinstance(declared_type, type) and issubclass(declared_type, Enum):
-        return _coerce_enum(declared_type, value)
+    if isinstance(declared, type) and issubclass(declared, Enum):
+        return deserialize_enum(declared, value)
     return _UNSET
 
 
@@ -298,20 +166,22 @@ def values_of(value: Any) -> Optional[list[Any]]:
 
 
 def deserialize_value(target_type: Any, value: Any, current: Any, persist_changes: bool) -> Any:
-    """Coerce a raw value for storage by its declared type, falling back to the current instance.
+    """Deserialize a raw value for storage by its declared type, falling back to the current one.
 
     Declared scalars/enums go through ``deserialize_declared``; declared
     ``ClientValue``/``ClientValueCollection`` (including generic aliases) are
-    populated via ``deserialize_nested``. Otherwise the value is coerced against
+    populated via ``deserialize_nested``. Otherwise the value is deserialized against
     the current instance (a nested ``ClientObject``/``ClientValue``, ``datetime``,
     ``Enum``) or passed through raw.
     """
     if target_type is not None and value is not None:
-        coerced = deserialize_declared(value, target_type)
-        if coerced is not _UNSET:
-            return coerced
-        if is_client_value_type(target_type):
-            origin = _client_value_origin(target_type)
+        from office365.runtime.client_value import ClientValue  # local: it imports this module
+
+        deserialized = deserialize_declared(value, target_type)
+        if deserialized is not _UNSET:
+            return deserialized
+        origin = target_type if isinstance(target_type, type) else get_origin(target_type)
+        if isinstance(origin, type) and issubclass(origin, ClientValue):
             if not isinstance(current, origin):
                 current = origin()
             return deserialize_nested(current, value, persist_changes)
@@ -320,5 +190,5 @@ def deserialize_value(target_type: Any, value: Any, current: Any, persist_change
     if isinstance(current, datetime):
         return parse_datetime(value)
     if isinstance(current, Enum):
-        return current if value is None else _coerce_enum(type(current), value)
+        return current if value is None else deserialize_enum(type(current), value)
     return value
