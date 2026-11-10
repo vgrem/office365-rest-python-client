@@ -266,13 +266,16 @@ class TypeSchema:
 
     @cached_property
     def serializable(self) -> frozenset[str]:
-        """OData names a request serializes: :attr:`columns` minus :attr:`readonly`.
+        """OData names a request serializes: the properties, minus navigations and :attr:`readonly`.
 
         The mirror of :attr:`readonly`, "a response carries them, a request does not": a
         name is here unless something declares the service owns it, so the answer is the
         model's statement of direction rather than a guess from the name. A navigation is
-        already absent from :attr:`columns`, so a link the service also assigns
-        (``Event.attachments``) is left out once.
+        a link and not a body, so a link the service also assigns (``Event.attachments``)
+        is left out once. :attr:`columns` answers a different question -- what ``$select``
+        accepts -- so a column declared ``selectable=False`` stays here: unprojectable is
+        not service-owned, and ``DeviceManagement.enableLegacyPcManagement`` is what a
+        ``PATCH`` sets.
 
         Serialized in the direction a request goes, which is what makes the name exact
         rather than convenient: ``to_json(profile=None)`` -- a response, a hydration, a
@@ -287,7 +290,9 @@ class TypeSchema:
         this field settable?" for one payload: a list's site columns exist on the wire and
         not in the CSDL, and a caller filtering a record by this set would drop them.
         """
-        return frozenset(name for name in self.columns if name not in self.readonly)
+        return frozenset(
+            name for name, declared in self.properties.items() if not declared.navigation and not declared.readonly
+        )
 
     @cached_property
     def persistable(self) -> frozenset[str]:

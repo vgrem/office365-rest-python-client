@@ -212,12 +212,13 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: sent and 11 refused it on account of what the column names (a form, a validation formula, a
 #: permission level, a sensitivity label, a versioning feature that is off), 3 hold a complex
 #: value the probe could not spell, and 2 discarded it -- ``DocumentTemplateUrl`` and
-#: ``DraftVersionVisibility``, the second only while content approval is off. ``Web``'s 50
+#: ``DraftVersionVisibility``, the second only while content approval is off. ``Web``'s 52
 #: divide the same way: 33 taken, 9 refused because the name asks for something the site does
 #: not have or the caller may not change (a master page, a welcome page, a primary colour, a
-#: search box placeholder, crawl settings), 7 complex. So the pin is a floor, not a debt:
-#: falling further needs a tenant whose sites have those features on, and the columns that
-#: would fall are the ones a caller sets.
+#: search box placeholder, crawl settings), 7 complex, and 2 a ``$select`` refuses while
+#: nothing says the site owns them (``DescriptionTranslations``, ``TitleTranslations``). So the
+#: pin is a floor, not a debt: falling further needs a tenant whose sites have those features
+#: on, and the columns that would fall are the ones a caller sets.
 #: ``User`` has had no probe because it has no scratch instance: a wrong write lands on a real
 #: account, and restoring it needs a token the write may have broken. Its direction is read off
 #: what the service answers with instead. ``Id`` is the ``<Key>`` of ``SP.Principal``,
@@ -238,7 +239,7 @@ _PROBED = (File, Folder, ListItem, Field, ContentType, SitePage)
 #: so all four of its columns are declared.
 _UNDECLARED = {
     "List": 52,
-    "Web": 50,
+    "Web": 52,
     "User": 7,
     "Group": 8,
     "NavigationNode": 3,
