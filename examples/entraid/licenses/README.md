@@ -2,8 +2,8 @@
 
 Six examples, in the order the questions are asked: what the tenant owns, what one person
 holds, whether a call may rely on it, who has what, how to change it, and what the change did
-to the plans. Two more carry that state as a list: `export_licences.py` writes it,
-`import_licences.py` plans every row before sending one.
+to the plans. Two more carry that state as a list: `export_licences.py` writes it, and
+`import_licences.py` reads it back into `assignLicense` calls, sent as one batch.
 
 ---
 
@@ -25,7 +25,7 @@ to the plans. Two more carry that state as a list: `export_licences.py` writes i
 | [`group_license.py`](./group_license.py) | ✓ | Licence a group once and let Graph keep its members licensed |
 | [`plans.py`](./plans.py) | ✓ | List the service plans of a SKU, or `--plan-off EXCHANGE_S_ENTERPRISE` for one user |
 | [`export_licences.py`](./export_licences.py) | — | Every user's SKUs and disabled plans as CSV — the input the next script reads |
-| [`import_licences.py`](./import_licences.py) | ✓ | Set each user to what a row asks, printing `already held`, `blocked — …` or the change it makes. `--dry-run` stops at the plan |
+| [`import_licences.py`](./import_licences.py) | ✓ | Give each user the licences a row asks for — one `assignLicense` per row, in one `$batch`. `--dry-run` prints the rows |
 
 Every script is runnable and documents itself:
 
@@ -61,10 +61,12 @@ changes the answer, and the library is not the level that knows when.
 
 ## A list, both ways
 
-`export_licences.py > licences.csv` writes the state; `import_licences.py licences.csv --dry-run`
-answers what the other tenant would need. Graph's own preconditions are decided before a row is
-sent, and a licence a group grants is reported rather than removed — the group owns it. For a
-population, group-based licensing is the way round; a per-user fan-out is for a one-off list.
+`export_licences.py > licences.csv` writes the state; `import_licences.py licences.csv` gives
+each user what a row asks for, one `assignLicense` per row in one `$batch`. Nothing is read
+first — the row addresses the user by UPN or id — and Graph's own preconditions are what refuses
+a row, each refusal returning as its own sub-request's error. A licence a group grants cannot be
+removed: the group owns it. For a population, group-based licensing is the way round; a
+per-user fan-out is for a one-off list.
 
 ## Official docs
 

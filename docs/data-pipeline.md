@@ -30,7 +30,7 @@ Six words carry the pipeline, and each names something the others are not:
 | **record** | a `dict` keyed by the declared OData names, in declaration order | an item |
 | **format** | bytes on a handle: csv, ndjson, json, excel, parquet, orc, feather, sql, dataframe | a record shape |
 | **profile** | how the wire spells a value (`JsonProfile`, `as_held()`, `scoped()`) | a format |
-| **projection** | the set of names one direction carries, and the function that makes it | a `$select` alone |
+| **map** | the caller's batch-at-a-time reshape of records before the type is applied: a column copied, a value computed, a constant, a row dropped or fanned out | the schema — a column's type is `converters` or the declared dtype |
 
 Direction is a separate axis, and the type states it once:
 
@@ -56,32 +56,32 @@ are not synonyms:
 
 | Verb | Direction | Used by |
 |---|---|---|
-| `serialize_value` | stored → JSON | `to_json()`, a request body, a report |
-| `deserialize_value` | raw → declared type | `set_property()`, a response, a CSV cell |
-| `converter_for` | a `coerce=` spec → the callable it names | any `from_*` |
+| `serialize_value` | stored → JSON | `to_json()`, a request body (`build_payload`), a CSV writer |
+| `deserialize_value` | raw → declared type | `set_property()`, a response, `deserialize_records` |
+| `converter_for` | a `converters=` spec → the callable it names | any `from_*` |
 | `parse_*` | one primitive (`parse_date`, `parse_uuid`, ...) | the arms both directions dispatch to |
 
-`serialize` and `deserialize` are the mechanism, and they pair by direction. `coerce=`
-is no synonym for either: it is the *user's* per-column instruction, and `converter_for`
-is what turns one into the single-argument callable that deserializes a cell. A spec is a
-callable, a Python type, a type name, or a SharePoint `FieldType` — four spellings of one
-callable.
+`converters=` names no direction: it is the *user's* per-column instruction, and
+`converter_for` turns one into the single-argument callable that deserializes a cell. A
+spec is a callable, a Python type, a type name, or a SharePoint `FieldType` — four
+spellings of one callable. A name that is none of them raises, so a typo cannot quietly
+mean "no conversion".
 
-One table decides what a declared type means, and both directions read it: a type the
-table names is a scalar; a type it does not name is an object (a `ClientValue`) or is not
-coercible at all. Two tables would drift into two meanings, and they already have.
+One table decides what a type means, and both directions read it: `PRIMITIVES` in
+`runtime/odata/edm.py`. A row is *(cell parser, every EDM name)*, so `Edm.Decimal` and
+`Decimal` cannot end up with two answers, and `serialize_value`, `deserialize_value`,
+`converter_for` and the CSV reader all resolve through that one row. A `str`-declared
+column has no parser *by design* — text is the wire spelling already, and a raw `1` must
+stay `1`.
 
-Gaps, in the order they hurt:
+Which type a column is declared as is a schema question, answered by
+`TypeSchema.of(T).dtypes`; the resolver lives in `runtime/schema.py`, beside the
+declarations it reads, and depends on them in one direction only (`value → schema`).
 
-- **`time` crosses neither direction.** No `parse_time`, and `serialize_value` passes it
-  through, so a `Edm.TimeOfDay` property — `Intune/IosUpdateConfiguration.active_hours_start`,
-  eight of them — builds a payload `json.dumps` refuses. `Decimal` has the same
-  serialization hole while coercing only on the import path.
-- **The two tables disagree about coverage.** `date`, `UUID` and `Decimal` coerce through
-  `coerce=` and not through `set_property`, so a property declared `Optional[UUID]` holds
-  a `str` at runtime, and `normalize_guid()` reconciles the two at every call site.
-- **`value.py` learns a declared type by reading a getter's source.** That is a schema
-  question, and it belongs beside `schema.wire_name`.
+What is left: `time` and `Decimal` have no serializer — `serialize_value` passes them
+through, so a payload holding one is refused by `json.dumps` (`Intune`'s
+`IosUpdateConfiguration.active_hours_start` is declared `time`). Two lines in
+`serialize_value` close it.
 
 ## Quick start
 
@@ -140,6 +140,11 @@ the parent, or the rows say nothing about whose they are.
 Every exporter takes it — `to_csv`, `to_ndjson`, `to_excel`, `to_parquet`, `to_orc`,
 `to_feather`, `to_sql`, `to_duckdb` — and `to_records(rows_from=...)` returns the rows to a
 caller instead of writing them.
+
+The import side of the same statement reads those rows back: the format's reader, then
+`deserialize_records`, which asks the child's schema what each column means, plus the one
+column the child does not declare — its owner — to name the group. `examples/entraid/licenses/import_licences.py`
+is that round trip.
 
 A type states its identity above the class — `@key("tenantId")` — and a read always
 asks for it even when `.select(...)` omitted it, because that column is what the next
@@ -228,13 +233,13 @@ lst.from_dataframe(
 
 A Graph entity declares its property types, so an import types its cells for free.
 Where nothing declares the type — a list item, an undocumented column, a spelling
-that differs — pass `coerce={column: converter}` to any `from_*`/`queue_records`.
+that differs — pass `converters={column: converter}` to any `from_*`/`queue_records`.
 One converter is one callable, spelled four ways:
 
 ```python
 lst.from_csv(
     "stocks.csv",
-    coerce={
+    converters={
         "Traded": "Edm.DateTimeOffset",  # a wire type name
         "Price": Decimal,  # a Python type
         "Notes": lambda cell: cell.strip() or None,  # a callable
@@ -246,17 +251,83 @@ lst.from_dataframe(df, schema={"Tags": FieldType.MultiChoice})  # FieldType is o
 
 Rules worth knowing:
 
-- **A `coerce` key is the destination key** — after `mapping` has renamed the
-  column. A key naming a column the type does not declare **raises**, so a typo
-  cannot silently mean "the column was dropped". Targets that accept arbitrary
-  columns (list items) are exempt.
+- **A `converters` key is the destination key** — the name `map` left it. A key naming
+  a column the type does not declare **raises**, so a typo cannot silently mean "the
+  column was dropped". Targets that accept arbitrary columns (list items) are exempt.
 - **The converter wins over the declared type**, and runs once. It tolerates an
   already-typed cell (`try_int(30) → 30`), so re-importing typed data is safe.
-- **Nothing is guessed.** A column with no `coerce` entry and no declared type is
+- **Nothing is guessed.** A column with no `converters` entry and no declared type is
   left exactly as the reader produced it — `30` stays an `int`, `"abc"` stays a
   `str`. `"18/2111"` is a room number, not a date.
-- **Per-cell vs per-row.** `coerce` types one cell; `to_records=` reshapes the whole
-  row (derived columns, defaults, validation).
+- **Per-cell vs per-row.** `converters` types one cell; `map` reshapes the batch
+  (one row into several, several into one).
+
+## Reshaping a row
+
+A file's columns are rarely the payload. `map=` is the one reshape step: a function of
+`list[dict]` to `list[dict]` that every format hands plain records (never its own chunk),
+so it says what the request carries without knowing where the rows came from:
+
+```python
+client.users.from_csv(
+    "users.csv",
+    map=lambda rows: [
+        {
+            "userPrincipalName": f"{r['userName']}@contoso.com",  # computed
+            "mailNickname": r["userName"],
+            "accountEnabled": True,  # a constant
+            "city": r["city"],  # a source column
+            "passwordProfile/password": r["password"],  # a nested path
+        }
+        for r in rows
+    ],
+).execute_batch()
+```
+
+A key `map` does not build is **not sent** — which is why `userName` above never reaches
+the payload — and a column with no declared type and no `converters` entry is left
+exactly as the reader produced it. `map` is the escape hatch for *shape*: typing a
+column stays with `converters`, which is declarative, so it can also be reused, checked
+and applied by a reader that never sees a callable. The two compose: `map` first, then
+`converters`, then the declared dtype.
+
+A lambda is never the schema. It cannot travel to the writer, cannot be pushed down into
+the reader, and cannot be reused by a migration — which is why the reshape is an option
+on the import verb and never the *statement* of the import.
+
+### Two shapes of sink
+
+A file import is the same three stages every time; only the sink differs:
+
+| Stage | Into a collection (rows are items to create) | Into a verb (rows are its arguments) |
+|---|---|---|
+| read + type | `client.users.from_csv(path)`, `lst.from_csv(path)` | `deserialize_records(AssignedLicense, path, format="csv")` |
+| shape, if the row is not the payload | `map=` — one function of records | `{"userPrincipalName": …, "addLicenses": [licence]}` |
+| send | `.execute_query()` / `.execute_batch()` | `assign_licences(rows)` + `execute_batch()`, or any verb |
+
+`from_csv` is the packaged form of the first column — reader, type and sink in one call — and it
+exists only where the service has a collection that *creates items*. `assignedLicenses` does not:
+it is read-only, and `assignLicense` takes the licence list as an argument, so a
+`target.from_csv(...)` there would pretend the service has something it does not. The verb is
+bulk instead, deferred like every other write:
+
+```python
+rows = []
+for record in deserialize_records(AssignedLicense, "licences.csv", format="csv", allow_unknown=True):
+    upn = record.pop("userPrincipalName")  # the one column the licence does not declare
+    rows.append({"userPrincipalName": upn, "addLicenses": [AssignedLicense().hydrate(record)]})
+client.users.assign_licences(rows)
+client.execute_batch()
+```
+
+`userPrincipalName` is the tell: it belongs to the *user*, not to the licence, so the row is a
+licence plus its owner — which is why the type cannot be the whole schema here.
+`allow_unknown=True` keeps that column, `hydrate` types the rest through the same `set_property`
+path a collection sink uses, and the row becomes the verb's own body: the address, plus
+`addLicenses` and `removeLicenses` exactly as Graph names them.
+
+`deserialize_records` is what `from_csv` applies too, so a `csv` read yields the same rows whether
+or not a collection is attached; the collection verb adds the sink, nothing else.
 
 ## Files (document libraries)
 

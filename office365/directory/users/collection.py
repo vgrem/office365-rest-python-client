@@ -1,3 +1,5 @@
+from typing import Any, Iterable, Mapping
+
 from typing_extensions import Self
 
 from office365.count_collection import CountCollection
@@ -57,6 +59,41 @@ class UserCollection(CountCollection[User]):
     def get_licensed(self) -> Self:
         """Get users holding at least one licence; see :meth:`get_unlicensed`."""
         return self.select(_LICENCE_COLUMNS).consistency_level().filter("assignedLicenses/$count ne 0")
+
+    @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
+    def assign_licences(self, assignments: Iterable[Mapping[str, Any]]) -> Self:
+        """Assign or remove licences for many users, one ``assignLicense`` per row.
+
+        Deferred: nothing is sent until ``execute_batch()``, which packs the rows into as few
+        ``$batch`` requests as the item cap allows and reports each row Graph refused.
+
+        A row addresses its user the way a request line does — ``userPrincipalName`` or ``id``,
+        either of which the ``/users/{user-id}`` segment accepts — and carries the two names
+        ``assignLicense`` itself takes::
+
+            {
+                "userPrincipalName": "ada@contoso.com",
+                "addLicenses": [AssignedLicense(skuId="...", disabledPlans=["EXCHANGE_S_FOUNDATION"])],
+                "removeLicenses": [],
+            }
+
+        Nothing is read first: the user is addressed, not loaded, so a file of rows goes straight
+        in. Nor is a decision taken here — Graph owns the preconditions (no ``usageLocation``, a
+        SKU this tenant does not subscribe to, no seat left, a licence held through a group), and
+        a row it refuses returns as that sub-request's own error.
+
+        Args:
+            assignments (Iterable[Mapping[str, Any]]): One mapping per ``assignLicense`` call.
+        """
+        for row in assignments:
+            key = row.get("userPrincipalName") or row.get("id")
+            if not key:
+                raise ValueError("every row needs a userPrincipalName or an id")
+            self.get_by_principal_name(key).assign_license(
+                add_licenses=list(row.get("addLicenses") or []),
+                remove_licenses=list(row.get("removeLicenses") or []),
+            )
+        return self
 
     @require_permission(
         delegated=["User.ReadWrite.All", "Directory.ReadWrite.All"],

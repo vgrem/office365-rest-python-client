@@ -348,10 +348,27 @@ The file carries SKU **ids**, because the projection is the type's and not a joi
 number lives on `subscribedSkus`, and `SubscribedSku.plan_name(plan_id)` is how a reader turns
 a plan id back into the name a person recognises. For the same reason the file is worth
 reading back only in the tenant that wrote it.
-`office365.directory.licenses.plan.plan_licences` decides what each row needs — a seat left, a
-SKU this tenant subscribes to, a `usageLocation` before an add, a licence inherited from a
-group before a remove — so a batch run reports the rows it will not send instead of catching
-the refusal.
+Read back, a row is one `assignLicense` call, so the verb takes many at once and the transport
+decides how many fit in a `$batch`. A row addresses its user (`userPrincipalName` or `id`) and
+carries the two names the API itself takes:
+
+```python
+rows = [
+    {
+        "userPrincipalName": "ada@contoso.com",
+        "addLicenses": [AssignedLicense(skuId=sku_id, disabledPlans=["EXCHANGE_S_FOUNDATION"])],
+        "removeLicenses": [],
+    },
+]
+client.users.assign_licences(rows)  # deferred — one sub-request per row
+client.execute_batch()  # 20 per $batch; a refused row returns its own error
+```
+
+Nothing is read first: `/users/{user-id}` takes a UPN or an id, so the row addresses the user
+instead of loading them. Graph owns the preconditions — no `usageLocation`, a SKU this tenant
+does not subscribe to, no seat left, a licence held through a group — and a row it refuses comes
+back as that sub-request's response, which is where a report of "what did not go through"
+belongs.
 
 ## Error handling
 
