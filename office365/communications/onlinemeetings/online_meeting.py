@@ -189,6 +189,7 @@ class OnlineMeeting(OnlineMeetingBase):
     def entity_type_name(self) -> str:
         return "microsoft.graph.OnlineMeeting"
 
+    @require_permission(delegated=["VirtualAppointmentNotification.Send"])
     def send_virtual_appointment_reminder_sms(
         self,
         remind_before_time_in_minutes_type: RemindBeforeTimeInMinutesType,
@@ -213,6 +214,7 @@ class OnlineMeeting(OnlineMeetingBase):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["VirtualAppointmentNotification.Send"])
     def send_virtual_appointment_sms(
         self, message_type: VirtualAppointmentMessageType, attendees: ClientValueCollection[AttendeeNotificationInfo]
     ) -> Self:

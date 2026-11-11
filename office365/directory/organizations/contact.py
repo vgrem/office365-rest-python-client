@@ -11,6 +11,7 @@ from office365.directory.objects.object import DirectoryObject
 from office365.directory.objects.onpremisesprovisioningerror import OnPremisesProvisioningError
 from office365.directory.objects.serviceprovisioningerror import ServiceProvisioningError
 from office365.directory.organizations.physical_office_address import PhysicalOfficeAddress
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -180,6 +181,10 @@ class OrgContact(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.OrgContact"
 
+    @require_permission(
+        delegated=["OrgContact.Read.All", "Directory.Read.All", "Directory.ReadWrite.All"],
+        application=["OrgContact.Read.All", "Directory.Read.All", "Directory.ReadWrite.All"],
+    )
     def retry_service_provisioning(self) -> Self:
         """retryServiceProvisioning operation."""
         qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)

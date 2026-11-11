@@ -12,6 +12,7 @@ from office365.intune.devices.management.mobileapps.category import MobileAppCat
 from office365.intune.devices.management.mobileapps.publishingstate import (
     MobileAppPublishingState,
 )
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -132,6 +133,10 @@ class MobileApp(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+    )
     def assign(self, mobile_app_assignments: ClientValueCollection[MobileAppAssignment]) -> Self:
         """assign operation.
 

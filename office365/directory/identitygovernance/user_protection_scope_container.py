@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -21,6 +22,10 @@ class UserProtectionScopeContainer(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserProtectionScopeContainer"
 
+    @require_permission(
+        delegated=["ProtectionScopes.Compute.User", "ProtectionScopes.Compute.All"],
+        application=["ProtectionScopes.Compute.User", "ProtectionScopes.Compute.All"],
+    )
     def compute(
         self,
         activities: UserActivityTypes,

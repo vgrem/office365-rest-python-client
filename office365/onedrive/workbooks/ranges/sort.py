@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
@@ -19,6 +20,7 @@ class WorkbookRangeSort(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRangeSort"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply(
         self,
         fields: ClientValueCollection[WorkbookSortField],

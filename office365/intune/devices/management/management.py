@@ -1171,6 +1171,10 @@ class DeviceManagement(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagement"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def verify_windows_enrollment_auto_discovery(self, domain_name: str) -> ClientResult[bool]:
         """verifyWindowsEnrollmentAutoDiscovery operation.
 
@@ -1183,6 +1187,10 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
+        application=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
+    )
     def user_experience_analytics_summarize_work_from_anywhere_devices(
         self,
     ) -> ClientResult[UserExperienceAnalyticsWorkFromAnywhereDevicesSummary]:
@@ -1545,6 +1553,10 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     @odata(name="enableAndroidDeviceAdministratorEnrollment", beta=True, selectable=False)
     def enable_android_device_administrator_enrollment(self) -> Self:
         """enableAndroidDeviceAdministratorEnrollment operation."""
@@ -1552,6 +1564,10 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     @odata(name="enableEndpointPrivilegeManagement", beta=True, selectable=False)
     def enable_endpoint_privilege_management(self) -> Self:
         """enableEndpointPrivilegeManagement operation."""
@@ -1559,6 +1575,10 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     @odata(name="enableLegacyPcManagement", beta=True, selectable=False)
     def enable_legacy_pc_management(self) -> Self:
         """enableLegacyPcManagement operation."""
@@ -1566,6 +1586,10 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     @odata(name="enableUnlicensedAdminstrators", beta=True, selectable=False)
     def enable_unlicensed_adminstrators(self) -> Self:
         """enableUnlicensedAdminstrators operation."""
@@ -1573,6 +1597,10 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     @odata(name="sendCustomNotificationToCompanyPortal", beta=True, selectable=False)
     def send_custom_notification_to_company_portal(
         self, notification_title: str, notification_body: str, groups_to_notify: list[str]
@@ -1602,6 +1630,20 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementRBAC.Read.All",
+            "DeviceManagementRBAC.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementRBAC.Read.All",
+            "DeviceManagementRBAC.ReadWrite.All",
+        ],
+    )
     @odata(name="scopedForResource", beta=True, selectable=False)
     def scoped_for_resource(self, resource: str) -> ClientResult[bool]:
         """scopedForResource operation.

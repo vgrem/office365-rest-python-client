@@ -5,6 +5,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -26,6 +27,7 @@ class TenantGovernanceSetting(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TenantGovernanceSetting"
 
+    @require_permission(delegated=["TenantGovernance-Setting.ReadWrite.All"])
     def enable_related_tenants(self) -> Self:
         """enableRelatedTenants operation."""
         qry = ServiceOperationQuery(self, "enableRelatedTenants", None, {}, None, None)

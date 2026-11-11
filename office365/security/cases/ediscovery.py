@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -147,12 +148,20 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def close(self) -> Self:
         """close operation."""
         qry = ServiceOperationQuery(self, "close", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def reopen(self) -> Self:
         """reopen operation."""
         qry = ServiceOperationQuery(self, "reopen", None, {}, None, None)

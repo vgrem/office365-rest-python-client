@@ -287,6 +287,7 @@ class Channel(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Channel"
 
+    @require_permission(delegated=["ChannelSettings.ReadWrite.All"], application=["ChannelSettings.ReadWrite.All"])
     def archive(self, should_set_spo_site_read_only_for_members: bool) -> Self:
         """archive operation.
 
@@ -305,18 +306,21 @@ class Channel(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["ChannelSettings.ReadWrite.All"], application=["ChannelSettings.ReadWrite.All"])
     def unarchive(self) -> Self:
         """unarchive operation."""
         qry = ServiceOperationQuery(self, "unarchive", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(application=["Teamwork.Migrate.All"])
     def complete_migration(self) -> Self:
         """completeMigration operation."""
         qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(application=["Teamwork.Migrate.All"])
     def start_migration(self, conversation_creation_date_time: datetime) -> Self:
         """startMigration operation.
 

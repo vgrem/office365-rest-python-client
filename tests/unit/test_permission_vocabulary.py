@@ -33,30 +33,31 @@ LIBRARY = index(office365)
 
 #: Public operations that still name no permission, per service package. The map only shrinks: a
 #: harvest lowers a number here, and a declaration removed anywhere raises one, which is the point -
-#: a debt nobody writes down is a debt nobody pays. It reopened on 2026-11-07 for one reason, not
-#: 741: ``generator/settings.graph.yaml`` switched ``generate_methods`` on, so a CSDL operation the
-#: model used to omit is now a method that submits a request. The count follows the file, so a type
-#: that changes package moves its own entry and every other entry stays where it was. The detector
-#: counts a method that *submits* a query (``add_query``, ``execute_query``, ``execute_batch``), so
-#: these are a floor: the real number is higher, never lower.
+#: a debt nobody writes down is a debt nobody pays. The detector counts a method that *submits* a
+#: query (``add_query``, ``execute_query``, ``execute_batch``), so these are a floor: the real
+#: number is higher, never lower. A package that publishes no product keeps no entry: its methods
+#: are reached through the products that inherit them, so the ledger would be naming the filing
+#: cabinet rather than the service that has to grant the permission.
+#:
+#: These 13 are what a fill that read one table per operation - from the docs as published - could
+#: not read, and neither reason is a judgement about which permission is *right*:
+#:
+#: * nine name a member the REST reference publishes no operation page for, so there is no table to
+#:   read - ``AccessReviewScheduleDefinition.stop``, ``AiInteractionHistory.get_all_enterprise_interactions``,
+#:   ``CalendarSharingMessage.accept``, ``DeviceManagementCompliancePolicy.assign``,
+#:   ``DeviceManagementConfigurationPolicy.assign``,
+#:   ``DeviceManagementReports.retrieve_device_app_installation_status_report``,
+#:   ``ExchangeAdminClient.invoke_all``, ``OnenotePage.onenote_patch_content``, ``OnenotePage.preview``;
+#: * four are documented as ``Not supported.`` in every flow, which is the reference answering the
+#:   question rather than leaving it open - ``NamedLocation.restore``, ``ConditionalAccessPolicy.restore``,
+#:   ``Workflow.clear_quarantine``, ``RecoveryJobBase.cancel``.
 PENDING: dict[str, int] = {
-    "admin": 4,
-    "backuprestore": 1,
-    "booking": 3,
-    "common": 10,
-    "communications": 23,
-    "copilot": 4,
-    "directory": 78,
+    "copilot": 1,
+    "directory": 5,
     "exchange": 1,
-    "intune": 89,
-    "onedrive": 413,
-    "onenote": 5,
-    "outlook": 11,
-    "partners": 5,
-    "reports": 53,
-    "search": 1,
-    "security": 30,
-    "teams": 32,
+    "intune": 3,
+    "onenote": 2,
+    "outlook": 1,
 }
 
 

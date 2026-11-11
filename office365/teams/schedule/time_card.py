@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -70,6 +71,7 @@ class TimeCard(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TimeCard"
 
+    @require_permission(delegated=["Schedule.ReadWrite.All"], application=["Schedule.ReadWrite.All"])
     def clock_out(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
         """clockOut operation.
 
@@ -88,6 +90,7 @@ class TimeCard(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Schedule.ReadWrite.All"], application=["Schedule.ReadWrite.All"])
     def confirm(self) -> TimeCard:
         """confirm operation."""
         from office365.teams.schedule.time_card import TimeCard
@@ -97,6 +100,7 @@ class TimeCard(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Schedule.ReadWrite.All"], application=["Schedule.ReadWrite.All"])
     def end_break(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
         """endBreak operation.
 
@@ -115,6 +119,7 @@ class TimeCard(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Schedule.ReadWrite.All"], application=["Schedule.ReadWrite.All"])
     def start_break(self, is_at_approved_location: bool, notes: ItemBody) -> TimeCard:
         """startBreak operation.
 

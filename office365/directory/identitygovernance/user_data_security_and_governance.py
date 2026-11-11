@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -49,6 +50,10 @@ class UserDataSecurityAndGovernance(Entity):
             UserProtectionScopeContainer(self.context, ResourcePath("protectionScopes", self.resource_path)),
         )
 
+    @require_permission(
+        delegated=["Content.Process.User", "Content.Process.All"],
+        application=["Content.Process.User", "Content.Process.All"],
+    )
     def process_content(self, content_to_process: ProcessContentRequest) -> ClientResult[ProcessContentResponse]:
         """processContent operation.
 

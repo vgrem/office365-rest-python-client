@@ -7,6 +7,7 @@ from office365.directory.rolemanagement.unifiedrole.permission import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -96,6 +97,10 @@ class UnifiedRoleDefinition(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleDefinition"
 
+    @require_permission(
+        delegated=["RoleManagement.ReadWrite.Directory"],
+        application=["RoleManagement.ReadWrite.Directory"],
+    )
     def restore(self) -> UnifiedRoleDefinition:
         """restore operation."""
         from office365.directory.rolemanagement.unifiedrole.definition import UnifiedRoleDefinition

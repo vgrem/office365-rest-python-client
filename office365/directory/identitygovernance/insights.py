@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
@@ -20,6 +21,10 @@ class Insights(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.identityGovernance.Insights"
 
+    @require_permission(
+        delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def top_tasks_processed_summary(
         self, start_date_time: datetime, end_date_time: datetime
     ) -> ClientResult[ClientValueCollection[TopTasksInsightsSummary]]:
@@ -43,6 +48,10 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def top_workflows_processed_summary(
         self, start_date_time: datetime, end_date_time: datetime
     ) -> ClientResult[ClientValueCollection[TopWorkflowsInsightsSummary]]:
@@ -66,6 +75,10 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def workflows_processed_by_category(
         self, start_date_time: datetime, end_date_time: datetime
     ) -> ClientResult[WorkflowsInsightsByCategory]:
@@ -89,6 +102,10 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def workflows_processed_summary(
         self, start_date_time: datetime, end_date_time: datetime
     ) -> ClientResult[WorkflowsInsightsSummary]:

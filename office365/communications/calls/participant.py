@@ -132,6 +132,7 @@ class Participant(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Participant"
 
+    @require_permission(application=["Calls.JoinGroupCall.All", "Calls.JoinGroupCallAsGuest.All"])
     def mute(self, client_context: str) -> MuteParticipantOperation:
         """mute operation.
 

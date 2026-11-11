@@ -112,6 +112,10 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         """Gets the pagesUrl property"""
         return self.properties.get("pagesUrl", None)
 
+    @require_permission(
+        delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.ReadWrite.All"],
+    )
     def copy_to_notebook(
         self, id_: str, group_id: str, rename_as: str, site_collection_id: str, site_id: str
     ) -> OnenoteOperation:

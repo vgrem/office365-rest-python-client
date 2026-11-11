@@ -214,6 +214,7 @@ class MailFolder(Entity):
             ),
         )
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def move(self, destination_id: str) -> MailFolder:
         """move operation.
 

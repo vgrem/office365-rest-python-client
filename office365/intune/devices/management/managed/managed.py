@@ -584,12 +584,20 @@ class ManagedDevice(Entity):
             WindowsProtectionState(self.context, ResourcePath("windowsProtectionState", self.resource_path)),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.ReadWrite.All"],
+        application=["DeviceManagementManagedDevices.ReadWrite.All"],
+    )
     def bypass_activation_lock(self) -> Self:
         """bypassActivationLock operation."""
         qry = ServiceOperationQuery(self, "bypassActivationLock", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def clean_windows_device(self, keep_user_data: bool) -> Self:
         """cleanWindowsDevice operation.
 
@@ -601,6 +609,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def delete_user_from_shared_apple_device(self, user_principal_name: str) -> Self:
         """deleteUserFromSharedAppleDevice operation.
 
@@ -614,36 +626,60 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def disable_lost_mode(self) -> Self:
         """disableLostMode operation."""
         qry = ServiceOperationQuery(self, "disableLostMode", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def logout_shared_apple_device_active_user(self) -> Self:
         """logoutSharedAppleDeviceActiveUser operation."""
         qry = ServiceOperationQuery(self, "logoutSharedAppleDeviceActiveUser", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def recover_passcode(self) -> Self:
         """recoverPasscode operation."""
         qry = ServiceOperationQuery(self, "recoverPasscode", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.ReadWrite.All"],
+        application=["DeviceManagementManagedDevices.ReadWrite.All"],
+    )
     def request_remote_assistance(self) -> Self:
         """requestRemoteAssistance operation."""
         qry = ServiceOperationQuery(self, "requestRemoteAssistance", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def reset_passcode(self) -> Self:
         """resetPasscode operation."""
         qry = ServiceOperationQuery(self, "resetPasscode", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def update_windows_device_account(
         self, update_windows_device_account_action_parameter: UpdateWindowsDeviceAccountActionParameter
     ) -> Self:
@@ -664,6 +700,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def windows_defender_scan(self, quick_scan: bool) -> Self:
         """windowsDefenderScan operation.
 
@@ -675,6 +715,10 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+        application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
+    )
     def windows_defender_update_signatures(self) -> Self:
         """windowsDefenderUpdateSignatures operation."""
         qry = ServiceOperationQuery(self, "windowsDefenderUpdateSignatures", None, {}, None, None)

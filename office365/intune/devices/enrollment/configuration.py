@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -81,6 +82,10 @@ class DeviceEnrollmentConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceEnrollmentConfiguration"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def assign(
         self, enrollment_configuration_assignments: ClientValueCollection[EnrollmentConfigurationAssignment]
     ) -> Self:
@@ -101,6 +106,10 @@ class DeviceEnrollmentConfiguration(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def set_priority(self, priority: int) -> Self:
         """setPriority operation.
 

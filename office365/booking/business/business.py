@@ -253,6 +253,7 @@ class BookingBusiness(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingBusiness"
 
+    @require_permission(delegated=["Bookings.Manage.All"], application=["Bookings.Manage.All"])
     def unpublish(self) -> Self:
         """unpublish operation."""
         qry = ServiceOperationQuery(self, "unpublish", None, {}, None, None)

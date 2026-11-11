@@ -19,6 +19,7 @@ from office365.directory.identitygovernance.accessreview.stages import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -122,18 +123,21 @@ class AccessReviewInstance(Entity):
             "reviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"])
     def accept_recommendations(self) -> Self:
         """acceptRecommendations operation."""
         qry = ServiceOperationQuery(self, "acceptRecommendations", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def apply_decisions(self) -> Self:
         """applyDecisions operation."""
         qry = ServiceOperationQuery(self, "applyDecisions", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def batch_apply_custom_data_provided_resource_decisions(
         self,
         apply_result: AccessReviewInstanceDecisionItemApplyResult,
@@ -165,6 +169,7 @@ class AccessReviewInstance(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def batch_record_decisions(self, decision: str, justification: str, principal_id: str, resource_id: str) -> Self:
         """batchRecordDecisions operation.
 
@@ -194,18 +199,21 @@ class AccessReviewInstance(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def reset_decisions(self) -> Self:
         """resetDecisions operation."""
         qry = ServiceOperationQuery(self, "resetDecisions", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def send_reminder(self) -> Self:
         """sendReminder operation."""
         qry = ServiceOperationQuery(self, "sendReminder", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def stop(self) -> Self:
         """stop operation."""
         qry = ServiceOperationQuery(self, "stop", None, {}, None, None)

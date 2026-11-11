@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.directory.synchronization.directorydefinitiondiscoverabilities import DirectoryDefinitionDiscoverabilities
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -64,6 +65,10 @@ class DirectoryDefinition(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DirectoryDefinition"
 
+    @require_permission(
+        delegated=["Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
+    )
     def discover(self) -> DirectoryDefinition:
         """discover operation."""
         from office365.directory.synchronization.directory_definition import DirectoryDefinition

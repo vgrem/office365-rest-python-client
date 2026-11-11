@@ -189,6 +189,10 @@ class FileStorageContainer(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["FileStorageContainer.Selected", "FileStorageContainer.Manage.All"],
+        application=["FileStorageContainer.Selected"],
+    )
     def restore(self) -> FileStorageContainer:
         """restore operation."""
         from office365.onedrive.filestorage.containers.container import FileStorageContainer
@@ -198,12 +202,20 @@ class FileStorageContainer(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["FileStorageContainer.Selected", "FileStorageContainer.Manage.All"],
+        application=["FileStorageContainer.Selected"],
+    )
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""
         qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["FileStorageContainer.Selected", "FileStorageContainer.Manage.All"],
+        application=["FileStorageContainer.Selected"],
+    )
     def lock(self, lock_state: SiteLockState) -> Self:
         """lock operation.
 
@@ -215,6 +227,7 @@ class FileStorageContainer(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["FileStorageContainer.Selected"], application=["FileStorageContainer.Selected"])
     def provision_migration_containers(self) -> ClientResult[SharePointMigrationContainerInfo]:
         """provisionMigrationContainers operation."""
         from office365.onedrive.sharepoint.migration.container_info import SharePointMigrationContainerInfo
@@ -224,6 +237,10 @@ class FileStorageContainer(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["FileStorageContainer.Selected", "FileStorageContainer.Manage.All"],
+        application=["FileStorageContainer.Selected"],
+    )
     def unlock(self) -> Self:
         """unlock operation."""
         qry = ServiceOperationQuery(self, "unlock", None, {}, None, None)

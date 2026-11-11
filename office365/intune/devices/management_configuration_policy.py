@@ -13,6 +13,7 @@ from office365.intune.devices.management_configuration_policy_template_reference
 )
 from office365.intune.devices.management_configuration_technologies import DeviceManagementConfigurationTechnologies
 from office365.intune.devices.management_priority_meta_data import DeviceManagementPriorityMetaData
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -161,6 +162,10 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All"],
+        application=["DeviceManagementConfiguration.Read.All"],
+    )
     def clear_enrollment_time_device_membership_target(self) -> ClientResult[bool]:
         """clearEnrollmentTimeDeviceMembershipTarget operation."""
         return_type = ClientResult(self.context, bool())
@@ -168,6 +173,10 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def create_copy(self, display_name: str, description: str) -> DeviceManagementConfigurationPolicy:
         """createCopy operation.
 
@@ -186,6 +195,10 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def reorder(self, priority: int) -> Self:
         """reorder operation.
 
@@ -197,6 +210,10 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def retrieve_latest_upgrade_default_baseline_policy(self) -> DeviceManagementConfigurationPolicy:
         """retrieveLatestUpgradeDefaultBaselinePolicy operation."""
         from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy

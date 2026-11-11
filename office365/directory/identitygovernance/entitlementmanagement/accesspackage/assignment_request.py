@@ -29,6 +29,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.directory.identitygovernance.entitlementmanagement.schedule import EntitlementManagementSchedule
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -130,18 +131,29 @@ class AccessPackageAssignmentRequest(Entity):
         """Gets the schedule property"""
         return self.properties.get("schedule", EntitlementManagementSchedule())
 
+    @require_permission(
+        delegated=["EntitlementMgmt-SubjectAccess.ReadWrite", "EntitlementManagement.ReadWrite.All"],
+    )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["EntitlementManagement.ReadWrite.All"],
+        application=["EntitlementManagement.ReadWrite.All"],
+    )
     def reprocess(self) -> Self:
         """reprocess operation."""
         qry = ServiceOperationQuery(self, "reprocess", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["EntitlementManagement.ReadWrite.All"],
+        application=["EntitlementManagement.ReadWrite.All"],
+    )
     def resume(self, source: str, type_: str, data: CustomExtensionData) -> Self:
         """resume operation.
 

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -47,6 +48,7 @@ class TenantDataSecurityAndGovernance(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TenantDataSecurityAndGovernance"
 
+    @require_permission(delegated=["Content.Process.All"], application=["Content.Process.All"])
     def process_content_async(
         self, process_content_requests: ClientValueCollection[ProcessContentBatchRequest]
     ) -> ClientResult[ClientValueCollection[ProcessContentResponses]]:

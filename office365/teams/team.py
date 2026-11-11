@@ -463,6 +463,7 @@ class Team(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Team"
 
+    @require_permission(application=["Teamwork.Migrate.All"])
     def complete_migration(self) -> Self:
         """completeMigration operation."""
         qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)

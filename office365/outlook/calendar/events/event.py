@@ -542,6 +542,7 @@ class Event(OutlookItem):
         """Gets the uid property"""
         return self.properties.get("uid", None)
 
+    @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def forward(self, to_recipients: ClientValueCollection[Recipient], comment: str) -> Self:
         """forward operation.
 
@@ -557,6 +558,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def snooze_reminder(self, new_reminder_time: DateTimeTimeZone) -> Self:
         """snoozeReminder operation.
 
@@ -568,6 +570,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def tentatively_accept(self, proposed_new_time: TimeSlot, send_response: bool, comment: str) -> Self:
         """tentativelyAccept operation.
 

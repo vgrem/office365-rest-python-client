@@ -18,6 +18,7 @@ from office365.intune.devices.management.mobileapps.relationship import (
 )
 from office365.intune.devices.management.vpptokens.vpp_token import VppToken
 from office365.intune.policies.managed_app import ManagedAppPolicy
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -285,6 +286,10 @@ class DeviceAppManagement(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+    )
     def sync_microsoft_store_for_business_apps(self) -> Self:
         """syncMicrosoftStoreForBusinessApps operation."""
         qry = ServiceOperationQuery(self, "syncMicrosoftStoreForBusinessApps", None, {}, None, None)

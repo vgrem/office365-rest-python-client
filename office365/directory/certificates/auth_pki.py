@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -65,6 +66,10 @@ class CertificateBasedAuthPki(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CertificateBasedAuthPki"
 
+    @require_permission(
+        delegated=["PublicKeyInfrastructure.ReadWrite.All"],
+        application=["PublicKeyInfrastructure.ReadWrite.All"],
+    )
     def upload(self, upload_url: str, sha256_file_hash: str) -> Self:
         """upload operation.
 

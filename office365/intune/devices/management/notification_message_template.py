@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.notificationtemplatebrandingoptions import NotificationTemplateBrandingOptions
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -71,6 +72,10 @@ class NotificationMessageTemplate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.NotificationMessageTemplate"
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def send_test_message(self) -> Self:
         """sendTestMessage operation."""
         qry = ServiceOperationQuery(self, "sendTestMessage", None, {}, None, None)

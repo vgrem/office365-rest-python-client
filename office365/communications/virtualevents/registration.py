@@ -12,6 +12,7 @@ from office365.communications.virtualevents.external_registration_information im
 from office365.communications.virtualevents.registration_question_answer import VirtualEventRegistrationQuestionAnswer
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -108,6 +109,10 @@ class VirtualEventRegistration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.VirtualEventRegistration"
 
+    @require_permission(
+        delegated=["VirtualEvent.ReadWrite"],
+        application=["VirtualEventRegistration-Anon.ReadWrite.All"],
+    )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)

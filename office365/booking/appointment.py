@@ -11,6 +11,7 @@ from office365.booking.reminder import BookingReminder
 from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.location import Location
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -223,6 +224,10 @@ class BookingAppointment(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingAppointment"
 
+    @require_permission(
+        delegated=["BookingsAppointment.ReadWrite.All", "Bookings.ReadWrite.All", "Bookings.Manage.All"],
+        application=["Bookings.ReadWrite.All", "Bookings.Manage.All"],
+    )
     def cancel(self, cancellation_message: str) -> Self:
         """cancel operation.
 

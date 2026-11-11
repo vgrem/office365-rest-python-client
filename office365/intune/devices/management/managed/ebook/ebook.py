@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.common.mime_content import MimeContent
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -138,6 +139,10 @@ class ManagedEBook(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementApps.ReadWrite.All"],
+    )
     def assign(self, managed_e_book_assignments: ClientValueCollection[ManagedEBookAssignment]) -> Self:
         """assign operation.
 

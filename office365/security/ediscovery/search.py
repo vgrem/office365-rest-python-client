@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -99,6 +100,10 @@ class EdiscoverySearch(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def estimate_statistics(self, statistics_options: StatisticsOptions) -> Self:
         """estimateStatistics operation.
 
@@ -112,6 +117,10 @@ class EdiscoverySearch(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def export_report(
         self,
         display_name: str,
@@ -159,6 +168,10 @@ class EdiscoverySearch(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def export_result(
         self,
         display_name: str,
@@ -214,6 +227,7 @@ class EdiscoverySearch(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["eDiscovery.ReadWrite.All"], application=["eDiscovery.ReadWrite.All"])
     def purge_data(self, purge_type: PurgeType, purge_areas: PurgeAreas) -> Self:
         """purgeData operation.
 

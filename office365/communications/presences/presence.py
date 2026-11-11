@@ -167,18 +167,21 @@ class Presence(Entity):
         """Gets the workLocation property"""
         return self.properties.get("workLocation", UserWorkLocation())
 
+    @require_permission(delegated=["Presence.ReadWrite"])
     def clear_automatic_location(self) -> Self:
         """clearAutomaticLocation operation."""
         qry = ServiceOperationQuery(self, "clearAutomaticLocation", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"])
     def clear_location(self) -> Self:
         """clearLocation operation."""
         qry = ServiceOperationQuery(self, "clearLocation", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"])
     def set_automatic_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
         """setAutomaticLocation operation.
 
@@ -194,6 +197,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Presence.ReadWrite"])
     def set_manual_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
         """setManualLocation operation.
 

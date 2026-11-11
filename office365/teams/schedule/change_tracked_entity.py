@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -59,6 +60,10 @@ class ChangeTrackedEntity(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChangeTrackedEntity"
 
+    @require_permission(
+        delegated=["Schedule.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Schedule.ReadWrite.All"],
+    )
     def stage_for_deletion(self) -> Self:
         """stageForDeletion operation."""
         qry = ServiceOperationQuery(self, "stageForDeletion", None, {}, None, None)

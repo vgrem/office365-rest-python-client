@@ -10,6 +10,7 @@ from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulereque
 from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -143,6 +144,10 @@ class UnifiedRoleEligibilityScheduleRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleEligibilityScheduleRequest"
 
+    @require_permission(
+        delegated=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+        application=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+    )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)

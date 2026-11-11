@@ -882,6 +882,10 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @require_permission(
+        delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Application.ReadWrite.All", "Directory.ReadWrite.All"],
+    )
     def remove_key(self, key_id: UUID, proof: str) -> Self:
         """removeKey operation.
 

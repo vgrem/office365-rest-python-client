@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
 
 if TYPE_CHECKING:
@@ -15,6 +16,7 @@ class RecoveryPreviewJob(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.entraRecoveryServices.RecoveryPreviewJob"
 
+    @require_permission(delegated=["EntraBackup.Read.All"], application=["EntraBackup.Read.All"])
     def get_changes(self) -> EntityCollection[RecoveryChangeObjectBase]:
         """getChanges operation."""
         from office365.directory.recovery.change_object_base import RecoveryChangeObjectBase

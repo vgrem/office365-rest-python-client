@@ -15,6 +15,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -114,18 +115,21 @@ class VirtualEvent(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.VirtualEvent"
 
+    @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def publish(self) -> Self:
         """publish operation."""
         qry = ServiceOperationQuery(self, "publish", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def set_external_event_information(self, external_event_id: str) -> Self:
         """setExternalEventInformation operation.
 

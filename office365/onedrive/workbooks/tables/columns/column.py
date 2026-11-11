@@ -69,6 +69,7 @@ class WorkbookTableColumn(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookTableColumn"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def data_body_range(self) -> WorkbookRange:
         """dataBodyRange operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange
@@ -78,6 +79,7 @@ class WorkbookTableColumn(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def total_row_range(self) -> WorkbookRange:
         """totalRowRange operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange

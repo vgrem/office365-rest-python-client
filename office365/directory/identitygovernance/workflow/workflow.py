@@ -16,6 +16,7 @@ from office365.directory.identitygovernance.workflow.version import WorkflowVers
 from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -152,6 +153,18 @@ class Workflow(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+        application=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+    )
     def activate(self, subjects: ClientValueCollection[User]) -> Self:
         """activate operation.
 
@@ -163,6 +176,18 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+        application=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+    )
     def activate_and_wait(self, subject: WorkflowSubject) -> ClientResult[AwaitedWorkflowProcessingResult]:
         """activateAndWait operation.
 
@@ -179,6 +204,18 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+        application=[
+            "LifecycleWorkflows-Workflow.Activate",
+            "LifecycleWorkflows-Workflow.ReadWrite.All",
+            "LifecycleWorkflows.ReadWrite.All",
+        ],
+    )
     def activate_with_scope(self, scope: ActivationScope) -> Self:
         """activateWithScope operation.
 
@@ -190,6 +227,10 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def cancel_processing(self, scope: CancelScope) -> Self:
         """cancelProcessing operation.
 
@@ -210,6 +251,10 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def create_new_version(self, workflow: Workflow) -> Workflow:
         """createNewVersion operation.
 
@@ -224,6 +269,10 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def preview_task_failures(self) -> ClientResult[ClientValueCollection[PreviewFailedTask]]:
         """previewTaskFailures operation."""
         from office365.directory.identitygovernance.preview_failed_task import PreviewFailedTask
@@ -233,6 +282,10 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def preview_workflow(self, subjects: ClientValueCollection[DirectoryObject]) -> Self:
         """previewWorkflow operation.
 
@@ -244,6 +297,10 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+        application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
+    )
     def restore(self) -> Workflow:
         """restore operation."""
         from office365.directory.identitygovernance.workflow.workflow import Workflow

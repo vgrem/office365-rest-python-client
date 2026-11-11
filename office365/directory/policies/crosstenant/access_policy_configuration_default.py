@@ -22,6 +22,7 @@ from office365.directory.policies.default_invitation_redemption_identity_provide
 from office365.directory.policies.inbound_outbound_policy_configuration import InboundOutboundPolicyConfiguration
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -127,6 +128,10 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantAccessPolicyConfigurationDefault"
 
+    @require_permission(
+        delegated=["Policy.ReadWrite.CrossTenantAccess"],
+        application=["Policy.ReadWrite.CrossTenantAccess"],
+    )
     def reset_to_system_default(self) -> Self:
         """resetToSystemDefault operation."""
         qry = ServiceOperationQuery(self, "resetToSystemDefault", None, {}, None, None)

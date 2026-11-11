@@ -173,6 +173,7 @@ class Workbook(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Workbook"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def table_row_operation_result(self, key: str) -> WorkbookTableRow:
         """tableRowOperationResult operation.
 

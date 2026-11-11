@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -189,6 +190,10 @@ class DeviceCompliancePolicy(Entity):
         """Gets the osMinimumVersion property"""
         return self.properties.get("osMinimumVersion", None)
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def assign(
         self, assignments: ClientValueCollection[DeviceCompliancePolicyAssignment]
     ) -> EntityCollection[DeviceCompliancePolicyAssignment]:
@@ -205,6 +210,10 @@ class DeviceCompliancePolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def schedule_actions_for_rules(
         self, device_compliance_scheduled_action_for_rules: ClientValueCollection[DeviceComplianceScheduledActionForRule]
     ) -> Self:

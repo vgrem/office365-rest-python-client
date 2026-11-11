@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
@@ -103,6 +104,7 @@ class Place(Entity):
         """Gets the lastUpdatedTime property"""
         return self.properties.get("lastUpdatedTime", datetime.min)
 
+    @require_permission(delegated=["Place.Read.All"], application=["Place.Read.All"])
     def descendants(self) -> EntityCollection[Place]:
         """descendants operation."""
         from office365.outlook.calendar.place import Place

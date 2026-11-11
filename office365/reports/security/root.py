@@ -52,6 +52,7 @@ class SecurityReportsRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.SecurityReportsRoot"
 
+    @require_permission(delegated=["AttackSimulation.Read.All"], application=["AttackSimulation.Read.All"])
     def get_attack_simulation_training_user_coverage(
         self,
     ) -> ClientResult[ClientValueCollection[AttackSimulationTrainingUserCoverage]]:

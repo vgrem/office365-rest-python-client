@@ -136,6 +136,10 @@ class Permission(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Permission"
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def revoke_grants(self, grantees: ClientValueCollection[DriveRecipient]) -> Permission:
         """revokeGrants operation.
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 
@@ -10,6 +11,7 @@ class CopilotReportRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CopilotReportRoot"
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_microsoft365_copilot_usage_user_detail(self, period: str, version: str) -> ClientResult[bytes]:
         """getMicrosoft365CopilotUsageUserDetail operation.
 
@@ -30,6 +32,7 @@ class CopilotReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_microsoft365_copilot_user_count_summary(self, period: str, version: str) -> ClientResult[bytes]:
         """getMicrosoft365CopilotUserCountSummary operation.
 
@@ -50,6 +53,7 @@ class CopilotReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_microsoft365_copilot_user_count_trend(self, period: str, version: str) -> ClientResult[bytes]:
         """getMicrosoft365CopilotUserCountTrend operation.
 

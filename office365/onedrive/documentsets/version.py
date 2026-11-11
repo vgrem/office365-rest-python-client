@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.onedrive.documentsets.version_item import DocumentSetVersionItem
 from office365.onedrive.versions.list_item import ListItemVersion
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -59,6 +60,10 @@ class DocumentSetVersion(ListItemVersion):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DocumentSetVersion"
 
+    @require_permission(
+        delegated=["Sites.ReadWrite.All", "Sites.FullControl.All", "Sites.Manage.All", "Sites.Selected"],
+        application=["Sites.ReadWrite.All", "Sites.FullControl.All", "Sites.Manage.All", "Sites.Selected"],
+    )
     def restore(self) -> Self:
         """restore operation."""
         qry = ServiceOperationQuery(self, "restore", None, {}, None, None)

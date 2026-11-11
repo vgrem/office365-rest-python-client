@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -43,6 +44,10 @@ class TargetedManagedAppProtection(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementApps.ReadWrite.All"],
+    )
     def assign(self, assignments: ClientValueCollection[TargetedManagedAppPolicyAssignment]) -> Self:
         """assign operation.
 

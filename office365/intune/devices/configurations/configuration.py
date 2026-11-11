@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -156,6 +157,10 @@ class DeviceConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceConfiguration"
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def assign(
         self, assignments: ClientValueCollection[DeviceConfigurationAssignment]
     ) -> EntityCollection[DeviceConfigurationAssignment]:
@@ -172,6 +177,10 @@ class DeviceConfiguration(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def get_oma_setting_plain_text_value(self, secret_reference_value_id: str) -> ClientResult[str]:
         """getOmaSettingPlainTextValue operation.
 

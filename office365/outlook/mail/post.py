@@ -9,6 +9,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -143,6 +144,10 @@ class Post(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Post"
 
+    @require_permission(
+        delegated=["Group-Conversation.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Group-Conversation.ReadWrite.All", "Group.ReadWrite.All"],
+    )
     def forward(self, comment: str, to_recipients: ClientValueCollection[Recipient]) -> Self:
         """forward operation.
 
@@ -158,6 +163,7 @@ class Post(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reply(self, post: Post) -> Self:
         """reply operation.
 

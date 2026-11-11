@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.virtualendpoint.cloudpcs.restorepointsetting import CloudPcRestorePointSetting
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -75,6 +76,7 @@ class CloudPcUserSetting(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcUserSetting"
 
+    @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def assign(self, assignments: ClientValueCollection[CloudPcUserSettingAssignment]) -> Self:
         """assign operation.
 

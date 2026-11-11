@@ -767,6 +767,10 @@ class Group(DirectoryObject):
         """Gets the unseenMessagesCount property"""
         return self.properties.get("unseenMessagesCount", None)
 
+    @require_permission(
+        delegated=["LicenseAssignment.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["LicenseAssignment.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
+    )
     def assign_license(self, add_licenses: ClientValueCollection[AssignedLicense], remove_licenses: list[UUID]) -> Group:
         """assignLicense operation.
 
@@ -790,12 +794,20 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Group.ReadWrite.All", "Directory.ReadWrite.All"],
+        application=["Group.ReadWrite.All", "Directory.ReadWrite.All"],
+    )
     def retry_service_provisioning(self) -> Self:
         """retryServiceProvisioning operation."""
         qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Group.Read.All", "Group.ReadWrite.All"],
+        application=["Group.Read.All", "Group.ReadWrite.All"],
+    )
     def validate_properties(self, display_name: str, mail_nickname: str, on_behalf_of_user_id: UUID) -> Self:
         """validateProperties operation.
 

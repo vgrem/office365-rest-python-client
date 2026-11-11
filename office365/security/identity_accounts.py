@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -56,6 +57,10 @@ class IdentityAccounts(Entity):
         """Gets the accounts property"""
         return self.properties.get("accounts", ClientValueCollection[Account](Account))
 
+    @require_permission(
+        delegated=["SecurityIdentitiesActions.ReadWrite.All"],
+        application=["SecurityIdentitiesActions.ReadWrite.All"],
+    )
     def invoke_action(
         self, account_id: str, action: Action, identity_provider: IdentityProvider
     ) -> ClientResult[InvokeActionResult]:

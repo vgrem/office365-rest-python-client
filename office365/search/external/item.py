@@ -10,6 +10,7 @@ from office365.externalconnectors.external_item_content import ExternalItemConte
 from office365.externalconnectors.external_item_information_protection_label import (  # noqa: E501
     ExternalItemInformationProtectionLabel,
 )
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -55,6 +56,9 @@ class ExternalItem(Entity):
         """Gets the informationProtectionLabel property"""
         return self.properties.get("informationProtectionLabel", None)
 
+    @require_permission(
+        application=["ExternalItem.ReadWrite.OwnedBy", "ExternalItem.ReadWrite.All"],
+    )
     def add_activities(
         self, activities: ClientValueCollection[ExternalActivity]
     ) -> EntityCollection[ExternalActivityResult]:

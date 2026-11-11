@@ -119,6 +119,7 @@ class WorkbookFunctions(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookFunctions"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def delta(self, number1: Json, number2: Json) -> WorkbookFunctionResult:
         """delta operation.
 
@@ -135,6 +136,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def acos(self, number: Json) -> WorkbookFunctionResult:
         """acos operation.
 
@@ -149,6 +151,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def acosh(self, number: Json) -> WorkbookFunctionResult:
         """acosh operation.
 
@@ -163,6 +166,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def acot(self, number: Json) -> WorkbookFunctionResult:
         """acot operation.
 
@@ -177,6 +181,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def acoth(self, number: Json) -> WorkbookFunctionResult:
         """acoth operation.
 
@@ -191,6 +196,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def amor_degrc(
         self, cost: Json, date_purchased: Json, first_period: Json, salvage: Json, period: Json, rate: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -234,6 +240,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def amor_linc(
         self, cost: Json, date_purchased: Json, first_period: Json, salvage: Json, period: Json, rate: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -277,6 +284,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def and_(self, values: Json) -> WorkbookFunctionResult:
         """and operation.
 
@@ -291,6 +299,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def arabic(self, text: Json) -> WorkbookFunctionResult:
         """arabic operation.
 
@@ -305,6 +314,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def areas(self, reference: Json) -> WorkbookFunctionResult:
         """areas operation.
 
@@ -319,6 +329,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def asc(self, text: Json) -> WorkbookFunctionResult:
         """asc operation.
 
@@ -333,6 +344,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def asin(self, number: Json) -> WorkbookFunctionResult:
         """asin operation.
 
@@ -347,6 +359,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def asinh(self, number: Json) -> WorkbookFunctionResult:
         """asinh operation.
 
@@ -361,6 +374,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def atan(self, number: Json) -> WorkbookFunctionResult:
         """atan operation.
 
@@ -375,6 +389,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def atan2(self, xnum: Json, ynum: Json) -> WorkbookFunctionResult:
         """atan2 operation.
 
@@ -391,6 +406,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def atanh(self, number: Json) -> WorkbookFunctionResult:
         """atanh operation.
 
@@ -405,6 +421,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ave_dev(self, values: Json) -> WorkbookFunctionResult:
         """aveDev operation.
 
@@ -419,6 +436,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def average(self, values: Json) -> WorkbookFunctionResult:
         """average operation.
 
@@ -433,6 +451,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def average_a(self, values: Json) -> WorkbookFunctionResult:
         """averageA operation.
 
@@ -447,6 +466,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def average_if(self, range_: Json, criteria: Json, average_range: Json) -> WorkbookFunctionResult:
         """averageIf operation.
 
@@ -472,6 +492,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def average_ifs(self, average_range: Json, values: Json) -> WorkbookFunctionResult:
         """averageIfs operation.
 
@@ -490,6 +511,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def baht_text(self, number: Json) -> WorkbookFunctionResult:
         """bahtText operation.
 
@@ -504,6 +526,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def base(self, number: Json, radix: Json, min_length: Json) -> WorkbookFunctionResult:
         """base operation.
 
@@ -524,6 +547,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bessel_i(self, x: Json, n: Json) -> WorkbookFunctionResult:
         """besselI operation.
 
@@ -540,6 +564,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bessel_j(self, x: Json, n: Json) -> WorkbookFunctionResult:
         """besselJ operation.
 
@@ -556,6 +581,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bessel_k(self, x: Json, n: Json) -> WorkbookFunctionResult:
         """besselK operation.
 
@@ -572,6 +598,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bessel_y(self, x: Json, n: Json) -> WorkbookFunctionResult:
         """besselY operation.
 
@@ -588,6 +615,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def beta_dist(self, x: Json, alpha: Json, beta: Json, cumulative: Json, a: Json, b: Json) -> WorkbookFunctionResult:
         """beta_Dist operation.
 
@@ -619,6 +647,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def beta_inv(self, probability: Json, alpha: Json, beta: Json, a: Json, b: Json) -> WorkbookFunctionResult:
         """beta_Inv operation.
 
@@ -648,6 +677,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bin2_dec(self, number: Json) -> WorkbookFunctionResult:
         """bin2Dec operation.
 
@@ -662,6 +692,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bin2_hex(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """bin2Hex operation.
 
@@ -678,6 +709,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bin2_oct(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """bin2Oct operation.
 
@@ -694,6 +726,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def binom_dist(self, number_s: Json, trials: Json, probability_s: Json, cumulative: Json) -> WorkbookFunctionResult:
         """binom_Dist operation.
 
@@ -721,6 +754,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def binom_dist_range(
         self, trials: Json, probability_s: Json, number_s: Json, number_s2: Json
     ) -> WorkbookFunctionResult:
@@ -750,6 +784,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def binom_inv(self, trials: Json, probability_s: Json, alpha: Json) -> WorkbookFunctionResult:
         """binom_Inv operation.
 
@@ -770,6 +805,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bitand(self, number1: Json, number2: Json) -> WorkbookFunctionResult:
         """bitand operation.
 
@@ -786,6 +822,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bitlshift(self, number: Json, shift_amount: Json) -> WorkbookFunctionResult:
         """bitlshift operation.
 
@@ -804,6 +841,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bitor(self, number1: Json, number2: Json) -> WorkbookFunctionResult:
         """bitor operation.
 
@@ -820,6 +858,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bitrshift(self, number: Json, shift_amount: Json) -> WorkbookFunctionResult:
         """bitrshift operation.
 
@@ -838,6 +877,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bitxor(self, number1: Json, number2: Json) -> WorkbookFunctionResult:
         """bitxor operation.
 
@@ -854,6 +894,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ceiling_math(self, number: Json, significance: Json, mode: Json) -> WorkbookFunctionResult:
         """ceiling_Math operation.
 
@@ -874,6 +915,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ceiling_precise(self, number: Json, significance: Json) -> WorkbookFunctionResult:
         """ceiling_Precise operation.
 
@@ -892,6 +934,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def char(self, number: Json) -> WorkbookFunctionResult:
         """char operation.
 
@@ -906,6 +949,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def chi_sq_dist(self, x: Json, deg_freedom: Json, cumulative: Json) -> WorkbookFunctionResult:
         """chiSq_Dist operation.
 
@@ -926,6 +970,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def chi_sq_dist_rt(self, x: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """chiSq_Dist_RT operation.
 
@@ -942,6 +987,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def chi_sq_inv(self, probability: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """chiSq_Inv operation.
 
@@ -960,6 +1006,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def chi_sq_inv_rt(self, probability: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """chiSq_Inv_RT operation.
 
@@ -978,6 +1025,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def choose(self, index_num: Json, values: Json) -> WorkbookFunctionResult:
         """choose operation.
 
@@ -994,6 +1042,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def clean(self, text: Json) -> WorkbookFunctionResult:
         """clean operation.
 
@@ -1008,6 +1057,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def code(self, text: Json) -> WorkbookFunctionResult:
         """code operation.
 
@@ -1022,6 +1072,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def columns(self, array: Json) -> WorkbookFunctionResult:
         """columns operation.
 
@@ -1036,6 +1087,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def combin(self, number: Json, number_chosen: Json) -> WorkbookFunctionResult:
         """combin operation.
 
@@ -1054,6 +1106,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def combina(self, number: Json, number_chosen: Json) -> WorkbookFunctionResult:
         """combina operation.
 
@@ -1072,6 +1125,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def complex(self, real_num: Json, inum: Json, suffix: Json) -> WorkbookFunctionResult:
         """complex operation.
 
@@ -1092,6 +1146,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def concatenate(self, values: Json) -> WorkbookFunctionResult:
         """concatenate operation.
 
@@ -1106,6 +1161,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def confidence_norm(self, alpha: Json, standard_dev: Json, size: Json) -> WorkbookFunctionResult:
         """confidence_Norm operation.
 
@@ -1126,6 +1182,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def confidence_t(self, alpha: Json, standard_dev: Json, size: Json) -> WorkbookFunctionResult:
         """confidence_T operation.
 
@@ -1146,6 +1203,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def convert(self, number: Json, from_unit: Json, to_unit: Json) -> WorkbookFunctionResult:
         """convert operation.
 
@@ -1166,6 +1224,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cos(self, number: Json) -> WorkbookFunctionResult:
         """cos operation.
 
@@ -1180,6 +1239,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cosh(self, number: Json) -> WorkbookFunctionResult:
         """cosh operation.
 
@@ -1194,6 +1254,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cot(self, number: Json) -> WorkbookFunctionResult:
         """cot operation.
 
@@ -1208,6 +1269,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coth(self, number: Json) -> WorkbookFunctionResult:
         """coth operation.
 
@@ -1222,6 +1284,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count(self, values: Json) -> WorkbookFunctionResult:
         """count operation.
 
@@ -1236,6 +1299,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count_a(self, values: Json) -> WorkbookFunctionResult:
         """countA operation.
 
@@ -1250,6 +1314,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count_blank(self, range_: Json) -> WorkbookFunctionResult:
         """countBlank operation.
 
@@ -1264,6 +1329,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count_if(self, range_: Json, criteria: Json) -> WorkbookFunctionResult:
         """countIf operation.
 
@@ -1280,6 +1346,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def count_ifs(self, values: Json) -> WorkbookFunctionResult:
         """countIfs operation.
 
@@ -1294,6 +1361,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_day_bs(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupDayBs operation.
 
@@ -1321,6 +1389,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_days(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupDays operation.
 
@@ -1348,6 +1417,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_days_nc(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupDaysNc operation.
 
@@ -1375,6 +1445,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_ncd(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupNcd operation.
 
@@ -1402,6 +1473,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_num(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupNum operation.
 
@@ -1429,6 +1501,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def coup_pcd(self, settlement: Json, maturity: Json, frequency: Json, basis: Json) -> WorkbookFunctionResult:
         """coupPcd operation.
 
@@ -1456,6 +1529,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def csc(self, number: Json) -> WorkbookFunctionResult:
         """csc operation.
 
@@ -1470,6 +1544,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def csch(self, number: Json) -> WorkbookFunctionResult:
         """csch operation.
 
@@ -1484,6 +1559,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cum_i_pmt(
         self, rate: Json, nper: Json, pv: Json, start_period: Json, end_period: Json, type_: Json
     ) -> WorkbookFunctionResult:
@@ -1517,6 +1593,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def cum_princ(
         self, rate: Json, nper: Json, pv: Json, start_period: Json, end_period: Json, type_: Json
     ) -> WorkbookFunctionResult:
@@ -1550,6 +1627,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def date(self, year: Json, month: Json, day: Json) -> WorkbookFunctionResult:
         """date operation.
 
@@ -1568,6 +1646,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def datevalue(self, date_text: Json) -> WorkbookFunctionResult:
         """datevalue operation.
 
@@ -1582,6 +1661,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def daverage(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """daverage operation.
 
@@ -1602,6 +1682,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def day(self, serial_number: Json) -> WorkbookFunctionResult:
         """day operation.
 
@@ -1616,6 +1697,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def days360(self, start_date: Json, end_date: Json, method: Json) -> WorkbookFunctionResult:
         """days360 operation.
 
@@ -1636,6 +1718,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def db(self, cost: Json, salvage: Json, life: Json, period: Json, month: Json) -> WorkbookFunctionResult:
         """db operation.
 
@@ -1665,6 +1748,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dbcs(self, text: Json) -> WorkbookFunctionResult:
         """dbcs operation.
 
@@ -1679,6 +1763,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dcount(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dcount operation.
 
@@ -1699,6 +1784,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dcount_a(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dcountA operation.
 
@@ -1719,6 +1805,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ddb(self, cost: Json, salvage: Json, life: Json, period: Json, factor: Json) -> WorkbookFunctionResult:
         """ddb operation.
 
@@ -1748,6 +1835,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dec2_bin(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """dec2Bin operation.
 
@@ -1764,6 +1852,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dec2_hex(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """dec2Hex operation.
 
@@ -1780,6 +1869,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dec2_oct(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """dec2Oct operation.
 
@@ -1796,6 +1886,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def decimal(self, number: Json, radix: Json) -> WorkbookFunctionResult:
         """decimal operation.
 
@@ -1812,6 +1903,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def degrees(self, angle: Json) -> WorkbookFunctionResult:
         """degrees operation.
 
@@ -1826,6 +1918,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dev_sq(self, values: Json) -> WorkbookFunctionResult:
         """devSq operation.
 
@@ -1840,6 +1933,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dget(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dget operation.
 
@@ -1860,6 +1954,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def disc(self, settlement: Json, maturity: Json, pr: Json, redemption: Json, basis: Json) -> WorkbookFunctionResult:
         """disc operation.
 
@@ -1889,6 +1984,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dmax(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dmax operation.
 
@@ -1909,6 +2005,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dmin(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dmin operation.
 
@@ -1929,6 +2026,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dollar(self, number: Json, decimals: Json) -> WorkbookFunctionResult:
         """dollar operation.
 
@@ -1945,6 +2043,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dollar_de(self, fractional_dollar: Json, fraction: Json) -> WorkbookFunctionResult:
         """dollarDe operation.
 
@@ -1963,6 +2062,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dollar_fr(self, decimal_dollar: Json, fraction: Json) -> WorkbookFunctionResult:
         """dollarFr operation.
 
@@ -1981,6 +2081,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dproduct(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dproduct operation.
 
@@ -2001,6 +2102,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dst_dev(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dstDev operation.
 
@@ -2021,6 +2123,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dst_dev_p(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dstDevP operation.
 
@@ -2041,6 +2144,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dsum(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dsum operation.
 
@@ -2061,6 +2165,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def duration(
         self, settlement: Json, maturity: Json, coupon: Json, yld: Json, frequency: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -2101,6 +2206,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dvar(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dvar operation.
 
@@ -2121,6 +2227,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def dvar_p(self, database: Json, field: Json, criteria: Json) -> WorkbookFunctionResult:
         """dvarP operation.
 
@@ -2141,6 +2248,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ecma_ceiling(self, number: Json, significance: Json) -> WorkbookFunctionResult:
         """ecma_Ceiling operation.
 
@@ -2159,6 +2267,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def edate(self, start_date: Json, months: Json) -> WorkbookFunctionResult:
         """edate operation.
 
@@ -2175,6 +2284,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def effect(self, nominal_rate: Json, npery: Json) -> WorkbookFunctionResult:
         """effect operation.
 
@@ -2193,6 +2303,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def eo_month(self, start_date: Json, months: Json) -> WorkbookFunctionResult:
         """eoMonth operation.
 
@@ -2211,6 +2322,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def erf(self, lower_limit: Json, upper_limit: Json) -> WorkbookFunctionResult:
         """erf operation.
 
@@ -2229,6 +2341,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def erf_c(self, x: Json) -> WorkbookFunctionResult:
         """erfC operation.
 
@@ -2243,6 +2356,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def erf_c_precise(self, x: Json) -> WorkbookFunctionResult:
         """erfC_Precise operation.
 
@@ -2257,6 +2371,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def erf_precise(self, x: Json) -> WorkbookFunctionResult:
         """erf_Precise operation.
 
@@ -2271,6 +2386,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def error_type(self, error_val: Json) -> WorkbookFunctionResult:
         """error_Type operation.
 
@@ -2285,6 +2401,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def even(self, number: Json) -> WorkbookFunctionResult:
         """even operation.
 
@@ -2299,6 +2416,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def exact(self, text1: Json, text2: Json) -> WorkbookFunctionResult:
         """exact operation.
 
@@ -2315,6 +2433,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def exp(self, number: Json) -> WorkbookFunctionResult:
         """exp operation.
 
@@ -2329,6 +2448,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def expon_dist(self, x: Json, lambda_: Json, cumulative: Json) -> WorkbookFunctionResult:
         """expon_Dist operation.
 
@@ -2349,6 +2469,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fact(self, number: Json) -> WorkbookFunctionResult:
         """fact operation.
 
@@ -2363,6 +2484,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fact_double(self, number: Json) -> WorkbookFunctionResult:
         """factDouble operation.
 
@@ -2377,6 +2499,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def false(self) -> WorkbookFunctionResult:
         """false operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -2386,6 +2509,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def find(self, find_text: Json, within_text: Json, start_num: Json) -> WorkbookFunctionResult:
         """find operation.
 
@@ -2411,6 +2535,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def find_b(self, find_text: Json, within_text: Json, start_num: Json) -> WorkbookFunctionResult:
         """findB operation.
 
@@ -2436,6 +2561,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fisher(self, x: Json) -> WorkbookFunctionResult:
         """fisher operation.
 
@@ -2450,6 +2576,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fisher_inv(self, y: Json) -> WorkbookFunctionResult:
         """fisherInv operation.
 
@@ -2464,6 +2591,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fixed(self, number: Json, decimals: Json, no_commas: Json) -> WorkbookFunctionResult:
         """fixed operation.
 
@@ -2484,6 +2612,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def floor_math(self, number: Json, significance: Json, mode: Json) -> WorkbookFunctionResult:
         """floor_Math operation.
 
@@ -2504,6 +2633,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def floor_precise(self, number: Json, significance: Json) -> WorkbookFunctionResult:
         """floor_Precise operation.
 
@@ -2522,6 +2652,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fv(self, rate: Json, nper: Json, pmt: Json, pv: Json, type_: Json) -> WorkbookFunctionResult:
         """fv operation.
 
@@ -2546,6 +2677,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fvschedule(self, principal: Json, schedule: Json) -> WorkbookFunctionResult:
         """fvschedule operation.
 
@@ -2564,6 +2696,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fdist(self, x: Json, deg_freedom1: Json, deg_freedom2: Json, cumulative: Json) -> WorkbookFunctionResult:
         """f_Dist operation.
 
@@ -2591,6 +2724,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def fdist_rt(self, x: Json, deg_freedom1: Json, deg_freedom2: Json) -> WorkbookFunctionResult:
         """f_Dist_RT operation.
 
@@ -2616,6 +2750,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def finv(self, probability: Json, deg_freedom1: Json, deg_freedom2: Json) -> WorkbookFunctionResult:
         """f_Inv operation.
 
@@ -2641,6 +2776,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def finv_rt(self, probability: Json, deg_freedom1: Json, deg_freedom2: Json) -> WorkbookFunctionResult:
         """f_Inv_RT operation.
 
@@ -2666,6 +2802,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gamma(self, x: Json) -> WorkbookFunctionResult:
         """gamma operation.
 
@@ -2680,6 +2817,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gamma_ln(self, x: Json) -> WorkbookFunctionResult:
         """gammaLn operation.
 
@@ -2694,6 +2832,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gamma_ln_precise(self, x: Json) -> WorkbookFunctionResult:
         """gammaLn_Precise operation.
 
@@ -2708,6 +2847,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gamma_dist(self, x: Json, alpha: Json, beta: Json, cumulative: Json) -> WorkbookFunctionResult:
         """gamma_Dist operation.
 
@@ -2730,6 +2870,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gamma_inv(self, probability: Json, alpha: Json, beta: Json) -> WorkbookFunctionResult:
         """gamma_Inv operation.
 
@@ -2750,6 +2891,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gauss(self, x: Json) -> WorkbookFunctionResult:
         """gauss operation.
 
@@ -2764,6 +2906,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def gcd(self, values: Json) -> WorkbookFunctionResult:
         """gcd operation.
 
@@ -2778,6 +2921,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def geo_mean(self, values: Json) -> WorkbookFunctionResult:
         """geoMean operation.
 
@@ -2792,6 +2936,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ge_step(self, number: Json, step: Json) -> WorkbookFunctionResult:
         """geStep operation.
 
@@ -2808,6 +2953,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def har_mean(self, values: Json) -> WorkbookFunctionResult:
         """harMean operation.
 
@@ -2822,6 +2968,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hex2_bin(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """hex2Bin operation.
 
@@ -2838,6 +2985,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hex2_dec(self, number: Json) -> WorkbookFunctionResult:
         """hex2Dec operation.
 
@@ -2852,6 +3000,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hex2_oct(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """hex2Oct operation.
 
@@ -2868,6 +3017,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hlookup(
         self, lookup_value: Json, table_array: Json, row_index_num: Json, range_lookup: Json
     ) -> WorkbookFunctionResult:
@@ -2902,6 +3052,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hour(self, serial_number: Json) -> WorkbookFunctionResult:
         """hour operation.
 
@@ -2916,6 +3067,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hyperlink(self, link_location: Json, friendly_name: Json) -> WorkbookFunctionResult:
         """hyperlink operation.
 
@@ -2934,6 +3086,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def hyp_geom_dist(
         self, sample_s: Json, number_sample: Json, population_s: Json, number_pop: Json, cumulative: Json
     ) -> WorkbookFunctionResult:
@@ -2971,6 +3124,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def if_(self, logical_test: Json, value_if_true: Json, value_if_false: Json) -> WorkbookFunctionResult:
         """if operation.
 
@@ -2996,6 +3150,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_abs(self, inumber: Json) -> WorkbookFunctionResult:
         """imAbs operation.
 
@@ -3010,6 +3165,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def imaginary(self, inumber: Json) -> WorkbookFunctionResult:
         """imaginary operation.
 
@@ -3024,6 +3180,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_argument(self, inumber: Json) -> WorkbookFunctionResult:
         """imArgument operation.
 
@@ -3038,6 +3195,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_conjugate(self, inumber: Json) -> WorkbookFunctionResult:
         """imConjugate operation.
 
@@ -3052,6 +3210,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_cos(self, inumber: Json) -> WorkbookFunctionResult:
         """imCos operation.
 
@@ -3066,6 +3225,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_cosh(self, inumber: Json) -> WorkbookFunctionResult:
         """imCosh operation.
 
@@ -3080,6 +3240,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_cot(self, inumber: Json) -> WorkbookFunctionResult:
         """imCot operation.
 
@@ -3094,6 +3255,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_csc(self, inumber: Json) -> WorkbookFunctionResult:
         """imCsc operation.
 
@@ -3108,6 +3270,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_csch(self, inumber: Json) -> WorkbookFunctionResult:
         """imCsch operation.
 
@@ -3122,6 +3285,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_div(self, inumber1: Json, inumber2: Json) -> WorkbookFunctionResult:
         """imDiv operation.
 
@@ -3138,6 +3302,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_exp(self, inumber: Json) -> WorkbookFunctionResult:
         """imExp operation.
 
@@ -3152,6 +3317,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_ln(self, inumber: Json) -> WorkbookFunctionResult:
         """imLn operation.
 
@@ -3166,6 +3332,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_log10(self, inumber: Json) -> WorkbookFunctionResult:
         """imLog10 operation.
 
@@ -3180,6 +3347,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_log2(self, inumber: Json) -> WorkbookFunctionResult:
         """imLog2 operation.
 
@@ -3194,6 +3362,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_power(self, inumber: Json, number: Json) -> WorkbookFunctionResult:
         """imPower operation.
 
@@ -3210,6 +3379,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_product(self, values: Json) -> WorkbookFunctionResult:
         """imProduct operation.
 
@@ -3224,6 +3394,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_real(self, inumber: Json) -> WorkbookFunctionResult:
         """imReal operation.
 
@@ -3238,6 +3409,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sec(self, inumber: Json) -> WorkbookFunctionResult:
         """imSec operation.
 
@@ -3252,6 +3424,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sech(self, inumber: Json) -> WorkbookFunctionResult:
         """imSech operation.
 
@@ -3266,6 +3439,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sin(self, inumber: Json) -> WorkbookFunctionResult:
         """imSin operation.
 
@@ -3280,6 +3454,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sinh(self, inumber: Json) -> WorkbookFunctionResult:
         """imSinh operation.
 
@@ -3294,6 +3469,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sqrt(self, inumber: Json) -> WorkbookFunctionResult:
         """imSqrt operation.
 
@@ -3308,6 +3484,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sub(self, inumber1: Json, inumber2: Json) -> WorkbookFunctionResult:
         """imSub operation.
 
@@ -3324,6 +3501,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_sum(self, values: Json) -> WorkbookFunctionResult:
         """imSum operation.
 
@@ -3338,6 +3516,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def im_tan(self, inumber: Json) -> WorkbookFunctionResult:
         """imTan operation.
 
@@ -3352,6 +3531,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def int(self, number: Json) -> WorkbookFunctionResult:
         """int operation.
 
@@ -3366,6 +3546,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def int_rate(
         self, settlement: Json, maturity: Json, investment: Json, redemption: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -3403,6 +3584,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ipmt(self, rate: Json, per: Json, nper: Json, pv: Json, fv: Json, type_: Json) -> WorkbookFunctionResult:
         """ipmt operation.
 
@@ -3434,6 +3616,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def irr(self, values: Json, guess: Json) -> WorkbookFunctionResult:
         """irr operation.
 
@@ -3450,6 +3633,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_err(self, value: Json) -> WorkbookFunctionResult:
         """isErr operation.
 
@@ -3464,6 +3648,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_error(self, value: Json) -> WorkbookFunctionResult:
         """isError operation.
 
@@ -3478,6 +3663,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_even(self, number: Json) -> WorkbookFunctionResult:
         """isEven operation.
 
@@ -3492,6 +3678,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_formula(self, reference: Json) -> WorkbookFunctionResult:
         """isFormula operation.
 
@@ -3506,6 +3693,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_logical(self, value: Json) -> WorkbookFunctionResult:
         """isLogical operation.
 
@@ -3520,6 +3708,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_na(self, value: Json) -> WorkbookFunctionResult:
         """isNA operation.
 
@@ -3534,6 +3723,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_non_text(self, value: Json) -> WorkbookFunctionResult:
         """isNonText operation.
 
@@ -3548,6 +3738,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_number(self, value: Json) -> WorkbookFunctionResult:
         """isNumber operation.
 
@@ -3562,6 +3753,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_odd(self, number: Json) -> WorkbookFunctionResult:
         """isOdd operation.
 
@@ -3576,6 +3768,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def iso_week_num(self, date: Json) -> WorkbookFunctionResult:
         """isoWeekNum operation.
 
@@ -3590,6 +3783,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def iso_ceiling(self, number: Json, significance: Json) -> WorkbookFunctionResult:
         """iso_Ceiling operation.
 
@@ -3608,6 +3802,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ispmt(self, rate: Json, per: Json, nper: Json, pv: Json) -> WorkbookFunctionResult:
         """ispmt operation.
 
@@ -3630,6 +3825,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def isref(self, value: Json) -> WorkbookFunctionResult:
         """isref operation.
 
@@ -3644,6 +3840,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def is_text(self, value: Json) -> WorkbookFunctionResult:
         """isText operation.
 
@@ -3658,6 +3855,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def kurt(self, values: Json) -> WorkbookFunctionResult:
         """kurt operation.
 
@@ -3672,6 +3870,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def large(self, array: Json, k: Json) -> WorkbookFunctionResult:
         """large operation.
 
@@ -3688,6 +3887,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def lcm(self, values: Json) -> WorkbookFunctionResult:
         """lcm operation.
 
@@ -3702,6 +3902,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def left(self, text: Json, num_chars: Json) -> WorkbookFunctionResult:
         """left operation.
 
@@ -3718,6 +3919,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def leftb(self, text: Json, num_bytes: Json) -> WorkbookFunctionResult:
         """leftb operation.
 
@@ -3734,6 +3936,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def len(self, text: Json) -> WorkbookFunctionResult:
         """len operation.
 
@@ -3748,6 +3951,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def lenb(self, text: Json) -> WorkbookFunctionResult:
         """lenb operation.
 
@@ -3762,6 +3966,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ln(self, number: Json) -> WorkbookFunctionResult:
         """ln operation.
 
@@ -3776,6 +3981,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def log(self, number: Json, base: Json) -> WorkbookFunctionResult:
         """log operation.
 
@@ -3792,6 +3998,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def log10(self, number: Json) -> WorkbookFunctionResult:
         """log10 operation.
 
@@ -3806,6 +4013,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def log_norm_dist(self, x: Json, mean: Json, standard_dev: Json, cumulative: Json) -> WorkbookFunctionResult:
         """logNorm_Dist operation.
 
@@ -3833,6 +4041,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def log_norm_inv(self, probability: Json, mean: Json, standard_dev: Json) -> WorkbookFunctionResult:
         """logNorm_Inv operation.
 
@@ -3858,6 +4067,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def lookup(self, lookup_value: Json, lookup_vector: Json, result_vector: Json) -> WorkbookFunctionResult:
         """lookup operation.
 
@@ -3883,6 +4093,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def lower(self, text: Json) -> WorkbookFunctionResult:
         """lower operation.
 
@@ -3897,6 +4108,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def match(self, lookup_value: Json, lookup_array: Json, match_type: Json) -> WorkbookFunctionResult:
         """match operation.
 
@@ -3922,6 +4134,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def max(self, values: Json) -> WorkbookFunctionResult:
         """max operation.
 
@@ -3936,6 +4149,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def max_a(self, values: Json) -> WorkbookFunctionResult:
         """maxA operation.
 
@@ -3950,6 +4164,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def mduration(
         self, settlement: Json, maturity: Json, coupon: Json, yld: Json, frequency: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -3990,6 +4205,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def median(self, values: Json) -> WorkbookFunctionResult:
         """median operation.
 
@@ -4004,6 +4220,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def mid(self, text: Json, start_num: Json, num_chars: Json) -> WorkbookFunctionResult:
         """mid operation.
 
@@ -4024,6 +4241,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def midb(self, text: Json, start_num: Json, num_bytes: Json) -> WorkbookFunctionResult:
         """midb operation.
 
@@ -4044,6 +4262,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def min(self, values: Json) -> WorkbookFunctionResult:
         """min operation.
 
@@ -4058,6 +4277,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def min_a(self, values: Json) -> WorkbookFunctionResult:
         """minA operation.
 
@@ -4072,6 +4292,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def minute(self, serial_number: Json) -> WorkbookFunctionResult:
         """minute operation.
 
@@ -4086,6 +4307,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def mirr(self, values: Json, finance_rate: Json, reinvest_rate: Json) -> WorkbookFunctionResult:
         """mirr operation.
 
@@ -4111,6 +4333,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def mod(self, number: Json, divisor: Json) -> WorkbookFunctionResult:
         """mod operation.
 
@@ -4127,6 +4350,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def month(self, serial_number: Json) -> WorkbookFunctionResult:
         """month operation.
 
@@ -4141,6 +4365,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def mround(self, number: Json, multiple: Json) -> WorkbookFunctionResult:
         """mround operation.
 
@@ -4157,6 +4382,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def multi_nomial(self, values: Json) -> WorkbookFunctionResult:
         """multiNomial operation.
 
@@ -4171,6 +4397,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def n(self, value: Json) -> WorkbookFunctionResult:
         """n operation.
 
@@ -4185,6 +4412,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def na(self) -> WorkbookFunctionResult:
         """na operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -4194,6 +4422,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def neg_binom_dist(
         self, number_f: Json, number_s: Json, probability_s: Json, cumulative: Json
     ) -> WorkbookFunctionResult:
@@ -4223,6 +4452,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def network_days(self, start_date: Json, end_date: Json, holidays: Json) -> WorkbookFunctionResult:
         """networkDays operation.
 
@@ -4248,6 +4478,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def network_days_intl(
         self, start_date: Json, end_date: Json, weekend: Json, holidays: Json
     ) -> WorkbookFunctionResult:
@@ -4277,6 +4508,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def nominal(self, effect_rate: Json, npery: Json) -> WorkbookFunctionResult:
         """nominal operation.
 
@@ -4295,6 +4527,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def norm_dist(self, x: Json, mean: Json, standard_dev: Json, cumulative: Json) -> WorkbookFunctionResult:
         """norm_Dist operation.
 
@@ -4322,6 +4555,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def norm_inv(self, probability: Json, mean: Json, standard_dev: Json) -> WorkbookFunctionResult:
         """norm_Inv operation.
 
@@ -4347,6 +4581,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def norm_s_dist(self, z: Json, cumulative: Json) -> WorkbookFunctionResult:
         """norm_S_Dist operation.
 
@@ -4363,6 +4598,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def norm_s_inv(self, probability: Json) -> WorkbookFunctionResult:
         """norm_S_Inv operation.
 
@@ -4377,6 +4613,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def not_(self, logical: Json) -> WorkbookFunctionResult:
         """not operation.
 
@@ -4391,6 +4628,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def now(self) -> WorkbookFunctionResult:
         """now operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -4400,6 +4638,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def nper(self, rate: Json, pmt: Json, pv: Json, fv: Json, type_: Json) -> WorkbookFunctionResult:
         """nper operation.
 
@@ -4424,6 +4663,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def npv(self, rate: Json, values: Json) -> WorkbookFunctionResult:
         """npv operation.
 
@@ -4440,6 +4680,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def number_value(self, text: Json, decimal_separator: Json, group_separator: Json) -> WorkbookFunctionResult:
         """numberValue operation.
 
@@ -4465,6 +4706,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def oct2_bin(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """oct2Bin operation.
 
@@ -4481,6 +4723,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def oct2_dec(self, number: Json) -> WorkbookFunctionResult:
         """oct2Dec operation.
 
@@ -4495,6 +4738,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def oct2_hex(self, number: Json, places: Json) -> WorkbookFunctionResult:
         """oct2Hex operation.
 
@@ -4511,6 +4755,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def odd(self, number: Json) -> WorkbookFunctionResult:
         """odd operation.
 
@@ -4525,6 +4770,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def odd_f_price(
         self,
         settlement: Json,
@@ -4583,6 +4829,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def odd_f_yield(
         self,
         settlement: Json,
@@ -4641,6 +4888,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def odd_l_price(
         self,
         settlement: Json,
@@ -4695,6 +4943,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def odd_l_yield(
         self,
         settlement: Json,
@@ -4749,6 +4998,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def or_(self, values: Json) -> WorkbookFunctionResult:
         """or operation.
 
@@ -4763,6 +5013,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def pduration(self, rate: Json, pv: Json, fv: Json) -> WorkbookFunctionResult:
         """pduration operation.
 
@@ -4781,6 +5032,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def percentile_exc(self, array: Json, k: Json) -> WorkbookFunctionResult:
         """percentile_Exc operation.
 
@@ -4797,6 +5049,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def percentile_inc(self, array: Json, k: Json) -> WorkbookFunctionResult:
         """percentile_Inc operation.
 
@@ -4813,6 +5066,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def percent_rank_exc(self, array: Json, x: Json, significance: Json) -> WorkbookFunctionResult:
         """percentRank_Exc operation.
 
@@ -4833,6 +5087,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def percent_rank_inc(self, array: Json, x: Json, significance: Json) -> WorkbookFunctionResult:
         """percentRank_Inc operation.
 
@@ -4853,6 +5108,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def permut(self, number: Json, number_chosen: Json) -> WorkbookFunctionResult:
         """permut operation.
 
@@ -4871,6 +5127,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def permutationa(self, number: Json, number_chosen: Json) -> WorkbookFunctionResult:
         """permutationa operation.
 
@@ -4889,6 +5146,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def phi(self, x: Json) -> WorkbookFunctionResult:
         """phi operation.
 
@@ -4903,6 +5161,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def pi(self) -> WorkbookFunctionResult:
         """pi operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -4912,6 +5171,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def pmt(self, rate: Json, nper: Json, pv: Json, fv: Json, type_: Json) -> WorkbookFunctionResult:
         """pmt operation.
 
@@ -4936,6 +5196,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def poisson_dist(self, x: Json, mean: Json, cumulative: Json) -> WorkbookFunctionResult:
         """poisson_Dist operation.
 
@@ -4956,6 +5217,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ppmt(self, rate: Json, per: Json, nper: Json, pv: Json, fv: Json, type_: Json) -> WorkbookFunctionResult:
         """ppmt operation.
 
@@ -4987,6 +5249,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def price(
         self, settlement: Json, maturity: Json, rate: Json, yld: Json, redemption: Json, frequency: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -5030,6 +5293,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def price_disc(
         self, settlement: Json, maturity: Json, discount: Json, redemption: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -5067,6 +5331,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def price_mat(
         self, settlement: Json, maturity: Json, issue: Json, rate: Json, yld: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -5100,6 +5365,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def product(self, values: Json) -> WorkbookFunctionResult:
         """product operation.
 
@@ -5114,6 +5380,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def proper(self, text: Json) -> WorkbookFunctionResult:
         """proper operation.
 
@@ -5128,6 +5395,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def pv(self, rate: Json, nper: Json, pmt: Json, fv: Json, type_: Json) -> WorkbookFunctionResult:
         """pv operation.
 
@@ -5152,6 +5420,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def quartile_exc(self, array: Json, quart: Json) -> WorkbookFunctionResult:
         """quartile_Exc operation.
 
@@ -5168,6 +5437,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def quartile_inc(self, array: Json, quart: Json) -> WorkbookFunctionResult:
         """quartile_Inc operation.
 
@@ -5184,6 +5454,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def quotient(self, numerator: Json, denominator: Json) -> WorkbookFunctionResult:
         """quotient operation.
 
@@ -5202,6 +5473,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def radians(self, angle: Json) -> WorkbookFunctionResult:
         """radians operation.
 
@@ -5216,6 +5488,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rand(self) -> WorkbookFunctionResult:
         """rand operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -5225,6 +5498,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rand_between(self, bottom: Json, top: Json) -> WorkbookFunctionResult:
         """randBetween operation.
 
@@ -5241,6 +5515,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rank_avg(self, number: Json, ref: Json, order: Json) -> WorkbookFunctionResult:
         """rank_Avg operation.
 
@@ -5261,6 +5536,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rank_eq(self, number: Json, ref: Json, order: Json) -> WorkbookFunctionResult:
         """rank_Eq operation.
 
@@ -5281,6 +5557,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rate(self, nper: Json, pmt: Json, pv: Json, fv: Json, type_: Json, guess: Json) -> WorkbookFunctionResult:
         """rate operation.
 
@@ -5312,6 +5589,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def received(
         self, settlement: Json, maturity: Json, investment: Json, discount: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -5349,6 +5627,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def replace(self, old_text: Json, start_num: Json, num_chars: Json, new_text: Json) -> WorkbookFunctionResult:
         """replace operation.
 
@@ -5376,6 +5655,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def replace_b(self, old_text: Json, start_num: Json, num_bytes: Json, new_text: Json) -> WorkbookFunctionResult:
         """replaceB operation.
 
@@ -5403,6 +5683,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rept(self, text: Json, number_times: Json) -> WorkbookFunctionResult:
         """rept operation.
 
@@ -5419,6 +5700,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def right(self, text: Json, num_chars: Json) -> WorkbookFunctionResult:
         """right operation.
 
@@ -5435,6 +5717,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rightb(self, text: Json, num_bytes: Json) -> WorkbookFunctionResult:
         """rightb operation.
 
@@ -5451,6 +5734,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def roman(self, number: Json, form: Json) -> WorkbookFunctionResult:
         """roman operation.
 
@@ -5467,6 +5751,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def round(self, number: Json, num_digits: Json) -> WorkbookFunctionResult:
         """round operation.
 
@@ -5483,6 +5768,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def round_down(self, number: Json, num_digits: Json) -> WorkbookFunctionResult:
         """roundDown operation.
 
@@ -5501,6 +5787,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def round_up(self, number: Json, num_digits: Json) -> WorkbookFunctionResult:
         """roundUp operation.
 
@@ -5519,6 +5806,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rows(self, array: Json) -> WorkbookFunctionResult:
         """rows operation.
 
@@ -5533,6 +5821,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def rri(self, nper: Json, pv: Json, fv: Json) -> WorkbookFunctionResult:
         """rri operation.
 
@@ -5551,6 +5840,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sec(self, number: Json) -> WorkbookFunctionResult:
         """sec operation.
 
@@ -5565,6 +5855,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sech(self, number: Json) -> WorkbookFunctionResult:
         """sech operation.
 
@@ -5579,6 +5870,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def second(self, serial_number: Json) -> WorkbookFunctionResult:
         """second operation.
 
@@ -5593,6 +5885,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def series_sum(self, x: Json, n: Json, m: Json, coefficients: Json) -> WorkbookFunctionResult:
         """seriesSum operation.
 
@@ -5615,6 +5908,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sheet(self, value: Json) -> WorkbookFunctionResult:
         """sheet operation.
 
@@ -5629,6 +5923,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sheets(self, reference: Json) -> WorkbookFunctionResult:
         """sheets operation.
 
@@ -5643,6 +5938,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sign(self, number: Json) -> WorkbookFunctionResult:
         """sign operation.
 
@@ -5657,6 +5953,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sin(self, number: Json) -> WorkbookFunctionResult:
         """sin operation.
 
@@ -5671,6 +5968,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sinh(self, number: Json) -> WorkbookFunctionResult:
         """sinh operation.
 
@@ -5685,6 +5983,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def skew(self, values: Json) -> WorkbookFunctionResult:
         """skew operation.
 
@@ -5699,6 +5998,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def skew_p(self, values: Json) -> WorkbookFunctionResult:
         """skew_p operation.
 
@@ -5713,6 +6013,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sln(self, cost: Json, salvage: Json, life: Json) -> WorkbookFunctionResult:
         """sln operation.
 
@@ -5733,6 +6034,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def small(self, array: Json, k: Json) -> WorkbookFunctionResult:
         """small operation.
 
@@ -5749,6 +6051,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sqrt(self, number: Json) -> WorkbookFunctionResult:
         """sqrt operation.
 
@@ -5763,6 +6066,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sqrt_pi(self, number: Json) -> WorkbookFunctionResult:
         """sqrtPi operation.
 
@@ -5777,6 +6081,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def standardize(self, x: Json, mean: Json, standard_dev: Json) -> WorkbookFunctionResult:
         """standardize operation.
 
@@ -5797,6 +6102,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def st_dev_a(self, values: Json) -> WorkbookFunctionResult:
         """stDevA operation.
 
@@ -5811,6 +6117,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def st_dev_pa(self, values: Json) -> WorkbookFunctionResult:
         """stDevPA operation.
 
@@ -5825,6 +6132,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def st_dev_p(self, values: Json) -> WorkbookFunctionResult:
         """stDev_P operation.
 
@@ -5839,6 +6147,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def st_dev_s(self, values: Json) -> WorkbookFunctionResult:
         """stDev_S operation.
 
@@ -5853,6 +6162,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def substitute(self, text: Json, old_text: Json, new_text: Json, instance_num: Json) -> WorkbookFunctionResult:
         """substitute operation.
 
@@ -5880,6 +6190,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def subtotal(self, function_num: Json, values: Json) -> WorkbookFunctionResult:
         """subtotal operation.
 
@@ -5898,6 +6209,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sum(self, values: Json) -> WorkbookFunctionResult:
         """sum operation.
 
@@ -5912,6 +6224,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sum_if(self, range_: Json, criteria: Json, sum_range: Json) -> WorkbookFunctionResult:
         """sumIf operation.
 
@@ -5932,6 +6245,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sum_ifs(self, sum_range: Json, values: Json) -> WorkbookFunctionResult:
         """sumIfs operation.
 
@@ -5948,6 +6262,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def sum_sq(self, values: Json) -> WorkbookFunctionResult:
         """sumSq operation.
 
@@ -5962,6 +6277,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def syd(self, cost: Json, salvage: Json, life: Json, per: Json) -> WorkbookFunctionResult:
         """syd operation.
 
@@ -5984,6 +6300,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def t(self, value: Json) -> WorkbookFunctionResult:
         """t operation.
 
@@ -5998,6 +6315,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tan(self, number: Json) -> WorkbookFunctionResult:
         """tan operation.
 
@@ -6012,6 +6330,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tanh(self, number: Json) -> WorkbookFunctionResult:
         """tanh operation.
 
@@ -6026,6 +6345,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tbill_eq(self, settlement: Json, maturity: Json, discount: Json) -> WorkbookFunctionResult:
         """tbillEq operation.
 
@@ -6051,6 +6371,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tbill_price(self, settlement: Json, maturity: Json, discount: Json) -> WorkbookFunctionResult:
         """tbillPrice operation.
 
@@ -6076,6 +6397,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tbill_yield(self, settlement: Json, maturity: Json, pr: Json) -> WorkbookFunctionResult:
         """tbillYield operation.
 
@@ -6096,6 +6418,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def text(self, value: Json, format_text: Json) -> WorkbookFunctionResult:
         """text operation.
 
@@ -6112,6 +6435,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def time(self, hour: Json, minute: Json, second: Json) -> WorkbookFunctionResult:
         """time operation.
 
@@ -6132,6 +6456,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def timevalue(self, time_text: Json) -> WorkbookFunctionResult:
         """timevalue operation.
 
@@ -6146,6 +6471,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def today(self) -> WorkbookFunctionResult:
         """today operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -6155,6 +6481,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def trim(self, text: Json) -> WorkbookFunctionResult:
         """trim operation.
 
@@ -6169,6 +6496,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def trim_mean(self, array: Json, percent: Json) -> WorkbookFunctionResult:
         """trimMean operation.
 
@@ -6185,6 +6513,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def true(self) -> WorkbookFunctionResult:
         """true operation."""
         from office365.onedrive.workbooks.functions.result import WorkbookFunctionResult
@@ -6194,6 +6523,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def trunc(self, number: Json, num_digits: Json) -> WorkbookFunctionResult:
         """trunc operation.
 
@@ -6210,6 +6540,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def type(self, value: Json) -> WorkbookFunctionResult:
         """type operation.
 
@@ -6224,6 +6555,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tdist(self, x: Json, deg_freedom: Json, cumulative: Json) -> WorkbookFunctionResult:
         """t_Dist operation.
 
@@ -6244,6 +6576,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tdist_2_t(self, x: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """t_Dist_2T operation.
 
@@ -6260,6 +6593,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tdist_rt(self, x: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """t_Dist_RT operation.
 
@@ -6276,6 +6610,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tinv(self, probability: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """t_Inv operation.
 
@@ -6294,6 +6629,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def tinv_2_t(self, probability: Json, deg_freedom: Json) -> WorkbookFunctionResult:
         """t_Inv_2T operation.
 
@@ -6312,6 +6648,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def unichar(self, number: Json) -> WorkbookFunctionResult:
         """unichar operation.
 
@@ -6326,6 +6663,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def unicode(self, text: Json) -> WorkbookFunctionResult:
         """unicode operation.
 
@@ -6340,6 +6678,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def upper(self, text: Json) -> WorkbookFunctionResult:
         """upper operation.
 
@@ -6354,6 +6693,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def usdollar(self, number: Json, decimals: Json) -> WorkbookFunctionResult:
         """usdollar operation.
 
@@ -6370,6 +6710,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def value(self, text: Json) -> WorkbookFunctionResult:
         """value operation.
 
@@ -6384,6 +6725,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def var_a(self, values: Json) -> WorkbookFunctionResult:
         """varA operation.
 
@@ -6398,6 +6740,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def var_pa(self, values: Json) -> WorkbookFunctionResult:
         """varPA operation.
 
@@ -6412,6 +6755,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def var_p(self, values: Json) -> WorkbookFunctionResult:
         """var_P operation.
 
@@ -6426,6 +6770,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def var_s(self, values: Json) -> WorkbookFunctionResult:
         """var_S operation.
 
@@ -6440,6 +6785,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def vdb(
         self, cost: Json, salvage: Json, life: Json, start_period: Json, end_period: Json, factor: Json, no_switch: Json
     ) -> WorkbookFunctionResult:
@@ -6483,6 +6829,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def vlookup(
         self, lookup_value: Json, table_array: Json, col_index_num: Json, range_lookup: Json
     ) -> WorkbookFunctionResult:
@@ -6517,6 +6864,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def weekday(self, serial_number: Json, return_type: Json) -> WorkbookFunctionResult:
         """weekday operation.
 
@@ -6535,6 +6883,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type_
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def week_num(self, serial_number: Json, return_type: Json) -> WorkbookFunctionResult:
         """weekNum operation.
 
@@ -6553,6 +6902,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type_
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def weibull_dist(self, x: Json, alpha: Json, beta: Json, cumulative: Json) -> WorkbookFunctionResult:
         """weibull_Dist operation.
 
@@ -6580,6 +6930,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def work_day(self, start_date: Json, days: Json, holidays: Json) -> WorkbookFunctionResult:
         """workDay operation.
 
@@ -6600,6 +6951,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def work_day_intl(self, start_date: Json, days: Json, weekend: Json, holidays: Json) -> WorkbookFunctionResult:
         """workDay_Intl operation.
 
@@ -6627,6 +6979,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def xirr(self, values: Json, dates: Json, guess: Json) -> WorkbookFunctionResult:
         """xirr operation.
 
@@ -6647,6 +7000,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def xnpv(self, rate: Json, values: Json, dates: Json) -> WorkbookFunctionResult:
         """xnpv operation.
 
@@ -6667,6 +7021,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def xor(self, values: Json) -> WorkbookFunctionResult:
         """xor operation.
 
@@ -6681,6 +7036,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def year(self, serial_number: Json) -> WorkbookFunctionResult:
         """year operation.
 
@@ -6695,6 +7051,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def year_frac(self, start_date: Json, end_date: Json, basis: Json) -> WorkbookFunctionResult:
         """yearFrac operation.
 
@@ -6715,6 +7072,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def yield_(
         self, settlement: Json, maturity: Json, rate: Json, pr: Json, redemption: Json, frequency: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -6758,6 +7116,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def yield_disc(
         self, settlement: Json, maturity: Json, pr: Json, redemption: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -6789,6 +7148,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def yield_mat(
         self, settlement: Json, maturity: Json, issue: Json, rate: Json, pr: Json, basis: Json
     ) -> WorkbookFunctionResult:
@@ -6822,6 +7182,7 @@ class WorkbookFunctions(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def ztest(self, array: Json, x: Json, sigma: Json) -> WorkbookFunctionResult:
         """z_Test operation.
 

@@ -62,12 +62,14 @@ class WorkbookTableSort(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookTableSort"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def clear(self) -> Self:
         """clear operation."""
         qry = ServiceOperationQuery(self, "clear", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def reapply(self) -> Self:
         """reapply operation."""
         qry = ServiceOperationQuery(self, "reapply", None, {}, None, None)

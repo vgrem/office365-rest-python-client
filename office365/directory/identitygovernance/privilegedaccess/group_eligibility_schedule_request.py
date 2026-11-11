@@ -11,6 +11,7 @@ from office365.directory.identitygovernance.privilegedaccess.group_eligibility_s
 from office365.directory.identitygovernance.privilegedaccess.grouprelationships import PrivilegedAccessGroupRelationships
 from office365.directory.objects.object import DirectoryObject
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -68,6 +69,10 @@ class PrivilegedAccessGroupEligibilityScheduleRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroupEligibilityScheduleRequest"
 
+    @require_permission(
+        delegated=["PrivilegedEligibilitySchedule.ReadWrite.AzureADGroup"],
+        application=["PrivilegedEligibilitySchedule.ReadWrite.AzureADGroup"],
+    )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)

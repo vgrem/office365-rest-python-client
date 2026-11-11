@@ -240,6 +240,7 @@ class WorkbookRange(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRange"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def delete(self, shift: str) -> Self:
         """delete operation.
 
@@ -251,6 +252,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def merge(self, across: bool) -> Self:
         """merge operation.
 
@@ -262,12 +264,14 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def unmerge(self) -> Self:
         """unmerge operation."""
         qry = ServiceOperationQuery(self, "unmerge", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def bounding_rect(self, another_range: str) -> WorkbookRange:
         """boundingRect operation.
 
@@ -282,6 +286,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def column(self, column: int) -> WorkbookRange:
         """column operation.
 
@@ -296,6 +301,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def columns_after(self, count: int) -> WorkbookRange:
         """columnsAfter operation.
 
@@ -310,6 +316,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def columns_before(self, count: int) -> WorkbookRange:
         """columnsBefore operation.
 
@@ -324,6 +331,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def entire_column(self) -> WorkbookRange:
         """entireColumn operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange
@@ -333,6 +341,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def entire_row(self) -> WorkbookRange:
         """entireRow operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange
@@ -342,6 +351,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def intersection(self, another_range: str) -> WorkbookRange:
         """intersection operation.
 
@@ -356,6 +366,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def last_cell(self) -> WorkbookRange:
         """lastCell operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange
@@ -365,6 +376,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def last_column(self) -> WorkbookRange:
         """lastColumn operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange
@@ -374,6 +386,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def offset_range(self, row_offset: int, column_offset: int) -> WorkbookRange:
         """offsetRange operation.
 
@@ -390,6 +403,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def resized_range(self, delta_rows: int, delta_columns: int) -> WorkbookRange:
         """resizedRange operation.
 
@@ -406,6 +420,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def row(self, row: int) -> WorkbookRange:
         """row operation.
 
@@ -420,6 +435,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def rows_above(self, count: int) -> WorkbookRange:
         """rowsAbove operation.
 
@@ -434,6 +450,7 @@ class WorkbookRange(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def rows_below(self, count: int) -> WorkbookRange:
         """rowsBelow operation.
 

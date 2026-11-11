@@ -7,6 +7,7 @@ from office365.directory.synchronization.secret_key_string_value_pair import Syn
 from office365.directory.synchronization.template import SynchronizationTemplate
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -58,6 +59,10 @@ class Synchronization(Entity):
             ClientValueCollection[SynchronizationSecretKeyStringValuePair](SynchronizationSecretKeyStringValuePair),
         )
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def acquire_access_token(self, credentials: ClientValueCollection[SynchronizationSecretKeyStringValuePair]) -> Self:
         """acquireAccessToken operation.
 

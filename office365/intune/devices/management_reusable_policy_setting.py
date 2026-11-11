@@ -8,6 +8,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.management_configuration_setting_instance import (
     DeviceManagementConfigurationSettingInstance,
 )
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata, version
@@ -86,6 +87,10 @@ class DeviceManagementReusablePolicySetting(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementReusablePolicySetting"
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def clone(self) -> DeviceManagementReusablePolicySetting:
         """clone operation."""
         from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting

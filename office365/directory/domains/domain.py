@@ -213,6 +213,7 @@ class Domain(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Domain"
 
+    @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def force_delete(self, disable_user_accounts: bool) -> Self:
         """forceDelete operation.
 
@@ -226,6 +227,7 @@ class Domain(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def promote(self) -> ClientResult[bool]:
         """promote operation."""
         return_type = ClientResult(self.context, bool())

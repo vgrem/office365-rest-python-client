@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.admin.exchange.exchange_message_trace_status import ExchangeMessageTraceStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 
@@ -72,6 +73,7 @@ class ExchangeMessageTrace(Entity):
         """Gets the status property"""
         return self.properties.get("status", ExchangeMessageTraceStatus.gettingStatus)
 
+    @require_permission(delegated=["ExchangeMessageTrace.Read.All"], application=["ExchangeMessageTrace.Read.All"])
     def get_details_by_recipient(self, recipient_address: str) -> EntityCollection[ExchangeMessageTraceDetail]:
         """getDetailsByRecipient operation.
 

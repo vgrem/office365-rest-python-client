@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -45,6 +46,26 @@ class TeamsAppInstallation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TeamsAppInstallation"
 
+    @require_permission(
+        delegated=[
+            "TeamsAppInstallation.ReadWriteSelfForTeam",
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "TeamsAppInstallation.ManageSelectedForTeam",
+            "TeamsAppInstallation.ReadWriteAndConsentForTeam",
+            "TeamsAppInstallation.ReadWriteAndConsentSelfForTeam",
+            "TeamsAppInstallation.ReadWriteForTeam",
+        ],
+        application=[
+            "TeamsAppInstallation.ReadWriteSelfForTeam.All",
+            "Directory.ReadWrite.All",
+            "Group.ReadWrite.All",
+            "TeamsAppInstallation.ManageSelectedForTeam.All",
+            "TeamsAppInstallation.ReadWriteAndConsentForTeam.All",
+            "TeamsAppInstallation.ReadWriteAndConsentSelfForTeam.All",
+            "TeamsAppInstallation.ReadWriteForTeam.All",
+        ],
+    )
     def upgrade(self, consented_permission_set: TeamsAppPermissionSet) -> Self:
         """upgrade operation.
 

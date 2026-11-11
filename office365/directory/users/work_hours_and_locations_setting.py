@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.communications.max_work_location_details import MaxWorkLocationDetails
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
@@ -51,6 +52,10 @@ class WorkHoursAndLocationsSetting(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkHoursAndLocationsSetting"
 
+    @require_permission(
+        delegated=["Calendars.Read", "Calendars.ReadWrite"],
+        application=["Calendars.Read.All", "Calendars.ReadWrite.All"],
+    )
     def occurrences_view(self, start_date_time: str, end_date_time: str) -> EntityCollection[WorkPlanOccurrence]:
         """occurrencesView operation.
 

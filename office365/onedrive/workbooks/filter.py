@@ -47,6 +47,7 @@ class WorkbookFilter(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookFilter"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply(self, criteria: WorkbookFilterCriteria) -> Self:
         """apply operation.
 
@@ -58,6 +59,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_bottom_percent_filter(self, percent: int) -> Self:
         """applyBottomPercentFilter operation.
 
@@ -69,6 +71,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_cell_color_filter(self, color: str) -> Self:
         """applyCellColorFilter operation.
 
@@ -80,6 +83,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_custom_filter(self, criteria1: str, criteria2: str, oper: str) -> Self:
         """applyCustomFilter operation.
 
@@ -97,6 +101,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_dynamic_filter(self, criteria: str) -> Self:
         """applyDynamicFilter operation.
 
@@ -108,6 +113,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_font_color_filter(self, color: str) -> Self:
         """applyFontColorFilter operation.
 
@@ -119,6 +125,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_icon_filter(self, icon: WorkbookIcon) -> Self:
         """applyIconFilter operation.
 
@@ -130,6 +137,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_top_items_filter(self, count: int) -> Self:
         """applyTopItemsFilter operation.
 
@@ -141,6 +149,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_top_percent_filter(self, percent: int) -> Self:
         """applyTopPercentFilter operation.
 
@@ -152,6 +161,7 @@ class WorkbookFilter(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def apply_values_filter(self, values: Json) -> Self:
         """applyValuesFilter operation.
 

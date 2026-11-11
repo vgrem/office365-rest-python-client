@@ -7,6 +7,7 @@ from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.browser.siteliststatus import BrowserSiteListStatus
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -94,6 +95,10 @@ class BrowserSiteList(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.BrowserSiteList"
 
+    @require_permission(
+        delegated=["BrowserSiteLists.ReadWrite.All"],
+        application=["BrowserSiteLists.ReadWrite.All"],
+    )
     def publish(
         self,
         revision: str,

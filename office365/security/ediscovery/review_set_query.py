@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
@@ -19,6 +20,10 @@ class EdiscoveryReviewSetQuery(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryReviewSetQuery"
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def export(
         self, output_name: str, description: str, export_options: ExportOptions, export_structure: ExportFileStructure
     ) -> Self:
@@ -50,6 +55,10 @@ class EdiscoveryReviewSetQuery(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def apply_tags(
         self,
         tags_to_add: ClientValueCollection[EdiscoveryReviewTag],

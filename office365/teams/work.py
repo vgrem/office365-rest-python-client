@@ -6,6 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -89,6 +90,7 @@ class Teamwork(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Teamwork"
 
+    @require_permission(delegated=["TeamsActivity.Send"], application=["TeamsActivity.Send"])
     def send_activity_notification_to_recipients(
         self,
         topic: TeamworkActivityTopic,

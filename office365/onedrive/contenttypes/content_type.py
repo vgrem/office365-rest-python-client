@@ -238,6 +238,10 @@ class ContentType(BaseItem):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ContentType"
 
+    @require_permission(
+        delegated=["Sites.ReadWrite.All", "Sites.FullControl.All", "Sites.Manage.All"],
+        application=["Sites.ReadWrite.All", "Sites.FullControl.All", "Sites.Manage.All"],
+    )
     def copy_to_default_content_location(self, source_file: ItemReference, destination_file_name: str) -> Self:
         """copyToDefaultContentLocation operation.
 

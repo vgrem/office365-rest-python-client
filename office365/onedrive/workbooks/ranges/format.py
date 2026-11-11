@@ -12,6 +12,7 @@ from office365.onedrive.workbooks.ranges.font import WorkbookRangeFont
 from office365.onedrive.workbooks.ranges.format_protection import (
     WorkbookFormatProtection,
 )
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -98,12 +99,14 @@ class WorkbookRangeFormat(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRangeFormat"
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def autofit_columns(self) -> Self:
         """autofitColumns operation."""
         qry = ServiceOperationQuery(self, "autofitColumns", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Files.ReadWrite"], application=["Files.ReadWrite.All"])
     def autofit_rows(self) -> Self:
         """autofitRows operation."""
         qry = ServiceOperationQuery(self, "autofitRows", None, {}, None, None)

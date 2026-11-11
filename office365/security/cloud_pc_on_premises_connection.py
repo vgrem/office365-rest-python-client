@@ -14,6 +14,7 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (  # noqa: E501
     CloudPcOnPremisesConnectionType,
 )
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
@@ -138,12 +139,14 @@ class CloudPcOnPremisesConnection(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcOnPremisesConnection"
 
+    @require_permission(delegated=["CloudPC.ReadWrite.All"])
     def run_health_checks(self) -> Self:
         """runHealthChecks operation."""
         qry = ServiceOperationQuery(self, "runHealthChecks", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def update_ad_domain_password(self, ad_domain_password: str) -> Self:
         """updateAdDomainPassword operation.
 

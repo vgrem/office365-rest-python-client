@@ -7,6 +7,7 @@ from office365.directory.policies.crosstenant.b2_b_setting import CrossTenantAcc
 from office365.directory.policies.crosstenant.inbound_trust import CrossTenantAccessPolicyInboundTrust
 from office365.directory.policies.inbound_outbound_policy_configuration import InboundOutboundPolicyConfiguration
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -58,6 +59,10 @@ class MultiTenantOrganizationPartnerConfigurationTemplate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.MultiTenantOrganizationPartnerConfigurationTemplate"
 
+    @require_permission(
+        delegated=["Policy.ReadWrite.CrossTenantAccess"],
+        application=["Policy.ReadWrite.CrossTenantAccess"],
+    )
     def reset_to_default_settings(self) -> Self:
         """resetToDefaultSettings operation."""
         qry = ServiceOperationQuery(self, "resetToDefaultSettings", None, {}, None, None)

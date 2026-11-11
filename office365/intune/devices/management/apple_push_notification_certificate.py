@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
@@ -62,6 +63,10 @@ class ApplePushNotificationCertificate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ApplePushNotificationCertificate"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def download_apple_push_notification_certificate_signing_request(self) -> ClientResult[str]:
         """downloadApplePushNotificationCertificateSigningRequest operation."""
         return_type = ClientResult(self.context, str())

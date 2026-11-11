@@ -15,6 +15,7 @@ from office365.directory.policies.conditionalaccess.conditional_access import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -102,6 +103,10 @@ class ConditionalAccessRoot(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["Policy.Read.ConditionalAccess", "Policy.Read.All", "Policy.ReadWrite.ConditionalAccess"],
+        application=["Policy.Read.ConditionalAccess", "Policy.Read.All", "Policy.ReadWrite.ConditionalAccess"],
+    )
     def evaluate(
         self,
         sign_in_identity: SignInIdentity,

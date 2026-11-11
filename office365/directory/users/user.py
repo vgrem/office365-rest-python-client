@@ -1752,12 +1752,31 @@ class User(DirectoryObject):
             ),
         )
 
+    @require_permission(
+        delegated=[
+            "User.ReadWrite",
+            "User.ManageIdentities.All",
+            "User.EnableDisableAccount.All",
+            "User.ReadWrite.All",
+            "Directory.ReadWrite.All",
+        ],
+        application=[
+            "User.ManageIdentities.All",
+            "User.EnableDisableAccount.All",
+            "User.ReadWrite.All",
+            "Directory.ReadWrite.All",
+        ],
+    )
     def retry_service_provisioning(self) -> Self:
         """retryServiceProvisioning operation."""
         qry = ServiceOperationQuery(self, "retryServiceProvisioning", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite"],
+        application=["Calendars.Read", "Calendars.ReadWrite"],
+    )
     def reminder_view(self, start_date_time: str, end_date_time: str) -> ClientResult[ClientValueCollection[Reminder]]:
         """reminderView operation.
 
@@ -1776,6 +1795,20 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_managed_devices_with_app_failures(self) -> ClientResult[StringCollection]:
         """getManagedDevicesWithAppFailures operation."""
         return_type = ClientResult(self.context, StringCollection())

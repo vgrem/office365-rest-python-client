@@ -68,6 +68,10 @@ class SynchronizationSchema(Entity):
             "synchronizationRules", ClientValueCollection[SynchronizationRule](SynchronizationRule)
         )
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def parse_expression(
         self, expression: str, test_input_object: ExpressionInputObject, target_attribute_definition: AttributeDefinition
     ) -> ClientResult[ParseExpressionResponse]:
@@ -99,6 +103,10 @@ class SynchronizationSchema(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def filter_operators(self) -> EntityCollection[FilterOperatorSchema]:
         """filterOperators operation."""
         from office365.directory.synchronization.filter_operator_schema import FilterOperatorSchema

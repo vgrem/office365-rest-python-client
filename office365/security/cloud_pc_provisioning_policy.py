@@ -20,6 +20,7 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.provisioningty
 from office365.intune.devices.management.virtualendpoint.provisioningpolicies.microsoft_managed_desktop import (  # noqa: E501
     MicrosoftManagedDesktop,
 )
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -150,6 +151,7 @@ class CloudPcProvisioningPolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcProvisioningPolicy"
 
+    @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def assign(self, assignments: ClientValueCollection[CloudPcProvisioningPolicyAssignment]) -> Self:
         """assign operation.
 

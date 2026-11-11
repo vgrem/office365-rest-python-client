@@ -11,6 +11,7 @@ from office365.directory.identitygovernance.accessreview.instance_decision_item 
 from office365.directory.identitygovernance.accessreview.reviewer_scope import AccessReviewReviewerScope
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -77,12 +78,14 @@ class AccessReviewStage(Entity):
             "reviewers", ClientValueCollection[AccessReviewReviewerScope](AccessReviewReviewerScope)
         )
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def accept_recommendations(self) -> Self:
         """acceptRecommendations operation."""
         qry = ServiceOperationQuery(self, "acceptRecommendations", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def batch_record_decisions(self, decision: str, justification: str, principal_id: str, resource_id: str) -> Self:
         """batchRecordDecisions operation.
 
@@ -112,6 +115,7 @@ class AccessReviewStage(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["AccessReview.ReadWrite.All"], application=["AccessReview.ReadWrite.All"])
     def stop(self) -> Self:
         """stop operation."""
         qry = ServiceOperationQuery(self, "stop", None, {}, None, None)

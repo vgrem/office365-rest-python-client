@@ -98,6 +98,10 @@ class SynchronizationJob(Entity):
         """Gets the schedule property"""
         return self.properties.get("schedule", SynchronizationSchedule())
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def provision_on_demand(
         self, parameters: ClientValueCollection[SynchronizationJobApplicationParameters]
     ) -> ClientResult[StringKeyStringValuePair]:
@@ -114,6 +118,10 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def restart(self, criteria: SynchronizationJobRestartCriteria) -> Self:
         """restart operation.
 
@@ -125,6 +133,10 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["Synchronization.ReadWrite.All"],
+        application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
+    )
     def validate_credentials(
         self,
         application_identifier: str,

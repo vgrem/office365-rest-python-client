@@ -128,6 +128,10 @@ class ListItem(BaseItem):
             EntityCollection[Permission](self.context, Permission, ResourcePath("permissions", self.resource_path)),
         )
 
+    @require_permission(
+        delegated=["Files.ReadWrite", "Files.ReadWrite.All", "Sites.ReadWrite.All"],
+        application=["Files.ReadWrite.All", "Sites.ReadWrite.All"],
+    )
     def create_link(
         self,
         type_: str,

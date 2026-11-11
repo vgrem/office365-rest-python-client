@@ -10,6 +10,7 @@ from office365.directory.privacy.subjectrightsrequeststatus import SubjectRights
 from office365.directory.privacy.subjectrightsrequesttype import SubjectRightsRequestType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -229,6 +230,7 @@ class SubjectRightsRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.SubjectRightsRequest"
 
+    @require_permission(delegated=["SubjectRightsRequest.Read.All", "SubjectRightsRequest.ReadWrite.All"])
     def get_final_attachment(self) -> ClientResult[bytes]:
         """getFinalAttachment operation."""
         return_type = ClientResult(self.context, bytes())
@@ -236,6 +238,7 @@ class SubjectRightsRequest(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(delegated=["SubjectRightsRequest.Read.All", "SubjectRightsRequest.ReadWrite.All"])
     def get_final_report(self) -> ClientResult[bytes]:
         """getFinalReport operation."""
         return_type = ClientResult(self.context, bytes())

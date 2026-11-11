@@ -143,6 +143,7 @@ class CloudCommunications(Entity):
             ),
         )
 
+    @require_permission(application=["EngagementMeetingConversation.Read.All"])
     def get_all_online_meeting_messages(self) -> EntityCollection[EngagementConversationMessage]:
         """getAllOnlineMeetingMessages operation."""
         from office365.teams.viva.engagement.conversation_message import EngagementConversationMessage

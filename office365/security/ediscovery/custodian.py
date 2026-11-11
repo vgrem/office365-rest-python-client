@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -85,30 +86,50 @@ class EdiscoveryCustodian(Entity):
             EntityCollection[UserSource](self.context, UserSource, ResourcePath("userSources", self.resource_path)),
         )
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def activate(self) -> Self:
         """activate operation."""
         qry = ServiceOperationQuery(self, "activate", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def apply_hold(self) -> Self:
         """applyHold operation."""
         qry = ServiceOperationQuery(self, "applyHold", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def release(self) -> Self:
         """release operation."""
         qry = ServiceOperationQuery(self, "release", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def remove_hold(self) -> Self:
         """removeHold operation."""
         qry = ServiceOperationQuery(self, "removeHold", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+        application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
+    )
     def update_index(self) -> Self:
         """updateIndex operation."""
         qry = ServiceOperationQuery(self, "updateIndex", None, {}, None, None)

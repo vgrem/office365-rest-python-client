@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.intune.devices.management.exchangeconnectors.status import DeviceManagementExchangeConnectorStatus
 from office365.intune.devices.management.exchangeconnectors.type import DeviceManagementExchangeConnectorType
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -74,6 +75,10 @@ class DeviceManagementExchangeConnector(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementExchangeConnector"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def sync(self, sync_type: DeviceManagementExchangeConnectorSyncType) -> Self:
         """sync operation.
 

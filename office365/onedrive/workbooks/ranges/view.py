@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.json import Json
@@ -99,6 +100,7 @@ class WorkbookRangeView(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkbookRangeView"
 
+    @require_permission(delegated=["Files.ReadWrite"])
     def range(self) -> WorkbookRange:
         """range operation."""
         from office365.onedrive.workbooks.ranges.range import WorkbookRange

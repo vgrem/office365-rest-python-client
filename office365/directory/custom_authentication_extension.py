@@ -6,6 +6,7 @@ from office365.directory.identitygovernance.entitlementmanagement.custom_extensi
     CustomExtensionBehaviorOnError,
 )
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -25,6 +26,10 @@ class CustomAuthenticationExtension(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CustomAuthenticationExtension"
 
+    @require_permission(
+        delegated=["CustomAuthenticationExtension.Read.All", "CustomAuthenticationExtension.ReadWrite.All"],
+        application=["CustomAuthenticationExtension.Read.All", "CustomAuthenticationExtension.ReadWrite.All"],
+    )
     def validate_authentication_configuration(self) -> ClientResult[AuthenticationConfigurationValidation]:
         """validateAuthenticationConfiguration operation."""
         from office365.directory.authentication.configuration.validation import AuthenticationConfigurationValidation

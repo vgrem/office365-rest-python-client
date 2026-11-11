@@ -7,6 +7,7 @@ from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
 from office365.onenote.notebook_links import NotebookLinks
 from office365.onenote.sections.collection import OnenoteSectionCollection
 from office365.onenote.userrole import OnenoteUserRole
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -90,6 +91,10 @@ class Notebook(OnenoteEntityHierarchyModel):
         """Gets the userRole property"""
         return self.properties.get("userRole", OnenoteUserRole.Unknown)
 
+    @require_permission(
+        delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.ReadWrite.All"],
+    )
     def copy_notebook(
         self, group_id: str, rename_as: str, notebook_folder: str, site_collection_id: str, site_id: str
     ) -> OnenoteOperation:

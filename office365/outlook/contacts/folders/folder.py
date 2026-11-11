@@ -11,6 +11,7 @@ from office365.directory.extensions.extended_property import (
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.contacts.collection import ContactCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -84,6 +85,7 @@ class ContactFolder(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ContactFolder"
 
+    @require_permission(delegated=["Contacts.ReadWrite"], application=["Contacts.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""
         qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)

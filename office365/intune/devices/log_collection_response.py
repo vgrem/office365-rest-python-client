@@ -6,6 +6,7 @@ from uuid import UUID
 
 from office365.entity import Entity
 from office365.intune.devices.management.apploguploadstate import AppLogUploadState
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -64,6 +65,10 @@ class DeviceLogCollectionResponse(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceLogCollectionResponse"
 
+    @require_permission(
+        delegated=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
+        application=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
+    )
     def create_download_url(self) -> ClientResult[str]:
         """createDownloadUrl operation."""
         return_type = ClientResult(self.context, str())

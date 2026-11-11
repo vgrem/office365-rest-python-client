@@ -16,6 +16,7 @@ from office365.directory.tenantinformation.partner_tenant_type import PartnerTen
 from office365.directory.users.provisioned_plan import ProvisionedPlan
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.mdmauthority import MdmAuthority
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -212,6 +213,10 @@ class Organization(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Organization"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
+    )
     def set_mobile_device_management_authority(self) -> ClientResult[int]:
         """setMobileDeviceManagementAuthority operation."""
         return_type = ClientResult(self.context, int())

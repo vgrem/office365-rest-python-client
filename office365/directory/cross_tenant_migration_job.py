@@ -10,6 +10,7 @@ from office365.directory.exchange_online_cross_tenant_migration_settings import 
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -124,6 +125,10 @@ class CrossTenantMigrationJob(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantMigrationJob"
 
+    @require_permission(
+        delegated=["CrossTenantContentMigration.ReadWrite.All"],
+        application=["CrossTenantContentMigration.ReadWrite.All"],
+    )
     def cancel(self) -> ClientResult[CrossTenantMigrationCancelResponse]:
         """cancel operation."""
         from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
@@ -133,6 +138,10 @@ class CrossTenantMigrationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["CrossTenantContentMigration.ReadWrite.All"],
+        application=["CrossTenantContentMigration.ReadWrite.All"],
+    )
     def migrate(self) -> CrossTenantMigrationJob:
         """migrate operation."""
         from office365.directory.cross_tenant_migration_job import CrossTenantMigrationJob
@@ -142,6 +151,10 @@ class CrossTenantMigrationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["CrossTenantContentMigration.ReadWrite.All"],
+        application=["CrossTenantContentMigration.ReadWrite.All"],
+    )
     def validate(self) -> CrossTenantMigrationJob:
         """validate operation."""
         from office365.directory.cross_tenant_migration_job import CrossTenantMigrationJob

@@ -7,6 +7,7 @@ from office365.entity import Entity
 from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType
 from office365.intune.devices.management.vpptokens.state import VppTokenState
 from office365.intune.devices.management.vpptokens.syncstatus import VppTokenSyncStatus
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -92,6 +93,10 @@ class VppToken(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.VppToken"
 
+    @require_permission(
+        delegated=["DeviceManagementApps.ReadWrite.All", "DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementApps.ReadWrite.All", "DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def sync_licenses(self) -> VppToken:
         """syncLicenses operation."""
         from office365.intune.devices.management.vpptokens.vpp_token import VppToken

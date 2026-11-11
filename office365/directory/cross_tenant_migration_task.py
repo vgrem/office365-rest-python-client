@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.directory.cross_tenant_migration_service_status_details import CrossTenantMigrationServiceStatusDetails
 from office365.entity import Entity
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -40,6 +41,10 @@ class CrossTenantMigrationTask(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantMigrationTask"
 
+    @require_permission(
+        delegated=["CrossTenantContentMigration.ReadWrite.All"],
+        application=["CrossTenantContentMigration.ReadWrite.All"],
+    )
     def cancel(self) -> ClientResult[CrossTenantMigrationCancelResponse]:
         """cancel operation."""
         from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse

@@ -598,6 +598,7 @@ class Message(OutlookItem):
             "mentions", EntityCollection[Mention](self.context, Mention, ResourcePath("mentions", self.resource_path))
         )
 
+    @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""
         qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)

@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.intune.print.printers.base import PrinterBase
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -87,6 +88,7 @@ class Printer(PrinterBase):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Printer"
 
+    @require_permission(delegated=["Printer.ReadWrite.All", "Printer.FullControl.All"])
     def restore_factory_defaults(self) -> Self:
         """restoreFactoryDefaults operation."""
         qry = ServiceOperationQuery(self, "restoreFactoryDefaults", None, {}, None, None)

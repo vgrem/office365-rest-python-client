@@ -120,6 +120,10 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
     def entity_type_name(self) -> str:
         return "microsoft.graph.OnenotePage"
 
+    @require_permission(
+        delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"],
+        application=["Notes.ReadWrite.All"],
+    )
     def copy_to_section(self, id_: str, group_id: str, site_collection_id: str, site_id: str) -> OnenoteOperation:
         """copyToSection operation.
 

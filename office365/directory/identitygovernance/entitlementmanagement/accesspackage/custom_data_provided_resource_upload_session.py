@@ -12,6 +12,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -81,6 +82,10 @@ class CustomDataProvidedResourceUploadSession(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CustomDataProvidedResourceUploadSession"
 
+    @require_permission(
+        delegated=["EntitlementManagement.ReadWrite.All"],
+        application=["EntitlementManagement.ReadWrite.All"],
+    )
     def upload_file(self) -> CustomDataProvidedResourceUploadSession:
         """uploadFile operation."""
         from office365.directory.identitygovernance.entitlementmanagement.accesspackage.custom_data_provided_resource_upload_session import (  # noqa: E501

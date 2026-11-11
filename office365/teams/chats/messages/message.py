@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -224,6 +225,7 @@ class ChatMessage(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChatMessage"
 
+    @require_permission(delegated=["Tasks.ReadWrite"])
     def set_reaction(self, reaction_type: str) -> Self:
         """setReaction operation.
 
@@ -235,18 +237,21 @@ class ChatMessage(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def soft_delete(self) -> Self:
         """softDelete operation."""
         qry = ServiceOperationQuery(self, "softDelete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def undo_soft_delete(self) -> Self:
         """undoSoftDelete operation."""
         qry = ServiceOperationQuery(self, "undoSoftDelete", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Tasks.ReadWrite"])
     def unset_reaction(self, reaction_type: str) -> Self:
         """unsetReaction operation.
 

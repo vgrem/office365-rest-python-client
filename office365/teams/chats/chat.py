@@ -10,6 +10,7 @@ from office365.directory.permissions.grants.resource_specific import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
@@ -203,12 +204,14 @@ class Chat(Entity):
             ),
         )
 
+    @require_permission(application=["Teamwork.Migrate.All"])
     def complete_migration(self) -> Self:
         """completeMigration operation."""
         qry = ServiceOperationQuery(self, "completeMigration", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(application=["Teamwork.Migrate.All"])
     def start_migration(self, conversation_creation_date_time: datetime) -> Self:
         """startMigration operation.
 
@@ -222,6 +225,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["TeamsActivity.Send"], application=["TeamsActivity.Send"])
     def send_activity_notification(
         self,
         topic: TeamworkActivityTopic,
@@ -273,6 +277,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def hide_for_user(self, user: TeamworkUserIdentity) -> Self:
         """hideForUser operation.
 
@@ -284,6 +289,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def mark_chat_read_for_user(self, user: TeamworkUserIdentity) -> Self:
         """markChatReadForUser operation.
 
@@ -295,6 +301,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def mark_chat_unread_for_user(self, user: TeamworkUserIdentity, last_message_read_date_time: datetime) -> Self:
         """markChatUnreadForUser operation.
 
@@ -315,6 +322,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite.All"])
     def remove_all_access_for_user(self, user: TeamworkUserIdentity) -> Self:
         """removeAllAccessForUser operation.
 
@@ -326,6 +334,7 @@ class Chat(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(delegated=["Chat.ReadWrite"])
     def unhide_for_user(self, user: TeamworkUserIdentity) -> Self:
         """unhideForUser operation.
 

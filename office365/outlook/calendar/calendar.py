@@ -261,6 +261,7 @@ class Calendar(Entity):
         """Gets the isShared property"""
         return self.properties.get("isShared", None)
 
+    @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""
         qry = ServiceOperationQuery(self, "permanentDelete", None, {}, None, None)

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -33,6 +34,7 @@ class Mailbox(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Mailbox"
 
+    @require_permission(delegated=["MailboxItem.ImportExport"], application=["MailboxItem.ImportExport.All"])
     def create_import_session(self) -> ClientResult[MailboxItemImportSession]:
         """createImportSession operation."""
         from office365.outlook.mail.mailbox_item_import_session import MailboxItemImportSession
@@ -42,6 +44,10 @@ class Mailbox(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=["MailboxItem.Export", "MailboxItem.ImportExport"],
+        application=["MailboxItem.Export.All", "MailboxItem.ImportExport.All"],
+    )
     def export_items(self, item_ids: list[str]) -> ClientResult[ClientValueCollection[ExportItemResponse]]:
         """exportItems operation.
 

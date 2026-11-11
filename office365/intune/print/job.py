@@ -10,6 +10,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.job_configuration import PrintJobConfiguration
 from office365.intune.print.job_status import PrintJobStatus
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -101,12 +102,29 @@ class PrintJob(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrintJob"
 
+    @require_permission(
+        delegated=[
+            "PrintJob.ReadWriteBasic",
+            "PrintJob.ReadWrite",
+            "PrintJob.ReadWrite.All",
+            "PrintJob.ReadWriteBasic.All",
+        ],
+    )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=[
+            "PrintJob.Create",
+            "PrintJob.ReadWrite",
+            "PrintJob.ReadWrite.All",
+            "PrintJob.ReadWriteBasic",
+            "PrintJob.ReadWriteBasic.All",
+        ],
+    )
     def start(self) -> ClientResult[PrintJobStatus]:
         """start operation."""
         from office365.intune.print.job_status import PrintJobStatus
@@ -116,6 +134,9 @@ class PrintJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        application=["PrintJob.ReadWriteBasic.All", "PrintJob.Manage.All", "PrintJob.ReadWrite.All"],
+    )
     def abort(self, reason: str) -> Self:
         """abort operation.
 
@@ -127,6 +148,7 @@ class PrintJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(application=["PrintJob.Manage.All"])
     def redirect(self, destination_printer_id: str, configuration: PrintJobConfiguration) -> PrintJob:
         """redirect operation.
 

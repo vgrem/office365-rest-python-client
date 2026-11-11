@@ -19,6 +19,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -143,6 +144,10 @@ class AccessPackageResource(Entity):
             ),
         )
 
+    @require_permission(
+        delegated=["EntitlementManagement.ReadWrite.All"],
+        application=["EntitlementManagement.ReadWrite.All"],
+    )
     def refresh(self) -> Self:
         """refresh operation."""
         qry = ServiceOperationQuery(self, "refresh", None, {}, None, None)

@@ -9,6 +9,7 @@ from office365.directory.identitygovernance.operationstatus import OperationStat
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dayofweek import DayOfWeek
+from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -252,6 +253,10 @@ class Schedule(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Schedule"
 
+    @require_permission(
+        delegated=["Schedule.ReadWrite.All", "Group.ReadWrite.All"],
+        application=["Schedule.ReadWrite.All"],
+    )
     def share(self, notify_team: bool, start_date_time: datetime, end_date_time: datetime) -> Self:
         """share operation.
 

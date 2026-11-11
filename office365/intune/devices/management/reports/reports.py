@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -92,6 +93,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_cached_report(
         self, id_: str, select: list[str], group_by: list[str], order_by: list[str], search: str, skip: int, top: int
     ) -> ClientResult[bytes]:
@@ -133,6 +152,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_compliance_policy_non_compliance_report(
         self,
         name: str,
@@ -189,6 +226,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_compliance_policy_non_compliance_summary_report(
         self,
         name: str,
@@ -245,6 +300,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_compliance_setting_non_compliance_report(
         self,
         name: str,
@@ -301,6 +374,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_configuration_policy_non_compliance_report(
         self,
         name: str,
@@ -357,6 +448,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_configuration_policy_non_compliance_summary_report(
         self,
         name: str,
@@ -413,6 +522,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_configuration_setting_non_compliance_report(
         self,
         name: str,
@@ -469,6 +596,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_device_management_intent_per_setting_contributing_profiles(
         self,
         name: str,
@@ -525,6 +670,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_device_management_intent_settings_report(
         self,
         name: str,
@@ -581,6 +744,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_device_non_compliance_report(
         self,
         name: str,
@@ -637,6 +818,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_devices_without_compliance_policy_report(
         self,
         name: str,
@@ -693,6 +892,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_historical_report(
         self,
         name: str,
@@ -745,6 +962,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_noncompliant_devices_and_settings_report(
         self,
         name: str,
@@ -801,6 +1036,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_policy_non_compliance_metadata(
         self,
         name: str,
@@ -857,6 +1110,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_policy_non_compliance_report(
         self,
         name: str,
@@ -913,6 +1184,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_policy_non_compliance_summary_report(
         self,
         name: str,
@@ -969,6 +1258,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_report_filters(
         self,
         name: str,
@@ -1025,6 +1332,24 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @require_permission(
+        delegated=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+        application=[
+            "DeviceManagementConfiguration.Read.All",
+            "DeviceManagementConfiguration.ReadWrite.All",
+            "DeviceManagementApps.Read.All",
+            "DeviceManagementApps.ReadWrite.All",
+            "DeviceManagementManagedDevices.Read.All",
+            "DeviceManagementManagedDevices.ReadWrite.All",
+        ],
+    )
     def get_setting_non_compliance_report(
         self,
         name: str,

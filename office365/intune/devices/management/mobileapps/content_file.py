@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.intune.devices.management.mobileapps.contentfileuploadstate import MobileAppContentFileUploadState
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -79,6 +80,10 @@ class MobileAppContentFile(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.MobileAppContentFile"
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+    )
     def commit(self, file_encryption_info: FileEncryptionInfo) -> Self:
         """commit operation.
 
@@ -90,6 +95,10 @@ class MobileAppContentFile(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+        application=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
+    )
     def renew_upload(self) -> Self:
         """renewUpload operation."""
         qry = ServiceOperationQuery(self, "renewUpload", None, {}, None, None)

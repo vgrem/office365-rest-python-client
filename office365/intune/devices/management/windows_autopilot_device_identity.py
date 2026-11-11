@@ -7,6 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.intune.devices.management.enrollment_state import EnrollmentState
+from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 
@@ -112,6 +113,10 @@ class WindowsAutopilotDeviceIdentity(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WindowsAutopilotDeviceIdentity"
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def assign_user_to_device(self, user_principal_name: str, addressable_user_name: str) -> Self:
         """assignUserToDevice operation.
 
@@ -132,12 +137,20 @@ class WindowsAutopilotDeviceIdentity(Entity):
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def unassign_user_from_device(self) -> Self:
         """unassignUserFromDevice operation."""
         qry = ServiceOperationQuery(self, "unassignUserFromDevice", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @require_permission(
+        delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
+        application=["DeviceManagementServiceConfig.ReadWrite.All"],
+    )
     def update_device_properties(
         self, user_principal_name: str, addressable_user_name: str, group_tag: str, display_name: str
     ) -> Self:

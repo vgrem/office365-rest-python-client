@@ -10,6 +10,7 @@ from office365.intune.devices.management.mobileapps.win32.lob_app_msi_informatio
 from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import Win32LobAppReturnCode
 from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
+from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -104,6 +105,10 @@ class Win32LobApp(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Win32LobApp"
 
+    @require_permission(
+        delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementApps.Read.All"],
+        application=["DeviceManagementConfiguration.Read.All", "DeviceManagementApps.Read.All"],
+    )
     def enable_applicable_architectures(self, applicable_architectures: WindowsArchitecture) -> Self:
         """enableApplicableArchitectures operation.
 
