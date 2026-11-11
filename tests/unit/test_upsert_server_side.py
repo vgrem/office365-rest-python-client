@@ -9,18 +9,9 @@ preference were ignored, so the caller can fall back to a client-side reconcile.
 from __future__ import annotations
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.runtime.exceptions import AccessDeniedException, UpsertNotSupported
 from office365.runtime.http.http_method import HttpMethod
-from tests._scripted_transport import RecordingTransport
-
-
-def _client(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
+from tests._scripted_transport import graph
 
 
 def _ok(body):
@@ -28,7 +19,7 @@ def _ok(body):
 
 
 def test_upsert_issues_patch_with_prefer_and_returns_representation():
-    client, transport = _client([_ok({"id": "g1", "displayName": "Group157", "description": "Desc"})])
+    client, transport = graph([_ok({"id": "g1", "displayName": "Group157", "description": "Desc"})], record=True)
 
     group = client.groups.get_by_alternate_key("uniqueName", "Group157")
     group.set_property("description", "Desc")
@@ -43,7 +34,7 @@ def test_upsert_issues_patch_with_prefer_and_returns_representation():
 
 
 def test_upsert_sets_conditional_headers_only_when_given():
-    client, transport = _client([_ok({"id": "g1"}), _ok({"id": "g1"})])
+    client, transport = graph([_ok({"id": "g1"}), _ok({"id": "g1"})], record=True)
 
     group = client.groups.get_by_alternate_key("uniqueName", "Group157")
     group.upsert(if_match='W/"etag-1"').execute_query()
@@ -56,13 +47,14 @@ def test_upsert_sets_conditional_headers_only_when_given():
 
 
 def test_upsert_400_naming_the_preference_is_translated_to_not_supported():
-    client, _ = _client(
+    client, _ = graph(
         [
             {
                 "http_status": 400,
                 "body": {"error": {"code": "BadRequest", "message": "Prefer: create-if-missing is not supported"}},
             }
-        ]
+        ],
+        record=True,
     )
 
     group = client.groups.get_by_alternate_key("uniqueName", "Missing")
@@ -71,7 +63,7 @@ def test_upsert_400_naming_the_preference_is_translated_to_not_supported():
 
 
 def test_upsert_denied_propagates_access_denied():
-    client, _ = _client([("deny",)])
+    client, _ = graph([("deny",)], record=True)
 
     group = client.groups.get_by_alternate_key("uniqueName", "Group157")
     with pytest.raises(AccessDeniedException):

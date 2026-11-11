@@ -1025,11 +1025,15 @@ class Web(SecurableObject):
             server_relative_url (str): Specifies the server-relative URL for the file.
         """
         path = SPResPath.create_relative(self.context.base_url, server_relative_url)
-        return File(
+        file = File(
             self.context,
             ServiceOperationPath("getFileByServerRelativeUrl", [str(path)], self.resource_path),
             self.root_folder.files,
         )
+        # The address states the path, so a caller can read, write or download from the file
+        # without loading it first - which is what ``List.from_file`` does.
+        file.set_property("ServerRelativeUrl", str(path), persist_changes=False)
+        return file
 
     def get_file_by_server_relative_path(self, path: str) -> File:
         """Returns the file object located at the specified server-relative path, for example:

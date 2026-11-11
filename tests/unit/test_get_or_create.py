@@ -7,10 +7,9 @@ swallows the 404 the way the create half tolerates a miss.
 from __future__ import annotations
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import graph
 
 # --- ClientObject.get_or_none: the read-side twin -----------------------------
 
@@ -25,16 +24,8 @@ _FORBIDDEN = {
 }
 
 
-def _client(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
-
-
 def test_ensure_returns_existing_domain_without_creating():
-    client, transport = _client([{"id": "contoso.com", "isVerified": True}])
+    client, transport = graph([{"id": "contoso.com", "isVerified": True}], record=True)
 
     domain = client.domains.ensure("contoso.com")
     assert transport.calls == 0
@@ -46,7 +37,9 @@ def test_ensure_returns_existing_domain_without_creating():
 
 
 def test_ensure_creates_missing_domain_before_dependent_read():
-    client, transport = _client([_NOT_FOUND, {"id": "contoso.com"}, {"id": "contoso.com", "isVerified": False}])
+    client, transport = graph(
+        [_NOT_FOUND, {"id": "contoso.com"}, {"id": "contoso.com", "isVerified": False}], record=True
+    )
 
     domain = client.domains.ensure("contoso.com")
     domain.get()
@@ -60,7 +53,7 @@ def test_ensure_creates_missing_domain_before_dependent_read():
 
 
 def test_ensure_propagates_forbidden_without_creating():
-    client, transport = _client([_FORBIDDEN])
+    client, transport = graph([_FORBIDDEN], record=True)
 
     domain = client.domains.ensure("contoso.com")
     with pytest.raises(ClientRequestException):
@@ -70,7 +63,7 @@ def test_ensure_propagates_forbidden_without_creating():
 
 
 def test_get_or_none_defers_until_execute():
-    client, transport = _client([{"id": "t1", "displayName": "Team One"}])
+    client, transport = graph([{"id": "t1", "displayName": "Team One"}], record=True)
 
     team = client.teams["t1"].get_or_none()
 
@@ -86,7 +79,7 @@ def test_get_or_none_defers_until_execute():
 
 
 def test_get_or_none_propagates_non_404_errors():
-    client, _ = _client([_FORBIDDEN])
+    client, _ = graph([_FORBIDDEN], record=True)
 
     team = client.teams["t1"].get_or_none()
 

@@ -14,19 +14,11 @@ from pathlib import Path
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.collection import FileCollection
 from office365.sharepoint.files.file import File
-from tests._scripted_transport import RoutingTransport
+from tests._scripted_transport import RoutingTransport, sharepoint
 
 _SITE_URL = "https://contoso.sharepoint.com/sites/dev"
 _ROOT = "/sites/dev/Shared Documents"
 _NOT_FOUND = {"status": 404, "body": {"error": {"message": "missing"}}}
-
-
-def _context(routes: list[tuple[str, object]]) -> tuple[ClientContext, RoutingTransport]:
-    ctx = ClientContext(_SITE_URL)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RoutingTransport(routes)
-    ctx.pending_request().transport = transport
-    return ctx, transport
 
 
 def _add_file(ctx: ClientContext, collection: FileCollection, name: str, url: str) -> File:
@@ -50,7 +42,7 @@ def _loaded_collection(ctx: ClientContext) -> FileCollection:
 
 
 def test_file_collection_download_writes_files(tmp_path: Path) -> None:
-    ctx, _ = _context([("a.txt", b"AAA"), ("b.txt", b"BBB")])
+    ctx, _ = sharepoint(RoutingTransport([("a.txt", b"AAA"), ("b.txt", b"BBB")]), url=_SITE_URL)
     col = _loaded_collection(ctx)
     _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
     _add_file(ctx, col, "b.txt", f"{_ROOT}/b.txt")
@@ -67,7 +59,7 @@ def test_file_collection_download_writes_files(tmp_path: Path) -> None:
 
 
 def test_download_continues_and_reports_on_error(tmp_path: Path) -> None:
-    ctx, _ = _context([("a.txt", b"AAA"), ("b.txt", _NOT_FOUND)])
+    ctx, _ = sharepoint(RoutingTransport([("a.txt", b"AAA"), ("b.txt", _NOT_FOUND)]), url=_SITE_URL)
     col = _loaded_collection(ctx)
     _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
     _add_file(ctx, col, "b.txt", f"{_ROOT}/b.txt")
@@ -85,7 +77,7 @@ def test_download_continues_and_reports_on_error(tmp_path: Path) -> None:
 
 
 def test_download_reports_global_progress(tmp_path: Path) -> None:
-    ctx, _ = _context([("a.txt", b"AAA"), ("b.txt", b"BBB")])
+    ctx, _ = sharepoint(RoutingTransport([("a.txt", b"AAA"), ("b.txt", b"BBB")]), url=_SITE_URL)
     col = _loaded_collection(ctx)
     _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
     _add_file(ctx, col, "b.txt", f"{_ROOT}/b.txt")
@@ -99,7 +91,7 @@ def test_download_reports_global_progress(tmp_path: Path) -> None:
 
 
 def test_folder_download_preserves_relative_tree(tmp_path: Path, monkeypatch) -> None:
-    ctx, _ = _context([("root.txt", b"ROOT"), ("deep.txt", b"DEEP")])
+    ctx, _ = sharepoint(RoutingTransport([("root.txt", b"ROOT"), ("deep.txt", b"DEEP")]), url=_SITE_URL)
     folder = _folder(ctx)
     col = FileCollection(ctx, folder.files.resource_path, folder)
     _add_file(ctx, col, "root.txt", f"{_ROOT}/root.txt")
@@ -123,7 +115,7 @@ def test_folder_download_preserves_relative_tree(tmp_path: Path, monkeypatch) ->
 def test_file_download_path_async_and_overwrite(tmp_path: Path) -> None:
     dest = tmp_path / "out.bin"
     dest.write_bytes(b"OLD")
-    ctx, transport = _context([("a.txt", b"NEW")])
+    ctx, transport = sharepoint(RoutingTransport([("a.txt", b"NEW")]), url=_SITE_URL)
     file = File(ctx)
     file.set_property("Name", "a.txt")
     file.set_property("ServerRelativeUrl", f"{_ROOT}/a.txt")
@@ -140,7 +132,7 @@ def test_file_download_path_async_and_overwrite(tmp_path: Path) -> None:
 
 
 def test_download_resume_appends_missing_range(tmp_path: Path) -> None:
-    ctx, transport = _context([("a.txt", {"status": 206, "body": b"world"})])
+    ctx, transport = sharepoint(RoutingTransport([("a.txt", {"status": 206, "body": b"world"})]), url=_SITE_URL)
     col = _loaded_collection(ctx)
     file = _add_file(ctx, col, "a.txt", f"{_ROOT}/a.txt")
     file.set_property("Length", 10)
@@ -158,11 +150,14 @@ def test_download_resume_appends_missing_range(tmp_path: Path) -> None:
 def test_file_download_resume_loads_length(tmp_path: Path) -> None:
     dest = tmp_path / "out.bin"
     dest.write_bytes(b"hello")
-    ctx, _ = _context(
-        [
-            ("$select=Length", {"d": {"Length": 10}}),
-            ("/$value", {"status": 206, "body": b"world"}),
-        ]
+    ctx, _ = sharepoint(
+        RoutingTransport(
+            [
+                ("$select=Length", {"d": {"Length": 10}}),
+                ("/$value", {"status": 206, "body": b"world"}),
+            ]
+        ),
+        url=_SITE_URL,
     )
     file = File(ctx)
     file.set_property("Name", "out.bin")

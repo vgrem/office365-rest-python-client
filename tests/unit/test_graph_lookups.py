@@ -11,23 +11,14 @@ from __future__ import annotations
 from urllib.parse import unquote_plus
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.runtime.types.exceptions import NotFoundException
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import graph
 
 TODO_TASK = {"id": "tt1", "title": "Ship the release"}
 MAIL_FOLDER = {"id": "mf1", "displayName": "Archive"}
 NOTEBOOK = {"id": "nb1", "displayName": "SDK OneNote Tour"}
 SECTION = {"id": "sec1", "displayName": "SDK Examples"}
 SKU = {"id": "s1", "skuId": "sku-guid", "skuPartNumber": "ENTERPRISEPACK"}
-
-
-def _client(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
 
 
 @pytest.mark.parametrize(
@@ -40,7 +31,7 @@ def _client(payloads):
     ],
 )
 def test_lookup_miss_leaves_entity_uninitialized(lookup, key, payload):
-    client, _ = _client([payload])
+    client, _ = graph([payload], record=True)
 
     entity = lookup(client)(key).execute_query()
 
@@ -86,7 +77,7 @@ def test_lookup_miss_leaves_entity_uninitialized(lookup, key, payload):
     ],
 )
 def test_named_find_by_defers_and_returns_match(lookup, key, payload, entity_id, path, filter_fragment):
-    client, transport = _client([{"value": [payload]}])
+    client, transport = graph([{"value": [payload]}], record=True)
 
     entity = lookup(client)(key)
 
@@ -103,7 +94,7 @@ def test_named_find_by_defers_and_returns_match(lookup, key, payload, entity_id,
 
 
 def test_team_find_by_name_required_raises_on_miss():
-    client, _ = _client([{"value": []}])
+    client, _ = graph([{"value": []}], record=True)
 
     client.teams.find_by_name("Missing Team", required=True)
 

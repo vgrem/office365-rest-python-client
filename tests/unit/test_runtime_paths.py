@@ -12,7 +12,7 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
-from tests._scripted_transport import RecordingTransport, RoutingTransport, ScriptedTransport
+from tests._scripted_transport import RecordingTransport, RoutingTransport, sharepoint
 
 
 class TestGraphPathBuilding(unittest.TestCase):
@@ -64,20 +64,13 @@ class TestGraphPathBuilding(unittest.TestCase):
 _LOGIN = "i:0#.f|membership|user.name@domain.com"
 
 
-def _ctx(payload: dict) -> ClientContext:
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    ctx.pending_request().transport = ScriptedTransport([{"d": payload}])
-    return ctx
-
-
 def _ensure_user(ctx: ClientContext):
     return ctx.web.ensure_user(_LOGIN).execute_query()
 
 
 def test_id_takes_precedence_when_mapped():
     """An identifier wins: the principal is addressed by Id, not by login name."""
-    ctx = _ctx({"__metadata": {"type": "SP.User"}, "Id": 6, "LoginName": _LOGIN})
+    ctx = sharepoint([{"d": {"__metadata": {"type": "SP.User"}, "Id": 6, "LoginName": _LOGIN}}])[0]
 
     user = _ensure_user(ctx)
 

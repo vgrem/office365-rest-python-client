@@ -25,6 +25,7 @@ _SITE_URL = "https://contoso.sharepoint.com"
 
 
 def _graph_client(token_callback) -> GraphClient:
+    """A client whose auth handler is *kept*: these tests are about that handler."""
     ctx = GraphClient(token_callback=token_callback)
     ctx.pending_request()  # apply the callback to the pending request
     return ctx

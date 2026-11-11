@@ -42,11 +42,6 @@ CSV_TEXT = (
 )
 
 
-def _graph_client() -> GraphClient:
-    """An unauthenticated client: these tests only queue records, never send them."""
-    return GraphClient()
-
-
 class TestCsvRecords(unittest.TestCase):
     def test_deserialize_records(self):
         records = deserialize_records(
@@ -79,7 +74,7 @@ class TestCsvRecords(unittest.TestCase):
 
 class TestImportPipeline(unittest.TestCase):
     def test_from_csv_queues_creates(self):
-        client = _graph_client()
+        client = GraphClient()  # never sent: these tests only queue records
         users = next(iter(client.users.from_csv(io.StringIO(CSV_TEXT))))
         self.assertEqual(len(users), 1)
         self.assertEqual(len(client._queries), 1)
@@ -111,7 +106,7 @@ class TestImportPipeline(unittest.TestCase):
         out = io.StringIO()
         write_records(iter_records(col), out)
 
-        client = _graph_client()
+        client = GraphClient()  # never sent: these tests only queue records
         users = next(iter(client.users.from_csv(io.StringIO(out.getvalue()))))
         user = users[0]
         self.assertIs(user.get_property("accountEnabled"), True)

@@ -9,22 +9,13 @@ after the upsert still runs after the resource exists.
 from __future__ import annotations
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.odata.literals import odata_literal
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import graph, sharepoint
 
 _EXISTING = {"id": "g1", "displayName": "Group157", "description": "Old"}
 _CREATED = {"id": "g1", "displayName": "Group157", "description": "Team site"}
-
-
-def _client(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
 
 
 def _methods(transport):
@@ -45,7 +36,7 @@ def test_odata_literal_emits_numbers_booleans_and_null_bare():
 
 
 def test_upsert_creates_when_missing():
-    client, transport = _client([{"value": []}, _CREATED])
+    client, transport = graph([{"value": []}, _CREATED], record=True)
 
     group = client.groups.upsert("uniqueName", "Group157", displayName="Group157", description="Team site")
     assert transport.calls == 0
@@ -64,7 +55,7 @@ def test_upsert_creates_when_missing():
 
 
 def test_upsert_creates_with_only_the_key_when_no_properties():
-    client, transport = _client([{"value": []}, {"id": "g1", "uniqueName": "Group157"}])
+    client, transport = graph([{"value": []}, {"id": "g1", "uniqueName": "Group157"}], record=True)
 
     group = client.groups.upsert("uniqueName", "Group157").execute_query()
 
@@ -76,7 +67,7 @@ def test_upsert_creates_with_only_the_key_when_no_properties():
 
 
 def test_upsert_updates_changed_properties():
-    client, transport = _client([{"value": [_EXISTING]}, _EXISTING])
+    client, transport = graph([{"value": [_EXISTING]}, _EXISTING], record=True)
 
     group = client.groups.upsert("uniqueName", "Group157", description="New").execute_query()
 
@@ -87,7 +78,7 @@ def test_upsert_updates_changed_properties():
 
 
 def test_upsert_is_write_idempotent_when_state_matches():
-    client, transport = _client([{"value": [_EXISTING]}])
+    client, transport = graph([{"value": [_EXISTING]}], record=True)
 
     group = client.groups.upsert("uniqueName", "Group157", description="Old")
     assert transport.calls == 0
@@ -99,8 +90,8 @@ def test_upsert_is_write_idempotent_when_state_matches():
 
 
 def test_upsert_propagates_forbidden_lookup_without_creating():
-    client, transport = _client(
-        [{"http_status": 403, "body": {"error": {"code": "Forbidden", "message": "Access is denied."}}}]
+    client, transport = graph(
+        [{"http_status": 403, "body": {"error": {"code": "Forbidden", "message": "Access is denied."}}}], record=True
     )
 
     group = client.groups.upsert("uniqueName", "Group157")
@@ -117,7 +108,7 @@ def test_upsert_propagates_forbidden_lookup_without_creating():
 
 
 def test_upsert_create_runs_before_queries_queued_after_it():
-    client, transport = _client([{"value": []}, _CREATED, _CREATED])
+    client, transport = graph([{"value": []}, _CREATED, _CREATED], record=True)
 
     group = client.groups.upsert("uniqueName", "Group157", description="Team site")
     group.get()  # dependent read queued after the upsert
@@ -131,19 +122,8 @@ def test_upsert_create_runs_before_queries_queued_after_it():
 # ── upsert: SharePoint parity ────────────────────────────────────
 
 
-def _sp(payloads):
-    from office365.sharepoint.client_context import ClientContext
-    from tests import test_site_url
-
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
-
-
 def test_upsert_creates_list_when_missing():
-    ctx, transport = _sp([{"d": {"results": []}}, {"d": {"Id": "list-1", "Title": "Documents"}}])
+    ctx, transport = sharepoint([{"d": {"results": []}}, {"d": {"Id": "list-1", "Title": "Documents"}}], record=True)
 
     result = ctx.web.lists.upsert("Title", "Documents").execute_query()
 
@@ -154,7 +134,9 @@ def test_upsert_creates_list_when_missing():
 
 
 def test_upsert_updates_existing_list():
-    ctx, transport = _sp([{"d": {"results": [{"Id": "list-1", "Title": "Documents", "Description": "Old"}]}}, {}])
+    ctx, transport = sharepoint(
+        [{"d": {"results": [{"Id": "list-1", "Title": "Documents", "Description": "Old"}]}}, {}], record=True
+    )
 
     result = ctx.web.lists.upsert("Title", "Documents", Description="New").execute_query()
 

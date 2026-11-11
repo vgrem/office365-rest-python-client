@@ -18,6 +18,9 @@ Payload forms handled by both transports:
 :class:`RoutingTransport` picks the first route whose URL substring matches;
 :class:`AsyncScriptedTransport` is the native-async twin that only implements
 ``execute_async``.
+
+:func:`graph` and :func:`sharepoint` build the two offline clients the unit tests
+drive, with the scripted transport already attached and the auth handler removed.
 """
 
 from __future__ import annotations
@@ -156,6 +159,40 @@ class AsyncScriptedTransport(BaseTransport):
         payload = self._payloads[self.calls]
         self.calls += 1
         return build_response(request, payload)
+
+
+def _scripted(client, transport, record=False):
+    """Attach ``transport`` to ``client``'s request and return ``(client, transport)``.
+
+    The auth handler is cleared: these clients are never authenticated, so a request
+    must not try to acquire a token. A payload list is wrapped in
+    :class:`ScriptedTransport`, or in :class:`RecordingTransport` when ``record`` is
+    set; a transport instance is used as given, which is how a test asks for URL
+    routes.
+    """
+    request = client.pending_request()
+    request.beforeExecute.clear()
+    if transport is not None:
+        if not isinstance(transport, BaseTransport):
+            transport = RecordingTransport(list(transport)) if record else ScriptedTransport(list(transport))
+        request.transport = transport
+    return client, request.transport
+
+
+def graph(transport=None, *, record=False, **client_kwargs):
+    """An unauthenticated :class:`GraphClient` and the transport answering it."""
+    from office365.graph_client import GraphClient
+
+    return _scripted(GraphClient(**client_kwargs), transport, record)
+
+
+def sharepoint(transport=None, *, record=False, url=None):
+    """An unauthenticated SharePoint :class:`ClientContext` and its transport."""
+    from office365.sharepoint.client_context import ClientContext
+
+    from tests import test_site_url
+
+    return _scripted(ClientContext(url or test_site_url), transport, record)
 
 
 def parse_batch_requests(request) -> list:

@@ -10,22 +10,12 @@ from __future__ import annotations
 
 import pytest
 from office365.runtime.exceptions import ObjectNotFoundException
-from office365.sharepoint.client_context import ClientContext
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import sharepoint
 
 _NOT_FOUND = {
     "http_status": 404,
     "body": {"error": {"code": "Request_ResourceNotFound", "message": "Resource not found"}},
 }
-
-
-def _sp(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
 
 
 def _loaded(ctx, *titles):
@@ -47,7 +37,7 @@ def _pending(ctx) -> int:
 
 
 def test_update_all_is_deferred_and_queues_one_update_per_item():
-    ctx, transport = _sp([])
+    ctx, transport = sharepoint([], record=True)
     col = _loaded(ctx, "A", "B", "C")
 
     col.update_all(Title="Archived")
@@ -59,7 +49,7 @@ def test_update_all_is_deferred_and_queues_one_update_per_item():
 
 
 def test_update_all_executes_queued_updates():
-    ctx, transport = _sp([{"d": {}}, {"d": {}}])
+    ctx, transport = sharepoint([{"d": {}}, {"d": {}}], record=True)
     col = _loaded(ctx, "A", "B")
 
     col.update_all(Status="Done").execute_query()
@@ -71,7 +61,7 @@ def test_update_all_executes_queued_updates():
 
 
 def test_delete_all_where_narrows_client_side():
-    ctx, _ = _sp([])
+    ctx, _ = sharepoint([], record=True)
     col = _loaded(ctx, "stale", "keep", "stale")
 
     col.delete_all(where=lambda i: i.properties["Title"] == "stale")
@@ -81,7 +71,7 @@ def test_delete_all_where_narrows_client_side():
 
 
 def test_delete_all_ignore_missing_is_idempotent():
-    ctx, transport = _sp([_NOT_FOUND])
+    ctx, transport = sharepoint([_NOT_FOUND], record=True)
     col = _loaded(ctx, "A")
 
     col.delete_all(ignore_missing=True).execute_query()
@@ -90,7 +80,7 @@ def test_delete_all_ignore_missing_is_idempotent():
 
 
 def test_delete_all_raises_on_missing_by_default():
-    ctx, _ = _sp([_NOT_FOUND])
+    ctx, _ = sharepoint([_NOT_FOUND], record=True)
     col = _loaded(ctx, "A")
 
     with pytest.raises(ObjectNotFoundException):
@@ -101,7 +91,7 @@ def test_delete_all_raises_on_missing_by_default():
 
 
 def test_list_clear_loads_ids_then_queues_deletes():
-    ctx, transport = _sp([{"d": {"results": [{"Id": 1}, {"Id": 2}]}}])
+    ctx, transport = sharepoint([{"d": {"results": [{"Id": 1}, {"Id": 2}]}}], record=True)
     lst = ctx.web.lists.get_by_title("Documents")
 
     lst.clear()

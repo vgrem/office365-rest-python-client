@@ -22,7 +22,7 @@ from office365.runtime.query_capabilities import (
 )
 from office365.security.labels.retention.collection import RetentionLabelCollection
 from office365.security.triggertypes.collection import RetentionEventTypeCollection
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import RecordingTransport, graph
 
 
 def test_call_records_declares_top_unsupported():
@@ -117,16 +117,9 @@ def test_drive_item_capability():
     col.order_by("size desc")  # allowed
 
 
-def _client(transport) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client
-
-
 def test_prefer_header_injected_for_last_modified_filter():
     transport = RecordingTransport([{"value": []}])
-    client = _client(transport)
+    client = graph(transport)[0]
 
     client.me.drive.root.children.filter("lastModifiedDateTime gt 2020-01-01T00:00:00Z").get().execute_query()
 

@@ -8,13 +8,10 @@ HTTP 404 is treated as success, while every other failure still propagates.
 from __future__ import annotations
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.exceptions import ObjectNotFoundException
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.views.view import View
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import graph, sharepoint
 
 _NOT_FOUND = {
     "http_status": 404,
@@ -27,27 +24,11 @@ _FORBIDDEN = {
 }
 
 
-def _graph(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
-
-
-def _sp(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
-
-
 # --- delete_object(ignore_missing=...) ---------------------------------------
 
 
 def test_graph_delete_object_raises_when_missing_by_default():
-    client, transport = _graph([_NOT_FOUND])
+    client, transport = graph([_NOT_FOUND], record=True)
 
     with pytest.raises(ObjectNotFoundException):
         client.users["missing@contoso.com"].delete_object().execute_query()
@@ -56,7 +37,7 @@ def test_graph_delete_object_raises_when_missing_by_default():
 
 
 def test_graph_delete_object_propagates_non_404_even_with_ignore_missing():
-    client, _ = _graph([_FORBIDDEN])
+    client, _ = graph([_FORBIDDEN], record=True)
 
     with pytest.raises(ClientRequestException):
         client.users["x@contoso.com"].delete_object(ignore_missing=True).execute_query()
@@ -70,7 +51,7 @@ def _views(ctx):
 
 
 def test_ensure_view_creates_when_missing():
-    ctx, transport = _sp([_NOT_FOUND, {"d": {"Id": "v1", "Title": "Active"}}])
+    ctx, transport = sharepoint([_NOT_FOUND, {"d": {"Id": "v1", "Title": "Active"}}], record=True)
 
     view = _views(ctx).ensure_view("Active", fields=["Title"]).execute_query()
 
@@ -83,11 +64,12 @@ def test_ensure_view_creates_when_missing():
 
 
 def test_ensure_view_on_conflict_update_reconciles_scalar_settings():
-    ctx, transport = _sp(
+    ctx, transport = sharepoint(
         [
             {"d": {"Id": "v1", "Title": "Active", "RowLimit": 30}},
             {},
-        ]
+        ],
+        record=True,
     )
 
     view = _views(ctx).ensure_view("Active", row_limit=50, on_conflict="update").execute_query()

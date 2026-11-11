@@ -18,22 +18,14 @@ from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import BaseTransport
 from office365.sharepoint.client_context import ClientContext
-from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport, build_response
+from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport, build_response, sharepoint
 
 _URL = "https://contoso.sharepoint.com/_api/web"
 _SITE_URL = "https://contoso.sharepoint.com"
 
 
-def _context(payloads: list) -> tuple[ClientContext, ScriptedTransport]:
-    ctx = ClientContext(_SITE_URL)
-    ctx.pending_request().beforeExecute.clear()
-    transport = ScriptedTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
-
-
 def test_deferred_query_resolves_without_request() -> None:
-    ctx, transport = _context([])
+    ctx, transport = sharepoint([], url=_SITE_URL)
     ctx.add_query(DeferredOperationQuery(ctx))
 
     asyncio.run(ctx.execute_query_async())
@@ -42,7 +34,7 @@ def test_deferred_query_resolves_without_request() -> None:
 
 
 def test_execute_query_async_dispatches_to_on_error() -> None:
-    ctx, _ = _context([{"status": 404, "body": {"error": {"message": "missing"}}}])
+    ctx, _ = sharepoint([{"status": 404, "body": {"error": {"message": "missing"}}}], url=_SITE_URL)
     handled: list[ClientRequestException] = []
     ctx.load(ctx.web)
     ctx.on_error(handled.append)
@@ -53,7 +45,7 @@ def test_execute_query_async_dispatches_to_on_error() -> None:
 
 
 def test_execute_query_async_retry_exhausts() -> None:
-    ctx, transport = _context([{"status": 500, "body": {}} for _ in range(3)])
+    ctx, transport = sharepoint([{"status": 500, "body": {}} for _ in range(3)], url=_SITE_URL)
     ctx.load(ctx.web)
 
     with pytest.raises(ClientRequestException):
@@ -300,7 +292,7 @@ def test_aiter_fetches_pages_lazily() -> None:
 
 
 def test_execute_query_parallel_async_processes_in_order_and_reports_progress() -> None:
-    ctx, transport = _context([{"d": {"Title": f"T{i}"}} for i in range(3)])
+    ctx, transport = sharepoint([{"d": {"Title": f"T{i}"}} for i in range(3)], url=_SITE_URL)
     _queue_loads(ctx, 3)
     seen: list = []
 
@@ -313,7 +305,7 @@ def test_execute_query_parallel_async_processes_in_order_and_reports_progress() 
 
 
 def test_execute_query_parallel_async_requeues_exhausted_transient() -> None:
-    ctx, transport = _context([{"status": 500, "body": {}}])
+    ctx, transport = sharepoint([{"status": 500, "body": {}}], url=_SITE_URL)
     ctx.load(ctx.web)
 
     with pytest.raises(ClientRequestException):
@@ -325,11 +317,12 @@ def test_execute_query_parallel_async_requeues_exhausted_transient() -> None:
 
 def test_execute_query_parallel_on_error_collects_and_continues() -> None:
     """A permanent failure is reported and skipped instead of aborting the batch."""
-    ctx, transport = _context(
+    ctx, transport = sharepoint(
         [
             {"status": 404, "body": {"error": {"message": "missing"}}},
             {"d": {"Title": "Contoso"}},
-        ]
+        ],
+        url=_SITE_URL,
     )
     _queue_loads(ctx, 2)
     errors: list[BaseException] = []
@@ -344,11 +337,12 @@ def test_execute_query_parallel_on_error_collects_and_continues() -> None:
 
 
 def test_execute_query_parallel_async_on_error_collects_and_continues() -> None:
-    ctx, transport = _context(
+    ctx, transport = sharepoint(
         [
             {"status": 404, "body": {"error": {"message": "missing"}}},
             {"d": {"Title": "Contoso"}},
-        ]
+        ],
+        url=_SITE_URL,
     )
     _queue_loads(ctx, 2)
     errors: list[BaseException] = []
@@ -411,7 +405,7 @@ def test_execute_query_parallel_async_cancels_in_flight_siblings() -> None:
 
 
 def test_execute_request_direct_async_returns_response() -> None:
-    ctx, transport = _context([{"d": {"Title": "Contoso"}}])
+    ctx, transport = sharepoint([{"d": {"Title": "Contoso"}}], url=_SITE_URL)
 
     response = asyncio.run(ctx.execute_request_direct_async("web"))
 
@@ -421,11 +415,12 @@ def test_execute_request_direct_async_returns_response() -> None:
 
 
 def test_incremental_retry_async_recovers() -> None:
-    ctx, transport = _context(
+    ctx, transport = sharepoint(
         [
             {"status": 429, "retry_after": 0, "body": {}},
             {"d": {"Title": "Contoso"}},
-        ]
+        ],
+        url=_SITE_URL,
     )
     ctx.load(ctx.web)
 
@@ -438,7 +433,7 @@ def test_incremental_retry_async_recovers() -> None:
 def test_client_result_async_retry_forwards_is_retriable() -> None:
     from office365.runtime.client_result import ClientResult
 
-    ctx, transport = _context([{"status": 404, "body": {}}, {"d": {"Title": "Contoso"}}])
+    ctx, transport = sharepoint([{"status": 404, "body": {}}, {"d": {"Title": "Contoso"}}], url=_SITE_URL)
     result = ClientResult(ctx, {})
     ctx.load(ctx.web)
 

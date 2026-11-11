@@ -11,6 +11,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.transport.base import BaseTransport
 from requests import Response
+from tests._scripted_transport import graph
 
 
 class _ConcurrencyTransport(BaseTransport):
@@ -58,13 +59,6 @@ def _json_response(request) -> Response:
     return resp
 
 
-def _client(transport) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()  # no auth handler during offline build
-    client.pending_request().transport = transport
-    return client
-
-
 def _queue(client: GraphClient, sink: list, index: int) -> None:
     result = ClientResult(client)
     query = FunctionQuery(client.me, "someOperation", None, result)
@@ -89,7 +83,7 @@ def test_run_parallel_on_error_collects_and_keeps_going():
 
 def test_execute_query_parallel_retries_transient_failure():
     transport = _FlakyTransport()
-    client = _client(transport)
+    client = graph(transport)[0]
     sink: list = []
     _queue(client, sink, 0)
 
@@ -102,7 +96,7 @@ def test_execute_query_parallel_retries_transient_failure():
 
 def test_execute_query_parallel_falls_back_to_serial():
     transport = _ConcurrencyTransport(delay=0.01)
-    client = _client(transport)
+    client = graph(transport)[0]
     sink: list = []
     for index in range(3):
         _queue(client, sink, index)

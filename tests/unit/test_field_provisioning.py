@@ -10,24 +10,14 @@ until ``execute_query()``.
 from __future__ import annotations
 
 from office365.runtime.http.http_method import HttpMethod
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.creation_information import FieldCreationInformation
 from office365.sharepoint.fields.type import FieldType
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import sharepoint
 
 _NOT_FOUND = {
     "http_status": 404,
     "body": {"error": {"code": "Request_ResourceNotFound", "message": "Resource not found"}},
 }
-
-
-def _sp(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
 
 
 def _existing(**props):
@@ -41,11 +31,12 @@ def _existing(**props):
 
 
 def test_ensure_reconciles_choices_on_conflict_update():
-    ctx, transport = _sp(
+    ctx, transport = sharepoint(
         [
             _existing(Title="Status", InternalName="Status", FieldTypeKind=6, Choices={"results": ["A", "B"]}),
             {},
-        ]
+        ],
+        record=True,
     )
 
     field = (
@@ -66,7 +57,7 @@ def test_ensure_reconciles_choices_on_conflict_update():
 
 
 def test_ensure_reconciles_formula_for_calculated():
-    ctx, transport = _sp([_existing(Title="Total", FieldTypeKind=17, Formula="=1"), {}])
+    ctx, transport = sharepoint([_existing(Title="Total", FieldTypeKind=17, Formula="=1"), {}], record=True)
 
     field = (
         ctx.web.lists.get_by_title("Tasks")
@@ -82,7 +73,7 @@ def test_ensure_reconciles_formula_for_calculated():
 
 
 def test_ensure_turns_on_required():
-    ctx, transport = _sp([_existing(Title="Owner", FieldTypeKind=2, Required=False), {}])
+    ctx, transport = sharepoint([_existing(Title="Owner", FieldTypeKind=2, Required=False), {}], record=True)
 
     field = (
         ctx.web.lists.get_by_title("Tasks")

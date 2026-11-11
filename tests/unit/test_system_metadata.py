@@ -10,19 +10,9 @@ from __future__ import annotations
 
 import datetime
 
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.lookup_value import FieldLookupValue
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
-
-
-def _sp(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
+from tests._scripted_transport import sharepoint
 
 
 def _item(ctx):
@@ -44,7 +34,7 @@ def _accepted() -> dict:
 
 def test_every_value_rides_in_one_request():
     """A second write would re-approve the item, so timestamps and authorship go together."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
 
     _item(ctx).set_system_metadata(
         {
@@ -69,7 +59,7 @@ def test_every_value_rides_in_one_request():
 def test_a_string_value_is_sent_as_given():
     """A document's form dates are read in the web's locale, so a converted wall clock
     must reach the service exactly as the conversion returned it."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
 
     _item(ctx).set_system_metadata({"Created": "2020-01-02T05:04:05"}, new_document_update=True).execute_query()
 
@@ -78,7 +68,7 @@ def test_a_string_value_is_sent_as_given():
 
 def test_a_user_value_becomes_its_lookup_value():
     """A resolved principal is passed as a model object; the wire takes its login."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
     author = ctx.web.site_users.get_by_id("12")
     author.set_property("Id", 12)
     author.set_property("LoginName", "i:0#.f|membership|author@contoso.com")
@@ -90,7 +80,7 @@ def test_a_user_value_becomes_its_lookup_value():
 
 def test_a_moderation_column_is_written_without_its_escape_prefix():
     """The model declares ``OData__ModerationStatus``; the write takes the internal name."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
 
     _item(ctx).set_system_metadata({"OData__ModerationStatus": 0}, new_document_update=True).execute_query()
     assert _form_values(_sent(transport)) == {"_ModerationStatus": "0"}
@@ -98,7 +88,7 @@ def test_a_moderation_column_is_written_without_its_escape_prefix():
 
 def test_a_declared_enum_is_written_as_its_wire_value():
     """A caller who has the enum the column declares writes the number it stands for."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
 
     _item(ctx).set_system_metadata(
         {"OData__ModerationStatus": SPModerationStatusType.Approved}, new_document_update=True
@@ -109,7 +99,7 @@ def test_a_declared_enum_is_written_as_its_wire_value():
 def test_restore_fidelity_rides_in_one_write():
     """A list item carries approval state in the same system update — a second write
     re-approves it. ``web_local_dates`` picks the grammar the item's form parses."""
-    ctx, transport = _sp([_accepted()])
+    ctx, transport = sharepoint([_accepted()], record=True)
 
     _item(ctx).restore_fidelity(
         created="2020-01-02 05:04:05",
@@ -130,7 +120,7 @@ def test_restore_fidelity_rides_in_one_write():
 
 
 def test_nothing_to_write_queues_no_request():
-    ctx, transport = _sp([])
+    ctx, transport = sharepoint([], record=True)
 
     result = _item(ctx).set_system_metadata({"Created": None}).execute_query()
 
@@ -140,7 +130,7 @@ def test_nothing_to_write_queues_no_request():
 
 def test_a_rejection_is_visible_on_the_result():
     """The caller reports it; the verb does not swallow a field the service refused."""
-    ctx, _ = _sp(
+    ctx, _ = sharepoint(
         [
             {
                 "d": {
@@ -155,7 +145,8 @@ def test_a_rejection_is_visible_on_the_result():
                     }
                 }
             }
-        ]
+        ],
+        record=True,
     )
 
     result = _item(ctx).set_system_metadata({"Author": FieldLookupValue(12, "nobody")}).execute_query()

@@ -21,7 +21,6 @@ from typing import Any
 
 import pytest
 from office365.graph_client import GraphClient
-from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
@@ -38,7 +37,6 @@ from office365.runtime.pollable import (
     is_transient_poll_error,
     next_poll_delay,
 )
-from office365.sharepoint.client_context import ClientContext
 from office365.teams.operations.async_operation import wait_for_operation_async
 from office365.teams.operations.async_status import TeamsAsyncOperationStatus
 from tests._scripted_transport import (
@@ -46,6 +44,8 @@ from tests._scripted_transport import (
     RoutingTransport,
     ScriptedTransport,
     build_response,
+    graph,
+    sharepoint,
 )
 
 
@@ -366,8 +366,7 @@ def test_teams_poll_for_status_blocks_until_succeeded():
 
 
 def _teams_client(payloads: list[Any]) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
+    client = graph()[0]
     client.pending_request()._async_transport = AsyncScriptedTransport(payloads)
     return client
 
@@ -435,12 +434,6 @@ def test_wait_for_operation_async_raises_on_failure():
 _MONITOR = "https://api.onedrive.com/monitor/abc"
 
 
-def _ctx() -> ClientContext:
-    ctx = offline_sharepoint_context()
-    ctx.pending_request().beforeExecute.clear()
-    return ctx
-
-
 def _response(http_status: int, body: Any = None, headers: dict[str, str] | None = None) -> Any:
     request = RequestOptions(url=_MONITOR)
     return build_response(request, _lro(http_status, body, headers))
@@ -449,7 +442,7 @@ def _response(http_status: int, body: Any = None, headers: dict[str, str] | None
 def _poller(transport: Any, clock: _Clock, **kwargs: Any) -> OperationPoller:
     options: dict[str, Any] = {"clock": clock.now, "sleep": clock.sleep, "async_sleep": clock.asleep}
     options.update(kwargs)
-    return OperationPoller(_ctx(), _MONITOR, transport=transport, **options)
+    return OperationPoller(sharepoint()[0], _MONITOR, transport=transport, **options)
 
 
 def test_status_parses_graph_progress():
@@ -514,12 +507,12 @@ def test_resolve_poll_url_final_state_via():
 
 def test_from_response_requires_monitor_url():
     with pytest.raises(ValueError, match="monitor URL"):
-        OperationPoller.from_response(_ctx(), _response(200))
+        OperationPoller.from_response(sharepoint()[0], _response(200))
 
 
 def test_from_response_builds_poller():
     resp = _response(202, {"status": "running"}, {"Location": _MONITOR})
-    poller = OperationPoller.from_response(_ctx(), resp)
+    poller = OperationPoller.from_response(sharepoint()[0], resp)
     assert poller.poll_url == _MONITOR
     assert poller.final_state_via == "auto"
     assert poller.last_status is None
@@ -548,7 +541,9 @@ def test_astream_yields_every_snapshot():
             _lro(202, {"status": "completed", "resourceId": "9"}),
         ]
     )
-    poller = OperationPoller(_ctx(), _MONITOR, async_transport=transport, clock=clock.now, async_sleep=clock.asleep)
+    poller = OperationPoller(
+        sharepoint()[0], _MONITOR, async_transport=transport, clock=clock.now, async_sleep=clock.asleep
+    )
 
     async def collect() -> list[OperationStatus]:
         return [status async for status in poller.astream()]
@@ -566,7 +561,7 @@ def test_continuation_token_round_trip():
     token = poller.to_continuation_token()
     assert token.status == "completed"
 
-    restored = OperationPoller.from_continuation_token(_ctx(), token.to_json())
+    restored = OperationPoller.from_continuation_token(sharepoint()[0], token.to_json())
     assert restored.poll_url == _MONITOR
     assert restored.final_state_via == "location"
 
@@ -595,7 +590,7 @@ def test_cancel_sends_service_request():
     )
     cancel_request = RequestOptions(url=cancel_url, method=HttpMethod.Post)
     poller = OperationPoller(
-        _ctx(),
+        sharepoint()[0],
         _MONITOR,
         transport=transport,
         cancel_request=cancel_request,
@@ -609,7 +604,9 @@ def test_cancel_sends_service_request():
 def test_wait_async_stops_when_cancelled():
     clock = _Clock()
     transport = AsyncScriptedTransport([_lro(202, {"status": "completed"})])
-    poller = OperationPoller(_ctx(), _MONITOR, async_transport=transport, clock=clock.now, async_sleep=clock.asleep)
+    poller = OperationPoller(
+        sharepoint()[0], _MONITOR, async_transport=transport, clock=clock.now, async_sleep=clock.asleep
+    )
     poller.cancel()
     with pytest.raises(OperationCancelledError):
         asyncio.run(poller.wait_async())
@@ -625,7 +622,7 @@ def test_wait_async_forwards_cancel_on_task_cancel():
         raise asyncio.CancelledError
 
     poller = OperationPoller(
-        _ctx(),
+        sharepoint()[0],
         _MONITOR,
         async_transport=transport,
         cancel_request=cancel_request,
@@ -640,7 +637,7 @@ def test_wait_async_forwards_cancel_on_task_cancel():
 def test_cancel_async_wakes_wait_async_promptly():
     clock = _Clock()
     transport = AsyncScriptedTransport([_lro(202, {"status": "inProgress"}, {"Retry-After": "2"})])
-    poller = OperationPoller(_ctx(), _MONITOR, async_transport=transport, clock=clock.now, interval=2)
+    poller = OperationPoller(sharepoint()[0], _MONITOR, async_transport=transport, clock=clock.now, interval=2)
 
     async def scenario() -> None:
         task = asyncio.ensure_future(poller.wait_async())
@@ -656,7 +653,7 @@ def test_cancel_async_wakes_wait_async_promptly():
 def test_cancel_from_thread_wakes_wait_async():
     clock = _Clock()
     transport = AsyncScriptedTransport([_lro(202, {"status": "inProgress"}, {"Retry-After": "2"})])
-    poller = OperationPoller(_ctx(), _MONITOR, async_transport=transport, clock=clock.now, interval=2)
+    poller = OperationPoller(sharepoint()[0], _MONITOR, async_transport=transport, clock=clock.now, interval=2)
 
     async def scenario() -> None:
         timer = threading.Timer(0.05, poller.cancel)

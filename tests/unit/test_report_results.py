@@ -7,13 +7,12 @@ import io
 from typing import Any
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.reports.report_export import (
     download_report,
 )
 from office365.reports.report_result import ReportResult
 from office365.runtime.client_request_exception import ClientRequestException
-from tests._scripted_transport import ScriptedTransport
+from tests._scripted_transport import graph
 
 # The usage reports arrive as UTF-8 with a BOM on the first header.
 _CSV_BOM = b"\xef\xbb\xbfReport Date,Send,Read\r\n2024-01-01,5,3\r\n2024-01-02,7,4\r\n"
@@ -32,13 +31,6 @@ def test_report_result_csv_rows_are_keyed_by_header():
     ]
 
 
-def _graph_client(payloads: list[Any]) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = ScriptedTransport(list(payloads))
-    return client
-
-
 def _report(http_status: int = 200, body: Any = None, headers: dict[str, str] | None = None) -> dict[str, Any]:
     payload: dict[str, Any] = {"http_status": http_status}
     if body is not None:
@@ -49,6 +41,6 @@ def _report(http_status: int = 200, body: Any = None, headers: dict[str, str] | 
 
 
 def test_download_report_raises_on_error():
-    client = _graph_client([_report(403, {"error": {"code": "Forbidden"}})])
+    client = graph([_report(403, {"error": {"code": "Forbidden"}})])[0]
     with pytest.raises(ClientRequestException):
         download_report(client.reports, "getX", io.BytesIO())

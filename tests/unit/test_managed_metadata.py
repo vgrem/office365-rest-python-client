@@ -14,19 +14,10 @@ from __future__ import annotations
 
 from office365.graph_client import GraphClient
 from office365.runtime.http.http_method import HttpMethod
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.taxonomy.create_xml_parameters import TaxonomyFieldCreateXmlParameters
 from office365.sharepoint.taxonomy.field_value import TaxonomyFieldValue
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport, ScriptedTransport
-
-
-def _ctx(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    ctx.pending_request().transport = ScriptedTransport(payloads)
-    return ctx
+from tests._scripted_transport import RecordingTransport
 
 
 def test_taxonomy_schema_omits_list_attribute():

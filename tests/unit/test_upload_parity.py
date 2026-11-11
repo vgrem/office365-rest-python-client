@@ -10,10 +10,8 @@ from __future__ import annotations
 import io
 
 import pytest
-from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.files.file import File
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import sharepoint
 
 _MISSING = {
     "http_status": 404,
@@ -21,14 +19,6 @@ _MISSING = {
 }
 
 _FILE = {"d": {"Name": "report.txt", "ServerRelativeUrl": "/sites/x/Shared Documents/report.txt"}}
-
-
-def _sp(payloads):
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    transport = RecordingTransport(payloads)
-    ctx.pending_request().transport = transport
-    return ctx, transport
 
 
 def _root(ctx):
@@ -43,7 +33,7 @@ def _files(ctx):
 
 
 def test_upload_file_large_path_uses_upload_session(tmp_path):
-    ctx, transport = _sp([_FILE, _FILE, _FILE])
+    ctx, transport = sharepoint([_FILE, _FILE, _FILE], record=True)
     source = tmp_path / "big.bin"
     source.write_bytes(b"0123456789")  # 10 bytes
 
@@ -57,7 +47,7 @@ def test_upload_file_large_path_uses_upload_session(tmp_path):
 
 
 def test_upload_file_small_stream():
-    ctx, transport = _sp([_FILE])
+    ctx, transport = sharepoint([_FILE], record=True)
 
     file = _files(ctx).upload_file(io.BytesIO(b"hi"), file_name="report.txt").execute_query()
 
@@ -66,7 +56,7 @@ def test_upload_file_small_stream():
 
 
 def test_upload_file_unnamed_stream_requires_name():
-    ctx, transport = _sp([])
+    ctx, transport = sharepoint([], record=True)
 
     with pytest.raises(ValueError):
         _files(ctx).upload_file(io.BytesIO(b"hi"))
@@ -75,7 +65,7 @@ def test_upload_file_unnamed_stream_requires_name():
 
 
 def test_upload_file_reports_progress_for_simple_upload(tmp_path):
-    ctx, _ = _sp([_FILE])
+    ctx, _ = sharepoint([_FILE], record=True)
     source = tmp_path / "report.txt"
     source.write_bytes(b"hello")
     seen = []
@@ -89,7 +79,7 @@ def test_upload_file_reports_progress_for_simple_upload(tmp_path):
 
 
 def test_ensure_file_reuses_existing_without_reupload():
-    ctx, transport = _sp([_FILE])
+    ctx, transport = sharepoint([_FILE], record=True)
 
     file = _root(ctx).ensure_file("report.txt", b"hi").execute_query()
 
@@ -99,7 +89,7 @@ def test_ensure_file_reuses_existing_without_reupload():
 
 
 def test_ensure_file_replace_overwrites_without_probe():
-    ctx, transport = _sp([_FILE])
+    ctx, transport = sharepoint([_FILE], record=True)
 
     file = _root(ctx).ensure_file("report.txt", b"hi", on_conflict="replace").execute_query()
 
@@ -109,7 +99,7 @@ def test_ensure_file_replace_overwrites_without_probe():
 
 
 def test_ensure_file_creates_parent_folders():
-    ctx, transport = _sp([_FILE, _FILE, _MISSING, _FILE])
+    ctx, transport = sharepoint([_FILE, _FILE, _MISSING, _FILE], record=True)
 
     _root(ctx).ensure_file("2026/Q1/report.txt", b"hi").execute_query()
 
@@ -118,7 +108,7 @@ def test_ensure_file_creates_parent_folders():
 
 
 def test_ensure_file_large_content_uses_upload_session():
-    ctx, transport = _sp([_MISSING, _FILE, _FILE, _FILE])
+    ctx, transport = sharepoint([_MISSING, _FILE, _FILE, _FILE], record=True)
 
     _root(ctx).ensure_file("big.bin", b"0123456789", chunk_size=6).execute_query()
 

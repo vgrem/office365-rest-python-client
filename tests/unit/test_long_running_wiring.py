@@ -24,7 +24,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.lro import LongRunningOperationResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.respond_async import RespondAsyncRequest
-from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport, build_response
+from tests._scripted_transport import AsyncScriptedTransport, ScriptedTransport, build_response, graph
 
 _MONITOR = "https://graph.microsoft.com/monitor/abc"
 
@@ -43,10 +43,7 @@ def _graph_client(
     sync_payloads: list[Any] | None = None,
     async_payloads: list[Any] | None = None,
 ) -> GraphClient:
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    if sync_payloads is not None:
-        client.pending_request().transport = ScriptedTransport(list(sync_payloads))
+    client = graph(sync_payloads)[0]
     if async_payloads is not None:
         client.pending_request()._async_transport = AsyncScriptedTransport(list(async_payloads))
     return client

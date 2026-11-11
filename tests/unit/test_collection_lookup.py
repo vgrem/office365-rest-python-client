@@ -7,22 +7,13 @@ without downloading every matching item, while ``first`` stays at ``$top=1``.
 from __future__ import annotations
 
 import pytest
-from office365.graph_client import GraphClient
-from tests._scripted_transport import RecordingTransport
+from tests._scripted_transport import graph
 
 GROUP = {"id": "g1", "displayName": "Group One"}
 
 
-def _client(payloads):
-    transport = RecordingTransport(payloads)
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    return client, transport
-
-
 def test_single_bounds_query_with_top_2():
-    client, transport = _client([{"value": [GROUP]}])
+    client, transport = graph([{"value": [GROUP]}], record=True)
 
     client.groups.single("displayName eq 'Group One'")
     client.execute_query()
@@ -38,7 +29,7 @@ def test_find_by_name_queues_a_tolerant_read():
     ``/groups/{id}``; a trailing ``.get()`` would therefore issue a redundant
     second request.
     """
-    client, transport = _client([{"value": [GROUP]}])
+    client, transport = graph([{"value": [GROUP]}], record=True)
 
     group = client.groups.find_by_name("Group One").execute_query()
 
@@ -49,7 +40,7 @@ def test_find_by_name_queues_a_tolerant_read():
 
 
 def test_find_by_name_required_raises_on_ambiguous():
-    client, _ = _client([{"value": [GROUP, {"id": "g2", "displayName": "Group One"}]}])
+    client, _ = graph([{"value": [GROUP, {"id": "g2", "displayName": "Group One"}]}], record=True)
 
     client.groups.find_by_name("Group One", required=True)
 
@@ -63,7 +54,7 @@ def test_get_by_principal_name_is_a_bare_address():
     Nothing is queued on its own, so ``.get()`` is required to fetch it — the
     examples that resolve a user by UPN must keep the trailing ``.get()``.
     """
-    client, transport = _client([{"id": "u1", "userPrincipalName": "a@contoso.com"}])
+    client, transport = graph([{"id": "u1", "userPrincipalName": "a@contoso.com"}], record=True)
 
     user = client.users.get_by_principal_name("a@contoso.com").execute_query()
 
@@ -88,7 +79,7 @@ def test_directory_role_lookup_skips_unsupported_top():
             {"id": "r2", "displayName": "Helpdesk Administrator"},
         ]
     }
-    client, transport = _client([payload])
+    client, transport = graph([payload], record=True)
 
     role = client.directory_roles.find_by_name("Helpdesk Administrator", required=True).execute_query()
 

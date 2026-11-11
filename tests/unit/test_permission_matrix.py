@@ -14,7 +14,6 @@ from unittest import TestCase, mock
 from office365.outlook.mail.messages.message import Message
 from office365.permissions import ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
-
 from tests.capabilities import Needs, Requirement, TenantState, declared_calls
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
