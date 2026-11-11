@@ -13,6 +13,7 @@ from typing import Optional
 from office365.migration.assessment.scanners import AssessmentOptions
 from office365.runtime.limits import Limit
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
+from office365.sharepoint.fields.schema import CONTAINER_ATTRIBUTES, SERVER_ASSIGNED_ATTRIBUTES
 from office365.sharepoint.thresholds import Limits
 
 
@@ -38,7 +39,13 @@ class SharePointAssessmentOptions(AssessmentOptions):
 
     invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
     large_site_threshold_gb: Optional[float] = 500.0
-    strip_field_attrs: set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
+    #: The SchemaXml attributes a replay must drop: where the definition lived and what the
+    #: service assigned are the base library's declarations (``FieldSchema``), and ``Version``
+    #: is the one stamp no constant names yet. Derived rather than re-spelled so the advice a
+    #: scan gives and the attributes a capture strips cannot drift apart.
+    strip_field_attrs: set[str] = field(
+        default_factory=lambda: set(CONTAINER_ATTRIBUTES | SERVER_ASSIGNED_ATTRIBUTES) | {"Version"}
+    )
     approval_workflow_fields: set[str] = field(
         default_factory=lambda: {"_ApprovalStatus", "_ApprovalRespondedBy", "_ApprovalAssignedTo"}
     )
