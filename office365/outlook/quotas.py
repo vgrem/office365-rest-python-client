@@ -21,6 +21,7 @@ from office365.runtime.limits import Limit, LimitKind, register_catalog
 
 _DOC = "https://learn.microsoft.com/en-us/graph/throttling-limits#outlook-service-limits"
 _SUPPORTED = LimitKind.SUPPORTED
+_BOUNDARY = LimitKind.BOUNDARY
 
 #: The per-mailbox request budget, and the only one every Outlook endpoint spends. Declared
 #: on ``OutlookItem`` (what messages, events and contacts share) and on ``OutlookUser`` (the
@@ -76,6 +77,20 @@ OUTLOOK_BATCH = Limit(
     note="sub-requests in flight per JSON batch that addresses Outlook; dependsOn serializes them instead",
     doc=_DOC,
     window_seconds=0,
+)
+
+#: A MIME import is one request whose whole body is the message, and Graph caps that body at
+#: 4 MB — a boundary on the request, not a throughput budget (which is why it is not in
+#: ``OUTLOOK_QUOTAS``). Declared on ``MessageCollection.add_from_mime``, the one entry point
+#: that posts a whole message; a larger message has to be written part by part instead.
+MIME_IMPORT = Limit(
+    "message MIME import request",
+    4 * 1024 * 1024,
+    _BOUNDARY,
+    "bytes",
+    "request",
+    note="the base64-encoded message is the request body; a larger message cannot be imported in one call",
+    doc="https://learn.microsoft.com/en-us/graph/api/user-post-messages",
 )
 
 OUTLOOK_QUOTAS = (*OUTLOOK_MAILBOX_BUDGETS, OUTLOOK_UPLOAD, OUTLOOK_BATCH)

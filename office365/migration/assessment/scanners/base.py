@@ -31,42 +31,29 @@ class ScanTarget(Generic[PayloadT]):
 class AssessmentOptions:
     """Product-agnostic scanner options.
 
-    Product packages subclass this to seed the thresholds and the ``limits``
-    mapping from their catalog (e.g. ``SharePointAssessmentOptions``).
-    ``disabled_scans`` mirrors SMAT's ScanDef.json ``Enabled`` flag: a scan
-    listed here does not run and its data is not collected.
+    Product packages subclass this to seed ``limits`` from their catalog (e.g.
+    ``SharePointAssessmentOptions``); a threshold is not stored as a number here, so it
+    cannot drift from the declaration a finding cites. ``disabled_scans`` mirrors SMAT's
+    ScanDef.json ``Enabled`` flag: a scan listed here does not run and its data is not
+    collected.
     """
 
-    max_path_length: Optional[int] = None
-    max_name_length: Optional[int] = None
     invalid_chars: set[str] = field(default_factory=set)
-    large_file_bytes: Optional[int] = None
-    large_excel_bytes: Optional[int] = None
-    long_onedrive_url: Optional[int] = None
-    list_view_threshold: Optional[int] = None
-    index_threshold: Optional[int] = None
-    max_list_items: Optional[int] = None
-    lookup_joins: Optional[int] = None
-    unique_scopes: Optional[int] = None
-    recommended_unique_scopes: Optional[int] = None
     large_site_threshold_gb: Optional[float] = None
     strip_field_attrs: set[str] = field(default_factory=set)
     approval_workflow_fields: set[str] = field(default_factory=set)
     disabled_scans: set[str] = field(default_factory=lambda: {"permissions"})
     include_site_admins: bool = False
     system_field_names: set[str] = field(default_factory=set)
-    #: Maps each threshold field to its source :class:`Limit` (seeded by the
-    #: product) so findings can reference the authoritative limit.
+    #: Maps each threshold a scan tests to the :class:`Limit` that states it, seeded by the
+    #: product, so a finding cites the number the service documents rather than a copy.
     limits: dict[str, Limit] = field(default_factory=dict)
 
     def limit(self, name: str) -> Limit:
-        """The source :class:`Limit` for a threshold field (from ``limits``)."""
+        """The :class:`Limit` stated for ``name`` (from ``limits``, seeded by the product)."""
         limit = self.limits.get(name)
         if limit is None:
-            value = getattr(self, name, None)
-            if value is None:
-                raise ValueError(f"no limit or value configured for {name!r}")
-            limit = Limit(name, int(value))
+            raise ValueError(f"no limit declared for {name!r}")
         return limit
 
 

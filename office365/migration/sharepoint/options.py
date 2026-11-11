@@ -34,20 +34,9 @@ def _limits() -> dict[str, Limit]:
 
 @dataclass
 class SharePointAssessmentOptions(AssessmentOptions):
-    """The SharePoint defaults — thresholds + the ``limits`` mapping."""
+    """The SharePoint defaults — the ``limits`` mapping, seeded from the SharePoint catalog."""
 
-    max_path_length: Optional[int] = Limits.FILE_PATH_LENGTH.value
-    max_name_length: Optional[int] = Limits.FILE_NAME_LENGTH.value
     invalid_chars: set[str] = field(default_factory=lambda: set(r'~"#%&*:<>?/\{|}'))
-    large_file_bytes: Optional[int] = Limits.MIGRATION_FILE_SIZE.value
-    large_excel_bytes: Optional[int] = Limits.LARGE_EXCEL_FILE.value
-    long_onedrive_url: Optional[int] = Limits.LONG_ONEDRIVE_URL.value
-    list_view_threshold: Optional[int] = Limits.LIST_VIEW.value
-    index_threshold: Optional[int] = Limits.INDEX_ADD_REMOVE.value
-    max_list_items: Optional[int] = Limits.MAX_LIST_ITEMS.value
-    lookup_joins: Optional[int] = Limits.LOOKUP_JOINS.value
-    unique_scopes: Optional[int] = Limits.UNIQUE_SCOPES.value
-    recommended_unique_scopes: Optional[int] = Limits.UNIQUE_SCOPES_RECOMMENDED.value
     large_site_threshold_gb: Optional[float] = 500.0
     strip_field_attrs: set[str] = field(default_factory=lambda: {"ColName", "RowOrdinal", "SourceID", "Version"})
     approval_workflow_fields: set[str] = field(

@@ -5,9 +5,9 @@ carrying what MIME does not (Graph ids, categories, read state, conversation). T
 sidecar is the message as the model serializes it, plus provenance; the convention
 itself is :class:`office365.migration.outlook.records.SidecarRecord`, and the naming
 rule every Outlook family shares is :func:`office365.migration.outlook.records.dest_path`.
-What is left here is what only mail has: its options, the 4 MB MIME import cap, and
-:func:`mime_digest` — the one comparable form of a message, because the ``.eml`` is the
-only artefact in this package with no model behind it.
+What is left here is what only mail has: its options and :func:`mime_digest` — the one
+comparable form of a message, because the ``.eml`` is the only artefact in this package
+with no model behind it.
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ from typing import Any, cast
 
 from office365.migration.outlook.records import SidecarRecord
 from office365.outlook.mail.messages.message import Message
+from office365.outlook.quotas import MIME_IMPORT
 from office365.runtime.odata.comparable import digest
 
 
@@ -45,9 +46,9 @@ class MailExportOptions:
     extra_properties: list[str] = field(default_factory=list)
 
 
-#: Graph caps a MIME import request at 4 MB (the base64 body is the payload), so
-#: a larger message has to go through an upload session instead.
-MAX_IMPORT_MIME_BYTES = 4 * 1024 * 1024
+#: Graph caps a MIME import at one request body, declared on ``MessageCollection.add_from_mime``
+#: (:data:`office365.outlook.quotas.MIME_IMPORT`), so a larger message has to go part by part.
+MAX_IMPORT_MIME_BYTES = MIME_IMPORT.value
 
 
 @dataclass

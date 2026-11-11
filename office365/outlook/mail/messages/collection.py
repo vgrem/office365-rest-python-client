@@ -6,9 +6,11 @@ from typing import TYPE_CHECKING, Any, List, Optional, Union
 from office365.delta_collection import DeltaCollection
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
+from office365.outlook.quotas import MIME_IMPORT
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 
@@ -68,6 +70,7 @@ class MessageCollection(DeltaCollection["Message"]):
         application=["Mail.ReadWrite"],
         notes="Create a draft from a MIME document",
     )
+    @limit(MIME_IMPORT)
     def add_from_mime(self, data: bytes) -> Message:
         """Create a draft from an RFC 822 document — a message as a file holds it.
 
