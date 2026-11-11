@@ -53,13 +53,55 @@ from office365.sharepoint.webs.web import Web
 if TYPE_CHECKING:
     from office365.runtime.queries.batch import BatchQuery
     from office365.runtime.queries.client_query import ClientQuery
+    from office365.sharepoint.apps.app_collection import AppCollection
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
+    from office365.sharepoint.clientsidecomponent.component_context_info import ComponentContextInfo
+    from office365.sharepoint.contentcenter.machinelearning.hub import SPMachineLearningHub
+    from office365.sharepoint.contentcenter.machinelearning.models.collection import SPMachineLearningModelCollection
+    from office365.sharepoint.contentcenter.machinelearning.publications.publication import SPMachineLearningPublication
+    from office365.sharepoint.contentcenter.machinelearning.workitems.collection import (
+        SPMachineLearningWorkItemCollection,
+    )
+    from office365.sharepoint.convergence.consumer_permissions import ConsumerPermissions
+    from office365.sharepoint.directory.provider.provider import SharePointDirectoryProvider
+    from office365.sharepoint.directory.session import DirectorySession
+    from office365.sharepoint.documentmanagement.document_id import DocumentId
+    from office365.sharepoint.entity_collection import EntityCollection
+    from office365.sharepoint.folders.coloring import FolderColoring
+    from office365.sharepoint.fontpackages.collection import FontPackageCollection
+    from office365.sharepoint.lists.collection import ListCollection
+    from office365.sharepoint.microservice.manager import MicroServiceManager
+    from office365.sharepoint.navigation.service import NavigationService
+    from office365.sharepoint.orgnewssite.api import OrgNewsSiteApi
+    from office365.sharepoint.portal.groups.service import GroupService
+    from office365.sharepoint.portal.groups.site_manager import GroupSiteManager
+    from office365.sharepoint.portal.home.service_context_builder import SharePointHomeServiceContextBuilder
+    from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
+    from office365.sharepoint.portal.linkedsites.manager import SiteLinkingManager
+    from office365.sharepoint.portal.organization_news import OrganizationNews
+    from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
+    from office365.sharepoint.portal.sites.manager import SPSiteManager
     from office365.sharepoint.portal.theme_manager import ThemeManager
+    from office365.sharepoint.publishing.announcements.controller import AnnouncementsController
+    from office365.sharepoint.publishing.diagnostics.controller import PageDiagnosticsController
+    from office365.sharepoint.search.administration.document_crawl_log import DocumentCrawlLog
     from office365.sharepoint.search.service import SearchService
+    from office365.sharepoint.search.setting import SearchSetting
     from office365.sharepoint.server_settings import ServerSettings
+    from office365.sharepoint.sites.home.site import SPHSite
+    from office365.sharepoint.sites.manager.service import SiteManagerService
+    from office365.sharepoint.social.feed.manager import SocialFeedManager
+    from office365.sharepoint.social.following.manager import SocialFollowingManager
+    from office365.sharepoint.taxonomy.service import TaxonomyService
     from office365.sharepoint.tenant.administration.tenant import Tenant
     from office365.sharepoint.tenant.settings import TenantSettings
+    from office365.sharepoint.userprofiles.people_manager import PeopleManager
+    from office365.sharepoint.userprofiles.profile_loader import ProfileLoader
+    from office365.sharepoint.viva.employee_engagement import EmployeeEngagement
+    from office365.sharepoint.viva.employee_experience_controller import EmployeeExperienceController
     from office365.sharepoint.viva.site_manager import VivaSiteManager
+    from office365.sharepoint.workflow.deployment_service import WorkflowDeploymentService
+    from office365.sharepoint.workflow.servicesmanager import WorkflowServicesManager
 
 
 class ClientContext(ClientRuntimeContext):
@@ -781,14 +823,14 @@ class ClientContext(ClientRuntimeContext):
         return self._site
 
     @property
-    def apps(self):
+    def apps(self) -> AppCollection:
         """"""
         from office365.sharepoint.apps.app_collection import AppCollection
 
         return AppCollection(self, ResourcePath("Apps"))
 
     @property
-    def announcements(self):
+    def announcements(self) -> AnnouncementsController:
         """Announcements controller"""
         from office365.sharepoint.publishing.announcements.controller import (
             AnnouncementsController,
@@ -805,7 +847,7 @@ class ClientContext(ClientRuntimeContext):
         return BrandCenter(self)
 
     @property
-    def client_people_picker(self):
+    def client_people_picker(self) -> ClientPeoplePickerWebServiceInterface:
         """Query principals service alias"""
 
         from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
@@ -815,7 +857,7 @@ class ClientContext(ClientRuntimeContext):
         return ClientPeoplePickerWebServiceInterface(self)
 
     @property
-    def component_context_info(self):
+    def component_context_info(self) -> ComponentContextInfo:
         """ComponentContextInfo alias"""
 
         from office365.sharepoint.clientsidecomponent.component_context_info import (
@@ -825,7 +867,7 @@ class ClientContext(ClientRuntimeContext):
         return ComponentContextInfo(self, ResourcePath("ComponentContextInfo"))
 
     @property
-    def consumer_permissions(self):
+    def consumer_permissions(self) -> ConsumerPermissions:
         """Consumer permissions alias"""
         from office365.sharepoint.convergence.consumer_permissions import (
             ConsumerPermissions,
@@ -834,7 +876,7 @@ class ClientContext(ClientRuntimeContext):
         return ConsumerPermissions(self, ResourcePath("ConsumerPermissions"))
 
     @property
-    def document_id(self):
+    def document_id(self) -> DocumentId:
         """Document IDs service"""
 
         from office365.sharepoint.documentmanagement.document_id import DocumentId
@@ -842,19 +884,19 @@ class ClientContext(ClientRuntimeContext):
         return DocumentId(self)
 
     @property
-    def me(self):
+    def me(self) -> RequestUserContext:
         """Gets the user context for the present request"""
         return RequestUserContext(self, ResourcePath("Me"))
 
     @property
-    def ee(self):
+    def ee(self) -> EmployeeEngagement:
         """Alias to EmployeeEngagement"""
         from office365.sharepoint.viva.employee_engagement import EmployeeEngagement
 
         return EmployeeEngagement(self)
 
     @property
-    def directory_provider(self):
+    def directory_provider(self) -> SharePointDirectoryProvider:
         """Alias to SharePointDirectoryProvider"""
         from office365.sharepoint.directory.provider.provider import (
             SharePointDirectoryProvider,
@@ -863,7 +905,7 @@ class ClientContext(ClientRuntimeContext):
         return SharePointDirectoryProvider(self)
 
     @property
-    def employee_experience(self):
+    def employee_experience(self) -> EmployeeExperienceController:
         """Alias to EmployeeExperience"""
         from office365.sharepoint.viva.employee_experience_controller import (
             EmployeeExperienceController,
@@ -872,21 +914,21 @@ class ClientContext(ClientRuntimeContext):
         return EmployeeExperienceController(self)
 
     @property
-    def micro_service_manager(self):
+    def micro_service_manager(self) -> MicroServiceManager:
         """Alias to MicroServiceManager"""
         from office365.sharepoint.microservice.manager import MicroServiceManager
 
         return MicroServiceManager(self, ResourcePath("microServiceManager"))
 
     @property
-    def directory_session(self):
+    def directory_session(self) -> DirectorySession:
         """Alias to DirectorySession"""
         from office365.sharepoint.directory.session import DirectorySession
 
         return DirectorySession(self)
 
     @property
-    def models(self):
+    def models(self) -> SPMachineLearningModelCollection:
         """Alias to collection of SPMachineLearningModel"""
         from office365.sharepoint.contentcenter.machinelearning.models.collection import (
             SPMachineLearningModelCollection,
@@ -895,14 +937,14 @@ class ClientContext(ClientRuntimeContext):
         return SPMachineLearningModelCollection(self, ResourcePath("models"))
 
     @property
-    def folder_coloring(self):
+    def folder_coloring(self) -> FolderColoring:
         """Alias to FolderColoring"""
         from office365.sharepoint.folders.coloring import FolderColoring
 
         return FolderColoring(self, ResourcePath("foldercoloring"))
 
     @property
-    def font_packages(self):
+    def font_packages(self) -> FontPackageCollection:
         """Alias to FontPackageCollection"""
 
         from office365.sharepoint.fontpackages.collection import FontPackageCollection
@@ -910,7 +952,7 @@ class ClientContext(ClientRuntimeContext):
         return FontPackageCollection(self, ResourcePath("fontpackages"))
 
     @property
-    def site_font_packages(self):
+    def site_font_packages(self) -> FontPackageCollection:
         """Alias to FontPackageCollection"""
 
         from office365.sharepoint.fontpackages.collection import FontPackageCollection
@@ -918,28 +960,28 @@ class ClientContext(ClientRuntimeContext):
         return FontPackageCollection(self, ResourcePath("sitefontpackages"))
 
     @property
-    def group_site_manager(self):
+    def group_site_manager(self) -> GroupSiteManager:
         """Alias to GroupSiteManager"""
         from office365.sharepoint.portal.groups.site_manager import GroupSiteManager
 
         return GroupSiteManager(self, ResourcePath("groupSiteManager"))
 
     @property
-    def group_service(self):
+    def group_service(self) -> GroupService:
         """Alias to GroupService"""
         from office365.sharepoint.portal.groups.service import GroupService
 
         return GroupService(self, ResourcePath("GroupService"))
 
     @property
-    def navigation_service(self):
+    def navigation_service(self) -> NavigationService:
         """Alias to NavigationService"""
         from office365.sharepoint.navigation.service import NavigationService
 
         return NavigationService(self)
 
     @property
-    def page_diagnostics(self):
+    def page_diagnostics(self) -> PageDiagnosticsController:
         """Alias to PageDiagnosticsController"""
         from office365.sharepoint.publishing.diagnostics.controller import (
             PageDiagnosticsController,
@@ -948,21 +990,21 @@ class ClientContext(ClientRuntimeContext):
         return PageDiagnosticsController(self)
 
     @property
-    def people_manager(self):
+    def people_manager(self) -> PeopleManager:
         """Alias to PeopleManager"""
         from office365.sharepoint.userprofiles.people_manager import PeopleManager
 
         return PeopleManager(self)
 
     @property
-    def profile_loader(self):
+    def profile_loader(self) -> ProfileLoader:
         """Alias to ProfileLoader"""
         from office365.sharepoint.userprofiles.profile_loader import ProfileLoader
 
         return ProfileLoader(self)
 
     @property
-    def document_crawl_log(self):
+    def document_crawl_log(self) -> DocumentCrawlLog:
         """Alias to DocumentCrawlLog"""
 
         from office365.sharepoint.search.administration.document_crawl_log import (
@@ -972,26 +1014,26 @@ class ClientContext(ClientRuntimeContext):
         return DocumentCrawlLog(self)
 
     @property
-    def lists(self):
+    def lists(self) -> ListCollection:
         """Alias to ListCollection. Gets information about all lists that the current user can access."""
         from office365.sharepoint.lists.collection import ListCollection
 
         return ListCollection(self, ResourcePath("Lists"))
 
     @property
-    def hub_sites(self):
+    def hub_sites(self) -> HubSiteCollection:
         """Alias to HubSiteCollection. Gets information about all hub sites that the current user can access."""
         return HubSiteCollection(self, ResourcePath("hubSites"))
 
     @property
-    def hub_sites_utility(self):
+    def hub_sites_utility(self) -> SPHubSitesUtility:
         """Alias to HubSitesUtility."""
         from office365.sharepoint.portal.hub_sites_utility import SPHubSitesUtility
 
         return SPHubSitesUtility(self, ResourcePath("HubSitesUtility"))
 
     @property
-    def machine_learning(self):
+    def machine_learning(self) -> SPMachineLearningHub:
         """Alias to SPMachineLearningHub"""
         from office365.sharepoint.contentcenter.machinelearning.hub import (
             SPMachineLearningHub,
@@ -1000,54 +1042,54 @@ class ClientContext(ClientRuntimeContext):
         return SPMachineLearningHub(self, ResourcePath("machinelearning"))
 
     @property
-    def org_news(self):
+    def org_news(self) -> OrganizationNews:
         """Alias to OrgNewsSite"""
         from office365.sharepoint.portal.organization_news import OrganizationNews
 
         return OrganizationNews(self, ResourcePath("OrgNews"))
 
     @property
-    def org_news_site(self):
+    def org_news_site(self) -> OrgNewsSiteApi:
         """Alias to OrgNewsSite"""
         from office365.sharepoint.orgnewssite.api import OrgNewsSiteApi
 
         return OrgNewsSiteApi(self, ResourcePath("OrgNewsSite"))
 
     @property
-    def search_setting(self):
+    def search_setting(self) -> SearchSetting:
         """Alias to SearchSetting"""
         from office365.sharepoint.search.setting import SearchSetting
 
         return SearchSetting(self)
 
     @property
-    def site_pages(self):
+    def site_pages(self) -> SitePageService:
         """Alias to SitePageService. Represents a set of APIs to use for managing site pages."""
         return SitePageService(self, ResourcePath("sitePages"))
 
     @property
-    def site_icon_manager(self):
+    def site_icon_manager(self) -> SiteIconManager:
         """Alias to Microsoft.SharePoint.Portal.SiteIconManager."""
         from office365.sharepoint.portal.sites.icon_manager import SiteIconManager
 
         return SiteIconManager(self, ResourcePath("SiteIconManager"))
 
     @property
-    def site_linking_manager(self):
+    def site_linking_manager(self) -> SiteLinkingManager:
         """Alias to Microsoft.SharePoint.Portal.SiteLinkingManager."""
         from office365.sharepoint.portal.linkedsites.manager import SiteLinkingManager
 
         return SiteLinkingManager(self, ResourcePath("siteLinkingManager"))
 
     @property
-    def site_manager(self):
+    def site_manager(self) -> SPSiteManager:
         """Alias to SPSiteManager. Represents methods for creating and managing SharePoint sites"""
         from office365.sharepoint.portal.sites.manager import SPSiteManager
 
         return SPSiteManager(self, ResourcePath("spSiteManager"))
 
     @property
-    def site_manager_svc(self):
+    def site_manager_svc(self) -> SiteManagerService:
         """Alias to SiteManagerService."""
 
         from office365.sharepoint.sites.manager.service import SiteManagerService
@@ -1055,14 +1097,14 @@ class ClientContext(ClientRuntimeContext):
         return SiteManagerService(self)
 
     @property
-    def social_feed_manager(self):
+    def social_feed_manager(self) -> SocialFeedManager:
         """Alias to SocialFeedManager."""
         from office365.sharepoint.social.feed.manager import SocialFeedManager
 
         return SocialFeedManager(self)
 
     @property
-    def home_service(self):
+    def home_service(self) -> SharePointHomeServiceContextBuilder:
         """Alias to SharePointHomeServiceContextBuilder."""
         from office365.sharepoint.portal.home.service_context_builder import (
             SharePointHomeServiceContextBuilder,
@@ -1071,7 +1113,7 @@ class ClientContext(ClientRuntimeContext):
         return SharePointHomeServiceContextBuilder(self, ResourcePath("sphomeservice"))
 
     @property
-    def home_site(self):
+    def home_site(self) -> SPHSite:
         """Alias to SPHSite."""
         from office365.sharepoint.sites.home.site import SPHSite
 
@@ -1084,7 +1126,7 @@ class ClientContext(ClientRuntimeContext):
         return PeoplePickerWebServiceInterface(self)
 
     @property
-    def publications(self):
+    def publications(self) -> EntityCollection[SPMachineLearningPublication]:
         from office365.sharepoint.contentcenter.machinelearning.publications.publication import (
             SPMachineLearningPublication,
         )
@@ -1101,7 +1143,7 @@ class ClientContext(ClientRuntimeContext):
         return ServerSettings(self)
 
     @property
-    def social_following_manager(self):
+    def social_following_manager(self) -> SocialFollowingManager:
         """ """
         from office365.sharepoint.social.following.manager import SocialFollowingManager
 
@@ -1115,7 +1157,7 @@ class ClientContext(ClientRuntimeContext):
         return ThemeManager(self, ResourcePath("themeManager"))
 
     @property
-    def taxonomy(self):
+    def taxonomy(self) -> TaxonomyService:
         """Alias to TaxonomyService"""
         from office365.sharepoint.taxonomy.service import TaxonomyService
 
@@ -1143,7 +1185,7 @@ class ClientContext(ClientRuntimeContext):
         return VivaSiteManager(self)
 
     @property
-    def workflow_services_manager(self):
+    def workflow_services_manager(self) -> WorkflowServicesManager:
         """Alias to WorkflowServicesManager"""
         from office365.sharepoint.workflow.servicesmanager import (
             WorkflowServicesManager,
@@ -1152,7 +1194,7 @@ class ClientContext(ClientRuntimeContext):
         return WorkflowServicesManager.current(self)
 
     @property
-    def workflow_deployment_service(self):
+    def workflow_deployment_service(self) -> WorkflowDeploymentService:
         """Alias to WorkflowServicesManager"""
 
         from office365.sharepoint.workflow.deployment_service import (
@@ -1162,7 +1204,7 @@ class ClientContext(ClientRuntimeContext):
         return WorkflowDeploymentService(self)
 
     @property
-    def work_items(self):
+    def work_items(self) -> SPMachineLearningWorkItemCollection:
         """"""
         from office365.sharepoint.contentcenter.machinelearning.workitems.collection import (
             SPMachineLearningWorkItemCollection,
