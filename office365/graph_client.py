@@ -34,6 +34,8 @@ from office365.directory.invitations.collection import InvitationCollection
 from office365.directory.licenses.collection import SubscribedSkuCollection
 from office365.directory.licenses.tenant import Licences
 from office365.directory.objects.collection import DirectoryObjectCollection
+from office365.directory.organizations.contact import OrgContact
+from office365.directory.organizations.organization import Organization
 from office365.directory.permissions.grants.oauth2_collection import OAuth2PermissionGrantCollection
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
@@ -54,8 +56,6 @@ from office365.graph_version import GraphVersion
 from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.management.app_management import DeviceAppManagement
 from office365.intune.devices.management.management import DeviceManagement
-from office365.intune.organizations.contact import OrgContact
-from office365.intune.organizations.organization import Organization
 from office365.intune.print.print import Print
 from office365.onedrive.drives.collection import DriveCollection
 from office365.onedrive.shares.collection import SharesCollection

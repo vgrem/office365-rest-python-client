@@ -37,6 +37,7 @@ from office365.directory.objects.onpremisesprovisioningerror import (
 from office365.directory.objects.serviceprovisioningerror import (
     ServiceProvisioningError,
 )
+from office365.directory.organizations.contact import OrgContact
 from office365.directory.permissions.grants.oauth2 import OAuth2PermissionGrant
 from office365.directory.permissions.grants.resource_specific import (
     ResourceSpecificPermissionGrant,
@@ -62,7 +63,6 @@ from office365.intune.devices.management.managed.app.registration import (
     ManagedAppRegistration,
 )
 from office365.intune.devices.management.managed.managed import ManagedDevice
-from office365.intune.organizations.contact import OrgContact
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.intune.print.user_print import UserPrint
 from office365.onedrive.drives.drive import Drive
@@ -243,7 +243,7 @@ class User(DirectoryObject):
         """Assign a user's manager.
 
         Args:
-            user (str or User or OrgContact): User or office365.intune.organizations.contact.OrgContact or identifier
+            user (str or User or OrgContact): User or office365.directory.organizations.contact.OrgContact or identifier
         """
 
         def _construct_request(request: RequestOptions) -> None:

@@ -10,12 +10,12 @@ from office365.directory.domains.verified import VerifiedDomain
 from office365.directory.extensions.extension import Extension
 from office365.directory.licenses.assigned_plan import AssignedPlan
 from office365.directory.objects.object import DirectoryObject
+from office365.directory.organizations.branding import OrganizationalBranding
+from office365.directory.organizations.privacy_profile import PrivacyProfile
 from office365.directory.tenantinformation.partner_tenant_type import PartnerTenantType
 from office365.directory.users.provisioned_plan import ProvisionedPlan
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.mdmauthority import MdmAuthority
-from office365.intune.organizations.branding import OrganizationalBranding
-from office365.intune.organizations.privacy_profile import PrivacyProfile
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

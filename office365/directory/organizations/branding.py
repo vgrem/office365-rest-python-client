@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity_collection import EntityCollection
-from office365.intune.organizations.branding_properties import (
+from office365.directory.organizations.branding_properties import (
     OrganizationalBrandingProperties,
 )
+from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.organizations.organizational_branding_localization import (
+    from office365.directory.organizations.organizational_branding_localization import (
         OrganizationalBrandingLocalization,
     )
 
@@ -32,7 +32,7 @@ class OrganizationalBranding(OrganizationalBrandingProperties):
     @property
     def localizations(self) -> EntityCollection[OrganizationalBrandingLocalization]:
         """Gets the localizations property"""
-        from office365.intune.organizations.organizational_branding_localization import (
+        from office365.directory.organizations.organizational_branding_localization import (
             OrganizationalBrandingLocalization,
         )
 

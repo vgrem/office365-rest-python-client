@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.intune.organizations.layouttemplatetype import LayoutTemplateType
+from office365.directory.organizations.layouttemplatetype import LayoutTemplateType
 from office365.runtime.client_value import ClientValue
 
 

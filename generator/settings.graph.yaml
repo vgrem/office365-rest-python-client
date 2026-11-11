@@ -751,7 +751,7 @@ type_routing:
   "CertificateAuthorityDetail": office365.directory.certificates
   "ServiceProviderConstraints": office365.directory
   "InternalDomainFederation": office365.directory.domains
-  "OrganizationalBrandingLocalization": office365.intune.organizations
+  "OrganizationalBrandingLocalization": office365.directory.organizations
   "TargetDeviceGroup": office365.directory.serviceprincipals
   "Edge": office365.admin
   "BrowserSharedCookie": office365.admin

@@ -10,7 +10,7 @@ from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.objects.object import DirectoryObject
 from office365.directory.objects.onpremisesprovisioningerror import OnPremisesProvisioningError
 from office365.directory.objects.serviceprovisioningerror import ServiceProvisioningError
-from office365.intune.organizations.physical_office_address import PhysicalOfficeAddress
+from office365.directory.organizations.physical_office_address import PhysicalOfficeAddress
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.directory.organizations.content_customization import ContentCustomization
+from office365.directory.organizations.login_page_layout_configuration import LoginPageLayoutConfiguration
+from office365.directory.organizations.login_page_text_visibility_settings import LoginPageTextVisibilitySettings
 from office365.entity import Entity
-from office365.intune.organizations.content_customization import ContentCustomization
-from office365.intune.organizations.login_page_layout_configuration import LoginPageLayoutConfiguration
-from office365.intune.organizations.login_page_text_visibility_settings import LoginPageTextVisibilitySettings
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
