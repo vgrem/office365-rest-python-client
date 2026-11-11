@@ -35,6 +35,7 @@ from office365.runtime.query_capabilities import (
 )
 from office365.runtime.types.event_handler import EventHandler
 from office365.runtime.types.exceptions import NotFoundException
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.runtime.operations import ProgressCallback
@@ -501,6 +502,7 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             self.top(page_size)
         return self
 
+    @verb(role="list", name="list")
     def get(self) -> Self:
         """
         Load the collection data from the server.
@@ -526,6 +528,10 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
         self.context.after_execute(_capture_headers, include_response=True).after_execute(_loaded)
         return self
 
+    # The list command, following paging to the end: no command word of its own, so a
+    # caller that has ``--all`` reaches this entry point and one that does not keeps
+    # ``get``. Declared, not inferred, because the two differ in paging and not in role.
+    @verb(role="list", paged=True, expose=False)
     def get_all(
         self,
         page_size: int | None = None,

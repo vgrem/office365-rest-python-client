@@ -9,6 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.record_collection import RecordCollection
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
@@ -55,6 +56,7 @@ class EntityCollection(RecordCollection[ClientObjectT]):
             resource_path=AlternateKeyPath(key_name, key_value, self._canonical_collection())
         )
 
+    @verb(role="create", name="create")
     def add(self, *args: Any, **kwargs: Any) -> ClientObjectT:
         """Creates an entity and prepares the query"""
         return_type = self.create_typed_object(kwargs, EntityPath(None, self.resource_path))

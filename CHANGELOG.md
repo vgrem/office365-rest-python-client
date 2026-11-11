@@ -30,6 +30,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **A method can say it is a command.** `@verb(role=...)` declares what a method is to a
+  caller that drives the library from outside Python: `list`, `get`, `create`, `update`,
+  `delete`, or `action` with an effect stated. The effect (`read`/`write`/`destroy`) and the
+  need to confirm are inferred from the role, the command word defaults to the method name,
+  and `expose=False` records the decision that a sibling entry point is not a command of its
+  own. Eight base methods carry it — `get`/`get_all`, `add`, and
+  `update`/`upsert`/`delete_object`, plus SharePoint's own `update`/`delete_object` — so every
+  Graph collection, Graph entity and SharePoint entity answers them with no per-type work, and
+  `Capabilities.verbs` reads them back beside the schema, the permissions, the limits and the
+  query rules. The stamp is opt-in for a reason: a method that declares nothing is a
+  shaping helper or a path builder, which is what most of the 4 000 public methods are.
 - **An export can put one row per child.** `to_csv(..., rows_from="assignedLicenses")` (and
   `export_to`/`to_records`/`to_ndjson`) emits one record per child of a collection-valued
   property, with the child's own fields as the columns. It exists for the case no projection

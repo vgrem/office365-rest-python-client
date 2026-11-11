@@ -34,6 +34,7 @@ from office365.runtime.types.odata_property import (
     addresses_version,
     request_version,
 )
+from office365.runtime.verbs import verb
 
 
 def require_declared_version(name: str, declared: Collection[str], context: Any) -> None:
@@ -314,6 +315,7 @@ class ClientObject:
             self.set_property(k, v, False)
         return self
 
+    @verb(role="get")
     def get(self) -> Self:
         """
         Retrieves the client object's data from the server.

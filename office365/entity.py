@@ -11,6 +11,7 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.queries.upsert_entity import UpsertEntityQuery, raise_if_upsert_unsupported
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
@@ -24,6 +25,7 @@ class Entity(ClientObject):
     #: ``@key(...)``, and ``@key()`` clears the inherited name.
     _key: ClassVar[str] = "id"
 
+    @verb(role="update")
     def update(self) -> Self:
         """Updates the entity in Microsoft Graph.
 
@@ -39,6 +41,7 @@ class Entity(ClientObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="update")
     def upsert(
         self,
         *,
@@ -101,6 +104,7 @@ class Entity(ClientObject):
             self.set_property(name, value)
         return self.update()
 
+    @verb(role="delete", name="delete")
     def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """Deletes the entity from Microsoft Graph.
 

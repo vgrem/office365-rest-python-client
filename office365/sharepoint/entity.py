@@ -13,6 +13,7 @@ from office365.runtime.http.url import get_absolute_url
 from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
+from office365.runtime.verbs import verb
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.thresholds import Limits, limit
 
@@ -188,6 +189,7 @@ class Entity(ClientObject):
         self.context.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
+    @verb(role="delete", name="delete")
     @site_access(SiteLevel.WRITE)
     def delete_object(self, *, ignore_missing: bool = False) -> Self:
         """
@@ -208,6 +210,7 @@ class Entity(ClientObject):
         self.remove_from_parent_collection()
         return self
 
+    @verb(role="update")
     @site_access(SiteLevel.WRITE)
     def update(self, *args: Any) -> Self:
         """
