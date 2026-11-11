@@ -1,8 +1,8 @@
 """Which ``@key(...)`` a snapshot justifies, and which types deliberately get none.
 
 A key is not a diff. One snapshot states it, so the plan is a pure function of that
-snapshot *and* of what the model's own source already says -- a class that writes
-``property_ref_name`` has answered the question itself, and a derivation that overwrote it
+snapshot *and* of what the model's own source already says -- a class that carries
+``@key(...)`` has answered the question itself, and a derivation that overwrote it
 would be the generator deciding, on its own, what a service addresses an entity by. The
 code is the state, the same way :mod:`generator.tools.beta_markers` reads it.
 
@@ -16,8 +16,8 @@ preview snapshot declares one) and a key no class spells.
 SharePoint is where the same derivation must **not** be trusted. Its v3 metadata states a
 key on 613 of 871 entity types, and states ones no client can address an entity by:
 ``Alert`` by ``AlertFrequency``, ``TypeInformation`` by ``BaseTypeFullName``,
-``ApiMetadata`` by ``Id4a81de82eeb94d6080ea5bf63e27023a``. The seventeen hand-written
-``property_ref_name`` overrides under ``office365/sharepoint`` are the reviewed answer,
+``ApiMetadata`` by ``Id4a81de82eeb94d6080ea5bf63e27023a``. The eighteen hand-written
+``@key(...)`` declarations under ``office365/sharepoint`` are the reviewed answer,
 and they are not a subset of it -- thirteen agree, three contradict it
 (``HubSiteProperties`` is addressed by ``SiteId``, not the metadata's ``Description``),
 one names a type the snapshot does not declare. So SharePoint plans and reports; it does
@@ -136,27 +136,24 @@ def _refusal(files: TypeFiles, type_name: str, key: str) -> Optional[str]:
     if not files.is_addressed(type_name):
         return "a complex or enum type is not addressed by a request"
     if _states_key_itself(files, type_name):
-        return f"{class_node.name} states its key in property_ref_name"
+        return f"{class_node.name} states its key in @key"
     if not _holds(files, type_name, key):
         return f"no member of {class_node.name} is spelled {key}"
     return None
 
 
 def _states_key_itself(files: TypeFiles, type_name: str) -> bool:
-    """Whether a class in the chain answers ``property_ref_name`` with a literal.
+    """Whether a class in the chain already carries ``@key``.
 
-    ``Entity`` and ``SP.Entity`` answer with an expression that *reads* the declaration,
-    which is the fallback rather than a statement; a hand-written override answers with
-    the string itself, and that is the fact the decorator would be duplicating.
+    ``Entity`` and ``SP.Entity`` state the family default as a ``_key`` class variable
+    rather than as a decorator, and a default is the fallback rather than a statement; a
+    decorated class answers with the declaration itself, and that is the fact the plan
+    would be duplicating.
     """
     for _, class_node in files.class_chain(type_name):
-        for node in class_node.body:
-            if not isinstance(node, ast.FunctionDef) or node.name != "property_ref_name":
-                continue
-            for statement in ast.walk(node):
-                if isinstance(statement, ast.Return) and isinstance(statement.value, ast.Constant):
-                    if isinstance(statement.value.value, str):
-                        return True
+        for node in class_node.decorator_list:
+            if isinstance(node, ast.Call) and getattr(node.func, "id", None) == KEY:
+                return True
     return False
 
 

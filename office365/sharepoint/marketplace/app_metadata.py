@@ -4,11 +4,12 @@ from typing_extensions import Self
 
 from office365.permissions.roles import DirectoryRole
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 
+@key("ID")
 class CorporateCatalogAppMetadata(Entity):
     """App metadata for apps stored in the corporate catalog."""
 
@@ -85,10 +86,6 @@ class CorporateCatalogAppMetadata(Entity):
     def id(self) -> Optional[str]:
         """The identifier of the app."""
         return self.properties.get("ID", None)
-
-    @property
-    def property_ref_name(self):
-        return "ID"
 
     @property
     def entity_type_name(self):

@@ -1556,10 +1556,6 @@ class DriveItem(BaseItem):
             SubscriptionCollection(self.context, ResourcePath("subscriptions", self.resource_path)),
         )
 
-    @property
-    def property_ref_name(self) -> str:
-        return "id"
-
     @odata(name="bundle")
     @property
     def bundle(self) -> Bundle:

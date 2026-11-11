@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 
 
+@key("DefinitionId")
 class Feature(Entity):
     """Represents an activated feature."""
 
@@ -18,7 +19,3 @@ class Feature(Entity):
     def display_name(self) -> str | None:
         """The display name of this feature."""
         return self.properties.get("DisplayName", None)
-
-    @property
-    def property_ref_name(self) -> str:
-        return "DefinitionId"

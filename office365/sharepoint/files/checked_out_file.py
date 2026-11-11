@@ -6,12 +6,13 @@ from typing_extensions import Self
 
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
 
 
+@key("CheckedOutById")
 class CheckedOutFile(Entity):
     """Represents a checked-out file in a document library or workspace."""
 
@@ -36,10 +37,6 @@ class CheckedOutFile(Entity):
             "CheckedOutBy",
             User(self.context, ResourcePath("CheckedOutBy", self.resource_path)),
         )
-
-    @property
-    def property_ref_name(self) -> str:
-        return "CheckedOutById"
 
     @odata(name="ServerRelativePath", beta=True)
     @property

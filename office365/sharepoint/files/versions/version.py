@@ -6,11 +6,12 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 
+@key("ID")
 class FileVersion(Entity):
     """Represents a version of a File object."""
 
@@ -142,10 +143,6 @@ class FileVersion(Entity):
     def snapshot_date(self) -> Optional[str]:
         """Gets the SnapshotDate property"""
         return self.properties.get("SnapshotDate", None)
-
-    @property
-    def property_ref_name(self) -> str:
-        return "ID"
 
     @site_access(SiteLevel.WRITE)
     def set_expiration_date(self, expiration_date: datetime) -> Self:

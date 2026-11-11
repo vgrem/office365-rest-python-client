@@ -92,11 +92,12 @@ class ClientObject:
     _versions: ClassVar[Collection[str]] = ()
 
     #: The property that spells this type's identity, declared by ``@key(...)`` on the
-    #: class. This is the *declaration*; it is read through :attr:`_schema` (``key``),
-    #: which is what :attr:`property_ref_name` answers. Empty -- every type whose key is
-    #: its family's default -- leaves the base class's own spelling to answer, so a class
-    #: that states nothing behaves exactly as it did before the declaration existed.
-    _key: ClassVar[Sequence[str]] = ()
+    #: class. This is the *declaration*; it is read through :attr:`_schema` (``key``).
+    #: Empty -- every type whose key is its family's default -- leaves the family base's
+    #: own spelling to answer, so a class that states nothing behaves exactly as it did
+    #: before the declaration existed. ``@key()`` states that no segment addresses the
+    #: type at all, which is how a class undoes a key it would otherwise inherit.
+    _key: ClassVar[str] = ""
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
@@ -536,8 +537,9 @@ class ClientObject:
                 earlier is a snapshot, not a reason to trust it for a decision made now.
         """
         names = list(names)
-        if self.property_ref_name is not None and self.property_ref_name not in names:
-            names.append(self.property_ref_name)
+        key = self._schema.key
+        if key and key not in names:
+            names.append(key)
 
         names_to_include = list(names) if refresh else [n for n in names if not self.is_property_available(n)]
         if names_to_include:
@@ -564,11 +566,6 @@ class ClientObject:
         if self._entity_type_name is None:
             self._entity_type_name = type(self).__name__
         return self._entity_type_name
-
-    @property
-    def property_ref_name(self) -> Optional[str]:
-        """Returns property reference name"""
-        return None
 
     @property
     def resource_url(self) -> Optional[str]:

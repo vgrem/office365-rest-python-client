@@ -35,8 +35,8 @@ class ServiceDefinition:
     #: Whether the CSDL's ``<Key>`` may be *written* into the model, or only reported.
     #: SharePoint's is not authoritative: it states a key on 613 of 871 entity types and
     #: states ones no client can address an entity by (``Alert`` by ``AlertFrequency``,
-    #: ``ApiMetadata`` by a mangled ``Id4a81de...``). The 17 hand-written
-    #: ``property_ref_name`` overrides there are the reviewed answer.
+    #: ``ApiMetadata`` by a mangled ``Id4a81de...``). The eighteen hand-written
+    #: ``@key(...)`` declarations there are the reviewed answer.
     keys_authoritative: bool = True
 
 

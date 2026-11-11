@@ -1,10 +1,11 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 
 
+@key("FieldId")
 class RelatedField(Entity):
     """Represents a Lookup Field that points to a given list on a Web site."""
 
@@ -42,7 +43,3 @@ class RelatedField(Entity):
             "LookupList",
             List(self.context, ResourcePath("LookupList", self.resource_path)),
         )
-
-    @property
-    def property_ref_name(self) -> str:
-        return "FieldId"

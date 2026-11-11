@@ -8,9 +8,10 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.json import Json
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 
 
+@key("name")
 class WorkbookNamedItem(Entity):
     """Represents a defined name for a range of cells or value. Names can be primitive named objects
     (as seen in the type below), range object, reference to a range. This object can be used to obtain range
@@ -54,10 +55,6 @@ class WorkbookNamedItem(Entity):
             "worksheet",
             WorkbookWorksheet(self.context, ResourcePath("worksheet", self.resource_path)),
         )
-
-    @property
-    def property_ref_name(self) -> str:
-        return "name"
 
     @odata(name="type")
     @property

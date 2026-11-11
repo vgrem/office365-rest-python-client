@@ -8,7 +8,7 @@ from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
@@ -25,6 +25,7 @@ from office365.sharepoint.tenant.administration.spofileversionfiletypepolicysett
 from office365.sharepoint.translation.resource_entry import SPResourceEntry
 
 
+@key("SiteId")
 class SiteProperties(Entity):
     """Contains a property bag of information about a site."""
 
@@ -217,10 +218,6 @@ class SiteProperties(Entity):
     @property
     def entity_type_name(self) -> str:
         return "Microsoft.Online.SharePoint.TenantAdministration.SiteProperties"
-
-    @property
-    def property_ref_name(self) -> str:
-        return "SiteId"
 
     @odata(name="AllowFileArchive")
     @property

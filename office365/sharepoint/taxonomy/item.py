@@ -3,8 +3,10 @@ from __future__ import annotations
 from office365.runtime.client_object import ClientObject
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
+from office365.runtime.types.odata_property import key
 
 
+@key("id")
 class TaxonomyItem(ClientObject):
     """The TaxonomyItem class is a base class that represents an item in the TermStore (section 3.1.5.23).
     A TaxonomyItem has a name and a unique identifier. It also contains date and time of when the item is created and
@@ -26,13 +28,9 @@ class TaxonomyItem(ClientObject):
         """Gets the name of the current TaxonomyItem object"""
         return self.properties.get("name", None)
 
-    @property
-    def property_ref_name(self) -> str:
-        return "id"
-
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        if name == self.property_ref_name:
+        if name == self._schema.key:
             if self._resource_path is None:
                 if self.parent_collection is None:
                     self._resource_path = ResourcePath(value)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 from typing_extensions import Self
 
@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 
 class Entity(ClientObject):
     """Base entity for Microsoft Graph objects with common CRUD operations."""
+
+    #: ``microsoft.graph.entity`` is keyed by ``id``, which is what a type that declares
+    #: nothing is addressed by; a type the metadata keys otherwise states it with
+    #: ``@key(...)``, and ``@key()`` clears the inherited name.
+    _key: ClassVar[str] = "id"
 
     def update(self) -> Self:
         """Updates the entity in Microsoft Graph.
@@ -149,19 +154,6 @@ class Entity(ClientObject):
         """
         return self.properties.get("id", None)
 
-    @property
-    def property_ref_name(self) -> str:
-        """Gets the name of the key property used for entity reference.
-
-        The answer is the type's own ``@key(...)`` when it declares one, and ``id``
-        otherwise -- which is what ``microsoft.graph.entity`` declares, so a type that
-        states nothing here is stating nothing because there is nothing to say.
-
-        Returns:
-            str: The property name used as entity key (default: "id")
-        """
-        return type(self)._schema.key[0] if type(self)._schema.key else "id"
-
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """Sets a property value and updates the resource path if needed.
 
@@ -174,7 +166,7 @@ class Entity(ClientObject):
             Self: The entity instance for method chaining
         """
         super().set_property(name, value, persist_changes)
-        if name == self.property_ref_name:
+        if name == self._schema.key:
             if self._resource_path is None:
                 if self.parent_collection is None:
                     self._resource_path = ResourcePath(value)

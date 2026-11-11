@@ -392,28 +392,29 @@ class CompositeKeyNotSupported(ValueError):
 def key(*names: str) -> Callable[[_Cls], _Cls]:
     """Declare which property spells a *type's* identity.
 
-    ``property_ref_name`` answers the question: it is what re-anchors an entity's path
-    when the value is set, and what widens the ``$select`` of a read. This decorator is
-    where the answer comes from, when the metadata declares one and the family default
-    is wrong::
+    ``TypeSchema.key`` is the answer: it is what re-anchors an entity's path when the
+    value is set, and what widens the ``$select`` of a read. This decorator is where the
+    answer comes from, when the metadata declares one and the family default is wrong::
 
         @key("tenantId")
         class CrossTenantAccessPolicyConfigurationPartner(Entity): ...
 
     No declaration means the family default -- ``id`` for Graph, ``Id`` for SharePoint --
     which is what a derived type inherits, and why the snapshot leaves ``<Key>`` off most
-    types. A class that writes ``property_ref_name`` itself is not decorated: the override
-    is the same fact stated in place, and two spellings of one fact is the thing this
-    decorator exists to remove.
+    types. Declaring no names says the type is addressed by no segment at all, which is
+    how a folder -- reached by its path, never by its id -- keeps an inherited ``Id`` from
+    re-anchoring it::
+
+        @key()
+        class Folder(Entity): ...
     """
 
     def decorate(cls: _Cls) -> _Cls:
-        if len(names) != 1:
+        if len(names) > 1:
             raise CompositeKeyNotSupported(
-                f"{cls.__name__} is keyed by {'/'.join(names) or 'nothing'}; "
-                "an entity is addressed by exactly one property"
+                f"{cls.__name__} is keyed by {'/'.join(names)}; an entity is addressed by exactly one property"
             )
-        cls._key = names
+        cls._key = names[0] if names else ""
         # The class is already read: ``__init_subclass__`` runs before this decorator.
         from office365.runtime.schema import TypeSchema
 

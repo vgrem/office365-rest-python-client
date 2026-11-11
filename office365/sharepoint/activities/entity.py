@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.activities.action_facet import ActionFacet
 from office365.sharepoint.activities.facets.activity_time import ActivityTimeFacet
 from office365.sharepoint.activities.facets.coalesced import CoalescedFacet
@@ -12,6 +12,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.sharing.principal import Principal
 
 
+@key("id")
 class SPActivityEntity(Entity):
     """"""
 
@@ -46,16 +47,12 @@ class SPActivityEntity(Entity):
         return self.properties.get("times", ActivityTimeFacet())
 
     @property
-    def property_ref_name(self):
-        return "id"
-
-    @property
     def entity_type_name(self):
         return "Microsoft.SharePoint.Activities.SPActivityEntity"
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)
-        if name == self.property_ref_name:
+        if name == self._schema.key:
             self._resource_path.set_segment(value)
         return self
 

@@ -8,7 +8,7 @@ from typing_extensions import Self
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.listitems.versions.change import SPListItemVersionChange
 from office365.sharepoint.permissions import SiteLevel, site_access
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     )
 
 
+@key("VersionId")
 class ListItemVersion(Entity):
     """Represents a version of a list item."""
 
@@ -92,10 +93,6 @@ class ListItemVersion(Entity):
             "FileVersion",
             FileVersion(self.context, ResourcePath("FileVersion", self.resource_path)),
         )
-
-    @property
-    def property_ref_name(self):
-        return "VersionId"
 
     @property
     def parent_collection(self) -> ListItemVersionCollection:

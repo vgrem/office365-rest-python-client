@@ -5,7 +5,7 @@ from typing_extensions import Self
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.internal.queries.upload_file import create_upload_file_query
 from office365.sharepoint.permissions import SiteLevel, site_access
@@ -15,6 +15,7 @@ from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 #: The upload budget of a list item attachment -- a different ceiling from a document library's
 #: 250 GB, so it is declared on the attachment and not on ``File``.
+@key("FileName")
 @limit(Limits.LIST_ITEM_ATTACHMENT)
 class Attachment(Entity):
     """Represents an attachment file in a SharePoint List Item."""
@@ -114,10 +115,6 @@ class Attachment(Entity):
     def server_relative_path(self) -> SPResPath:
         """The server-relative-path of the attachment."""
         return self.properties.get("ServerRelativePath", SPResPath())
-
-    @property
-    def property_ref_name(self):
-        return "FileName"
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

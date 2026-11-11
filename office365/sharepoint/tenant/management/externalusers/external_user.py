@@ -3,10 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 
 
+@key("AcceptedAs")
 class ExternalUser(Entity):
     """Represents an external (guest) user in the SharePoint tenant."""
 
@@ -63,10 +64,6 @@ class ExternalUser(Entity):
     def when_created(self) -> Optional[datetime]:
         """The date and time when the external user was created."""
         return self.properties.get("WhenCreated", None)
-
-    @property
-    def property_ref_name(self) -> str:
-        return "AcceptedAs"
 
     @property
     def entity_type_name(self) -> str:

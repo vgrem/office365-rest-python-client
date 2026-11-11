@@ -3,10 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 
 
+@key("ExpectedContentRange")
 class UploadStatus(Entity):
     """The status of a chunk session upload."""
 
@@ -29,10 +30,6 @@ class UploadStatus(Entity):
     def upload_id(self) -> Optional[str]:
         """Unique Id of the chunk session upload."""
         return self.properties.get("UploadId", None)
-
-    @property
-    def property_ref_name(self):
-        return "ExpectedContentRange"
 
     @property
     def entity_type_name(self):

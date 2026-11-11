@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, ClassVar, List, Optional, Union, cast
 
 from typing_extensions import Self
 
@@ -22,6 +22,13 @@ if TYPE_CHECKING:
 
 class Entity(ClientObject):
     """SharePoint specific entity"""
+
+    #: A SharePoint entity is addressed by ``Id`` unless the type declares its own
+    #: ``@key(...)``: the v3 metadata names a key on 613 of 871 entity types and the ones
+    #: it names are not always an address (``Alert`` is keyed by ``AlertFrequency``), so
+    #: the declaration is still written by hand after review -- the runtime only has to
+    #: honour it.
+    _key: ClassVar[str] = "Id"
 
     def execute_query_with_incremental_retry(self, max_retry: int = 5, max_delay=None, jitter: bool = True) -> Self:
         """
@@ -247,17 +254,6 @@ class Entity(ClientObject):
             self._entity_type_name = ".".join(["SP", type(self).__name__])
         return self._entity_type_name
 
-    @property
-    def property_ref_name(self) -> str:
-        """The property a SharePoint entity is addressed by.
-
-        ``Id`` unless the type declares its own ``@key(...)``: the v3 metadata names a
-        key on 613 of 871 entity types and the ones it names are not always an address
-        (``Alert`` is keyed by ``AlertFrequency``), so the declaration is still written
-        by hand after review -- the runtime only has to honour it.
-        """
-        return type(self)._schema.key[0] if type(self)._schema.key else "Id"
-
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
         """
         Set a property value
@@ -271,7 +267,7 @@ class Entity(ClientObject):
             self: Supports method chaining
         """
         super().set_property(name, value, persist_changes)
-        if name == self.property_ref_name:
+        if name == self._schema.key:
             if self.resource_path is None:
                 if self.parent_collection:
                     self._resource_path = EntityPath(value, self.parent_collection.resource_path)

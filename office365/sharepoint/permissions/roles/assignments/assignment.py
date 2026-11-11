@@ -1,7 +1,7 @@
 from typing import Optional
 
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions.roles.definitions.collection import (
     RoleDefinitionCollection,
@@ -9,6 +9,7 @@ from office365.sharepoint.permissions.roles.definitions.collection import (
 from office365.sharepoint.principal.principal import Principal
 
 
+@key("PrincipalId")
 class RoleAssignment(Entity):
     """An association between a principal or a site group and a role definition."""
 
@@ -35,7 +36,3 @@ class RoleAssignment(Entity):
             "RoleDefinitionBindings",
             RoleDefinitionCollection(self.context, ResourcePath("RoleDefinitionBindings", self.resource_path)),
         )
-
-    @property
-    def property_ref_name(self) -> str:
-        return "PrincipalId"

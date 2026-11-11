@@ -4,13 +4,14 @@ from typing import Optional
 from uuid import UUID
 
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.tenant.administration.hubsites.permission import (
     HubSitePermission,
 )
 
 
+@key("SiteId")
 class HubSiteProperties(Entity):
     @odata(name="Permissions")
     @property
@@ -22,10 +23,6 @@ class HubSiteProperties(Entity):
     def site_id(self) -> Optional[str]:
         """Returns the Site identifier"""
         return self.properties.get("SiteId", None)
-
-    @property
-    def property_ref_name(self):
-        return "SiteId"
 
     @property
     def entity_type_name(self):  # type: ignore[override]

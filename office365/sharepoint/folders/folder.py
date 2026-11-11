@@ -14,7 +14,7 @@ from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import key, odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
@@ -48,6 +48,7 @@ _DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload thresho
 
 
 #: Renaming a folder within its library is one of the few operations with its own item ceiling.
+@key()
 @limit(Limits.RENAME_FOLDER)
 class Folder(Entity):
     """Represents a folder in a SharePoint Website."""
@@ -921,10 +922,6 @@ class Folder(Entity):
     def server_relative_path(self) -> Optional[SPResPath]:
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
-
-    @property
-    def property_ref_name(self) -> Optional[str]:  # type: ignore[override]
-        return None
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

@@ -128,7 +128,7 @@ def _class_facts(model: type) -> Dict[str, Any]:
     return {
         "class_limits": collect_class_limits(model),
         "member_limits": MappingProxyType(collect_limit_meta(model)),
-        "key": tuple(getattr(model, "_key", ())),
+        "key": getattr(model, "_key", ""),
         "versions": frozenset(getattr(model, "_versions", ())),
     }
 
@@ -157,9 +157,9 @@ class TypeSchema:
     #: Member name -> the ``@limit`` declarations carried by that method or property.
     member_limits: Mapping[str, Tuple[LimitDecl, ...]] = field(default_factory=_empty_map)
     #: The property that spells the type's identity, from ``@key(...)`` on the class --
-    #: inherited, so a derived type is addressed the way its base is. Empty means the
-    #: family's reader answers its own default (``id``, ``Id``).
-    key: Tuple[str, ...] = ()
+    #: inherited, so a derived type is addressed the way its base is. Empty means no
+    #: segment addresses it: the family's default is inherited, and ``@key()`` clears it.
+    key: str = ""
     #: The service roots whose metadata declares the type, from ``@version(...)`` on the
     #: class. Empty means every root: a type that states nothing is served everywhere it
     #: is reachable from.
