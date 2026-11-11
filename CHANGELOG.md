@@ -41,6 +41,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `Capabilities.verbs` reads them back beside the schema, the permissions, the limits and the
   query rules. The stamp is opt-in for a reason: a method that declares nothing is a
   shaping helper or a path builder, which is what most of the 4 000 public methods are.
+- **Logging in is a declared command too.** The credential entry points on `GraphClient`
+  (`with_client_secret`, `with_certificate`, `with_device_flow`, `with_username_and_password`,
+  `with_token_interactive`) and on `ClientContext` (those, plus `with_client_credentials` for
+  SharePoint App-Only, `with_interactive` and `with_user_credentials` for on-prem NTLM) carry
+  `@verb(role="action", effect="local", name="login")`. `local` is the fourth effect: it acts
+  on the session and touches nothing on the tenant, so `VerbMeta.needs_session` is what tells a
+  caller this is the one command it may run before it has a token. Six ways to log in stay one
+  command word, `login`, distinguished by `mode` — read off the method name
+  (`with_client_secret` → `client-secret`) unless the two clients disagree, in which case it is
+  stated. `with_access_token`/`with_cookies` take a callback and are declared `expose=False`:
+  a callable is not a command-line argument.
 - **An export can put one row per child.** `to_csv(..., rows_from="assignedLicenses")` (and
   `export_to`/`to_records`/`to_ndjson`) emits one record per child of a collection-valued
   property, with the child's own fields as the columns. It exists for the case no projection

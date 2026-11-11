@@ -76,6 +76,7 @@ from office365.runtime.odata.v4.json_format import V4JsonFormat
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.transport.base import NoTimeoutType
 from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTIONS, DEFAULT_POOL_MAXSIZE
+from office365.runtime.verbs import verb
 from office365.search.entity import SearchEntity
 from office365.search.external.connection import ExternalConnection
 from office365.search.external.external import External
@@ -144,6 +145,7 @@ class GraphClient(ClientRuntimeContext):
         self._directory: Optional[Directory] = None
         self._authority = authority
 
+    @verb(role="action", effect="local", name="login")
     def with_certificate(
         self,
         client_id: str,
@@ -181,6 +183,7 @@ class GraphClient(ClientRuntimeContext):
         )
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_client_secret(self, client_id: str, client_secret: str) -> Self:
         """
         Initialize with client secret authentication
@@ -195,6 +198,7 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_client_secret(client_id, client_secret)
         return self
 
+    @verb(role="action", effect="local", name="login", mode="interactive")
     def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> Self:
         """
         Initialize with interactive authentication flow
@@ -206,6 +210,7 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_token_interactive(client_id, username)
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_username_and_password(self, client_id: str, username: str, password: str) -> Self:
         """
         Initialize with username/password authentication
@@ -218,6 +223,7 @@ class GraphClient(ClientRuntimeContext):
         self.pending_request().with_username_and_password(client_id, username, password)
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_device_flow(self, client_id: str) -> Self:
         """
         Initialize with device code flow authentication.

@@ -39,8 +39,10 @@ STAMP = "__verb__"
 ROLES = ("list", "get", "create", "update", "delete", "action")
 
 #: The effect, in the vocabulary a safety gate uses: may send (``read``), changes
-#: something (``write``), or is irreversible (``destroy``, and therefore confirmed).
-EFFECTS = ("read", "write", "destroy")
+#: something (``write``), is irreversible (``destroy``, and therefore confirmed), or acts
+#: on the session alone (``local``, which is the one effect a caller may reach with no
+#: session at all - logging in is the only member of that set today).
+EFFECTS = ("read", "write", "destroy", "local")
 
 _EFFECT_BY_ROLE = {
     "list": "read",
@@ -59,6 +61,10 @@ class VerbMeta:
     which is what almost every method wants. It is stated on the few whose Python name
     is not a command word - ``delete_object`` answers ``delete``.
 
+    :attr:`mode` distinguishes sibling declarations that share one command word, which is
+    how six ways to log in stay one ``login``: filled from the method name (``with_``
+    dropped) unless stated, since a method is named after the way it authenticates.
+
     :attr:`paged` and :attr:`lro` are tri-state on purpose: ``None`` means "infer it
     from what the method returns", ``True``/``False`` overrides the inference. That is
     the same rule as everywhere else here - declare only where the code does not already
@@ -68,6 +74,7 @@ class VerbMeta:
     role: str
     name: str = ""
     effect: str = ""
+    mode: str = ""
     expose: bool = True
     paged: bool | None = None
     lro: bool | None = None
@@ -82,6 +89,16 @@ class VerbMeta:
                 "because the service, not the name, decides what it does"
             )
         object.__setattr__(self, "effect", effect)
+
+    @property
+    def needs_session(self) -> bool:
+        """Whether the command needs a session before it can run.
+
+        Derived from the effect, so there is one place to state it: everything but
+        ``local`` touches the tenant and therefore a token, and ``local`` acts on the
+        session itself - which is why a caller can be told to ``login`` first.
+        """
+        return self.effect != "local"
 
     @property
     def confirm(self) -> bool:
@@ -137,7 +154,11 @@ def declared_verb(func: Any) -> VerbMeta:
             f"{_name(func)} names no verb: decorate it with @verb(role=...) to make it a command, "
             "or leave it undeclared if it is not one"
         )
-    return replace(declaration, name=declaration.name or _command_word(func))
+    word = _command_word(func)
+    # Only a ``with_`` method is named after the way it authenticates, so only it
+    # carries a mode; the rest of the tree leaves the field alone.
+    mode = declaration.mode or (word[5:] if word.startswith("with-") else "")
+    return replace(declaration, name=declaration.name or word, mode=mode)
 
 
 def verbs_of(target: Any) -> Mapping[str, VerbMeta]:

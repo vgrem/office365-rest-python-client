@@ -60,6 +60,10 @@ def test_the_effect_is_inferred_and_only_an_action_has_to_state_it() -> None:
     assert VerbMeta(role="action", effect="write").effect in EFFECTS
     with pytest.raises(ValueError, match="unknown verb role"):
         VerbMeta(role="upsert")
+    # `local` acts on the session and nothing else, which is the one effect a caller can
+    # reach with no session yet - so it is the only one that may skip authentication.
+    assert not VerbMeta(role="action", effect="local").needs_session
+    assert VerbMeta(role="get").needs_session
 
 
 def test_a_declared_name_wins_and_an_undeclared_one_is_the_method_name() -> None:
@@ -72,3 +76,12 @@ def test_a_declared_name_wins_and_an_undeclared_one_is_the_method_name() -> None
     def get_all(self: object) -> None: ...
 
     assert declared_verb(get_all).name == "get-all"
+
+    @verb(role="action", effect="local", name="login")
+    def with_client_secret(self: object) -> None: ...
+
+    # One command word, six ways to reach it: the method is named after the way it
+    # authenticates, so the mode is read off the name unless it is stated.
+    assert declared_verb(with_client_secret).name == "login"
+    assert declared_verb(with_client_secret).mode == "client-secret"
+    assert declared_verb(get_all).mode == ""

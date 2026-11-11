@@ -24,6 +24,7 @@ from office365.runtime.queries.deferred import DeferredOperationQuery
 from office365.runtime.transport.base import NoTimeoutType
 from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTIONS, DEFAULT_POOL_MAXSIZE
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.verbs import verb
 from office365.sharepoint.exceptions import SecurityValidationException
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
@@ -103,6 +104,7 @@ class ClientContext(ClientRuntimeContext):
         Web.get_web_url_from_page_url(ctx, full_url).after_execute(_init_context)
         return ctx
 
+    @verb(role="action", effect="local", name="login")
     def with_client_secret(
         self,
         tenant: str,
@@ -121,6 +123,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_client_secret(tenant, client_id, client_secret, scopes)
         return self
 
+    @verb(role="action", effect="local", name="login", mode="certificate")
     def with_client_certificate(
         self,
         tenant: str,
@@ -164,6 +167,7 @@ class ClientContext(ClientRuntimeContext):
         )
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """Initializes a client to acquire a token interactively i.e. via a local browser.
 
@@ -178,6 +182,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_interactive(tenant, client_id, scopes)
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_device_flow(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
         """Initializes a client to acquire a token via device flow auth.
 
@@ -189,6 +194,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_device_flow(tenant, client_id, scopes)
         return self
 
+    @verb(role="action", effect="local", name="login", expose=False)
     def with_access_token(self, token_func: Callable[[], TokenResponse | Dict[str, Any] | None]) -> Self:
         """Initializes a client to acquire a token from a callback
 
@@ -250,6 +256,7 @@ class ClientContext(ClientRuntimeContext):
         )
         return self
 
+    @verb(role="action", effect="local", name="login", mode="ntlm")
     def with_user_credentials(self, username: str, password: str) -> Self:
         """Initializes a client to acquire a token via user credentials (NTLM).
 
@@ -264,6 +271,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(UserCredential(username, password))
         return self
 
+    @verb(role="action", effect="local", name="login")
     def with_username_and_password(self, tenant: str, client_id: str, username: str, password: str) -> Self:
         """Initializes a client to acquire a token via Username and password authentication flow.
 
@@ -278,6 +286,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
+    @verb(role="action", effect="local", name="login", mode="app-only")
     def with_client_credentials(self, client_id: str, client_secret: str) -> Self:
         """Initializes a client to acquire a token via client credentials (SharePoint App-Only)
 
@@ -291,6 +300,7 @@ class ClientContext(ClientRuntimeContext):
         self.authentication_context.with_credentials(ClientCredential(client_id, client_secret))
         return self
 
+    @verb(role="action", effect="local", name="login", expose=False)
     def with_cookies(self, cookie_source, ttl_seconds=None):
         """Initializes authentication using browser-session cookies.
 
