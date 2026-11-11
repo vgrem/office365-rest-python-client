@@ -533,13 +533,14 @@ class TypeBuilder(ast.NodeTransformer):
             n.target.id if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name) else None
             for n in class_node.body
         }
+        stated = {declared_wire_name(n) for n in class_node.body if isinstance(n, ast.AnnAssign)}
 
         insert_pos = self._last_stmt_index(class_node.body, (ast.AnnAssign,))
         if insert_pos == 0:
             insert_pos = len(class_node.body) - 1
 
         for prop in self._properties:
-            if self._safe_member_name(prop.schema.Name) in existing_anns:
+            if self._safe_member_name(prop.schema.Name) in existing_anns or prop.schema.Name in stated:
                 continue
             if prop.docstring:
                 doc = prop.docstring.replace("\\n", "\n")

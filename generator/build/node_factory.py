@@ -45,21 +45,27 @@ def existing_members(class_node: ast.ClassDef) -> set[str]:
     return names
 
 
-def declared_wire_name(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
-    """The ``@odata(name=...)`` a getter declares, or ``""`` when it declares none.
+def declared_wire_name(node: ast.FunctionDef | ast.AsyncFunctionDef | ast.AnnAssign) -> str:
+    """The ``@odata(name=...)`` a member declares, or ``""`` when it declares none.
 
     A class may read a column under a name of its own (``CanvasContent1`` is read as
     ``canvas_content``), so matching a schema property by Python name alone declares
-    the same column twice.
+    the same column twice. A getter states the name in a decorator; a value field states
+    it once, in ``field(metadata=odata(name=...))``.
     """
-    for decorator in node.decorator_list:
-        if not (isinstance(decorator, ast.Call) and _is_odata(decorator.func)):
+    if isinstance(node, ast.AnnAssign):
+        value = node.value
+        calls = [kw.value for kw in value.keywords if kw.arg == "metadata"] if isinstance(value, ast.Call) else []
+    else:
+        calls = node.decorator_list
+    for call in calls:
+        if not (isinstance(call, ast.Call) and _is_odata(call.func)):
             continue
-        for keyword in decorator.keywords:
+        for keyword in call.keywords:
             if keyword.arg == "name" and isinstance(keyword.value, ast.Constant):
                 return str(keyword.value.value)
-        if decorator.args and isinstance(decorator.args[0], ast.Constant):
-            return str(decorator.args[0].value)
+        if call.args and isinstance(call.args[0], ast.Constant):
+            return str(call.args[0].value)
     return ""
 
 
