@@ -28,16 +28,6 @@ PERMISSIONS = "permissions"
 MODERATION = "moderation"
 FACETS = frozenset({AUTHORSHIP, MODERATION, PERMISSIONS})
 
-#: What a member identifies the object by, in the order a reader should try them: the
-#: address as it stands, then the path inside its own site collection. Ordered rather
-#: than a set, because the two spellings of one address are not interchangeable -- a
-#: caller in another site collection can use the first and not the second. A caller that
-#: holds an object whose own name it cannot spell asks the schema for these names instead
-#: of keeping a second list: a projection drops a property, not the fact it declares.
-ABSOLUTE_URL = "absolute-url"
-SERVER_RELATIVE_URL = "server-relative-url"
-IDENTITIES = (ABSOLUTE_URL, SERVER_RELATIVE_URL)
-
 
 def request_version(context: Any) -> Optional[str]:
     """The API version a client addresses, when the client names one at all.
@@ -208,17 +198,18 @@ class ODataPropertyMeta:
     #: name. A facet is not a projection: it holds columns and navigations alike, and a
     #: name plays one role (``TypeSchema.columns_of_facet``).
     facet: Optional[str] = None
-    #: What the member identifies the object by, where it names the object rather than
-    #: describing it: ``Url`` is a web's address, ``ServerRelativeUrl`` the same address
-    #: inside its site collection. One member names one kind of thing, so this is one
-    #: role rather than a set; the roles are ranked in :data:`IDENTITIES`.
-    identity: Optional[str] = None
+    #: Whether the member *names* the object rather than describing it: ``Url`` is a
+    #: web's address, ``ServerRelativeUrl`` the same address inside its site collection,
+    #: ``LoginName`` the name a site addresses a principal by. A caller that has to name
+    #: an object it did not create reads them back with ``TypeSchema.identities``, in the
+    #: order the class declares them -- a base's names before a subclass's, so a web's own
+    #: address comes before the one scoped to its site collection, and a login name before
+    #: the user principal name the directory knows it by.
+    identity: bool = False
 
     def __post_init__(self) -> None:
         if self.facet is not None and self.facet not in FACETS:
             raise ValueError(f"unknown facet {self.facet!r}; known: {', '.join(sorted(FACETS))}")
-        if self.identity is not None and self.identity not in IDENTITIES:
-            raise ValueError(f"unknown identity {self.identity!r}; known: {', '.join(IDENTITIES)}")
 
 
 class odata(dict):
@@ -265,15 +256,21 @@ class odata(dict):
         @odata(name="AuthorId", system=True, readonly=True, facet=AUTHORSHIP)
         def author_id(self): ...
 
-    ``identity=`` states the other kind of role: not what a member *means* but what it
+    ``identity=True`` states the other kind of role: not what a member *means* but what it
     *names*. A web says which site it is twice -- ``Url`` and ``ServerRelativeUrl``, the
     same address whole and inside its site collection -- and a caller that has to
-    identify a web it did not create has no other way to know the two spellings. Declared
-    once, both are read back with ``TypeSchema.of(web).identities``, in the order a reader
-    should try them -- which is what ``Web.absolute_url`` does::
+    identify a web it did not create has no other way to know the two spellings. The flag
+    says the name identifies the object; nothing more is stated, because the wire name is
+    already stated once and the order a reader should try them in is the order the class
+    declares them. Both are read back with ``TypeSchema.of(web).identities``, which is what
+    ``Web.absolute_url`` does::
 
-        @odata(name="Url", identity=ABSOLUTE_URL)
+        @odata(name="Url", readonly=True, identity=True)
         def url(self): ...
+
+    A principal takes the same flag for the same reason -- the login name a site addresses
+    it by, then the user principal name the directory knows it by -- so one reader answers
+    for a site user and a directory user alike.
 
     The keywords left describe one member's place in a *version* of the service, and what
     the service does with the value it sends. ``beta=`` records what the preview root does

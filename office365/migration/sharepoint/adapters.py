@@ -667,7 +667,7 @@ def _read_role_assignments(
     result: list[PermissionEntry] = []
     for assignment in assignments:
         member = assignment.member
-        name = member.login_name or member.user_principal_name
+        name = next((v for n in type(member)._schema.identities if (v := member.get_property(n))), None)
         if not name:
             continue
         roles: list[str] = []

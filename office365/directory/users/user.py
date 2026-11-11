@@ -760,7 +760,7 @@ class User(DirectoryObject):
         """The office location in the user's place of business."""
         return self.properties.get("officeLocation", None)
 
-    @odata(name="userPrincipalName")
+    @odata(name="userPrincipalName", identity=True)
     @property
     def user_principal_name(self) -> Optional[str]:
         """

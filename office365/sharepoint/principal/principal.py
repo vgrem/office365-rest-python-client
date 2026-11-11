@@ -32,7 +32,7 @@ class Principal(Entity):
         """Sets a value that specifies the name of the principal."""
         self.set_property("Title", value)
 
-    @odata(name="LoginName")
+    @odata(name="LoginName", identity=True)
     @property
     def login_name(self) -> Optional[str]:
         """Gets the login name of the principal."""
@@ -61,10 +61,6 @@ class Principal(Entity):
     @property
     def principal_type_name(self) -> str:
         return self.principal_type.name  # type: ignore[return-value]
-
-    @property
-    def property_ref_name(self):
-        return "Id"
 
     def set_property(self, name, value, persist_changes=True):
         super().set_property(name, value, persist_changes)

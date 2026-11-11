@@ -188,7 +188,7 @@ def capture_site_groups(web) -> list[SiteGroup]:
         members: list[str] = []
         if not is_default:  # associated-group membership is managed by the M365 group
             for user in group.users.get().execute_query():
-                login = user.login_name or user.user_principal_name
+                login = next((v for n in type(user)._schema.identities if (v := user.get_property(n))), None)
                 if login:
                     members.append(login)
         result.append(
@@ -206,7 +206,7 @@ def capture_site_groups(web) -> list[SiteGroup]:
 def _member_logins(group) -> set[str]:
     logins: set[str] = set()
     for user in group.users.get().execute_query():
-        login = user.login_name or user.user_principal_name
+        login = next((v for n in type(user)._schema.identities if (v := user.get_property(n))), None)
         if login:
             logins.add(login)
     return logins

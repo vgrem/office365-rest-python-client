@@ -127,7 +127,7 @@ class User(Principal):
         """
         return self.properties.get("IsShareByEmailGuestUser", None)
 
-    @odata(name="UserPrincipalName", readonly=True)
+    @odata(name="UserPrincipalName", readonly=True, identity=True)
     @property
     def user_principal_name(self) -> Optional[str]:
         """User principal name of the user that initiated the sign-in."""
