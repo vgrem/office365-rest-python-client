@@ -180,3 +180,7 @@ def __getattr__(name: str):
     import importlib
 
     return getattr(importlib.import_module(module_name), name)
+
+
+#: The migration engine: a job the library runs, not a product it calls.
+__product__ = ""

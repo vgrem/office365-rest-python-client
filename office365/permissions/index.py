@@ -29,6 +29,8 @@ from pathlib import Path
 from types import CodeType, ModuleType
 from typing import TYPE_CHECKING, Any, Callable, Iterator, Optional, Sequence, cast
 
+from office365.runtime.schema import service_of
+
 if TYPE_CHECKING:
     from office365.permissions.declaration import PermissionRequirement
 
@@ -38,11 +40,6 @@ if TYPE_CHECKING:
 #: cannot be reported as declared. The async twins count too: a hole in the detector is a hole
 #: exactly where an awaitable path would stand.
 _SUBMIT = frozenset({"add_query", "execute_query", "execute_batch", "execute_query_async", "execute_batch_async"})
-
-#: Packages that are not asked to name a permission: the transport orchestrates requests that
-#: model methods already declare, and a root-level base class cannot know the type it creates
-#: (``Entity.get`` serves every entity there is).
-UNTRACKED = frozenset({"runtime", "."})
 
 
 @dataclass(frozen=True)
@@ -100,12 +97,15 @@ class Index:
         """Undeclared public operations, counted per service package, biggest first.
 
         Private helpers are left out: they are reached through the method that owns the
-        request, and the ledger asks who owns the request, not who typed it.
+        request, and the ledger asks who owns the request, not who typed it. So is a type
+        published under no product: a root-level base class cannot know the type it
+        creates (``Entity.get`` serves every entity there is), and the transport
+        orchestrates requests that model methods already declare.
         """
         counted: dict[str, int] = {}
         for operation in self.undeclared():
-            package = _service(operation.module)
-            if package in UNTRACKED or operation.is_private:
+            package = service_of(operation.module)
+            if not package or operation.is_private:
                 continue
             counted[package] = counted.get(package, 0) + 1
         return dict(sorted(counted.items(), key=lambda item: (-item[1], item[0])))
@@ -206,9 +206,3 @@ def _codes(code: CodeType) -> Sequence[CodeType]:
     """``code`` plus every nested one, so a query built inside a closure still counts."""
     nested = [value for value in code.co_consts if isinstance(value, CodeType)]
     return [code, *(inner for child in nested for inner in _codes(child))]
-
-
-def _service(module: str) -> str:
-    """The service package a module belongs to: ``outlook``, ``sharepoint``, or ``.``."""
-    parts = module.split(".")
-    return parts[1] if parts[1:-1] else "."

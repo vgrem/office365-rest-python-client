@@ -31,6 +31,7 @@ import ast
 import importlib
 import inspect
 import re
+import sys
 import types
 from dataclasses import dataclass, field, fields, is_dataclass, replace
 from functools import cached_property
@@ -133,6 +134,24 @@ def _class_facts(model: type) -> Dict[str, Any]:
     }
 
 
+def service_of(module: str) -> str:
+    """The product a module is published under: ``outlook``, ``sharepoint``, and so on.
+
+    The one place that reads a product, so a type, a permission ledger and a command all
+    answer it the same way. A product is a package, named after itself -- which is why the
+    thousands of generated types declare nothing. A package that publishes no product says
+    so once, in its own ``__init__``: ``runtime`` is the machinery every product is built
+    on, and its types belong to none. A module at the top of the tree (``office365.entity``,
+    a base every product shares) belongs to none as well.
+    """
+    package, _, tail = module.partition(".")
+    product, _, rest = tail.partition(".")
+    if not rest:
+        return ""
+    declared = getattr(sys.modules.get(f"{package}.{product}"), "__product__", None)
+    return product if declared is None else declared
+
+
 @dataclass(frozen=True)
 class TypeSchema:
     """The declarations of one model class.
@@ -219,6 +238,11 @@ class TypeSchema:
         row asks here instead of taking a ``dtypes=`` map from the caller.
         """
         return _Dtypes(self)
+
+    @cached_property
+    def product(self) -> str:
+        """The product the type is published under, which is the word a command starts with."""
+        return "" if self.model is None else service_of(self.model.__module__)
 
     @cached_property
     def by_attr(self) -> Mapping[str, str]:

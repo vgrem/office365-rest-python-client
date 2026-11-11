@@ -10,3 +10,6 @@ the RFC numbers are stated where they are implemented rather than per writer.
 from office365.formats.text import MAX_LINE_OCTETS, escape_text, fold_line, quote_param
 
 __all__ = ["MAX_LINE_OCTETS", "escape_text", "fold_line", "quote_param"]
+
+#: Text and data formats the library reads and writes, not a service.
+__product__ = ""

@@ -61,3 +61,6 @@ __all__ = [
     "index",
     "require_permission",
 ]
+
+#: The permission catalog: it names what products require, it is not one.
+__product__ = ""
