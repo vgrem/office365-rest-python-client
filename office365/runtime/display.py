@@ -13,6 +13,7 @@ display options) without touching the classes themselves.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import date, datetime
 from enum import Enum
 from itertools import islice
@@ -111,6 +112,8 @@ def _record_fields(item: Any) -> dict[str, Any] | None:
 
     if isinstance(item, ClientValueCollection):
         return None
+    if isinstance(item, Mapping):
+        return {k: v for k, v in item.items() if not str(k).startswith("_") and not _is_unset(v)}
     if isinstance(item, ClientObject):
         return {k: v for k, v in item.properties.items() if not k.startswith("_") and not _is_unset(v)}
     if isinstance(item, ClientValue):
@@ -118,15 +121,23 @@ def _record_fields(item: Any) -> dict[str, Any] | None:
     return None
 
 
-def _columns_and_rows(items: Sequence[Any]) -> tuple[list[str] | None, list[dict[str, Any]] | None]:
-    """Build the column set (first-seen union) and per-item field maps."""
+def _columns_and_rows(
+    items: Sequence[Any], columns: Sequence[str] | None = None
+) -> tuple[list[str] | None, list[dict[str, Any]] | None]:
+    """Build the column set and per-item field maps.
+
+    Without ``columns`` the set is the first-seen union of the items' own fields, bounded by
+    :data:`MAX_COLUMNS`; with them the caller has already decided what a reader came for.
+    """
     records: list[dict[str, Any]] = []
     for item in items:
         fields = _record_fields(item)
         if fields is None:
             return None, None
         records.append(fields)
-    columns: list[str] = []
+    if columns is not None:
+        return list(columns), records
+    columns = []
     for record in records:
         for name in record:
             if name not in columns:
@@ -161,6 +172,7 @@ def describe_collection(
     max_items: int | None = MAX_ITEMS,
     max_column_width: int | None = MAX_COLUMN_WIDTH,
     more: bool = False,
+    columns: Sequence[str] | None = None,
 ) -> str:
     """Return a bounded, pandas-like preview of an already-loaded collection.
 
@@ -181,6 +193,10 @@ def describe_collection(
             true the count is marked with ``+`` and a hint to call
             ``get_all()`` is appended, so a preview never implies the
             collection is complete.
+        columns: The names to show, in that order, instead of the first-seen
+            union of the items' fields. A caller that knows which names answer
+            its question (a command line, printing three columns rather than a
+            hundred) says so here rather than filtering the records itself.
     """
     footer = f"{_INDENT}(more pages available — call get_all() to load them)" if more else ""
     total = len(items)
@@ -189,7 +205,7 @@ def describe_collection(
         return "\n".join(part for part in (empty, footer) if part)
     limit = total if max_items is None else max_items
     preview = list(islice(items, limit))
-    columns, records = _columns_and_rows(preview)
+    columns, records = _columns_and_rows(preview, columns)
     if columns is None or records is None or not columns:
         return "\n".join(part for part in (format_value(items, max_items=limit), footer) if part)
     lines = [

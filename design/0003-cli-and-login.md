@@ -155,6 +155,51 @@ one suggestion, which is exactly the ambiguity a user has.
 The cost, measured cold: 1.29 s for ``sharepoint web lists`` (the index dominates), 1.31 s adding
 a word, 0.23 s for ``outlook message attachments``.
 
+### 2.3 What a command prints — the default is the answer, not the object
+
+``o365 sharepoint web get`` first printed 118 fields of JSON, beginning ``AllowRssFeeds``,
+``AlternateCssUrl``, ``AppInstanceId``. That is the object, not the answer. Every mature tool
+prints a row: ``kubectl get pod`` prints ``NAME READY STATUS RESTARTS AGE``, ``kubectl describe``
+is the separate verb that prints everything, ``az`` prints JSON and is the cautionary example.
+
+The model does not state which columns those are — measured: ``identity=True`` appears **5**
+times in 12 069 ``@odata`` declarations, and no property declares a facet at all. ``identities``
+is therefore too thin to be a table (``Web`` gives ``Url ServerRelativeUrl``, ``Message`` and
+``DriveItem`` give nothing) and too narrow (a message table without its subject). What the type
+*does* state, everywhere, is the word it calls itself by.
+
+So the default view is three columns: the first three of ``NAMES`` the record has — ``title``,
+``name``, ``displayName``, ``subject``, ``userPrincipalName``, ``mail``, ``url``, the two dates,
+``id`` last. Measured against the declared columns:
+
+| type | 118 → | table |
+| --- | --- | --- |
+| ``Web`` | 118 | ``Title Url Id`` |
+| ``List`` | 98 | ``Title Id`` |
+| ``User`` | 81 | ``displayName userPrincipalName mail`` |
+| ``Message`` | 34 | ``subject receivedDateTime id`` |
+| ``DriveItem`` | 32 | ``id name lastModifiedDateTime`` |
+
+``-o json`` prints the payload, ``--columns a,b`` says what the table shows. The rendering is not
+new: ``office365/runtime/display.py`` already renders a bounded table for ``repr()``, so the two
+additions there are options, not code — ``describe_collection(columns=...)`` and a ``Mapping``
+counted as a record. The CLI passes ``max_items=None`` and ``max_column_width=None`` because a
+command line shows what it fetched (146 lists, measured) and does not cut a subject in half.
+
+Live, both halves of the same command:
+
+```
+$ o365 sharepoint web get
+Web(count=1)
+  Title         Url                               Id
+  SiteU74H3Z9O  https://mediadev8.sharepoint.com  cd5c86f3-261c-4d3a-8a91-34d6392cdfb9
+$ o365 sharepoint web lists list
+ListCollection(count=146)
+  Title                  Id
+  _catalogs/hubsite      4692bf0a-264a-4707-be11-3be708834095
+  appdata                0a1773f6-6b04-40d1-b3c8-1ca45cadc66e
+```
+
 ## 3. Decisions proposed
 
 **S1 — One store, keyed by audience.** A session belongs to an *audience* (``graph``,
@@ -173,7 +218,7 @@ correctly: ``login`` is a verb of ``ClientContext``, not of a noun inside it.
 **S3 — Grammar.**
 ```
 o365 login|logout|whoami|sessions [--audience graph|sharepoint|exchange] [flags]
-o365 <product> <noun> [navigation ...] [action] [flags]   # what routing.route() resolves
+o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]   # what routing.route() resolves
 ```
 The words between the noun and the action are getters the model states, so the command line
 names its own URL and the model only checks it (§2.2). An action ends the line; a word after one
@@ -185,7 +230,9 @@ the product. ``graph`` is an audience and no product at all, so its nouns are ad
 Argument flags are the method's own parameters, converted with the existing
 ``converters.parser_for(py_type)`` — 2 287 of 3 252 request-issuing methods are fully annotated
 (152 annotate nothing, 11 take ``**kwargs``), so ``--help`` can be exhaustive without a
-catch-all.
+catch-all. Two flags are the command line's own and never the method's: ``-o table|json`` and
+``--columns``, because what to print is not a parameter of the request (§2.3). Measured: no
+request-issuing method in the seven products publishes ``output`` or ``columns``.
 
 **S4 — The session file.** ``~/.o365/sessions.json``, mode ``0600``, ``O365_HOME`` overrides;
 one object per audience: ``mode``, ``client_id``, ``tenant``, ``scopes``, ``environment``,

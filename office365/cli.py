@@ -6,7 +6,7 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
                --tenant contoso.onmicrosoft.com --client-id <id> [--scopes User.Read Mail.Read]
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
-    o365 <product> <noun> <action> [flags]
+    o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]
 
 There is no flag table here. ``--tenant`` reaches ``GraphClient.__init__`` because the
 constructor declares ``tenant``; the same flag reaches ``ClientContext.with_device_flow``
@@ -29,6 +29,11 @@ the access token itself, plus MSAL's cache where the root has one to hold: ``Gra
 and ``ExchangeAdminClient`` do, and ``ClientContext`` authenticates through a different
 provider that does not, so a sharepoint session is kept until its token expires and is then
 renewed by logging in again.
+
+A read prints a table, not the payload: the words a type calls itself with and the dates it
+carries, which is the answer a command line was asked for. ``-o json`` prints everything the
+object loaded, and ``--columns`` says which names the table shows. ``Web`` is 118 fields loaded
+and three printed; the other 115 are not hidden, they are unasked for.
 """
 
 from __future__ import annotations
@@ -65,6 +70,13 @@ SUPPLIED = ("self", "token_cache", "token_callback")
 
 #: The words an audience prefixes: ``o365 sharepoint login`` is a session, not a noun.
 SESSION = ("login", "whoami", "logout")
+
+#: Why a read prints a table and not the payload. Two facts decide the columns: what the type
+#: calls itself, and when it changed. ``Web`` answers ``Title Url``, ``Message`` answers
+#: ``subject receivedDateTime``; the rest of the 118 loaded fields are one ``-o json`` away,
+#: because a command line's default is the answer, not the object.
+NAMES = "title name displayname subject userprincipalname mail url receiveddatetime lastmodifieddatetime".split()
+NAMES += ("createddatetime", "id")
 
 
 def main(argv: "list[str] | None" = None) -> int:
@@ -208,7 +220,10 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         else f"{found.method}() on {target.__name__}",
     )
     _flags(parser, method, set())
-    given = _accepted(parser.parse_args(argv), method)
+    parser.add_argument("-o", "--output", choices=("table", "json"), default="table", help="what to print")
+    parser.add_argument("--columns", default="", help="comma separated names the table shows")
+    args = parser.parse_args(argv)
+    given = _accepted(args, method)
 
     try:
         client = _client(_audience(found.entity))
@@ -219,20 +234,41 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
             f"{product} {spoken} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
         )
-    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given)
+    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given, args)
 
 
-def _send(client: Any, method: Any, given: "Mapping[str, Any]") -> int:
+def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.Namespace) -> int:
     """Call the method, run the one query it queued, and print what came back."""
     from office365.runtime.client_request_exception import ClientRequestException
+    from office365.runtime.display import describe_collection
 
     result = method(**given)
     try:
         client.execute_query()
     except ClientRequestException as err:
         return _refuse(str(err), 1)
-    print(json.dumps(_rows(result), indent=2, default=str))
+    records = _rows(result)
+    if args.output == "json":
+        print(json.dumps(records, indent=2, default=str))
+    elif any(records):
+        print(
+            describe_collection(
+                records,
+                name=type(result).__name__,
+                columns=_columns(records, args.columns),
+                max_items=None,
+                max_column_width=None,
+            )
+        )
     return 0
+
+
+def _columns(records: "list[Any]", chosen: str) -> "list[str] | None":
+    """The columns a table shows: the ones asked for, or the ones a reader came for."""
+    if chosen:
+        return [name.strip() for name in chosen.split(",")]
+    fields = {name for record in records if isinstance(record, Mapping) for name in record}
+    return [name for word in NAMES for name in sorted(fields) if name.lower() == word][:3] or None
 
 
 def _rows(result: Any) -> Any:
@@ -386,9 +422,10 @@ def _summary(audience: str, entry: "dict[str, Any]") -> str:
 
 
 def _usage() -> str:
-    """The three words this command line knows today."""
+    """What this command line knows: a session, and a route of words."""
     return (
         "usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]\n"
+        "       o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]\n"
         "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]"
     )
 
