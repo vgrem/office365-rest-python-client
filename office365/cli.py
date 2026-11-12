@@ -93,18 +93,14 @@ def login(audience: str, argv: "list[str]") -> int:
         prog=f"o365 {audience} login",
         description=f"Log in to {audience}. Every flag is a parameter {root.__name__} declares.",
     )
-    parser.add_argument(
-        "--mode", default=DEFAULT_MODE if DEFAULT_MODE in modes else modes[0], help=f"one of {', '.join(modes)}"
-    )
+    parser.add_argument("--mode", choices=modes, default=DEFAULT_MODE)
     seen = {"mode"}
     _flags(parser, root, seen)
     for method in (getattr(root, attribute) for attribute in logins):
         _flags(parser, method, seen)
     args = parser.parse_args(argv)
 
-    method = next((attribute for attribute, meta in logins.items() if meta.mode == args.mode), "")
-    if not method:
-        parser.error(f"cannot log in with mode {args.mode!r}; {root.__name__} declares {', '.join(modes)}")
+    method = next(attribute for attribute, meta in logins.items() if meta.mode == args.mode)
 
     given = _accepted(args, root) | _accepted(args, getattr(root, method))
     given["client_id"] = given.get("client_id") or os.environ.get("O365_CLIENT_ID", "")
