@@ -573,6 +573,8 @@ class GraphClient(ClientRuntimeContext):
                 tenant=self._tenant,
                 environment=self._environment,
                 authority=self._authority,
+                scopes=self._scopes,
+                token_cache=self._token_cache,
             )
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)

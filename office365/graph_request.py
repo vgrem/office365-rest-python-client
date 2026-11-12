@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
@@ -27,6 +27,8 @@ class GraphRequest(ODataRequest):
         tenant: Optional[str] = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
         authority: Optional[str] = None,
+        scopes: Optional[List[str]] = None,
+        token_cache: Any = None,
     ):
         """
         Initialize a Microsoft Graph API request handler.
@@ -36,11 +38,19 @@ class GraphRequest(ODataRequest):
             tenant: Tenant ID or domain name
             environment: Azure environment (default: AzureEnvironment.Global)
             authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
+            scopes: Scopes requested to access the API
+            token_cache: MSAL token cache to keep the session in
         """
         super().__init__("", V4JsonFormat())
         self._version = version
         self._environment = environment
-        self._auth_context = AuthenticationContext(environment=environment, tenant=tenant, authority=authority)
+        self._auth_context = AuthenticationContext(
+            environment=environment,
+            tenant=tenant,
+            scopes=scopes,
+            token_cache=token_cache,
+            authority=authority,
+        )
         self.beforeExecute += self.authenticate_request
         self._async_authenticate = self.authenticate_request_async
 

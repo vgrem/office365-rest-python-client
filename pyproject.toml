@@ -85,6 +85,9 @@ optional-dependencies.sql = [
 ]
 urls.funding = "https://ko-fi.com/vgrem"
 urls.repository = "https://github.com/vgrem/office365-rest-python-client"
+# One command, and it needs nothing beyond the core dependencies: the session is
+# `msal`, the output is `json`/`csv`, the parsing is `argparse`.
+scripts.o365 = "office365.cli:main"
 
 [dependency-groups]
 dev = [

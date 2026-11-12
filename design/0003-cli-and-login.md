@@ -42,9 +42,20 @@ interactive:   token_cache passed to PublicClientApplication -> False
 "reuse the signed-in account" branch — which can only ever find the account it created in the
 same process. In a CLI, every process is a new process: the login would be lost on exit.
 
-The fix is ``token_cache=self._token_cache`` in two constructor calls,
-``office365/runtime/auth/entra/authentication_context.py``. Nothing else is needed to persist a
-session: MSAL refreshes from the cache, so a store that keeps the cache keeps the login.
+It took two fixes, not one, because the cache was dropped at two levels. The flows built
+their MSAL app without it; and above them ``GraphClient.pending_request()`` built its
+``GraphRequest`` without it, so ``GraphClient(token_cache=...)`` was stored on the client and
+read by nobody. The same read found a second silent drop beside it: ``GraphClient(scopes=...)``
+never reached the context either, which used ``https://graph.microsoft.com/.default``
+regardless.
+
+Fixed at both levels — ``token_cache=self._token_cache`` in the three public-flow constructions,
+and ``scopes``/``token_cache`` passed from ``GraphClient`` to ``GraphRequest`` to
+``AuthenticationContext``. Nothing else is needed to persist a session: MSAL refreshes from the
+cache, so a store that keeps the cache keeps the login. ``ExchangeAdminClient`` already threaded
+its cache; ``ClientContext`` authenticates through a different provider
+(``office365/runtime/auth/authentication_context.py``) that has no cache to thread, so a
+sharepoint login authenticates and is not kept until that provider grows one.
 
 ## 2. Addressing — the honest measurement
 
@@ -123,22 +134,23 @@ cannot justify — refusing with a reason beats guessing.
 | # | Step | Size | Proves |
 | --- | --- | --- | --- |
 | 0 | ``token_cache`` in the three public flows + a test that it reaches MSAL | 3 lines | persistence is possible at all — **done** |
-| 1 | ``office365/cli`` = 4 functions: ``session()`` (file), ``login()`` (reads ``verbs_of(root)`` where ``name == "login"``, picks ``mode``, applies, verifies from claims), ``whoami()``, ``client()`` (rebuilds the root from a session) | ~120 lines | the session reads the declarations, and declares nothing |
+| 1 | ``office365/cli.py``: ``login`` (reads ``verbs_of(root)`` where ``name == "login"``, picks by ``--mode``, derives every flag from the two signatures), ``whoami``, ``logout``, and the store | 270 lines | the session reads the declarations, and declares nothing — **done** |
 | 2 | ``o365 outlook message list|get|send`` | ~40 lines + ``chain(root, noun)`` (~25) reading ``TypeSchema.navigations`` and ``item_type()`` | the engine is thin: one equality test against the library's own path builder |
 | 3 | ``-o json|table|tsv``, ``--select``, ``--filter``, ``--top``, ``--all`` | output only | the data verbs already exist (``get_all``, ``QueryOptions``) |
 | 4 | ``--yes`` gate from ``VerbMeta.confirm`` | small | the CLI can refuse before building a request |
 | 5 | ``--help`` from signatures + docstrings | small | flags are exhaustive |
 
-Start-up cost is the budget, not the code: 6 941 modules for the full index (~2 s), one product
-0.2 s (``outlook``) to 1.2 s (``sharepoint``). A ``login`` must import only the auth modules, so
-step 1 may not import ``routing``; step 2 pays the product import and nothing else.
+Start-up cost is the budget, not the code. Measured after step 1: ``o365 whoami`` imports
+**99 modules in 0.03 s** and never touches ``routing`` or ``sharepoint``; ``login --help`` pays
+for the root it describes — 2 281 modules / 0.64 s for ``graph``, 1 054 / 0.31 s for
+``sharepoint``. Step 2 pays the product import and nothing else; the full noun index (6 941
+modules, ~2 s) is only needed to list what exists, which no command does.
 
 ## 5. Open, needs a decision
 
-1. **Client id.** ``az`` works because Azure CLI ships its own app registration. This library has
-   none, and every ``login`` mode requires ``--client-id``. Either we ship a public client id
-   (an app registration allowing device-code/public client flows, consented per tenant) or
-   ``--client-id``/``O365_CLIENT_ID`` stays mandatory. Not a coding question.
+1. ~~**Client id.**~~ Decided: ``--client-id`` (or ``O365_CLIENT_ID``) is mandatory, and a login
+   without it is refused with that reason. Shipping a public client id is a product question,
+   not a coding one, and can be answered later without changing the grammar.
 2. **Addressing scope.** Ship over the 911 addressable nouns now, or generate path templates from
    ``graphopenapi.yaml`` first to reach 1 940? The second is a generator job, not a CLI job.
 3. **``[cli]`` extra** — dropped as S6 argues.
