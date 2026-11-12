@@ -14,6 +14,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.extensions.extended_property import (
@@ -144,6 +145,7 @@ class Post(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Post"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Group-Conversation.ReadWrite.All", "Group.ReadWrite.All"],
         application=["Group-Conversation.ReadWrite.All", "Group.ReadWrite.All"],
@@ -163,6 +165,7 @@ class Post(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reply(self, post: Post) -> Self:
         """reply operation.

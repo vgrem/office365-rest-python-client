@@ -9,6 +9,7 @@ from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.calendar import Calendar
@@ -51,6 +52,7 @@ class CalendarSharingMessage(Message):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CalendarSharingMessage"
 
+    @verb(role="action", effect="write")
     def accept(self) -> Calendar:
         """accept operation."""
         from office365.outlook.calendar.calendar import Calendar

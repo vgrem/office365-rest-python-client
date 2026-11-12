@@ -16,6 +16,7 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.channels.channel import Channel
 from office365.teams.channels.collection import ChannelCollection
@@ -274,6 +275,7 @@ class Team(Entity):
         """Gets the photo property"""
         return self.properties.get("photo", ProfilePhoto(self.context, ResourcePath("photo", self.resource_path)))
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
         application=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
@@ -287,6 +289,7 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
         application=["TeamSettings.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
@@ -299,6 +302,7 @@ class Team(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Team.Create", "Group.ReadWrite.All", "Directory.ReadWrite.All"],
@@ -410,6 +414,7 @@ class Team(Entity):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["TeamsActivity.Send"],
         application=["TeamsActivity.Send"],
@@ -463,6 +468,7 @@ class Team(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Team"
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Teamwork.Migrate.All"])
     def complete_migration(self) -> Self:
         """completeMigration operation."""

@@ -20,6 +20,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.mute_participant_operation import MuteParticipantOperation
@@ -28,6 +29,7 @@ if TYPE_CHECKING:
 class Participant(Entity):
     """Represents a participant in a call."""
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.InitiateGroupCall.All"])
     def invite(self, participants: List[InvitationParticipantInfo], client_context: str) -> InviteParticipantsOperation:
         """Invite participants to the active call.
@@ -45,6 +47,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def start_hold_music(
         self, custom_prompt: Optional[str] = None, client_context: Optional[str] = None
@@ -61,6 +64,7 @@ class Participant(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def stop_hold_music(self, client_context: Optional[str] = None) -> StopHoldMusicOperation:
         """Reincorporate a participant previously put on hold to the call.
@@ -132,6 +136,7 @@ class Participant(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Participant"
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.JoinGroupCall.All", "Calls.JoinGroupCallAsGuest.All"])
     def mute(self, client_context: str) -> MuteParticipantOperation:
         """mute operation.

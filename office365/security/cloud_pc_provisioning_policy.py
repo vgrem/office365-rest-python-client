@@ -25,6 +25,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.security.cloud_pc_provisioning_policy_assignment import (
@@ -151,6 +152,7 @@ class CloudPcProvisioningPolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcProvisioningPolicy"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def assign(self, assignments: ClientValueCollection[CloudPcProvisioningPolicyAssignment]) -> Self:
         """assign operation.

@@ -14,6 +14,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
@@ -225,6 +226,7 @@ class ChatMessage(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChatMessage"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Tasks.ReadWrite"])
     def set_reaction(self, reaction_type: str) -> Self:
         """setReaction operation.
@@ -237,6 +239,7 @@ class ChatMessage(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Chat.ReadWrite"])
     def soft_delete(self) -> Self:
         """softDelete operation."""
@@ -244,6 +247,7 @@ class ChatMessage(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Chat.ReadWrite"])
     def undo_soft_delete(self) -> Self:
         """undoSoftDelete operation."""
@@ -251,6 +255,7 @@ class ChatMessage(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Tasks.ReadWrite"])
     def unset_reaction(self, reaction_type: str) -> Self:
         """unsetReaction operation.

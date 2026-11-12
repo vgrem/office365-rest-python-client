@@ -12,6 +12,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.cases.operation import CaseOperation
 from office365.security.ediscovery.case_member import EdiscoveryCaseMember
 from office365.security.ediscovery.custodian import EdiscoveryCustodian
@@ -148,6 +149,7 @@ class EdiscoveryCase(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -158,6 +160,7 @@ class EdiscoveryCase(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],

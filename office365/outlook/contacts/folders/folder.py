@@ -15,6 +15,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.outlook.contacts.folders.collection import ContactFolderCollection
@@ -85,6 +86,7 @@ class ContactFolder(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ContactFolder"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Contacts.ReadWrite"], application=["Contacts.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""

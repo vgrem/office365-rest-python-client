@@ -14,6 +14,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.communications.adhoc_call import AdhocCall
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 class CloudCommunications(Entity):
     """ """
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.Read.All"], application=["Presence.Read.All"])
     def get_presences_by_user_id(
         self, ids: List[str], return_type: Optional[EntityCollection[Presence]] = None
@@ -143,6 +145,7 @@ class CloudCommunications(Entity):
             ),
         )
 
+    @verb(role="action", effect="read")
     @require_permission(application=["EngagementMeetingConversation.Read.All"])
     def get_all_online_meeting_messages(self) -> EntityCollection[EngagementConversationMessage]:
         """getAllOnlineMeetingMessages operation."""

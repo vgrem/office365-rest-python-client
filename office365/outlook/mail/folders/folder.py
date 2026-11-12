@@ -24,6 +24,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 @limit(*OUTLOOK_MAILBOX_BUDGETS)  # a folder is read inside the mailbox budget
@@ -34,6 +35,7 @@ class MailFolder(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination_id: str) -> MailFolder:
         """Copy a mailfolder and its contents to another mailfolder.
@@ -80,6 +82,7 @@ class MailFolder(Entity):
         self.messages.get_all(page_loaded=_mark_all_items_as_unread)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def permanent_delete(self) -> Self:
         """Permanently delete a mail folder and remove its items from the user's mailbox."""
@@ -214,6 +217,7 @@ class MailFolder(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def move(self, destination_id: str) -> MailFolder:
         """move operation.

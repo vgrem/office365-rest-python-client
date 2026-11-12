@@ -11,6 +11,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.apps.user_scope_installation import UserScopeTeamsAppInstallation
 from office365.teams.associated_info import AssociatedTeamInfo
 
@@ -70,6 +71,7 @@ class UserTeamwork(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["TeamsActivity.Send"],
         application=["TeamsActivity.Send"],
@@ -104,6 +106,7 @@ class UserTeamwork(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserTeamwork"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["TeamworkTargetedMessage.ReadWrite"])
     def delete_targeted_message(self, team_id: str, channel_id: str, message_id: str) -> Self:
         """deleteTargetedMessage operation.
@@ -127,6 +130,7 @@ class UserTeamwork(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(application=["TeamworkTargetedMessage.Read.All"])
     def get_all_retained_targeted_messages(self) -> EntityCollection[TargetedChatMessage]:
         """getAllRetainedTargetedMessages operation."""
@@ -137,6 +141,7 @@ class UserTeamwork(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(application=["TeamworkTargetedMessage.Read.All"])
     def get_all_targeted_messages(self) -> EntityCollection[TargetedChatMessage]:
         """getAllTargetedMessages operation."""

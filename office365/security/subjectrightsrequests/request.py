@@ -17,6 +17,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.subjectrightsrequests.data_subject import DataSubject
 from office365.security.subjectrightsrequests.detail import SubjectRightsRequestDetail
 from office365.security.subjectrightsrequests.history import SubjectRightsRequestHistory
@@ -230,6 +231,7 @@ class SubjectRightsRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.SubjectRightsRequest"
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["SubjectRightsRequest.Read.All", "SubjectRightsRequest.ReadWrite.All"])
     def get_final_attachment(self) -> ClientResult[bytes]:
         """getFinalAttachment operation."""
@@ -238,6 +240,7 @@ class SubjectRightsRequest(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["SubjectRightsRequest.Read.All", "SubjectRightsRequest.ReadWrite.All"])
     def get_final_report(self) -> ClientResult[bytes]:
         """getFinalReport operation."""

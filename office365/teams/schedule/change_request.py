@@ -8,6 +8,7 @@ from typing_extensions import Self
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.changerequestactor import ScheduleChangeRequestActor
 from office365.teams.schedule.changestate import ScheduleChangeState
@@ -16,6 +17,7 @@ from office365.teams.schedule.changestate import ScheduleChangeState
 class ScheduleChangeRequest(ChangeTrackedEntity):
     """"""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Schedule.ReadWrite.All"],
         application=["Schedule.ReadWrite.All"],
@@ -31,6 +33,7 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Schedule.ReadWrite.All"],
         application=["Schedule.ReadWrite.All"],

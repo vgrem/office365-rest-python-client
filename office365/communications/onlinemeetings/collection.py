@@ -12,6 +12,7 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_value import ClientValue
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.runtime.operations import ProgressCallback
@@ -57,6 +58,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
         """
         return super().add(subject=subject, startDateTime=start_datetime, endDateTime=end_datetime, **kwargs)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["OnlineMeetings.ReadWrite"], application=["OnlineMeetings.ReadWrite.All"])
     def create_or_get(
         self,
@@ -111,6 +113,7 @@ class OnlineMeetingCollection(EntityCollection[OnlineMeeting]):
                 self.context.after_execute(hook)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["OnlineMeetingRecording.Read.All"], application=["OnlineMeetingRecording.Read.All"])
     def get_all_recordings(
         self,

@@ -26,6 +26,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 @limit(*OUTLOOK_MAILBOX_BUDGETS)  # a calendar is read inside the mailbox budget
@@ -38,6 +39,7 @@ class Calendar(Entity):
     def __repr__(self):
         return self.name or self.id or self.entity_type_name
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Calendars.Read.Shared", "Calendars.ReadWrite.Shared"], notes="No application permission"
     )
@@ -51,6 +53,7 @@ class Calendar(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Calendars.Read", "Calendars.ReadWrite", "Calendars.Read.Shared", "Calendars.ReadWrite.Shared"],
         application=["Calendars.Read", "Calendars.ReadWrite"],
@@ -261,6 +264,7 @@ class Calendar(Entity):
         """Gets the isShared property"""
         return self.properties.get("isShared", None)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""

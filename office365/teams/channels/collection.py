@@ -11,6 +11,7 @@ from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 from office365.teams.channels.channel import Channel
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation, wait_for_operation
@@ -92,6 +93,7 @@ class ChannelCollection(EntityCollection[Channel]):
         self.context.add_query(qry).after_execute(_handle_response, include_response=True)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         application=["ChannelMessage.Read.All"],
         notes="Export every channel message in the tenant; application tokens only",

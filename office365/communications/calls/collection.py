@@ -7,6 +7,7 @@ from office365.communications.teleconferencedevicequality import TeleconferenceD
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 
 class CallCollection(EntityCollection[Call]):
@@ -21,6 +22,7 @@ class CallCollection(EntityCollection[Call]):
         """
         return super().add(callbackUri=callback_uri)
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def log_teleconference_device_quality(self, quality: Optional[TeleconferenceDeviceQuality] = None) -> Self:
         """Log video teleconferencing device quality data.

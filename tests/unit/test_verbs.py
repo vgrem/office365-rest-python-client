@@ -34,7 +34,9 @@ def test_paging_is_a_second_entry_point_for_the_same_command_not_a_second_comman
 @pytest.mark.parametrize("entity_type", [Message, List])
 def test_an_entity_gets_updates_and_deletes_and_only_the_last_one_confirms(entity_type: type) -> None:
     verbs = capabilities_of(entity_type).verbs
-    assert {meta.role for meta in verbs.values()} == {"get", "update", "delete"}
+    # A type may declare more than the three it inherits (Message sends, List subscribes),
+    # so the claim is that the base trio is there and nothing irreversible is silent about it.
+    assert {"get", "update", "delete"} <= {meta.role for meta in verbs.values()}
     assert [name for name, meta in verbs.items() if meta.confirm] == ["delete_object"]
     assert verbs["delete_object"].name == "delete"
 

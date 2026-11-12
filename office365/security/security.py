@@ -10,6 +10,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.alerts.alert import Alert
 from office365.security.alerts.collection import AlertCollection
 from office365.security.attacksimulations.root import AttackSimulationRoot
@@ -46,6 +47,7 @@ class Security(Entity):
     """The security resource is the entry point for the Security object model. It returns a singleton security resource.
     It doesn't contain any usable properties."""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["ThreatHunting.Read.All"],
         application=["ThreatHunting.Read.All"],

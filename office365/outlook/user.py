@@ -10,12 +10,14 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 @limit(*OUTLOOK_MAILBOX_BUDGETS)
 class OutlookUser(Entity):
     """Represents the Outlook services available to a user."""
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["User.Read"], application=["User.Read.All"])
     @odata(name="supportedLanguages")
     def supported_languages(self) -> ClientResult[ClientValueCollection[LocaleInfo]]:
@@ -29,6 +31,7 @@ class OutlookUser(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["User.Read"], application=["User.Read.All"])
     @odata(name="supportedTimeZones")
     def supported_time_zones(self) -> ClientResult[ClientValueCollection[TimeZoneInformation]]:

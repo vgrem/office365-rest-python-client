@@ -21,6 +21,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 @limit(*VIRTUAL_EVENT_QUOTAS)
@@ -115,6 +116,7 @@ class VirtualEvent(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.VirtualEvent"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def cancel(self) -> Self:
         """cancel operation."""
@@ -122,6 +124,7 @@ class VirtualEvent(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def publish(self) -> Self:
         """publish operation."""
@@ -129,6 +132,7 @@ class VirtualEvent(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["VirtualEvent.ReadWrite"])
     def set_external_event_information(self, external_event_id: str) -> Self:
         """setExternalEventInformation operation.

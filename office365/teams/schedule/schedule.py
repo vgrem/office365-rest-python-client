@@ -14,6 +14,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.schedule.groups.group import SchedulingGroup
 from office365.teams.schedule.shifts.open.change_request import OpenShiftChangeRequest
 from office365.teams.schedule.shifts.shift import Shift
@@ -253,6 +254,7 @@ class Schedule(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Schedule"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Schedule.ReadWrite.All", "Group.ReadWrite.All"],
         application=["Schedule.ReadWrite.All"],

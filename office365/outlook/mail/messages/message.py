@@ -33,6 +33,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.mention import Mention
@@ -54,6 +55,7 @@ class Message(OutlookItem):
         parent = self.resource_path.parent if self.resource_path is not None else None
         return ResourcePath(None, parent)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_forward(
         self,
@@ -158,6 +160,7 @@ class Message(OutlookItem):
             self.add_file_attachment(os.path.basename(file_path), content)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def send(self) -> Self:
         """
@@ -168,6 +171,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def reply(self, comment: Optional[str] = None) -> Message:
         """Reply to the sender of a message by specifying a comment and using the Reply method. The message is then
@@ -182,6 +186,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return message
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def reply_all(self) -> Self:
         """Reply to all recipients of a message. The message is then saved in the Sent Items folder."""
@@ -189,6 +194,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_reply(self, comment=None) -> Message:
         """Create a draft to reply to the sender of a message in either JSON or MIME format.
@@ -202,6 +208,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def create_reply_all(self) -> "Message":
         """
@@ -214,6 +221,7 @@ class Message(OutlookItem):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def copy(self, destination: Union[str, MailFolder]) -> "Message":
         """Copy a message to another folder within the specified user's mailbox.
@@ -239,6 +247,7 @@ class Message(OutlookItem):
             _copy(destination)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def move(self, destination: Union[str, MailFolder]) -> "Message":
         """Move a message to another folder within the specified user's mailbox.
@@ -264,6 +273,7 @@ class Message(OutlookItem):
             _move(destination)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def forward(self, to_recipients: List[str], comment: str = "") -> Self:
         """Forward a message. The message is saved in the Sent Items folder.
@@ -598,6 +608,7 @@ class Message(OutlookItem):
             "mentions", EntityCollection[Mention](self.context, Mention, ResourcePath("mentions", self.resource_path))
         )
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.ReadWrite"], application=["Mail.ReadWrite"])
     def permanent_delete(self) -> Self:
         """permanentDelete operation."""

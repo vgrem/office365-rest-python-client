@@ -6,6 +6,7 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 from office365.teams.chats.chat import Chat
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.chats.type import ChatType
@@ -60,6 +61,7 @@ class ChatCollection(EntityCollection[Chat]):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         application=["Teamwork.Migrate.All"], notes="Export every chat message in the tenant; application tokens only"
     )

@@ -13,11 +13,13 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class ConversationThread(Entity):
     """A conversationThread is a collection of posts."""
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reply(self, post: Post) -> Self:
         """Reply to a thread in a group conversation and add a new post to it. You can specify the parent conversation

@@ -17,6 +17,7 @@ from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.duration import Duration
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.communications.presences.work_location_type import WorkLocationType
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 class Presence(Entity):
     """Contains information about a user's presence, including their availability and user activity."""
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def clear_presence(self, session_id: str | None = None) -> Self:
         """Clear the application's presence session for a user. If it is the user's only presence session,
@@ -39,6 +41,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def clear_user_preferred_presence(self) -> Self:
         """
@@ -48,6 +51,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_presence(
         self,
@@ -76,6 +80,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_status_message(self, message: str | ItemBody, expiry: Optional[datetime] = None):
         """Set a presence status message for a user. An optional expiration date and time can be supplied.
@@ -96,6 +101,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"], application=["Presence.ReadWrite.All"])
     def set_user_preferred_presence(
         self, availability="Available", activity="Available", expiration_duration: Duration | str | None = None
@@ -167,6 +173,7 @@ class Presence(Entity):
         """Gets the workLocation property"""
         return self.properties.get("workLocation", UserWorkLocation())
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"])
     def clear_automatic_location(self) -> Self:
         """clearAutomaticLocation operation."""
@@ -174,6 +181,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"])
     def clear_location(self) -> Self:
         """clearLocation operation."""
@@ -181,6 +189,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"])
     def set_automatic_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
         """setAutomaticLocation operation.
@@ -197,6 +206,7 @@ class Presence(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Presence.ReadWrite"])
     def set_manual_location(self, work_location_type: WorkLocationType, place_id: str) -> Self:
         """setManualLocation operation.

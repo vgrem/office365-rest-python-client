@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.security.cases.exportfilestructure import ExportFileStructure
@@ -20,6 +21,7 @@ class EdiscoveryReviewSetQuery(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryReviewSetQuery"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -55,6 +57,7 @@ class EdiscoveryReviewSetQuery(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],

@@ -7,6 +7,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_recommendation_report_type import (
@@ -19,6 +20,7 @@ class CloudPcReport(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPcReport"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def retrieve_cloud_pc_recommendation_reports(
         self,

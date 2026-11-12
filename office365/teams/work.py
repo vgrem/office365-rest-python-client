@@ -11,6 +11,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.deleted import DeletedTeam
 
 if TYPE_CHECKING:
@@ -90,6 +91,7 @@ class Teamwork(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Teamwork"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["TeamsActivity.Send"], application=["TeamsActivity.Send"])
     def send_activity_notification_to_recipients(
         self,

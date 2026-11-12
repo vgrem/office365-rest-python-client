@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.cases.reviewsetsettings import ReviewSetSettings
 from office365.security.cases.type import CaseType
 from office365.security.ocr_settings import OcrSettings
@@ -48,6 +49,7 @@ class EdiscoveryCaseSettings(Entity):
         """Gets the topicModeling property"""
         return self.properties.get("topicModeling", TopicModelingSettings())
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["eDiscovery.ReadWrite.All"], application=["eDiscovery.ReadWrite.All"])
     def reset_to_default(self) -> Self:
         """resetToDefault operation."""

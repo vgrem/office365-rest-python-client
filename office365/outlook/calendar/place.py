@@ -13,6 +13,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.check_in_claim import CheckInClaim
@@ -104,6 +105,7 @@ class Place(Entity):
         """Gets the lastUpdatedTime property"""
         return self.properties.get("lastUpdatedTime", datetime.min)
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Place.Read.All"], application=["Place.Read.All"])
     def descendants(self) -> EntityCollection[Place]:
         """descendants operation."""

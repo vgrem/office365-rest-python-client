@@ -40,6 +40,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import Compare, odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.outlook.calendar.events.event import Event
@@ -85,6 +86,7 @@ class Event(OutlookItem):
         )
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"])
     def accept(self, send_response, comment=None):
         """Accept the specified event in a user calendar.
@@ -98,6 +100,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"])
     def cancel(self, comment=None):
         """This action allows the organizer of a meeting to send a cancellation message and cancel the event.
@@ -115,6 +118,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"])
     def decline(self, proposed_new_time=None, send_response=True, comment=None):
         """Decline invitation to the specified event in a user calendar.
@@ -135,6 +139,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"])
     def dismiss_reminder(self):
         """Dismiss a reminder that has been triggered for an event in a user calendar."""
@@ -142,6 +147,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def permanent_delete(self):
         """
@@ -542,6 +548,7 @@ class Event(OutlookItem):
         """Gets the uid property"""
         return self.properties.get("uid", None)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.Read"], application=["Calendars.Read"])
     def forward(self, to_recipients: ClientValueCollection[Recipient], comment: str) -> Self:
         """forward operation.
@@ -558,6 +565,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def snooze_reminder(self, new_reminder_time: DateTimeTimeZone) -> Self:
         """snoozeReminder operation.
@@ -570,6 +578,7 @@ class Event(OutlookItem):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Calendars.ReadWrite"], application=["Calendars.ReadWrite"])
     def tentatively_accept(self, proposed_new_time: TimeSlot, send_response: bool, comment: str) -> Self:
         """tentativelyAccept operation.

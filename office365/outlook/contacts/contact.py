@@ -19,11 +19,13 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import Compare, odata
+from office365.runtime.verbs import verb
 
 
 class Contact(OutlookItem):
     """User's contact."""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Contacts.ReadWrite"], application=["Contacts.ReadWrite"], notes="Permanently delete a contact"
     )

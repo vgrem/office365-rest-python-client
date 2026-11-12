@@ -16,6 +16,7 @@ from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.exceptions import NotFoundException
+from office365.runtime.verbs import verb
 from office365.teams.chats.messages.collection import ChatMessageCollection
 from office365.teams.operations.async_operation import TeamsAsyncOperation, wait_for_operation
 from office365.teams.team import Team
@@ -87,6 +88,7 @@ class TeamCollection(EntityCollection[Team]):
         group.after_execute(_populate)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         application=["Teamwork.Migrate.All"],
         notes="Export every channel message across all teams; application tokens only",

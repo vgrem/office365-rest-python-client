@@ -7,6 +7,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.apps.app import TeamsApp
 from office365.teams.apps.definition import TeamsAppDefinition
 from office365.teams.apps.permission_set import TeamsAppPermissionSet
@@ -46,6 +47,7 @@ class TeamsAppInstallation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TeamsAppInstallation"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "TeamsAppInstallation.ReadWriteSelfForTeam",

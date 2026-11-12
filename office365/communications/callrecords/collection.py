@@ -15,6 +15,7 @@ from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import limit
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.query_capabilities import query_capabilities
+from office365.runtime.verbs import verb
 
 _DOC = "https://learn.microsoft.com/en-us/graph/api/callrecords-callrecord-list"
 
@@ -31,6 +32,7 @@ class CallRecordCollection(EntityCollection[CallRecord]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, CallRecord, resource_path)
 
+    @verb(role="action", effect="read")
     @limit(*PSTN_RECORD_QUOTAS)
     @require_permission(application=["CallRecords.Read.All"])
     def get_direct_routing_calls(

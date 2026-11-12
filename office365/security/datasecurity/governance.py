@@ -10,6 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.datasecurity.sensitivity_label import SensitivityLabel
 
 if TYPE_CHECKING:
@@ -48,6 +49,7 @@ class TenantDataSecurityAndGovernance(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TenantDataSecurityAndGovernance"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Content.Process.All"], application=["Content.Process.All"])
     def process_content_async(
         self, process_content_requests: ClientValueCollection[ProcessContentBatchRequest]

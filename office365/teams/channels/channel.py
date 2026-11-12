@@ -16,6 +16,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.channels.layout_type import ChannelLayoutType
 from office365.teams.channels.membership_type import ChannelMembershipType
 from office365.teams.channels.provision_email_result import ProvisionChannelEmailResult
@@ -37,6 +38,7 @@ class Channel(Entity):
     def __str__(self):
         return self.display_name or self.entity_type_name
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Channel.ReadBasic.All", "ChannelMember.Read.All"],
         application=["Channel.ReadBasic.All", "ChannelMember.Read.All"],
@@ -68,6 +70,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["ChannelSettings.ReadWrite.All"],
         application=["ChannelSettings.ReadWrite.All"],
@@ -89,6 +92,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["ChannelSettings.ReadWrite.All"],
         application=["ChannelSettings.ReadWrite.All"],
@@ -287,6 +291,7 @@ class Channel(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Channel"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["ChannelSettings.ReadWrite.All"], application=["ChannelSettings.ReadWrite.All"])
     def archive(self, should_set_spo_site_read_only_for_members: bool) -> Self:
         """archive operation.
@@ -306,6 +311,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["ChannelSettings.ReadWrite.All"], application=["ChannelSettings.ReadWrite.All"])
     def unarchive(self) -> Self:
         """unarchive operation."""
@@ -313,6 +319,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Teamwork.Migrate.All"])
     def complete_migration(self) -> Self:
         """completeMigration operation."""
@@ -320,6 +327,7 @@ class Channel(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Teamwork.Migrate.All"])
     def start_migration(self, conversation_creation_date_time: datetime) -> Self:
         """startMigration operation.

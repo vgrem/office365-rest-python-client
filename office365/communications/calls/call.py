@@ -42,6 +42,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.add_large_gallery_view_operation import AddLargeGalleryViewOperation
@@ -67,6 +68,7 @@ class Call(Entity):
     new outgoing call via a POST on app/calls.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def cancel_media_processing(self, client_context=None):
         """Cancels processing for any in-progress media operations.
@@ -86,6 +88,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def reject(self, reason=None, callback_uri=None):
         """Enable a bot to reject an incoming call. The incoming call request can be an invite from a participant in
@@ -114,6 +117,7 @@ class Call(Entity):
         group call will still continue."""
         return super().delete_object()
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def update_recording_status(self, status, client_context):
         """Update the application's recording status associated with a call.
@@ -129,6 +133,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def unmute(self, client_context):
         """Allow the application to unmute itself.
@@ -319,6 +324,7 @@ class Call(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All"])
     def redirect(
         self, targets: ClientValueCollection[InvitationParticipantInfo], timeout: int, callback_uri: str
@@ -339,6 +345,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         application=["Calls.JoinGroupCallAsGuest.All", "Calls.InitiateGroupCall.All", "Calls.JoinGroupCall.All"],
     )
@@ -358,6 +365,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.JoinGroupCall.All", "Calls.JoinGroupCallAsGuest.All"])
     def answer(
         self,
@@ -398,6 +406,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def change_screen_sharing_role(self, role: ScreenSharingRole) -> Self:
         """changeScreenSharingRole operation.
@@ -410,6 +419,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All", "Calls.AccessMedia.All"])
     def keep_alive(self) -> Self:
         """keepAlive operation."""
@@ -417,6 +427,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All", "Calls.AccessMedia.All"])
     def mute(self, client_context: str) -> MuteParticipantOperation:
         """mute operation.
@@ -432,6 +443,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All", "Calls.AccessMedia.All"])
     def play_prompt(self, prompts: ClientValueCollection[Prompt], client_context: str) -> PlayPromptOperation:
         """playPrompt operation.
@@ -451,6 +463,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def record_response(
         self,
@@ -506,6 +519,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All", "Calls.AccessMedia.All"])
     def send_dtmf_tones(
         self, tones: ClientValueCollection[Tone], delay_between_tones_ms: int, client_context: str
@@ -534,6 +548,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.AccessMedia.All"])
     def subscribe_to_tone(self, client_context: str) -> SubscribeToToneOperation:
         """subscribeToTone operation.
@@ -549,6 +564,7 @@ class Call(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(application=["Calls.Initiate.All"])
     def transfer(self, transfer_target: InvitationParticipantInfo, transferee: ParticipantInfo) -> Self:
         """transfer operation.

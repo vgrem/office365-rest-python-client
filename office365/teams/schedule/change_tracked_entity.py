@@ -9,6 +9,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class ChangeTrackedEntity(Entity):
@@ -60,6 +61,7 @@ class ChangeTrackedEntity(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ChangeTrackedEntity"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Schedule.ReadWrite.All", "Group.ReadWrite.All"],
         application=["Schedule.ReadWrite.All"],

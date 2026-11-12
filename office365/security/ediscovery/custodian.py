@@ -11,6 +11,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.ediscovery_index_operation import (
@@ -86,6 +87,7 @@ class EdiscoveryCustodian(Entity):
             EntityCollection[UserSource](self.context, UserSource, ResourcePath("userSources", self.resource_path)),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -96,6 +98,7 @@ class EdiscoveryCustodian(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -106,6 +109,7 @@ class EdiscoveryCustodian(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -116,6 +120,7 @@ class EdiscoveryCustodian(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
@@ -126,6 +131,7 @@ class EdiscoveryCustodian(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],
         application=["eDiscovery.Read.All", "eDiscovery.ReadWrite.All"],

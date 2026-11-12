@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.account import Account
 
 if TYPE_CHECKING:
@@ -57,6 +58,7 @@ class IdentityAccounts(Entity):
         """Gets the accounts property"""
         return self.properties.get("accounts", ClientValueCollection[Account](Account))
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["SecurityIdentitiesActions.ReadWrite.All"],
         application=["SecurityIdentitiesActions.ReadWrite.All"],
