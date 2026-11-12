@@ -2,10 +2,17 @@
 
 from __future__ import annotations
 
+import json
 import sys
 import types
 
+import pytest
+from office365.cli import main
+from office365.graph_client import GraphClient
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
+
+#: What argparse exits with when it cannot build a command at all.
+USAGE_ERROR = 2
 
 
 class _FakePublicClientApplication:
@@ -34,6 +41,13 @@ class _FakePublicClientApplication:
         return {"access_token": "device", "expires_in": 3600}
 
 
+class _FakeTokenCache:
+    """The one thing a session store needs from MSAL's cache: it serializes."""
+
+    def serialize(self):
+        return '{"AccessToken": {}}'
+
+
 def _install_fake_msal(monkeypatch) -> list[_FakePublicClientApplication]:
     created: list[_FakePublicClientApplication] = []
 
@@ -44,6 +58,7 @@ def _install_fake_msal(monkeypatch) -> list[_FakePublicClientApplication]:
 
     fake = types.ModuleType("msal")
     fake.PublicClientApplication = _factory  # type: ignore[attr-defined]
+    fake.SerializableTokenCache = _FakeTokenCache  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "msal", fake)
     return created
 
@@ -75,3 +90,38 @@ def test_a_public_client_flow_hands_the_cache_to_msal(monkeypatch):
     # Without this the login dies with the process: only the confidential flows
     # used to receive it, and a command line can use neither of them.
     assert [app.kwargs.get("token_cache") for app in created] == [cache, cache, cache]
+
+
+def test_the_client_hands_its_cache_and_scopes_to_the_context():
+    cache = object()
+    client = GraphClient(tenant="contoso.onmicrosoft.com", scopes=["User.Read"], token_cache=cache)
+
+    # Both used to stop at the client: the request carried neither, so the cache was
+    # unread and the scopes silently became the *.default one.
+    context = client.pending_request().authentication_context
+    assert context._token_cache is cache
+    assert context._scopes == ["User.Read"]
+    assert GraphClient().pending_request().authentication_context._scopes == ["https://graph.microsoft.com/.default"]
+
+
+def test_a_login_is_kept_and_answers_whoami(monkeypatch, tmp_path):
+    _install_fake_msal(monkeypatch)
+    monkeypatch.setenv("O365_HOME", str(tmp_path))
+
+    assert main(["login", "--tenant", "contoso.onmicrosoft.com", "--client-id", "cli-client"]) == 0
+    kept = json.loads((tmp_path / "sessions.json").read_text("utf-8"))["graph"]
+    assert kept["method"] == "with_device_flow"
+    assert kept["client_id"] == "cli-client"
+    assert kept["constructor"] == {"tenant": "contoso.onmicrosoft.com"}
+    assert kept["cache"] == '{"AccessToken": {}}'
+    assert not (tmp_path / "sessions.json").stat().st_mode & 0o077
+
+    # A second command reads what the first wrote, without logging in again.
+    assert main(["whoami"]) == 0
+    assert main(["logout"]) == 0
+    assert main(["whoami"]) == 1
+
+    # The library ships no app registration of its own, so this cannot be filled in.
+    with pytest.raises(SystemExit) as refused:
+        main(["login", "--tenant", "contoso.onmicrosoft.com"])
+    assert refused.value.code == USAGE_ERROR
