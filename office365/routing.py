@@ -1,33 +1,24 @@
 """Finding a type by the words a command line uses.
 
-``outlook messages list`` names three things: a product, a noun and a verb. The verb is
-already a declaration on the method (:mod:`office365.runtime.verbs`), and the product is
-already a declaration on the package (:func:`office365.runtime.schema.service_of`), so
-neither needs a table. The noun is the one word with no declaration anywhere - a command
-line says ``message``, the type is called ``Message`` - so this module derives it from the
-type it belongs to, and resolves the collection that holds it as the same noun. It is the
-singular, because that is what the type is called: ``outlook message list`` reads like
-``az vm list``, and nothing here has to know English plurals.
+``outlook message list`` names three things, and two of them are declarations: the verb is
+stamped on the method (:mod:`office365.runtime.verbs`) and the product is stated by the
+package (:func:`office365.runtime.schema.service_of`). The noun is the type's own name,
+singular, because that is what a type is called - ``outlook message list`` reads like
+``az vm list`` - so nothing here spells a word the model already holds, and nothing here is
+a list of commands. What this module does is pair the two halves of one noun and read:
 
-Two words are the same word when they carry the same letters. ``message-rule``,
-``message_rule`` and ``MessageRule`` all fold to ``messagerule``, so a command line may
-spell a noun the way it reads best and never be told it guessed the separators wrong -
-the separators are the one thing the type system does not decide for it.
+* the type a feed holds, from ``ClientObjectCollection.item_type()``, which the base
+  declares (``MessageCollection(DeltaCollection["Message"])``);
+* the commands a type answers, from ``verbs_of`` over its stamped methods;
+* the product a type belongs to, from ``service_of`` over its module.
 
-The pairing is the part worth stating. A collection says which type it holds - in its
-generic base (``ClientObjectCollection[Message]``) sometimes lazily, or by carrying the
-type in its name (``MessageCollection``) - so the two halves of one noun are read, never
-assumed. Where two classes answer one noun - 16 of 1,978 do, ``User`` beside ``User``
-under ``sharepoint.directory`` and ``sharepoint.principal``, ``B2xIdentityUserFlow`` beside
-``B2XIdentityUserFlow`` - the answer is a ranking
-(a class a command can list, then the shorter path, then the alphabet), not a table:
-the same words answer the same type on every run, and nothing has to be kept in step
-with a class that is added tomorrow.
+Two words are one word when they carry the same letters, so ``message-rule``,
+``message_rule`` and ``MessageRule`` all fold to ``messagerule``. The tree does not settle
+its own separators (``cloud_pc.py`` sits beside ``share_point_audit_record.py``), and a
+command line is the wrong place to decide what the library has not.
 
-Discovery is per product, because it has to be cheap: importing the whole tree costs ~3 s,
-while one product costs a fraction of it (cold, interpreter included: ``outlook`` 0.21 s,
-``teams`` 0.44 s, ``sharepoint`` 1.20 s). So :func:`nouns` walks one package and remembers
-the answer, and a command never pays for a product it does not mention.
+Discovery stays inside the product a command names: the whole tree costs ~3 s to import,
+one product 0.2 s (``outlook``) to 1.2 s (``sharepoint``), and the index is kept once built.
 """
 
 from __future__ import annotations
@@ -35,119 +26,107 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import re
-import sys
-import typing
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from difflib import get_close_matches
 from functools import cache
-from types import MappingProxyType
+from types import MappingProxyType, ModuleType
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.verbs import VerbMeta, command_word, verbs_of
 
-#: The roles that address the collection rather than the item: ``list`` reads the feed,
-#: ``create`` posts into it. Everything else - including ``action``, which is why it is
-#: looked up on both halves - acts on one item.
-_COLLECTION_ROLES = frozenset({"list", "create"})
+#: ``list`` reads the feed and ``create`` posts into it, so both are looked for on the
+#: collection first; every other command - ``action`` included - acts on one item.
+COLLECTION_ROLES = frozenset({"list", "create"})
 
 
 @dataclass(frozen=True)
 class Route:
-    """One noun, resolved to the types a command word can be sent to.
+    """What a command line resolved to: one noun, and the half a verb was found on.
 
-    :attr:`entity` is the item and :attr:`collection` the feed that holds it, which may be
-    ``None`` when the type states no collection (a report, a workbook function). When a
-    verb was asked for, :attr:`verb` is its declaration and :attr:`target` the half that
-    declares it - the object a caller sends through, not a name to look up again.
+    :attr:`entity` is the item and :attr:`collection` the feed that holds it, ``None`` for a
+    type that states no feed (a report root, a workbook function). :attr:`verb` and
+    :attr:`target` are filled in only when an action was asked for, and they are the
+    declaration and the class that answers it, so a caller sends through a type instead of
+    looking a name up a second time.
     """
 
     product: str
     noun: str
     entity: type
-    collection: type | None
+    collection: type | None = None
     verb: VerbMeta | None = None
     target: type | None = None
 
 
 def route(product: str, noun: str, action: str = "") -> Route:
-    """The types ``<product> <noun> <action>`` names, or a failure saying what was close.
+    """The type ``<product> <noun> <action>`` names, or a failure saying what was close.
 
     Raises:
-        LookupError: the product imports nothing, the noun is not spelled that way, or no
-            exposed verb on either half answers ``action``. The message lists what does
-            exist, because a command line's job is to be tried.
+        LookupError: the product publishes no types, the noun is spelled with other letters,
+            or no exposed command on either half answers ``action``. The message lists what
+            does exist, because a command line's job is to be tried.
     """
     index = nouns(product)
     key = _fold(noun)
     found = index.get(key)
     if found is None:
         spoken = {_fold(entry.noun): entry.noun for entry in index.values()}
-        near = get_close_matches(key, spoken, n=5)
-        spoken_near = ", ".join(spoken[one] for one in near)
-        raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {spoken_near}?" if near else ""))
+        near = ", ".join(spoken[one] for one in get_close_matches(key, spoken, n=5))
+        raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {near}?" if near else ""))
     if not action:
         return found
-    order = (found.collection, found.entity) if action in _COLLECTION_ROLES else (found.entity, found.collection)
-    halves = [half for half in order if half is not None]
-    for half in halves:
-        for meta in verbs_of(half).values():
-            if meta.expose and meta.name == action:
-                return Route(found.product, found.noun, found.entity, found.collection, meta, half)
-    available = sorted({meta.name for half in halves for meta in verbs_of(half).values() if meta.expose})
-    raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {', '.join(available)}")
+    order = (found.collection, found.entity) if action in COLLECTION_ROLES else (found.entity, found.collection)
+    answers: dict[str, tuple[type, VerbMeta]] = {}
+    for half in reversed([half for half in order if half is not None]):
+        answers.update({meta.name: (half, meta) for meta in verbs_of(half).values() if meta.expose})
+    if action not in answers:
+        raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {', '.join(sorted(answers))}")
+    return replace(found, verb=answers[action][1], target=answers[action][0])
 
 
 @cache
 def nouns(product: str) -> Mapping[str, Route]:
-    """Every noun ``product`` publishes, keyed by the word a command line spells.
+    """Every noun ``product`` publishes, keyed by the letters a command line spells.
 
-    Built by importing that product's package and nothing else, then reading each class's
-    own declarations: its name for the noun, its generic base for the type its collection
-    holds. The answer is cached per product, so a shell pays once.
+    Read from the product's own package and nothing else. A feed names the type it holds in
+    its generic base, or, when that is stated lazily to break a circular import, in its own
+    name - which the tree keeps true for all ten feeds whose base is silent - and the item
+    is filed under the feed so both halves answer one noun.
     """
+    package = _package(product)
+    declared = list(_declared_in(package))
+    known: dict[str, type] = {}
+    for cls in declared:
+        known.setdefault(cls.__name__, cls)
+    held: dict[type, type | None] = {}
+    for cls in declared:
+        if issubclass(cls, ClientObjectCollection):
+            item = cls.item_type() or known.get(cls.__name__.removesuffix("Collection"))
+            if item is not None:
+                held[item] = cls
+        else:
+            held.setdefault(cls, None)
+    grouped: dict[str, list[Route]] = {}
+    for entity, collection in held.items():
+        noun = _noun_of(entity, product)
+        grouped.setdefault(_fold(noun), []).append(Route(product, noun, entity, collection))
+    return MappingProxyType({key: _ranked(options) for key, options in grouped.items()})
+
+
+def _package(product: str) -> ModuleType:
+    """The package a product word names, or a failure naming what is not one."""
     try:
         package = importlib.import_module(f"office365.{product}")
     except ModuleNotFoundError as err:
         raise LookupError(f"no product {product!r}") from err
     if not hasattr(package, "__path__"):
-        raise LookupError(f"no product {product!r}: {product} is a module, not a product")
-    entities: dict[str, list[type]] = {}
-    collections: dict[str, list[type]] = {}
-    for cls in _declared_in(package):
-        bucket = collections if issubclass(cls, ClientObjectCollection) else entities
-        bucket.setdefault(cls.__name__, []).append(cls)
-    candidates: dict[str, list[tuple[type, type | None]]] = {}
-    for name, group in collections.items():
-        stem = name[: -len("Collection")] if name.endswith("Collection") else name
-        for collection in group:
-            held = _item_type(collection)
-            for entity in [held] if held is not None else entities.get(stem, []):
-                candidates.setdefault(_fold(_noun_of(entity, product)), []).append((entity, collection))
-    for group in entities.values():
-        for entity in group:
-            candidates.setdefault(_fold(_noun_of(entity, product)), []).append((entity, None))
-    found: dict[str, Route] = {}
-    for key, options in candidates.items():
-        entity, collection = _ranked(options)
-        found[key] = Route(product, _noun_of(entity, product), entity, collection)
-    return MappingProxyType(found)
+        raise LookupError(f"{product!r} is a module, not a product")
+    return package
 
 
-def _ranked(options: list[tuple[type, type | None]]) -> tuple[type, type | None]:
-    """The one owner of a noun the tree reuses under one name.
-
-    Sixteen nouns are spelled by two classes - ``User`` exists under ``sharepoint.directory``
-    and under ``sharepoint.principal``, ``Group`` beside ``Group`` - and a name is not an
-    identity, so one of them has to be the answer. It is a *ranking*, not a table: the class
-    a command can list (the one with a collection) wins, then the shorter module path, then
-    the alphabet. A rule, so the same words always answer the same type on every run.
-    """
-    return min(options, key=lambda option: (option[1] is None, option[0].__module__.count("."), option[0].__module__))
-
-
-def _declared_in(package: typing.Any) -> Iterator[type]:
+def _declared_in(package: ModuleType) -> Iterator[type]:
     """The client objects whose own module is inside ``package``.
 
     Read from each module's namespace rather than by walking the type tree, and filtered on
@@ -164,37 +143,29 @@ def _declared_in(package: typing.Any) -> Iterator[type]:
                 yield member
 
 
-def _item_type(collection: type) -> type | None:
-    """The type a collection states it holds, from its generic base.
+def _ranked(options: list[Route]) -> Route:
+    """The one owner of a noun the tree reuses under one name.
 
-    The base may state it lazily (``DeltaCollection[ForwardRef('Message')]``), so a name is
-    resolved in the collection's own module - the scope the class was written in.
+    Sixteen nouns are spelled by two classes - ``User`` under ``sharepoint.directory`` and
+    under ``sharepoint.principal``, ``Group`` beside ``Group`` - and a name is not an
+    identity, so one of them has to be the answer. It is a *ranking*, not a table: the class
+    a command can list wins, then the shorter module path, then the alphabet, so the same
+    words answer the same type on every run.
     """
-    for base in getattr(collection, "__orig_bases__", ()):
-        origin = typing.get_origin(base)
-        if not (isinstance(origin, type) and issubclass(origin, ClientObjectCollection)):
-            continue
-        arguments = typing.get_args(base)
-        if not arguments:
-            continue
-        argument = arguments[0]
-        if isinstance(argument, type):
-            return argument
-        scope = sys.modules.get(collection.__module__)
-        resolved = getattr(scope, getattr(argument, "__forward_arg__", ""), None) if scope else None
-        if isinstance(resolved, type):
-            return resolved
-    return None
+    return min(
+        options,
+        key=lambda found: (found.collection is None, found.entity.__module__.count("."), found.entity.__module__),
+    )
 
 
 def _noun_of(entity: type, product: str) -> str:
     """The noun ``entity`` answers, with the product word it repeats left off.
 
     ``planner.tasks.task:PlannerTask`` is ``planner task``, not ``planner planner-task``:
-    the leading ``Planner`` is the product already spelled earlier on the line, which is the
-    same rule the generator follows when it drops a word the module path implies. Only the
-    *product* is stripped - ``DriveItem`` keeps its ``drive`` under ``onedrive``, because
-    nothing in the type system says the word is redundant there.
+    the leading ``Planner`` is the product already spelled earlier on the line, the same rule
+    the generator follows when it drops a word the module path implies. Only the product word
+    is stripped - ``DriveItem`` keeps its ``drive`` under ``onedrive``, because nothing in
+    the type system says the word is redundant there.
     """
     word = command_word(entity.__name__)
     head = command_word(product) + "-"
@@ -204,9 +175,8 @@ def _noun_of(entity: type, product: str) -> str:
 def _fold(word: str) -> str:
     """``MessageRule``, ``message-rule``, ``message_rule`` -> ``messagerule``: one key.
 
-    The separators a command line puts between words are a reading preference, and the tree
-    does not settle them (``cloud_pc.py`` beside ``share_point_audit_record.py``), so they
-    are dropped on both sides rather than decided here. Case goes too, because a shell is
-    not case sensitive about a noun.
+    The separators a command line puts between words are a reading preference, and case is
+    not something a shell is careful about, so both are dropped on both sides rather than
+    decided here.
     """
     return re.sub(r"[^a-z0-9]", "", word.lower())

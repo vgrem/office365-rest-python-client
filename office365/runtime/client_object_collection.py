@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import warnings
 from typing import (
     TYPE_CHECKING,
@@ -14,6 +15,8 @@ from typing import (
     Sequence,
     Type,
     cast,
+    get_args,
+    get_origin,
 )
 
 from typing_extensions import Self
@@ -62,6 +65,37 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
     #: it allows). Declared with
     #: :func:`~office365.runtime.query_capabilities.query_capabilities`.
     _query_capability_decl: Optional[QueryCapability] = None
+
+    @classmethod
+    def item_type(cls) -> Optional[Type[ClientObjectT]]:
+        """The type this collection states it holds, read from its own generic base.
+
+        ``MessageCollection(EntityCollection[Message])`` says ``Message`` in the base, and a
+        collection that states it lazily (``DeltaCollection[ForwardRef('Message')]``) says it
+        in a name the class's own module resolves - the scope the class was written in. So
+        the answer is read once from the declaration rather than guessed from the name of the
+        class, which is what ``MessageCollection`` invites and what
+        ``TopicPageCollection`` (holding ``TopicSitePage``) punishes.
+
+        ``None`` means the collection declares nothing: the base classes in this module do,
+        and every concrete collection in the tree does, so a caller may rely on an answer.
+        """
+        for klass in cls.__mro__:
+            for base in klass.__dict__.get("__orig_bases__", ()):
+                origin = get_origin(base)
+                if not (isinstance(origin, type) and issubclass(origin, ClientObjectCollection)):
+                    continue
+                arguments = get_args(base)
+                if not arguments:
+                    continue
+                argument = arguments[0]
+                if isinstance(argument, type):
+                    return cast("Type[ClientObjectT]", argument)
+                scope = sys.modules.get(klass.__module__)
+                resolved = getattr(scope, getattr(argument, "__forward_arg__", ""), None) if scope else None
+                if isinstance(resolved, type):
+                    return cast("Type[ClientObjectT]", resolved)
+        return None
 
     def __init__(
         self,
