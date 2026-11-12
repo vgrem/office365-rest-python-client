@@ -6,7 +6,7 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
                --tenant contoso.onmicrosoft.com --client-id <id> [--scopes User.Read Mail.Read]
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
-    o365 <product> <noun> <action> [flags]      # arrives with the routing step
+    o365 <product> <noun> <action> [flags]
 
 There is no flag table here. ``--tenant`` reaches ``GraphClient.__init__`` because the
 constructor declares ``tenant``; the same flag reaches ``ClientContext.with_device_flow``
@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import functools
 import importlib
 import inspect
 import json
@@ -41,6 +42,7 @@ import os
 import sys
 import time
 import types
+from collections.abc import Mapping
 from enum import Enum
 from pathlib import Path
 from typing import Any, Union, get_args, get_origin
@@ -68,18 +70,18 @@ def main(argv: "list[str] | None" = None) -> int:
     if not words or words[0] in ("-h", "--help"):
         print(_usage())
         return 0 if words else 2
-    command, rest = words[0], words[1:]
-    if command == "login":
+    word, rest = words[0], words[1:]
+    if word == "login":
         return login(audience or "graph", rest)
-    if command == "whoami":
+    if word == "whoami":
         return whoami(audience)
-    if command == "logout":
+    if word == "logout":
         return logout(audience)
-    print(
-        f"o365: unknown command {command!r}; the <product> <noun> <action> grammar is not wired yet\n{_usage()}",
-        file=sys.stderr,
-    )
-    return 2
+    if not rest:
+        print(f"o365: unknown command {word!r}\n{_usage()}", file=sys.stderr)
+        return 2
+    noun, rest = rest[0], rest[1:]
+    return command(word, noun, rest[0] if rest else "", rest[1:])
 
 
 def login(audience: str, argv: "list[str]") -> int:
@@ -164,6 +166,100 @@ def logout(audience: str) -> int:
     _save(sessions)
     print("logged out: " + ", ".join(dropped))
     return 0
+
+
+def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
+    """Run ``<product> <noun> <action>``: the route is read, the flags are the method's own."""
+    from office365.routing import chain, route
+
+    try:
+        found = route(product, noun, action)
+    except LookupError as err:
+        print(f"o365: {err}", file=sys.stderr)
+        return 2
+    if not action:
+        print(f"{product} {found.noun}: " + ", ".join(_answers(found)))
+        return 0
+    target = found.target
+    if target is None:
+        print(f"o365: {product} {noun} does not answer {action!r}", file=sys.stderr)
+        return 2
+
+    try:
+        client = _client(_audience(found.entity))
+    except LookupError as err:
+        print(f"o365: {err}", file=sys.stderr)
+        return 2
+    path = chain(client, target)
+    if path is None:
+        print(
+            f"o365: {product} {noun} is declared, but nothing walks there from {type(client).__name__}:"
+            " every link on the way needs an argument the model does not name yet",
+            file=sys.stderr,
+        )
+        return 2
+
+    method = getattr(functools.reduce(getattr, path, client), found.method)
+    parser = argparse.ArgumentParser(
+        prog=f"o365 {product} {noun} {action}",
+        description=f"Walk {' -> '.join(path)}, then {found.method}() on {target.__name__}",
+    )
+    _flags(parser, method, set())
+    given = _accepted(parser.parse_args(argv), method)
+    result = method(**given)
+    client.execute_query()
+    print(json.dumps(_rows(result), indent=2, default=str))
+    return 0
+
+
+def _answers(found: Any) -> "list[str]":
+    """The actions a noun answers, read off the two halves the route names."""
+    from office365.runtime.verbs import verbs_of
+
+    halves = (found.entity, found.collection)
+    return sorted({meta.name for half in halves if half for meta in verbs_of(half).values() if meta.expose})
+
+
+def _rows(result: Any) -> Any:
+    """What a command prints: the payload the object serializes to, always as a list."""
+    payload = result.to_json() if hasattr(result, "to_json") else result
+    return payload if isinstance(payload, list) else [payload]
+
+
+def _audience(entity: type) -> str:
+    """Which token a type is read with: the entity base it inherits, which is the family."""
+    graphs = "office365.entity.Entity"
+    if graphs in {f"{base.__module__}.{base.__name__}" for base in entity.__mro__}:
+        return "graph"
+    if "office365.sharepoint.entity.Entity" in {f"{base.__module__}.{base.__name__}" for base in entity.__mro__}:
+        return "sharepoint"
+    raise LookupError(f"{entity.__name__} inherits neither entity, so no audience owns it")
+
+
+def _client(audience: str) -> Any:
+    """A client for ``audience``, holding the token its session kept.
+
+    A command does not log in: it either finds a live token in the store or says to run
+    ``login`` again. Re-running the mode would need the credentials a session must not
+    keep - the second half of ``username-and-password`` was missing on the first live run.
+    """
+    entry = _load().get(audience)
+    if entry is None:
+        ran = "o365 login" if audience == "graph" else f"o365 {audience} login"
+        raise LookupError(f"no session for {audience}; run {ran}")
+    client = _root(audience)(**dict(entry["constructor"]))
+    token = _token(entry)
+    client.pending_request().with_access_token(lambda: {"access_token": token})
+    return client
+
+
+def _token(entry: "Mapping[str, Any]") -> str:
+    """The access token the session still holds; nothing here refreshes it."""
+    tokens = json.loads(entry.get("cache") or "{}").get("AccessToken", {})
+    live = [token for token in tokens.values() if int(token.get("expires_on", 0)) > time.time()]
+    if not live:
+        raise LookupError(f"the {entry['method']} token has expired; run login again")
+    return max(live, key=lambda token: int(token["expires_on"]))["secret"]
 
 
 def _root(audience: str) -> type:

@@ -57,32 +57,67 @@ its cache; ``ClientContext`` authenticates through a different provider
 (``office365/runtime/auth/authentication_context.py``) that has no cache to thread, so a
 sharepoint login authenticates and is not kept until that provider grows one.
 
+**A command does not log in — measured, and this is why.** The first live run reached
+``username-and-password``, and the second command failed: ``with_username_and_password() missing
+2 required positional arguments``. Replaying the mode needs the password, and a session must not
+keep one. So a command reads the access token the session already holds
+(``pending_request().with_access_token(...)``) and says ``run login again`` when it has expired.
+One rule for all six modes, no secret on disk, and nothing to thread through MSAL a second time.
+
 ## 2. Addressing — the honest measurement
 
 A verb is reachable; an *instance* is not. ``Message.send`` needs a ``Message``, and the path to
-one is a chain of navigation properties from a root. Measured over the tree, walking declared
-navigations from ``GraphClient`` and ``ClientContext`` (reading the item type out of a generic
-alias such as ``EntityCollection[Mailbox]`` — the same read ``item_type()`` does):
+one is a chain of links from a root. A link, in this model, is **a property that says what it
+returns**: ``GraphClient.me`` answers ``User``, ``User.messages`` answers ``MessageCollection``,
+and ``EntityCollection[Note]`` is read through its origin because that is what a generic holds at
+run time. Nothing is guessed and no URL is composed — the walk is ``chain(root, target)`` in
+``office365/routing.py``, and each step is ``getattr``.
 
-| | nouns |
+Two limits keep it honest: a getter that *needs an argument* is not a link (the walk has nothing
+to pass it), and a link that is only declared as a navigation without a getter is not a link
+either (``getattr`` would fail).
+
+| | measured |
 | --- | --- |
-| addressable from a root with no arguments | **851** |
-| addressable with one ``{id}`` flag | 60 |
-| addressable with nothing the model states | **1 029** |
+| types reachable from the two roots | **315** (234 graph, 81 sharepoint) |
+| nouns addressable in the eight largest products | **169 of 1 520** |
+| the same, allowing one hop into a feed's item type | 200 |
 
-Most of the gap is not an oversight in the model; those types are addressed by a *server path*
-rather than by a navigation: ``Mailbox`` is ``/admin/exchange/mailboxes/{id}``, sharepoint
-collections are ``web.lists.get_by_title(...)``, and 684 of the 1 029 are sharepoint nouns whose
-addressing is per-list. ``office365/<p>/internal/paths/`` is where the unusual ones are spelled.
+Per product, noun-and-feed pairs the walk reaches: ``directory`` 51/380, ``sharepoint`` 61/684,
+``onedrive`` 20/104, ``outlook`` 10/30, ``teams`` 10/69, ``intune`` 10/233, ``planner`` 5/12,
+``todo`` 2/8. Re-take any row with ``chain()`` itself: for every ``nouns(product)`` entry, ask
+``chain(GraphClient(), entry.collection or entry.entity)``.
 
-Two consequences, both worth deciding before any more code:
+**Retracted: 851 / 60 / 1 029 and "911 of 1 940".** Those numbers came from an earlier probe
+that is not reproducible by an attribute walk, and an attempt to re-derive them with declared
+navigations *and* annotated getters gives 221, not 911. The table above is what the code does;
+the earlier figures are not used anywhere.
 
-* the CLI can ship over the 911 nouns the model addresses and be *honest* about the rest
-  (``o365 outlook message list`` works; ``o365 admin mailbox list`` needs a path first);
-* covering the rest needs a **path template per noun**, and the only source that has one is the
-  service metadata (``graphopenapi.yaml``, 35 MB, already in ``generator/metadata``). That is a
-  generated *addressing* table, not a hand-written command table — the thing rejected earlier
-  was a table of *words*, which the type system already states.
+The gap is not an oversight in the model. Most of the rest are addressed by a *server path*
+rather than by a link: ``Mailbox`` is ``/admin/exchange/mailboxes/{id}``, sharepoint collections
+are ``web.lists.get_by_title(...)``, and 684 of the unaddressable nouns are sharepoint ones whose
+addressing is per-list. What the model does **not** state, anywhere, is *how to address one item
+of a feed*: ``todo task`` is reachable only as ``me.todo.lists[?].tasks``, and no declaration says
+what that ``?`` is for a given collection. ``ClientObjectCollection`` has ``single(expression)``,
+``first``, and ``get_by_alternate_key``, but no per-type statement of the key an item is
+addressed by — ``get_by_id`` exists on 12 collections and is not a rule.
+
+### 2.1 What a command runs now — measured
+
+``o365 <product> <noun> <action> [flags]`` resolves the route, walks the links, and calls the
+method the verb names. Flags are the method's own signature (the machinery ``login`` already
+uses); the object it is called on is the one the walk reached.
+
+* ``o365 outlook message list`` → ``https://graph.microsoft.com/v1.0/me/messages``, records on
+  stdout. The URL is the one the library's own builder makes, produced code-based and offline
+  with a stand-in MSAL and a scripted transport, and again live against a real tenant.
+* ``o365 directory user get`` → ``GET /me``, live.
+* ``o365 outlook message`` with no action → the 16 actions the noun answers, read off
+  ``verbs_of`` for the entity and its feed (``list``, ``get``, ``create``, ``send`` …).
+* ``o365 outlook attachment get`` → exit 2, and a line that says the noun is declared but nothing
+  walks there: no URL is invented for it.
+
+Reaching a noun by an ``{id}`` is therefore the next *model* question, not the next CLI question.
 
 ## 3. Decisions proposed
 
@@ -135,7 +170,7 @@ cannot justify — refusing with a reason beats guessing.
 | --- | --- | --- | --- |
 | 0 | ``token_cache`` in the three public flows + a test that it reaches MSAL | 3 lines | persistence is possible at all — **done** |
 | 1 | ``office365/cli.py``: ``login`` (reads ``verbs_of(root)`` where ``name == "login"``, picks by ``--mode``, derives every flag from the two signatures), ``whoami``, ``logout``, and the store | 270 lines | the session reads the declarations, and declares nothing — **done** |
-| 2 | ``o365 outlook message list|get|send`` | ~40 lines + ``chain(root, noun)`` (~25) reading ``TypeSchema.navigations`` and ``item_type()`` | the engine is thin: one equality test against the library's own path builder |
+| 2 | ``o365 <product> <noun> <action>``: ``chain(root, target)`` (25 lines) plus the command path in ``cli.py`` (110 lines) | 163 lines net | the engine is thin: the URL comes out of the model, and the flags out of the signature — **done**, live |
 | 3 | ``-o json|table|tsv``, ``--select``, ``--filter``, ``--top``, ``--all`` | output only | the data verbs already exist (``get_all``, ``QueryOptions``) |
 | 4 | ``--yes`` gate from ``VerbMeta.confirm`` | small | the CLI can refuse before building a request |
 | 5 | ``--help`` from signatures + docstrings | small | flags are exhaustive |
@@ -151,7 +186,10 @@ modules, ~2 s) is only needed to list what exists, which no command does.
 1. ~~**Client id.**~~ Decided: ``--client-id`` (or ``O365_CLIENT_ID``) is mandatory, and a login
    without it is refused with that reason. Shipping a public client id is a product question,
    not a coding one, and can be answered later without changing the grammar.
-2. **Addressing scope.** Ship over the 911 addressable nouns now, or generate path templates from
-   ``graphopenapi.yaml`` first to reach 1 940? The second is a generator job, not a CLI job.
+2. **One item of a feed.** 169 of 1 520 nouns are reachable by walking; the rest need either an
+   ``{id}`` in the path or a server path template. The first is a model question (nothing states
+   what addresses one element of a collection), the second a generator question
+   (``graphopenapi.yaml``). Neither belongs in the CLI: ``o365 outlook attachment get`` refuses
+   rather than composing a URL.
 3. **``[cli]`` extra** — dropped as S6 argues.
 4. Nothing here adds a model declaration: no new decorator, no noun table, no client-id table.

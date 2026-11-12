@@ -16,6 +16,9 @@ Two words are one word when they carry the same letters, so ``message-rule``,
 its own separators (``cloud_pc.py`` sits beside ``share_point_audit_record.py``), and a
 command line is the wrong place to decide what the library has not.
 
+A route is walked, not built: :func:`chain` reads the return annotations from the root
+down, so a command reaches the object the model already connects instead of composing a URL.
+
 Discovery stays inside the product a command names: the whole tree costs ~3 s to import,
 one product 0.2 s (``outlook``) to 1.2 s (``sharepoint``), and the index is kept once built.
 """
@@ -25,6 +28,7 @@ from __future__ import annotations
 import importlib
 import pkgutil
 import re
+import typing
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, replace
 from difflib import get_close_matches
@@ -85,6 +89,59 @@ def route(product: str, noun: str, action: str = "") -> Route:
         raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {', '.join(sorted(answers))}")
     target, method, verb = answers[action]
     return replace(found, verb=verb, target=target, method=method)
+
+
+def chain(root: object, target: type) -> tuple[str, ...] | None:
+    """The attributes to walk from ``root`` to an instance of ``target``, or ``None``.
+
+    A command line names a type; a request needs an object hanging off the client, and the
+    route between them is already written down: every link is a property that says what it
+    returns. So the walk reads return annotations and nothing else - ``GraphClient.me``
+    answers ``User``, ``User.messages`` answers ``MessageCollection`` - and a generic feed
+    is read through its origin, because ``EntityCollection[Note]`` holds an
+    ``EntityCollection`` at run time whatever the parameter says.
+
+    Breadth first, so the path is the shortest one and the first noun the model can reach is
+    the one a user gets. ``None`` is the honest answer for the rest: 588 types are
+    constructed nowhere, and no command line should invent a URL to reach them.
+    """
+    start = type(root)
+    seen = {start}
+    queue: list[tuple[type, tuple[str, ...]]] = [(start, ())]
+    while queue:
+        cls, path = queue.pop(0)
+        for attribute, held in _links(cls).items():
+            if held is target:
+                return path + (attribute,)
+            if held not in seen:
+                seen.add(held)
+                queue.append((held, path + (attribute,)))
+    return None
+
+
+@cache
+def _links(cls: type) -> Mapping[str, type]:
+    """Attribute -> the client object it holds, for the links a walk may take.
+
+    A getter that needs an argument is not a link: the walk has nothing to pass it, and the
+    60 links that take one ``id`` are addressed by a flag, not by walking.
+    """
+    links: dict[str, type] = {}
+    for klass in reversed(cls.__mro__):
+        for name, member in vars(klass).items():
+            if not isinstance(member, property) or member.fget is None:
+                continue
+            code = member.fget.__code__
+            if code.co_argcount != 1 or code.co_kwonlyargcount:
+                continue
+            try:
+                hint = typing.get_type_hints(member.fget).get("return")
+            except NameError:  # a name the getter's module cannot import is not a route
+                continue
+            held = typing.get_origin(hint) or hint
+            if isinstance(held, type) and issubclass(held, ClientObject):
+                links.setdefault(name, held)
+    return MappingProxyType(links)
 
 
 @cache
