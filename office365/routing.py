@@ -32,7 +32,7 @@ import typing
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, replace
 from difflib import get_close_matches
-from functools import cache
+from functools import cache, cached_property
 from types import MappingProxyType, ModuleType
 
 from office365.runtime.client_object import ClientObject
@@ -58,6 +58,21 @@ class Route:
     target: type | None = None
     method: str = ""
 
+    @cached_property
+    def commands(self) -> "Mapping[str, tuple[type, str, VerbMeta]]":
+        """Action -> the half that answers it, the attribute on it, and the declaration.
+
+        The item is asked first, then its feed; they never disagree (a feed restates the verb it
+        inherits), and the declaration says which half means what.
+        """
+        answers: dict[str, tuple[type, str, VerbMeta]] = {}
+        for half in (self.entity, self.collection):
+            if half is not None:
+                for method, meta in verbs_of(half).items():
+                    if meta.expose:
+                        answers.setdefault(meta.name, (half, method, meta))
+        return MappingProxyType(answers)
+
 
 def route(product: str, noun: str, action: str = "") -> Route:
     """The type ``<product> <noun> <action>`` names, or a failure saying what was close.
@@ -76,18 +91,10 @@ def route(product: str, noun: str, action: str = "") -> Route:
         raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {near}?" if near else ""))
     if not action:
         return found
-    # The item is asked first, then its feed; they never disagree, because a feed restates
-    # the verb it inherits (``ClientObjectCollection.get`` answers ``list``) and no noun in
-    # the tree claims one word on both halves. The declaration says which half means what.
-    answers: dict[str, tuple[type, str, VerbMeta]] = {}
-    for half in (found.entity, found.collection):
-        if half is not None:
-            for method, meta in verbs_of(half).items():
-                if meta.expose:
-                    answers.setdefault(meta.name, (half, method, meta))
-    if action not in answers:
-        raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {', '.join(sorted(answers))}")
-    target, method, verb = answers[action]
+    if action not in found.commands:
+        spoken = ", ".join(sorted(found.commands))
+        raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {spoken}")
+    target, method, verb = found.commands[action]
     return replace(found, verb=verb, target=target, method=method)
 
 
@@ -102,10 +109,12 @@ def chain(root: object, target: type) -> tuple[str, ...] | None:
     ``EntityCollection`` at run time whatever the parameter says.
 
     Breadth first, so the path is the shortest one and the first noun the model can reach is
-    the one a user gets. ``None`` is the honest answer for the rest: 588 types are
-    constructed nowhere, and no command line should invent a URL to reach them.
+    the one a user gets. ``root`` may be the client class, because the walk reads types only
+    and a command has to name its own route before it holds a token. ``None`` is the honest
+    answer for the rest: 588 types are constructed nowhere, and no command line should invent
+    a URL to reach them.
     """
-    start = type(root)
+    start = root if isinstance(root, type) else type(root)
     seen = {start}
     queue: list[tuple[type, tuple[str, ...]]] = [(start, ())]
     while queue:

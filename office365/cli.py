@@ -92,8 +92,10 @@ def main(argv: "list[str] | None" = None) -> int:
 
 def login(audience: str, argv: "list[str]") -> int:
     """Authenticate, then keep the session in the store."""
+    from office365.runtime.verbs import verbs_of
+
     root = _root(audience)
-    logins = {attribute: meta for attribute, meta in _verbs(root).items() if meta.name == "login" and meta.expose}
+    logins = {attribute: meta for attribute, meta in verbs_of(root).items() if meta.name == "login" and meta.expose}
     modes = sorted({meta.mode for meta in logins.values()})
     parser = argparse.ArgumentParser(
         prog=f"o365 {audience} login",
@@ -184,30 +186,34 @@ def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
     except LookupError as err:
         return _refuse(str(err))
     if not action:
-        print(f"{product} {found.noun}: " + ", ".join(_answers(found)))
+        print(f"{product} {found.noun}: " + ", ".join(sorted(found.commands)))
         return 0
     target = found.target
     if target is None:
         return _refuse(f"{product} {noun} does not answer {action!r}")
+    method = getattr(target, found.method)
+    # The walk reads types only, so the route to the noun is known before a token is: help and
+    # a bad flag are answered without a session, and only the request itself needs one.
+    path = chain(_root(_audience(found.entity)), target)
+    parser = argparse.ArgumentParser(
+        prog=f"o365 {product} {noun} {action}",
+        description=f"Walk {' -> '.join(path)}, then {found.method}() on {target.__name__}"
+        if path
+        else f"{found.method}() on {target.__name__}",
+    )
+    _flags(parser, method, set())
+    given = _accepted(parser.parse_args(argv), method)
 
     try:
         client = _client(_audience(found.entity))
     except LookupError as err:
         return _refuse(str(err))
-    path = chain(client, target)
     if path is None:
         return _refuse(
             f"{product} {noun} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
         )
-
-    method = getattr(functools.reduce(getattr, path, client), found.method)
-    parser = argparse.ArgumentParser(
-        prog=f"o365 {product} {noun} {action}",
-        description=f"Walk {' -> '.join(path)}, then {found.method}() on {target.__name__}",
-    )
-    _flags(parser, method, set())
-    return _send(client, method, _accepted(parser.parse_args(argv), method))
+    return _send(client, getattr(functools.reduce(getattr, path, client), found.method), given)
 
 
 def _send(client: Any, method: Any, given: "Mapping[str, Any]") -> int:
@@ -223,14 +229,6 @@ def _send(client: Any, method: Any, given: "Mapping[str, Any]") -> int:
     return 0
 
 
-def _answers(found: Any) -> "list[str]":
-    """The actions a noun answers, read off the two halves the route names."""
-    from office365.runtime.verbs import verbs_of
-
-    halves = (found.entity, found.collection)
-    return sorted({meta.name for half in halves if half for meta in verbs_of(half).values() if meta.expose})
-
-
 def _rows(result: Any) -> Any:
     """What a command prints: the payload the object serializes to, always as a list."""
     payload = result.to_json() if hasattr(result, "to_json") else result
@@ -238,13 +236,15 @@ def _rows(result: Any) -> Any:
 
 
 def _audience(entity: type) -> str:
-    """Which token a type is read with: the entity base it inherits, which is the family."""
-    graphs = "office365.entity.Entity"
-    if graphs in {f"{base.__module__}.{base.__name__}" for base in entity.__mro__}:
-        return "graph"
-    if "office365.sharepoint.entity.Entity" in {f"{base.__module__}.{base.__name__}" for base in entity.__mro__}:
-        return "sharepoint"
-    raise LookupError(f"{entity.__name__} inherits neither entity, so no audience owns it")
+    """Which token reads a type: its product, when the product is an audience of its own.
+
+    ``sharepoint`` is an audience and a product; ``outlook`` and 20 more are only products, all
+    served by one token. No MRO is walked, so a shared base cannot mislead.
+    """
+    from office365.runtime.schema import TypeSchema
+
+    product = TypeSchema.of(entity).product
+    return product if product in AUDIENCES else "graph"
 
 
 def _client(audience: str) -> Any:
@@ -288,13 +288,6 @@ def _root(audience: str) -> type:
         if isinstance(member, type) and issubclass(member, ClientRuntimeContext) and member is not ClientRuntimeContext
     ]
     return min(roots, key=lambda root: root.__module__.count("."))
-
-
-def _verbs(root: type) -> "Any":
-    """The commands a root declares."""
-    from office365.runtime.verbs import verbs_of
-
-    return verbs_of(root)
 
 
 def _flags(parser: argparse.ArgumentParser, fn: Any, seen: "set[str]") -> None:

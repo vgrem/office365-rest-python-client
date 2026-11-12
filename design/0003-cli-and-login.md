@@ -207,3 +207,115 @@ modules, ~2 s) is only needed to list what exists, which no command does.
    rather than composing a URL.
 3. **``[cli]`` extra** — dropped as S6 argues.
 4. Nothing here adds a model declaration: no new decorator, no noun table, no client-id table.
+
+## 6. The name a class declares — the marker that is missing
+
+A command needs three facts from the model, and it now reads all three from metadata: the noun
+(``ClientObjectCollection.item_type()``), the action (``@verb``), and the product
+(``__product__`` in the package). A fourth it still has to guess — **which family a type belongs
+to** — and today it guesses by walking the MRO for one of the two ``Entity`` bases. That guess is
+wrong for three models:
+
+| model | imports | should be |
+| --- | --- | --- |
+| ``office365.copilot.admin.CopilotAdmin`` | ``office365.sharepoint.entity.Entity`` | ``office365.entity.Entity`` |
+| ``office365.copilot.root.CopilotRoot`` | ``office365.sharepoint.entity.Entity`` | ``office365.entity.Entity`` |
+| ``office365.directory.authentication.methods.sms_target.SmsAuthenticationMethodTarget`` | ``office365.sharepoint.entity.Entity`` | ``office365.entity.Entity`` |
+
+All three are Graph types (``copilot/admin``, ``copilot/root``, ``sms-authentication-method-target``),
+so today each answers ``SP.<name>`` as its wire name, ``Id`` as its key, and the v3 entity path.
+Measured before the fix: ``o365 copilot admin get`` asked for the **sharepoint** session. The
+product rule (``TypeSchema.product``) answers ``graph`` for them now, so only the wire, the key
+and the path are still wrong, and the fix is one import line each.
+
+Eleven more SharePoint types inherit neither base — ``term``, ``term-set``, ``term-store``,
+``term-group``, ``taxonomy-item``, ``client-side-page``, ``spo-operation``,
+``site-collection-management-service``, ``picker-entity-information``, ``group-site-manager``,
+``token-response`` — and the honest consequence is already the behaviour: ``chain`` answers
+``None`` for all eleven, so no command claims them.
+
+**The real finding is bigger, and it is the opposite of a gap.** The OData name is not missing:
+it is stated **4 642 times** as an instance property —
+
+```python
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.User"
+```
+
+— 3 722 model classes and 910 enums. ``ClientObject.entity_type_name`` **already** reads
+``self._odata_type_name`` first, and ``ClientValue.entity_type_name`` is nothing but
+``return self._odata_type_name``. The class fact exists; what does not exist is anybody
+*declaring* it. Measured consequences:
+
+- ``edm_type_name(cls)`` answers ``None`` for ``Web``, ``User``, ``Term``, ``CopilotRoot`` and
+  ``ClientSidePage``, so resolution falls through to constructing a throwaway instance.
+- ``addresses_version(cls)`` is ``False`` for every model, because ``getattr(cls,
+  "entity_type_name")`` is a ``property`` object, not a string. ``ClientQuery._require_declared_member``
+  returns early on that, which means **the beta/stable gate never runs for an operation name** —
+  its own docstring says it is the difference between a local error and a 404 naming a segment.
+
+One line per class states the same fact where a class can be asked for it:
+
+```python
+    _odata_type_name: ClassVar[str] = "microsoft.graph.User"
+```
+
+That is **10 189 lines fewer** in generated code (4 642 × 2 saved, 4 642 added), it makes
+``edm_type_name`` a dictionary read instead of an instantiation, it turns the operation gate on,
+and it lets ``_audience`` be ``TypeSchema.product`` for every type without an MRO walk. Enums have
+to keep the property: a class attribute in an ``Enum`` body becomes a **member** (measured), and
+the sunder spelling is refused (``ValueError: _sunder_ names … are reserved``).
+
+**Prototyped on one file, and the swap alone is not enough.** Removing ``User.entity_type_name``
+and declaring ``_odata_type_name = "microsoft.graph.User"`` was enough for ``edm_type_name(User)``
+(None -> ``microsoft.graph.User``, no instantiation, no import needed in the file), but
+``User(None).entity_type_name`` then answered **``microsoft.graph.DirectoryObject``**: both
+``Entity`` bases derive a name, cache it in ``self._entity_type_name``, and never look at the fact,
+so a class that inherits from another would start lying about itself.
+
+So three readers come first, and each is smaller than what it replaces:
+
+- ``ClientObject.entity_type_name`` becomes the one reader of all three sources, in the order the
+  object knows them: ``_entity_type_name`` (stated about *this* object - a list item's real type
+  arrives from the server, ``listitem.py:1094``), then ``_odata_type_name`` (declared by the
+  class), then a derived default.
+- ``office365/entity.py`` and ``office365/sharepoint/entity.py`` stop overriding the property and
+  override only the default (``microsoft.graph.<camel>`` / ``SP.<Name>``): 10 and 6 lines become
+  2 each.
+- ``addresses_version`` reads ``edm_type_name(model)`` instead of ``getattr(model,
+  "entity_type_name")``, which is the difference between the operation gate running and not.
+
+Then the sweep is mechanical (``ast`` in, ``ast`` out, 4 632 files, −3 lines each), and it changes
+what a *class* answers, so it lands with the generator template change
+(``generator/build/member.py`` emits the property; ``generator/tools/type_identity.py`` reads the
+shape) and a live run, not just ``--offline``.
+
+## 7. Completion — possible, and what it costs
+
+The grammar is already a tree: products (22, 0.16 s to enumerate), nouns (``nouns(product)``),
+actions (``Route.commands``), flags (a method signature). Completion is a fourth reader of those,
+never a fourth source, and it is one hidden verb plus a six-line shell function that
+``o365 completion bash|zsh`` prints.
+
+Cost is the whole question, measured per level, cold:
+
+| level | what it reads | time |
+| --- | --- | --- |
+| product | the 22 packages | 0.16 s |
+| noun | ``nouns('outlook')`` | 0.22 s |
+| noun | ``nouns('teams')`` | 0.42 s |
+| noun | ``nouns('directory')`` | 0.97 s |
+| noun | ``nouns('sharepoint')`` (684) | 1.34 s |
+| action | ``route(product, noun)`` — reuses the same index | +0.10 s |
+
+Two answers, and the decision is a product one:
+
+1. **No cache.** Tab on ``o365 sharepoint `` takes 1.3 s. Correct, never stale, and paid only
+   by the two large products.
+2. **A cache of a declaration.** The index is a function of the library version, so it is written
+   once per version under ``~/.o365/nouns/<version>/<product>.json`` and read thereafter (~10 ms).
+   A stale cache can only *offer* a noun that no longer routes, and the run refuses it — the cache
+   is never the answer to "what exists", only a faster copy of one.
+
+Nothing about completion is a table: no name in it is authored.
