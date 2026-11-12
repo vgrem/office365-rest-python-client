@@ -24,10 +24,11 @@ no app registration of its own, so ``--client-id`` or ``O365_CLIENT_ID`` is requ
 A ``--password`` is a flag like any other, which also means it is visible in the process
 list; a secret store behind ``--authority``/``--client-secret`` is the better habit.
 
-A session is one token, so it is kept per audience and not per product, and it is kept
-only where the root can hold a cache: ``GraphClient`` and ``ExchangeAdminClient`` can,
-``ClientContext`` authenticates through a different provider that has no cache to hold,
-so ``o365 sharepoint login`` verifies the credentials and says it did not keep them.
+A session is one token, so it is kept per audience and not per product. What is kept is
+the access token itself, plus MSAL's cache where the root has one to hold: ``GraphClient``
+and ``ExchangeAdminClient`` do, and ``ClientContext`` authenticates through a different
+provider that does not, so a sharepoint session is kept until its token expires and is then
+renewed by logging in again.
 """
 
 from __future__ import annotations
@@ -62,11 +63,16 @@ DEFAULT_MODE = "device-flow"
 #: Parameters the command line fills itself, so they are never flags.
 SUPPLIED = ("self", "token_cache", "token_callback")
 
+#: The words an audience prefixes: ``o365 sharepoint login`` is a session, not a noun.
+SESSION = ("login", "whoami", "logout")
+
 
 def main(argv: "list[str] | None" = None) -> int:
     """Run one command, returning the process exit code."""
     words = list(sys.argv[1:] if argv is None else argv)
-    audience = words.pop(0) if words and words[0] in AUDIENCES else ""
+    # An audience word names a session, so it is only taken when a session verb follows it:
+    # `o365 sharepoint login` is the sharepoint session, `o365 sharepoint web get` the product.
+    audience = words.pop(0) if len(words) > 1 and words[1] in SESSION and words[0] in AUDIENCES else ""
     if not words or words[0] in ("-h", "--help"):
         print(_usage())
         return 0 if words else 2
@@ -117,13 +123,9 @@ def login(audience: str, argv: "list[str]") -> int:
     constructor = {name: value for name, value in given.items() if name in inspect.signature(root).parameters}
     client = root(**constructor)
     getattr(client, method)(**{name: value for name, value in given.items() if name not in constructor})
-    token = client.pending_request().authentication_context.acquire_token()
-    claims = _claims(token.accessToken or "")
-
-    if cache is None:
-        print(_summary(audience, {"mode": args.mode, "claims": claims, "constructor": {}}))
-        print(f"o365: this session is not kept - {root.__name__} takes no token_cache\n", file=sys.stderr)
-        return 0
+    # Both providers state the same property: acquired on first read, cached, never validated.
+    token = client.pending_request().authentication_context.access_token or ""
+    claims = _claims(token)
 
     sessions = _load()
     sessions[audience] = {
@@ -132,7 +134,10 @@ def login(audience: str, argv: "list[str]") -> int:
         "client_id": given["client_id"],
         "constructor": {name: _plain(value) for name, value in constructor.items() if name != "token_cache"},
         "claims": claims,
-        "cache": cache.serialize(),
+        # The token itself, so an audience whose root has no cache to hold is still kept;
+        # the cache beside it is what MSAL refreshes from when the root can.
+        "token": {"access_token": token, "expires_on": int(claims.get("exp", 0))},
+        "cache": cache.serialize() if cache is not None else "",
     }
     _save(sessions)
     print(_summary(audience, sessions[audience]))
@@ -164,6 +169,12 @@ def logout(audience: str) -> int:
     return 0
 
 
+def _refuse(message: str, code: int = 2) -> int:
+    """Say why nothing ran, and answer the shell with a non-zero code."""
+    print(f"o365: {message}", file=sys.stderr)
+    return code
+
+
 def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
     """Run ``<product> <noun> <action>``: the route is read, the flags are the method's own."""
     from office365.routing import chain, route
@@ -171,29 +182,24 @@ def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
     try:
         found = route(product, noun, action)
     except LookupError as err:
-        print(f"o365: {err}", file=sys.stderr)
-        return 2
+        return _refuse(str(err))
     if not action:
         print(f"{product} {found.noun}: " + ", ".join(_answers(found)))
         return 0
     target = found.target
     if target is None:
-        print(f"o365: {product} {noun} does not answer {action!r}", file=sys.stderr)
-        return 2
+        return _refuse(f"{product} {noun} does not answer {action!r}")
 
     try:
         client = _client(_audience(found.entity))
     except LookupError as err:
-        print(f"o365: {err}", file=sys.stderr)
-        return 2
+        return _refuse(str(err))
     path = chain(client, target)
     if path is None:
-        print(
-            f"o365: {product} {noun} is declared, but nothing walks there from {type(client).__name__}:"
-            " every link on the way needs an argument the model does not name yet",
-            file=sys.stderr,
+        return _refuse(
+            f"{product} {noun} is declared, but nothing walks there from {type(client).__name__}:"
+            " every link on the way needs an argument the model does not name yet"
         )
-        return 2
 
     method = getattr(functools.reduce(getattr, path, client), found.method)
     parser = argparse.ArgumentParser(
@@ -201,9 +207,18 @@ def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
         description=f"Walk {' -> '.join(path)}, then {found.method}() on {target.__name__}",
     )
     _flags(parser, method, set())
-    given = _accepted(parser.parse_args(argv), method)
+    return _send(client, method, _accepted(parser.parse_args(argv), method))
+
+
+def _send(client: Any, method: Any, given: "Mapping[str, Any]") -> int:
+    """Call the method, run the one query it queued, and print what came back."""
+    from office365.runtime.client_request_exception import ClientRequestException
+
     result = method(**given)
-    client.execute_query()
+    try:
+        client.execute_query()
+    except ClientRequestException as err:
+        return _refuse(str(err), 1)
     print(json.dumps(_rows(result), indent=2, default=str))
     return 0
 
@@ -245,16 +260,20 @@ def _client(audience: str) -> Any:
         raise LookupError(f"no session for {audience}; run {ran}")
     client = _root(audience)(**dict(entry["constructor"]))
     token = _token(entry)
-    client.pending_request().with_access_token(lambda: {"access_token": token})
+    # The OAuth response shape, not just the secret: a provider reads the scheme too.
+    client.pending_request().with_access_token(lambda: {"access_token": token, "token_type": "Bearer"})
     return client
 
 
 def _token(entry: "Mapping[str, Any]") -> str:
     """The access token the session still holds; nothing here refreshes it."""
+    kept = entry.get("token") or {}
+    if int(kept.get("expires_on", 0)) > time.time():
+        return kept["access_token"]
     tokens = json.loads(entry.get("cache") or "{}").get("AccessToken", {})
     live = [token for token in tokens.values() if int(token.get("expires_on", 0)) > time.time()]
     if not live:
-        raise LookupError(f"the {entry['method']} token has expired; run login again")
+        raise LookupError(f"the {entry['mode']} session has no live token here; run login again")
     return max(live, key=lambda token: int(token["expires_on"]))["secret"]
 
 

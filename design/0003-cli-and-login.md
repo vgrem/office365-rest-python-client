@@ -54,8 +54,18 @@ and ``scopes``/``token_cache`` passed from ``GraphClient`` to ``GraphRequest`` t
 ``AuthenticationContext``. Nothing else is needed to persist a session: MSAL refreshes from the
 cache, so a store that keeps the cache keeps the login. ``ExchangeAdminClient`` already threaded
 its cache; ``ClientContext`` authenticates through a different provider
-(``office365/runtime/auth/authentication_context.py``) that has no cache to thread, so a
-sharepoint login authenticates and is not kept until that provider grows one.
+(``office365/runtime/auth/authentication_context.py``) that has no cache to thread.
+
+So the store keeps **two** things, and the second is what makes sharepoint work: the MSAL cache
+where the root has one, and the access token itself in every case. Re-opening a session reads the
+token the login kept; nothing re-runs the mode, and nothing needs a secret. Both providers answer
+the same read — ``pending_request().authentication_context.access_token``, "acquired on first
+read, cached, never validated" — which is what a login states once and what a replay attaches
+through ``with_access_token``. A sharepoint token is not refreshed (that provider has no cache),
+so it is kept until it expires and renewed by logging in again; a graph token refreshes from the
+cache beside it. Measured: ``o365 sharepoint login --mode certificate`` then ``o365 sharepoint web
+get`` prints the web, and ``o365 login --mode client-secret`` then ``o365 directory user get``
+prints the user.
 
 **A command does not log in — measured, and this is why.** The first live run reached
 ``username-and-password``, and the second command failed: ``with_username_and_password() missing
@@ -139,6 +149,10 @@ correctly: ``login`` is a verb of ``ClientContext``, not of a noun inside it.
 o365 login|logout|whoami|sessions [--audience graph|sharepoint|exchange] [flags]
 o365 <product> <noun> <action> [flags]        # what routing.route() already resolves
 ```
+An audience word is only read when a session verb follows it, because ``sharepoint`` is both an
+audience and a product: ``o365 sharepoint login`` is the session, ``o365 sharepoint web get`` is
+the product. ``graph`` is an audience and no product at all, so its nouns are addressed by product
+(``o365 directory user get``), and ``o365 graph`` alone prints the usage.
 Argument flags are the method's own parameters, converted with the existing
 ``converters.parser_for(py_type)`` — 2 287 of 3 252 request-issuing methods are fully annotated
 (152 annotate nothing, 11 take ``**kwargs``), so ``--help`` can be exhaustive without a
@@ -146,7 +160,7 @@ catch-all.
 
 **S4 — The session file.** ``~/.o365/sessions.json``, mode ``0600``, ``O365_HOME`` overrides;
 one object per audience: ``mode``, ``client_id``, ``tenant``, ``scopes``, ``environment``,
-``version``, ``account``, and the MSAL cache dump. Secrets are **not** written (the cache
+``version``, ``account``, the access token it kept, and the MSAL cache dump where the root has one. Secrets are **not** written (the cache
 refreshes); ``--store-secret`` opts in and says so. No new dependency: ``json`` + ``os.chmod``,
 not ``platformdirs``.
 
