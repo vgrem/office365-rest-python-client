@@ -36,6 +36,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.users.collection import UserCollection
@@ -52,6 +53,7 @@ if TYPE_CHECKING:
 class ManagedDevice(Entity):
     """Devices that are managed or pre-enrolled through Intune"""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -62,6 +64,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -75,6 +78,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -88,6 +92,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -101,6 +106,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -114,6 +120,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -127,6 +134,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -584,6 +592,7 @@ class ManagedDevice(Entity):
             WindowsProtectionState(self.context, ResourcePath("windowsProtectionState", self.resource_path)),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.ReadWrite.All"],
         application=["DeviceManagementManagedDevices.ReadWrite.All"],
@@ -594,6 +603,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -609,6 +619,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -626,6 +637,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -636,6 +648,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -646,6 +659,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -656,6 +670,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.ReadWrite.All"],
         application=["DeviceManagementManagedDevices.ReadWrite.All"],
@@ -666,6 +681,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -676,6 +692,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -700,6 +717,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -715,6 +733,7 @@ class ManagedDevice(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],

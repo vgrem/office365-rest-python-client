@@ -8,6 +8,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.print.document_upload_properties import PrintDocumentUploadProperties
@@ -49,6 +50,7 @@ class PrintDocument(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrintDocument"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["PrintJob.Create", "PrintJob.ReadWrite", "PrintJob.ReadWrite.All"],
         application=["PrintJob.ReadWrite.All"],

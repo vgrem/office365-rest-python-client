@@ -8,6 +8,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.create_entity import CreateEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 from office365.todo.attachments.base import AttachmentBase
 from office365.todo.attachments.info import AttachmentInfo
 from office365.todo.attachments.session import AttachmentSession
@@ -57,6 +58,7 @@ class AttachmentBaseCollection(EntityCollection[AttachmentBase]):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Tasks.ReadWrite"])
     def create_upload_session(
         self,

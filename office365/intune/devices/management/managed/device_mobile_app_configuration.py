@@ -13,6 +13,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.device_mobile_app_configuration_assignment import (
@@ -154,6 +155,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ManagedDeviceMobileAppConfiguration"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All", "DeviceManagementApps.ReadWrite.All"],

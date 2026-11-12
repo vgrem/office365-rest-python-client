@@ -16,6 +16,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class ServiceHealthIssue(ServiceAnnouncementBase):
@@ -52,6 +53,7 @@ class ServiceHealthIssue(ServiceAnnouncementBase):
         """The description of the service issue impact."""
         return self.properties.get("impactDescription", None)
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["ServiceHealth.Read.All"],
         application=["ServiceHealth.Read.All"],

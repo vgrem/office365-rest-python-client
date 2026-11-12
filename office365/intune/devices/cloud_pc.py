@@ -12,6 +12,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
@@ -112,6 +113,7 @@ class CloudPC(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CloudPC"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def end_grace_period(self) -> Self:
         """endGracePeriod operation."""
@@ -119,6 +121,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def reboot(self) -> Self:
         """reboot operation."""
@@ -126,6 +129,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def rename(self, display_name: str) -> Self:
         """rename operation.
@@ -138,6 +142,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def reprovision(self, user_account_type: CloudPcUserAccountType, os_version: CloudPcOperatingSystem) -> Self:
         """reprovision operation.
@@ -154,6 +159,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def resize(self, target_service_plan_id: str) -> Self:
         """resize operation.
@@ -166,6 +172,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def restore(self, cloud_pc_snapshot_id: str) -> Self:
         """restore operation.
@@ -178,6 +185,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["CloudPC.ReadWrite.All"], application=["CloudPC.ReadWrite.All"])
     def troubleshoot(self) -> Self:
         """troubleshoot operation."""
@@ -185,6 +193,7 @@ class CloudPC(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["CloudPC.Read.All", "CloudPC.ReadWrite.All"])
     def retrieve_cloud_pc_launch_detail(self) -> ClientResult[CloudPcLaunchDetail]:
         """retrieveCloudPcLaunchDetail operation."""

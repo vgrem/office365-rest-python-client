@@ -36,6 +36,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.group_policy_category import GroupPolicyCategory
@@ -206,6 +207,7 @@ class DeviceManagement(Entity):
     configuration.
     """
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementRBAC.Read.All"],
         application=["DeviceManagementRBAC.Read.All"],
@@ -1171,6 +1173,7 @@ class DeviceManagement(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagement"
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
@@ -1187,6 +1190,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
         application=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
@@ -1553,6 +1557,7 @@ class DeviceManagement(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -1564,6 +1569,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -1575,6 +1581,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -1586,6 +1593,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -1597,6 +1605,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -1630,6 +1639,7 @@ class DeviceManagement(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",

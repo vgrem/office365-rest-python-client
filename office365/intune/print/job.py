@@ -15,6 +15,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.print.document import PrintDocument
@@ -102,6 +103,7 @@ class PrintJob(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrintJob"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "PrintJob.ReadWriteBasic",
@@ -116,6 +118,7 @@ class PrintJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "PrintJob.Create",
@@ -134,6 +137,7 @@ class PrintJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         application=["PrintJob.ReadWriteBasic.All", "PrintJob.Manage.All", "PrintJob.ReadWrite.All"],
     )
@@ -148,6 +152,7 @@ class PrintJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(application=["PrintJob.Manage.All"])
     def redirect(self, destination_printer_id: str, configuration: PrintJobConfiguration) -> PrintJob:
         """redirect operation.

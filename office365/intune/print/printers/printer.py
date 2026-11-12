@@ -11,6 +11,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.print.connectors.connector import PrintConnector
@@ -88,6 +89,7 @@ class Printer(PrinterBase):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Printer"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Printer.ReadWrite.All", "Printer.FullControl.All"])
     def restore_factory_defaults(self) -> Self:
         """restoreFactoryDefaults operation."""

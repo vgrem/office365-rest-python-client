@@ -10,6 +10,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class DeviceLogCollectionResponse(Entity):
@@ -65,6 +66,7 @@ class DeviceLogCollectionResponse(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceLogCollectionResponse"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],
         application=["DeviceManagementManagedDevices.Read.All", "DeviceManagementManagedDevices.ReadWrite.All"],

@@ -8,6 +8,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class ApplePushNotificationCertificate(Entity):
@@ -63,6 +64,7 @@ class ApplePushNotificationCertificate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ApplePushNotificationCertificate"
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],

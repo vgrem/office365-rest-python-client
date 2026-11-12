@@ -10,6 +10,7 @@ from office365.intune.devices.management.remoteassistance.onboardingstatus impor
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class RemoteAssistancePartner(Entity):
@@ -41,6 +42,7 @@ class RemoteAssistancePartner(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.RemoteAssistancePartner"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -51,6 +53,7 @@ class RemoteAssistancePartner(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],

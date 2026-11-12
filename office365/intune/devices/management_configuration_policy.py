@@ -21,6 +21,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
@@ -144,6 +145,7 @@ class DeviceManagementConfigurationPolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementConfigurationPolicy"
 
+    @verb(role="action", effect="write")
     def assign(
         self, assignments: ClientValueCollection[DeviceManagementConfigurationPolicyAssignment]
     ) -> EntityCollection[DeviceManagementConfigurationPolicyAssignment]:
@@ -162,6 +164,7 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All"],
         application=["DeviceManagementConfiguration.Read.All"],
@@ -173,6 +176,7 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All"],
@@ -195,6 +199,7 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All"],
@@ -210,6 +215,7 @@ class DeviceManagementConfigurationPolicy(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],

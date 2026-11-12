@@ -10,6 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management_export_job import DeviceManagementExportJob
@@ -37,6 +38,7 @@ class DeviceManagementReports(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementReports"
 
+    @verb(role="action", effect="write")
     def retrieve_device_app_installation_status_report(
         self,
         name: str,
@@ -93,6 +95,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -152,6 +155,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -226,6 +230,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -300,6 +305,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -374,6 +380,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -448,6 +455,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -522,6 +530,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -596,6 +605,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -670,6 +680,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -744,6 +755,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -818,6 +830,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -892,6 +905,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -962,6 +976,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -1036,6 +1051,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -1110,6 +1126,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -1184,6 +1201,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -1258,6 +1276,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",
@@ -1332,6 +1351,7 @@ class DeviceManagementReports(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",

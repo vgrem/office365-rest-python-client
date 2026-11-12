@@ -11,6 +11,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.protections.targeted_managed_app_policy_assignment import (
@@ -78,6 +79,7 @@ class TargetedManagedAppConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.TargetedManagedAppConfiguration"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementApps.ReadWrite.All"],
         application=["DeviceManagementApps.ReadWrite.All"],

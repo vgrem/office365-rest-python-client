@@ -10,6 +10,7 @@ from office365.intune.devices.management.enrollment_state import EnrollmentState
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class WindowsAutopilotDeviceIdentity(Entity):
@@ -113,6 +114,7 @@ class WindowsAutopilotDeviceIdentity(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WindowsAutopilotDeviceIdentity"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -137,6 +139,7 @@ class WindowsAutopilotDeviceIdentity(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],
@@ -147,6 +150,7 @@ class WindowsAutopilotDeviceIdentity(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All"],

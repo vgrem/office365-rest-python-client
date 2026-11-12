@@ -12,6 +12,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.compliance.setting_state_device_summary import (
@@ -157,6 +158,7 @@ class DeviceConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceConfiguration"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All"],
@@ -177,6 +179,7 @@ class DeviceConfiguration(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],

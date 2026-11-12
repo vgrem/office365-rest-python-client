@@ -13,6 +13,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class DeviceManagementPartner(Entity):
@@ -77,6 +78,7 @@ class DeviceManagementPartner(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementPartner"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.Read.All", "DeviceManagementConfiguration.Read.All"],
         application=["DeviceManagementServiceConfig.Read.All", "DeviceManagementConfiguration.Read.All"],

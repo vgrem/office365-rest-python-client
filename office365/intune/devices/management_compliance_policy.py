@@ -13,6 +13,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management_compliance_scheduled_action_for_rule import (
@@ -137,6 +138,7 @@ class DeviceManagementCompliancePolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DeviceManagementCompliancePolicy"
 
+    @verb(role="action", effect="write")
     def assign(
         self, assignments: ClientValueCollection[DeviceManagementConfigurationPolicyAssignment]
     ) -> EntityCollection[DeviceManagementConfigurationPolicyAssignment]:
@@ -155,6 +157,7 @@ class DeviceManagementCompliancePolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All"],
