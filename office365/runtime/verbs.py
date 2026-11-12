@@ -154,7 +154,7 @@ def declared_verb(func: Any) -> VerbMeta:
             f"{_name(func)} names no verb: decorate it with @verb(role=...) to make it a command, "
             "or leave it undeclared if it is not one"
         )
-    word = _command_word(func)
+    word = command_word(func)
     # Only a ``with_`` method is named after the way it authenticates, so only it
     # carries a mode; the rest of the tree leaves the field alone.
     mode = declaration.mode or (word[5:] if word.startswith("with-") else "")
@@ -193,10 +193,16 @@ def _name(member: Any) -> str:
     return qualified.rsplit(".", 1)[-1]
 
 
-def _command_word(func: Any) -> str:
-    """``delete_object`` -> ``delete-object``: the spelling a command line uses."""
-    word = re.sub(r"(?<!^)(?=[A-Z])", "-", _name(func).strip("_"))
+def command_word(target: Any) -> str:
+    """``delete_object`` -> ``delete-object``: the spelling a command line uses.
+
+    A run of capitals is one word, so the break falls before its last capital
+    (``CloudPC`` -> ``cloud-pc``, ``AADUser`` -> ``aad-user``) rather than between every
+    pair of them. The tree writes the same names in a file, so this is the one spelling a
+    command line and a help page share.
+    """
+    word = re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", "-", _name(target).strip("_"))
     return word.replace("_", "-").lower()
 
 
-__all__ = ["EFFECTS", "ROLES", "STAMP", "VerbMeta", "declared_verb", "verb", "verbs_of"]
+__all__ = ["EFFECTS", "ROLES", "STAMP", "VerbMeta", "command_word", "declared_verb", "verb", "verbs_of"]

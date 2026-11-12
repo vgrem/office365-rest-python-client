@@ -3,16 +3,23 @@
 ``outlook messages list`` names three things: a product, a noun and a verb. The verb is
 already a declaration on the method (:mod:`office365.runtime.verbs`), and the product is
 already a declaration on the package (:func:`office365.runtime.schema.service_of`), so
-neither needs a table. The noun is the one word with no declaration anywhere - ``messages``
-is not spelled by ``Message``, it is spelled by the *plural kebab* of it - so this module
-derives it from the type it belongs to, and derives the same noun for the collection that
-holds it.
+neither needs a table. The noun is the one word with no declaration anywhere - a command
+line says ``message``, the type is called ``Message`` - so this module derives it from the
+type it belongs to, and resolves the collection that holds it as the same noun. It is the
+singular, because that is what the type is called: ``outlook message list`` reads like
+``az vm list``, and nothing here has to know English plurals.
+
+Two words are the same word when they carry the same letters. ``message-rule``,
+``message_rule`` and ``MessageRule`` all fold to ``messagerule``, so a command line may
+spell a noun the way it reads best and never be told it guessed the separators wrong -
+the separators are the one thing the type system does not decide for it.
 
 The pairing is the part worth stating. A collection says which type it holds - in its
 generic base (``ClientObjectCollection[Message]``) sometimes lazily, or by carrying the
 type in its name (``MessageCollection``) - so the two halves of one noun are read, never
-assumed. Where two classes answer one noun - 15 of 1,978 do, ``User`` beside ``User``
-under ``sharepoint.directory`` and ``sharepoint.principal`` - the answer is a ranking
+assumed. Where two classes answer one noun - 16 of 1,978 do, ``User`` beside ``User``
+under ``sharepoint.directory`` and ``sharepoint.principal``, ``B2xIdentityUserFlow`` beside
+``B2XIdentityUserFlow`` - the answer is a ranking
 (a class a command can list, then the shorter path, then the alphabet), not a table:
 the same words answer the same type on every run, and nothing has to be kept in step
 with a class that is added tomorrow.
@@ -38,9 +45,7 @@ from types import MappingProxyType
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
-from office365.runtime.verbs import VerbMeta, verbs_of
-
-_WORDS = re.compile(r"[A-Z][a-z0-9]*|[A-Z]+(?![a-z])|[0-9]+")
+from office365.runtime.verbs import VerbMeta, command_word, verbs_of
 
 #: The roles that address the collection rather than the item: ``list`` reads the feed,
 #: ``create`` posts into it. Everything else - including ``action``, which is why it is
@@ -75,10 +80,13 @@ def route(product: str, noun: str, action: str = "") -> Route:
             exist, because a command line's job is to be tried.
     """
     index = nouns(product)
-    found = index.get(_kebab(noun))
+    key = _fold(noun)
+    found = index.get(key)
     if found is None:
-        near = get_close_matches(_kebab(noun), index, n=5)
-        raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {', '.join(near)}?" if near else ""))
+        spoken = {_fold(entry.noun): entry.noun for entry in index.values()}
+        near = get_close_matches(key, spoken, n=5)
+        spoken_near = ", ".join(spoken[one] for one in near)
+        raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {spoken_near}?" if near else ""))
     if not action:
         return found
     order = (found.collection, found.entity) if action in _COLLECTION_ROLES else (found.entity, found.collection)
@@ -116,27 +124,21 @@ def nouns(product: str) -> Mapping[str, Route]:
         for collection in group:
             held = _item_type(collection)
             for entity in [held] if held is not None else entities.get(stem, []):
-                candidates.setdefault(_noun_of(entity, product), []).append((entity, collection))
+                candidates.setdefault(_fold(_noun_of(entity, product)), []).append((entity, collection))
     for group in entities.values():
         for entity in group:
-            candidates.setdefault(_noun_of(entity, product), []).append((entity, None))
+            candidates.setdefault(_fold(_noun_of(entity, product)), []).append((entity, None))
     found: dict[str, Route] = {}
-    plurals: dict[str, Route] = {}
-    for singular, options in candidates.items():
+    for key, options in candidates.items():
         entity, collection = _ranked(options)
-        found[singular] = Route(product, singular, entity, collection)
-        plural = _plural(singular)
-        if plural != singular:
-            plurals.setdefault(plural, Route(product, plural, entity, collection))
-    for plural, answer in plurals.items():
-        found.setdefault(plural, answer)
+        found[key] = Route(product, _noun_of(entity, product), entity, collection)
     return MappingProxyType(found)
 
 
 def _ranked(options: list[tuple[type, type | None]]) -> tuple[type, type | None]:
     """The one owner of a noun the tree reuses under one name.
 
-    Fifteen nouns are spelled by two classes - ``User`` exists under ``sharepoint.directory``
+    Sixteen nouns are spelled by two classes - ``User`` exists under ``sharepoint.directory``
     and under ``sharepoint.principal``, ``Group`` beside ``Group`` - and a name is not an
     identity, so one of them has to be the answer. It is a *ranking*, not a table: the class
     a command can list (the one with a collection) wins, then the shorter module path, then
@@ -188,44 +190,23 @@ def _item_type(collection: type) -> type | None:
 def _noun_of(entity: type, product: str) -> str:
     """The noun ``entity`` answers, with the product word it repeats left off.
 
-    ``planner.tasks.task:PlannerTask`` is ``planner tasks``, not ``planner planner-tasks``:
+    ``planner.tasks.task:PlannerTask`` is ``planner task``, not ``planner planner-task``:
     the leading ``Planner`` is the product already spelled earlier on the line, which is the
-    same rule the generator uses when it drops a word the module path implies. It is the
-    *product* that is stripped and nothing else - ``DriveItem`` keeps its ``drive`` under
-    ``onedrive``, because only the module path, not a guess about the words, says it is
-    redundant.
+    same rule the generator follows when it drops a word the module path implies. Only the
+    *product* is stripped - ``DriveItem`` keeps its ``drive`` under ``onedrive``, because
+    nothing in the type system says the word is redundant there.
     """
-    words = _WORDS.findall(entity.__name__)
-    for cut in range(len(words) - 1, 0, -1):
-        if "".join(words[:cut]).lower() == product.replace("-", "").lower():
-            return _kebab("".join(words[cut:]))
-    return _kebab(entity.__name__)
+    word = command_word(entity.__name__)
+    head = command_word(product) + "-"
+    return word[len(head) :] if word.startswith(head) and len(word) > len(head) else word
 
 
-def _kebab(name: str) -> str:
-    """``TodoTaskList`` -> ``todo-task-list``, ``AIInteraction`` -> ``ai-interaction``.
+def _fold(word: str) -> str:
+    """``MessageRule``, ``message-rule``, ``message_rule`` -> ``messagerule``: one key.
 
-    A run of capitals is one word, so the break goes before the last capital of the run
-    (``AADUser`` -> ``aad-user``) rather than between every pair of them.
+    The separators a command line puts between words are a reading preference, and the tree
+    does not settle them (``cloud_pc.py`` beside ``share_point_audit_record.py``), so they
+    are dropped on both sides rather than decided here. Case goes too, because a shell is
+    not case sensitive about a noun.
     """
-    broken = re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", "-", name)
-    return broken.replace("_", "-").lower()
-
-
-def _plural(word: str) -> str:
-    """The plural a command line says: ``message`` -> ``messages``, ``policy`` -> ``policies``.
-
-    Only the last word of a kebab noun is inflected (``todo-task`` -> ``todo-tasks``), and a
-    noun that already reads as plural is left alone - ``AccessRequests`` is a type whose
-    name is its own plural, and appending ``es`` would invent a word nobody says.
-    """
-    stem, _, last = word.rpartition("-")
-    if last.endswith("s"):
-        plural = last
-    elif last.endswith("y") and not last.endswith(("ay", "ey", "oy", "uy")):
-        plural = last[:-1] + "ies"
-    elif last.endswith(("x", "z", "ch", "sh")):
-        plural = last + "es"
-    else:
-        plural = last + "s"
-    return f"{stem}-{plural}" if stem else plural
+    return re.sub(r"[^a-z0-9]", "", word.lower())
