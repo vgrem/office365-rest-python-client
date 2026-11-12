@@ -16,6 +16,7 @@ class _FakePublicClientApplication:
         self.silent_result: dict | None = {"access_token": "cached"}
         self.initiated = 0
         self.silent_calls = 0
+        self.kwargs = kwargs
 
     def get_accounts(self, username=None):
         return list(self.accounts)
@@ -60,3 +61,17 @@ def test_device_flow_prompts_once_then_reuses_cached_token(monkeypatch):
     app = created[0]
     assert app.initiated == 1
     assert app.silent_calls == 1
+
+
+def test_a_public_client_flow_hands_the_cache_to_msal(monkeypatch):
+    created = _install_fake_msal(monkeypatch)
+    cache = object()
+    ctx = AuthenticationContext(tenant="contoso.onmicrosoft.com", token_cache=cache)
+
+    ctx.with_device_flow("client-id")
+    ctx.with_token_interactive("client-id")
+    ctx.with_username_and_password("client-id", "ann@contoso.com", "secret")
+
+    # Without this the login dies with the process: only the confidential flows
+    # used to receive it, and a command line can use neither of them.
+    assert [app.kwargs.get("token_cache") for app in created] == [cache, cache, cache]

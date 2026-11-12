@@ -122,7 +122,7 @@ cannot justify — refusing with a reason beats guessing.
 
 | # | Step | Size | Proves |
 | --- | --- | --- | --- |
-| 0 | ``token_cache`` in the two public flows + a test that a cache survives construction | 2 lines | persistence is possible at all |
+| 0 | ``token_cache`` in the three public flows + a test that it reaches MSAL | 3 lines | persistence is possible at all — **done** |
 | 1 | ``office365/cli`` = 4 functions: ``session()`` (file), ``login()`` (reads ``verbs_of(root)`` where ``name == "login"``, picks ``mode``, applies, verifies from claims), ``whoami()``, ``client()`` (rebuilds the root from a session) | ~120 lines | the session reads the declarations, and declares nothing |
 | 2 | ``o365 outlook message list|get|send`` | ~40 lines + ``chain(root, noun)`` (~25) reading ``TypeSchema.navigations`` and ``item_type()`` | the engine is thin: one equality test against the library's own path builder |
 | 3 | ``-o json|table|tsv``, ``--select``, ``--filter``, ``--top``, ``--all`` | output only | the data verbs already exist (``get_all``, ``QueryOptions``) |

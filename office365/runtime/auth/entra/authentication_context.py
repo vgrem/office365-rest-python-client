@@ -182,7 +182,7 @@ class AuthenticationContext:
         self._client_id = client_id
         import msal
 
-        app = msal.PublicClientApplication(client_id, authority=self.authority_url)
+        app = msal.PublicClientApplication(client_id, authority=self.authority_url, token_cache=self._token_cache)
 
         def _acquire_token():
             # Reuse the signed-in account so only the first request shows a code;
@@ -281,7 +281,7 @@ class AuthenticationContext:
         self._client_id = client_id
         import msal
 
-        app = msal.PublicClientApplication(client_id, authority=self.authority_url)
+        app = msal.PublicClientApplication(client_id, authority=self.authority_url, token_cache=self._token_cache)
 
         def _acquire_token():
             # The pattern to acquire a token looks like this.
@@ -317,6 +317,7 @@ class AuthenticationContext:
         app = msal.PublicClientApplication(
             authority=self.authority_url,
             client_id=client_id,
+            token_cache=self._token_cache,
         )
 
         def _acquire_token():
