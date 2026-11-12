@@ -9,7 +9,7 @@ from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 
 
-class CallCollection(EntityCollection):
+class CallCollection(EntityCollection[Call]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, Call, resource_path)
 

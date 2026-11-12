@@ -2,6 +2,6 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.logger.fileinfo import LogFileInfo
 
 
-class LogFileInfoCollection(EntityCollection):
+class LogFileInfoCollection(EntityCollection[LogFileInfo]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, LogFileInfo, resource_path)

@@ -1,16 +1,15 @@
 """Finding a type by the words a command line uses.
 
-``outlook message list`` names three things, and two of them are declarations: the verb is
-stamped on the method (:mod:`office365.runtime.verbs`) and the product is stated by the
-package (:func:`office365.runtime.schema.service_of`). The noun is the type's own name,
-singular, because that is what a type is called - ``outlook message list`` reads like
-``az vm list`` - so nothing here spells a word the model already holds, and nothing here is
-a list of commands. What this module does is pair the two halves of one noun and read:
+A command line is ``<product> <noun> <verb> <arguments>``, and the first three levels are
+already statements of the model, so none of them is spelled a second time here:
 
-* the type a feed holds, from ``ClientObjectCollection.item_type()``, which the base
-  declares (``MessageCollection(DeltaCollection["Message"])``);
-* the commands a type answers, from ``verbs_of`` over its stamped methods;
-* the product a type belongs to, from ``service_of`` over its module.
+* the product is the package a type lives in, and the package says so (``__product__``, read
+  by :func:`office365.runtime.schema.service_of`);
+* the noun is the type's own name, singular - ``outlook message list`` reads like
+  ``az vm list`` - and a feed answers the same noun because it states what it holds
+  (``ClientObjectCollection.item_type()``);
+* the verb is stamped on the method (:mod:`office365.runtime.verbs`), and the arguments are
+  that method's own parameters.
 
 Two words are one word when they carry the same letters, so ``message-rule``,
 ``message_rule`` and ``MessageRule`` all fold to ``messagerule``. The tree does not settle
@@ -36,20 +35,15 @@ from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.verbs import VerbMeta, command_word, verbs_of
 
-#: ``list`` reads the feed and ``create`` posts into it, so both are looked for on the
-#: collection first; every other command - ``action`` included - acts on one item.
-COLLECTION_ROLES = frozenset({"list", "create"})
-
 
 @dataclass(frozen=True)
 class Route:
     """What a command line resolved to: one noun, and the half a verb was found on.
 
     :attr:`entity` is the item and :attr:`collection` the feed that holds it, ``None`` for a
-    type that states no feed (a report root, a workbook function). :attr:`verb` and
-    :attr:`target` are filled in only when an action was asked for, and they are the
-    declaration and the class that answers it, so a caller sends through a type instead of
-    looking a name up a second time.
+    type that states no feed. The last three are filled in only when an action was asked for:
+    the declaration, the class that answers it and the attribute on it, so a caller reads the
+    arguments of the method that will do the work instead of looking it up a second time.
     """
 
     product: str
@@ -58,6 +52,7 @@ class Route:
     collection: type | None = None
     verb: VerbMeta | None = None
     target: type | None = None
+    method: str = ""
 
 
 def route(product: str, noun: str, action: str = "") -> Route:
@@ -77,13 +72,19 @@ def route(product: str, noun: str, action: str = "") -> Route:
         raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {near}?" if near else ""))
     if not action:
         return found
-    order = (found.collection, found.entity) if action in COLLECTION_ROLES else (found.entity, found.collection)
-    answers: dict[str, tuple[type, VerbMeta]] = {}
-    for half in reversed([half for half in order if half is not None]):
-        answers.update({meta.name: (half, meta) for meta in verbs_of(half).values() if meta.expose})
+    # The item is asked first, then its feed; they never disagree, because a feed restates
+    # the verb it inherits (``ClientObjectCollection.get`` answers ``list``) and no noun in
+    # the tree claims one word on both halves. The declaration says which half means what.
+    answers: dict[str, tuple[type, str, VerbMeta]] = {}
+    for half in (found.entity, found.collection):
+        if half is not None:
+            for method, meta in verbs_of(half).items():
+                if meta.expose:
+                    answers.setdefault(meta.name, (half, method, meta))
     if action not in answers:
         raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {', '.join(sorted(answers))}")
-    return replace(found, verb=answers[action][1], target=answers[action][0])
+    target, method, verb = answers[action]
+    return replace(found, verb=verb, target=target, method=method)
 
 
 @cache
@@ -91,9 +92,9 @@ def nouns(product: str) -> Mapping[str, Route]:
     """Every noun ``product`` publishes, keyed by the letters a command line spells.
 
     Read from the product's own package and nothing else. A feed names the type it holds in
-    its generic base, or, when that is stated lazily to break a circular import, in its own
-    name - which the tree keeps true for all ten feeds whose base is silent - and the item
-    is filed under the feed so both halves answer one noun.
+    its generic base, and a name stated there to break a circular import is resolved against
+    the product's own types, so the item is filed under the feed and both halves answer one
+    noun. Nothing is spelled out twice: a noun is the name of a type.
     """
     package = _package(product)
     declared = list(_declared_in(package))
@@ -103,7 +104,7 @@ def nouns(product: str) -> Mapping[str, Route]:
     held: dict[type, type | None] = {}
     for cls in declared:
         if issubclass(cls, ClientObjectCollection):
-            item = cls.item_type() or known.get(cls.__name__.removesuffix("Collection"))
+            item = cls.item_type(known)
             if item is not None:
                 held[item] = cls
         else:

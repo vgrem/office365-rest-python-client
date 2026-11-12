@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
 
 
-class FontPackageCollection(EntityCollection):
+class FontPackageCollection(EntityCollection[FontPackage]):
     """Represents a collection of View resources."""
 
     def __init__(self, context: ClientContext, resource_path: Optional[ResourcePath] = None) -> None:

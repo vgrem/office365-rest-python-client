@@ -5,7 +5,7 @@ from office365.sharepoint.contentcenter.machinelearning.samples.sample import (
 from office365.sharepoint.entity_collection import EntityCollection
 
 
-class SPMachineLearningSampleCollection(EntityCollection):
+class SPMachineLearningSampleCollection(EntityCollection[SPMachineLearningSample]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, SPMachineLearningSample, resource_path)
 

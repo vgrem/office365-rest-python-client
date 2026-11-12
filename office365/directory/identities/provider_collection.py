@@ -6,7 +6,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 
 
-class IdentityProviderCollection(EntityCollection):
+class IdentityProviderCollection(EntityCollection[IdentityProvider]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, IdentityProvider, resource_path)
 

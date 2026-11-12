@@ -5,7 +5,7 @@ from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.publishing.pages.reposts.repost import RepostPage
 
 
-class RepostPageCollection(EntityCollection):
+class RepostPageCollection(EntityCollection[RepostPage]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, RepostPage, resource_path)
 

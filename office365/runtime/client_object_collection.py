@@ -11,6 +11,7 @@ from typing import (
     Generic,
     Iterator,
     List,
+    Mapping,
     Optional,
     Sequence,
     Type,
@@ -67,18 +68,18 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
     _query_capability_decl: Optional[QueryCapability] = None
 
     @classmethod
-    def item_type(cls) -> Optional[Type[ClientObjectT]]:
+    def item_type(cls, known: Optional[Mapping[str, type]] = None) -> Optional[Type[ClientObjectT]]:
         """The type this collection states it holds, read from its own generic base.
 
-        ``MessageCollection(EntityCollection[Message])`` says ``Message`` in the base, and a
-        collection that states it lazily (``DeltaCollection[ForwardRef('Message')]``) says it
-        in a name the class's own module resolves - the scope the class was written in. So
-        the answer is read once from the declaration rather than guessed from the name of the
-        class, which is what ``MessageCollection`` invites and what
-        ``TopicPageCollection`` (holding ``TopicSitePage``) punishes.
-
-        ``None`` means the collection declares nothing: the base classes in this module do,
-        and every concrete collection in the tree does, so a caller may rely on an answer.
+        ``MessageCollection(DeltaCollection["Message"])`` says ``Message`` in the base, which
+        is the declaration a reader wants: no caller has to guess it from the name of the
+        class, which is what ``MessageCollection`` invites and what ``TopicPageCollection``
+        (holding ``TopicSitePage``) punishes. A name stated for a circular import may not be
+        importable in the module that states it, so ``known`` is where a caller hands over the
+        names it holds - a product hands over its own types. A class that states a *type
+        variable* (``EntityCollection[ClientObjectT]``) is a template, not a feed, and answers
+        ``None`` like a class that states nothing; every concrete collection in the tree states
+        its item, so an answer is available wherever one matters.
         """
         for klass in cls.__mro__:
             for base in klass.__dict__.get("__orig_bases__", ()):
@@ -88,11 +89,12 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
                 arguments = get_args(base)
                 if not arguments:
                     continue
-                argument = arguments[0]
-                if isinstance(argument, type):
-                    return cast("Type[ClientObjectT]", argument)
+                stated = arguments[0]
+                if isinstance(stated, type):
+                    return cast("Type[ClientObjectT]", stated)
+                name = getattr(stated, "__forward_arg__", stated if isinstance(stated, str) else "")
                 scope = sys.modules.get(klass.__module__)
-                resolved = getattr(scope, getattr(argument, "__forward_arg__", ""), None) if scope else None
+                resolved = (getattr(scope, name, None) if scope else None) or (known or {}).get(name)
                 if isinstance(resolved, type):
                     return cast("Type[ClientObjectT]", resolved)
         return None

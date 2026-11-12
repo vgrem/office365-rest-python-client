@@ -68,6 +68,6 @@ class IdentityUserFlowAttributeAssignment(Entity):
         return "microsoft.graph.IdentityUserFlowAttributeAssignment"
 
 
-class IdentityUserFlowAttributeAssignmentCollection(EntityCollection):
+class IdentityUserFlowAttributeAssignmentCollection(EntityCollection[IdentityUserFlowAttributeAssignment]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, IdentityUserFlowAttributeAssignment, resource_path)
