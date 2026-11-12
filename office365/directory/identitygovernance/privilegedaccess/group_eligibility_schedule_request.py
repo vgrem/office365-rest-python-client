@@ -15,6 +15,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class PrivilegedAccessGroupEligibilityScheduleRequest(Entity):
@@ -69,6 +70,7 @@ class PrivilegedAccessGroupEligibilityScheduleRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroupEligibilityScheduleRequest"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["PrivilegedEligibilitySchedule.ReadWrite.AzureADGroup"],
         application=["PrivilegedEligibilitySchedule.ReadWrite.AzureADGroup"],

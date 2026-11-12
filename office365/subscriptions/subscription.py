@@ -10,6 +10,7 @@ from office365.runtime.limits import limit
 from office365.runtime.odata.json_format import JsonProfile
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.subscriptions.quotas import SUBSCRIPTION_CHANGES, SUBSCRIPTION_READ, SUBSCRIPTION_REAUTHORIZE
 
 
@@ -17,6 +18,7 @@ from office365.subscriptions.quotas import SUBSCRIPTION_CHANGES, SUBSCRIPTION_RE
 class Subscription(Entity):
     """A subscription allows a client app to receive change notifications about changes to data in Microsoft Graph"""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Subscription.Read.All"],
         notes="Renewal uses the watched resource's app-only grant, not a subscription permission.",

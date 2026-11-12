@@ -24,6 +24,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class AccessReviewScheduleDefinition(Entity):
@@ -135,6 +136,7 @@ class AccessReviewScheduleDefinition(Entity):
             "stageSettings", ClientValueCollection[AccessReviewStageSettings](AccessReviewStageSettings)
         )
 
+    @verb(role="action", effect="write")
     def stop(self) -> Self:
         """stop operation."""
         qry = ServiceOperationQuery(self, "stop", None, {}, None, None)

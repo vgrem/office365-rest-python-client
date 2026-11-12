@@ -8,6 +8,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.activities_container import (
@@ -50,6 +51,7 @@ class UserDataSecurityAndGovernance(Entity):
             UserProtectionScopeContainer(self.context, ResourcePath("protectionScopes", self.resource_path)),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Content.Process.User", "Content.Process.All"],
         application=["Content.Process.User", "Content.Process.All"],

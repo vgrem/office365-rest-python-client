@@ -10,6 +10,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.cross_tenant_migration_cancel_response import CrossTenantMigrationCancelResponse
@@ -41,6 +42,7 @@ class CrossTenantMigrationTask(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantMigrationTask"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["CrossTenantContentMigration.ReadWrite.All"],
         application=["CrossTenantContentMigration.ReadWrite.All"],

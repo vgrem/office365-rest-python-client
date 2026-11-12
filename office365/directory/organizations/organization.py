@@ -23,6 +23,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class Organization(DirectoryObject):
@@ -213,6 +214,7 @@ class Organization(DirectoryObject):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Organization"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementServiceConfig.ReadWrite.All", "DeviceManagementConfiguration.ReadWrite.All"],

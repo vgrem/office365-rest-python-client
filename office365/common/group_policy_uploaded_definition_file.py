@@ -13,6 +13,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata, version
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.group_policy_operation import GroupPolicyOperation
@@ -70,12 +71,14 @@ class GroupPolicyUploadedDefinitionFile(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.GroupPolicyUploadedDefinitionFile"
 
+    @verb(role="action", effect="write")
     def remove(self) -> Self:
         """remove operation."""
         qry = ServiceOperationQuery(self, "remove", None, {}, None, None)
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     def add_language_files(
         self, group_policy_uploaded_language_files: ClientValueCollection[GroupPolicyUploadedLanguageFile]
     ) -> Self:
@@ -96,6 +99,7 @@ class GroupPolicyUploadedDefinitionFile(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     def remove_language_files(
         self, group_policy_uploaded_language_files: ClientValueCollection[GroupPolicyUploadedLanguageFile]
     ) -> Self:
@@ -116,6 +120,7 @@ class GroupPolicyUploadedDefinitionFile(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     def update_language_files(
         self, group_policy_uploaded_language_files: ClientValueCollection[GroupPolicyUploadedLanguageFile]
     ) -> Self:
@@ -136,6 +141,7 @@ class GroupPolicyUploadedDefinitionFile(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     def upload_new_version(
         self,
         content: bytes,

@@ -26,6 +26,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.management.m365_capability_base import M365CapabilityBase
@@ -128,6 +129,7 @@ class CrossTenantAccessPolicyConfigurationDefault(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CrossTenantAccessPolicyConfigurationDefault"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Policy.ReadWrite.CrossTenantAccess"],
         application=["Policy.ReadWrite.CrossTenantAccess"],

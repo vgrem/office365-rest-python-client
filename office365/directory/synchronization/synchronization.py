@@ -12,6 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class Synchronization(Entity):
@@ -59,6 +60,7 @@ class Synchronization(Entity):
             ClientValueCollection[SynchronizationSecretKeyStringValuePair](SynchronizationSecretKeyStringValuePair),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],

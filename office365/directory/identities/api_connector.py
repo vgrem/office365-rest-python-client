@@ -11,6 +11,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class IdentityApiConnector(Entity):
@@ -24,6 +25,7 @@ class IdentityApiConnector(Entity):
     show an input validation error, or overwrite user collected attributes.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["APIConnectors.ReadWrite.All"], application=["APIConnectors.ReadWrite.All"])
     def upload_client_certificate(self, pkcs12_value: str, password: str) -> Self:
         """Upload a PKCS 12 format key (.pfx) to an API connector's authentication configuration.

@@ -13,6 +13,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.group_policy_configuration_assignment import GroupPolicyConfigurationAssignment
@@ -87,6 +88,7 @@ class GroupPolicyConfiguration(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.GroupPolicyConfiguration"
 
+    @verb(role="action", effect="write")
     def assign(
         self, assignments: ClientValueCollection[GroupPolicyConfigurationAssignment]
     ) -> EntityCollection[GroupPolicyConfigurationAssignment]:
@@ -103,6 +105,7 @@ class GroupPolicyConfiguration(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     def update_definition_values(
         self,
         added: ClientValueCollection[GroupPolicyDefinitionValue],

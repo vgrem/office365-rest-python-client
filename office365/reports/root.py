@@ -28,6 +28,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.transport.base import DEFAULT_STREAM_CHUNK_SIZE
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.print.archived_print_job import ArchivedPrintJob
@@ -80,6 +81,7 @@ class ReportRoot(Entity):
         """Async twin of :meth:`download_report` that never blocks the loop."""
         return await download_report_async(self, report_name, target, period, chunk_size=chunk_size, progress=progress)
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"]
     )
@@ -92,6 +94,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementConfiguration.Read.All"], application=["DeviceManagementConfiguration.Read.All"]
     )
@@ -104,6 +107,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"]
     )
@@ -114,6 +118,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Reports.Read.All"],
         application=["Reports.Read.All"],
@@ -127,6 +132,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_email_activity_counts(self, period: str) -> ReportResult:
         """Enables you to understand the trends of email activity (like how many were sent, read, and received)
@@ -203,6 +209,7 @@ class ReportRoot(Entity):
         """
         return create_report_query(self, "getMailboxUsageStorage", period)
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_m365_app_user_counts(self, period: Optional[str] = None) -> ReportResult:
         """
@@ -214,6 +221,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Reports.Read.All"],
         application=["Reports.Read.All"],
@@ -478,6 +486,7 @@ class ReportRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ReportRoot"
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_relying_party_detailed_summary(self, period: str) -> EntityCollection[RelyingPartyDetailedSummary]:
         """getRelyingPartyDetailedSummary operation.
@@ -493,6 +502,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_email_app_usage_versions_user_counts(self, period: str) -> ClientResult[bytes]:
         """getEmailAppUsageVersionsUserCounts operation.
@@ -508,6 +518,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_m365_app_platform_user_counts(self, period: str) -> ClientResult[bytes]:
         """getM365AppPlatformUserCounts operation.
@@ -523,6 +534,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_activations_user_detail(self) -> ClientResult[Report]:
         """getOffice365ActivationsUserDetail operation."""
@@ -533,6 +545,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_active_user_counts(self, period: str) -> ClientResult[Report]:
         """getOffice365ActiveUserCounts operation.
@@ -548,6 +561,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_active_user_detail(self, period: str) -> ClientResult[Report]:
         """getOffice365ActiveUserDetail operation.
@@ -563,6 +577,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_groups_activity_counts(self, period: str) -> ClientResult[Report]:
         """getOffice365GroupsActivityCounts operation.
@@ -578,6 +593,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_groups_activity_detail(self, period: str) -> ClientResult[Report]:
         """getOffice365GroupsActivityDetail operation.
@@ -593,6 +609,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_groups_activity_file_counts(self, period: str) -> ClientResult[Report]:
         """getOffice365GroupsActivityFileCounts operation.
@@ -608,6 +625,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_groups_activity_group_counts(self, period: str) -> ClientResult[Report]:
         """getOffice365GroupsActivityGroupCounts operation.
@@ -623,6 +641,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_groups_activity_storage(self, period: str) -> ClientResult[Report]:
         """getOffice365GroupsActivityStorage operation.
@@ -638,6 +657,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_office365_services_user_counts(self, period: str) -> ClientResult[Report]:
         """getOffice365ServicesUserCounts operation.
@@ -653,6 +673,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_usage_account_counts(self, period: str) -> ClientResult[Report]:
         """getOneDriveUsageAccountCounts operation.
@@ -668,6 +689,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_onedrive_usage_account_detail(self, period: str) -> ClientResult[Report]:
         """getOneDriveUsageAccountDetail operation.
@@ -683,6 +705,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_activity_file_counts(self, period: str) -> ClientResult[Report]:
         """getSharePointActivityFileCounts operation.
@@ -698,6 +721,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_site_usage_file_counts(self, period: str) -> ClientResult[Report]:
         """getSharePointSiteUsageFileCounts operation.
@@ -713,6 +737,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_site_usage_pages(self, period: str) -> ClientResult[Report]:
         """getSharePointSiteUsagePages operation.
@@ -728,6 +753,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_sharepoint_site_usage_storage(self, period: str) -> ClientResult[Report]:
         """getSharePointSiteUsageStorage operation.
@@ -743,6 +769,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_activity_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessActivityCounts operation.
@@ -758,6 +785,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessActivityUserCounts operation.
@@ -773,6 +801,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_activity_user_detail(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessActivityUserDetail operation.
@@ -788,6 +817,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_device_usage_distribution_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessDeviceUsageDistributionUserCounts operation.
@@ -805,6 +835,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_device_usage_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessDeviceUsageUserCounts operation.
@@ -820,6 +851,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_device_usage_user_detail(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessDeviceUsageUserDetail operation.
@@ -835,6 +867,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_organizer_activity_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessOrganizerActivityCounts operation.
@@ -850,6 +883,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_organizer_activity_minute_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessOrganizerActivityMinuteCounts operation.
@@ -865,6 +899,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_organizer_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessOrganizerActivityUserCounts operation.
@@ -880,6 +915,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_participant_activity_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessParticipantActivityCounts operation.
@@ -895,6 +931,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_participant_activity_minute_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessParticipantActivityMinuteCounts operation.
@@ -910,6 +947,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_participant_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessParticipantActivityUserCounts operation.
@@ -925,6 +963,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_peer_to_peer_activity_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessPeerToPeerActivityCounts operation.
@@ -940,6 +979,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_peer_to_peer_activity_minute_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessPeerToPeerActivityMinuteCounts operation.
@@ -955,6 +995,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_skype_for_business_peer_to_peer_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """getSkypeForBusinessPeerToPeerActivityUserCounts operation.
@@ -970,6 +1011,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_device_usage_distribution_user_counts(self, period: str) -> ClientResult[bytes]:
         """getTeamsDeviceUsageDistributionUserCounts operation.
@@ -985,6 +1027,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_device_usage_user_counts(self, period: str) -> ClientResult[bytes]:
         """getTeamsDeviceUsageUserCounts operation.
@@ -1000,6 +1043,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_device_usage_user_detail(self, period: str) -> ClientResult[bytes]:
         """getTeamsDeviceUsageUserDetail operation.
@@ -1015,6 +1059,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_team_activity_counts(self, period: str) -> ClientResult[bytes]:
         """getTeamsTeamActivityCounts operation.
@@ -1028,6 +1073,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_team_activity_detail(self, period: str) -> ClientResult[bytes]:
         """getTeamsTeamActivityDetail operation.
@@ -1041,6 +1087,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_team_activity_distribution_counts(self, period: str) -> ClientResult[bytes]:
         """getTeamsTeamActivityDistributionCounts operation.
@@ -1056,6 +1103,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_teams_user_activity_user_detail(self, period: str) -> ClientResult[bytes]:
         """getTeamsUserActivityUserDetail operation.
@@ -1071,6 +1119,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_activity_counts(self, period: str) -> ClientResult[Report]:
         """getYammerActivityCounts operation.
@@ -1086,6 +1135,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_activity_user_counts(self, period: str) -> ClientResult[Report]:
         """getYammerActivityUserCounts operation.
@@ -1101,6 +1151,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_activity_user_detail(self, period: str) -> ClientResult[Report]:
         """getYammerActivityUserDetail operation.
@@ -1116,6 +1167,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_device_usage_distribution_user_counts(self, period: str) -> ClientResult[Report]:
         """getYammerDeviceUsageDistributionUserCounts operation.
@@ -1131,6 +1183,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_device_usage_user_counts(self, period: str) -> ClientResult[Report]:
         """getYammerDeviceUsageUserCounts operation.
@@ -1146,6 +1199,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_device_usage_user_detail(self, period: str) -> ClientResult[Report]:
         """getYammerDeviceUsageUserDetail operation.
@@ -1161,6 +1215,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_groups_activity_counts(self, period: str) -> ClientResult[Report]:
         """getYammerGroupsActivityCounts operation.
@@ -1176,6 +1231,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_groups_activity_detail(self, period: str) -> ClientResult[Report]:
         """getYammerGroupsActivityDetail operation.
@@ -1191,6 +1247,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"], application=["Reports.Read.All"])
     def get_yammer_groups_activity_group_counts(self, period: str) -> ClientResult[Report]:
         """getYammerGroupsActivityGroupCounts operation.
@@ -1206,6 +1263,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"])
     def get_group_archived_print_jobs(
         self, group_id: str, start_date_time: datetime, end_date_time: datetime
@@ -1232,6 +1290,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"])
     def get_printer_archived_print_jobs(
         self, printer_id: str, start_date_time: datetime, end_date_time: datetime
@@ -1258,6 +1317,7 @@ class ReportRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Reports.Read.All"])
     def get_user_archived_print_jobs(
         self, user_id: str, start_date_time: datetime, end_date_time: datetime

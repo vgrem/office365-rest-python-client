@@ -49,6 +49,7 @@ from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.team import Team
 
 if TYPE_CHECKING:
@@ -61,6 +62,7 @@ class Group(DirectoryObject):
     def __repr__(self):
         return self.display_name or self.id or self.entity_type_name
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def renew(self) -> Self:
         """
@@ -71,6 +73,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def add_favorite(self) -> Self:
         """Add the group to the list of the current user's favorite groups. Supported for Microsoft 365 groups only."""
@@ -78,6 +81,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Group.Read.All", "Group.ReadWrite.All"], application=["Group.Read.All", "Group.ReadWrite.All"]
     )
@@ -88,6 +92,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def remove_favorite(self) -> Self:
         """
@@ -97,6 +102,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def reset_unseen_count(self) -> Self:
         """
@@ -107,6 +113,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def subscribe_by_mail(self) -> Self:
         """Calling this method will enable the current user to receive email notifications for this group,
@@ -116,6 +123,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Group.ReadWrite.All"], application=["Group.ReadWrite.All"])
     def unsubscribe_by_mail(self) -> Self:
         """Calling this method will prevent the current user from receiving email notifications for this group
@@ -125,6 +133,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Group.ReadWrite.All", "Team.Create"], application=["Group.ReadWrite.All", "Team.Create"]
     )
@@ -767,6 +776,7 @@ class Group(DirectoryObject):
         """Gets the unseenMessagesCount property"""
         return self.properties.get("unseenMessagesCount", None)
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LicenseAssignment.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
         application=["LicenseAssignment.ReadWrite.All", "Directory.ReadWrite.All", "Group.ReadWrite.All"],
@@ -794,6 +804,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Group.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Group.ReadWrite.All", "Directory.ReadWrite.All"],
@@ -804,6 +815,7 @@ class Group(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Group.Read.All", "Group.ReadWrite.All"],
         application=["Group.Read.All", "Group.ReadWrite.All"],

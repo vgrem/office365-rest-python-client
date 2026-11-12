@@ -10,6 +10,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.types.public_error import PublicError
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.backuprestore.restoresessions.browsable_resource_type import (
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
 
 class BrowseSessionBase(Entity):
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["BackupRestore-Restore.Read.All"],
         application=["BackupRestore-Restore.Read.All"],

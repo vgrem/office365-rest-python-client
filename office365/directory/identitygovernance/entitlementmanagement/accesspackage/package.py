@@ -12,6 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.entitlementmanagement.accesspackage.assignment_policy import (
@@ -171,6 +172,7 @@ class AccessPackage(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "EntitlementMgmt-SubjectAccess.ReadWrite",

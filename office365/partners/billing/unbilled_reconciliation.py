@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.partners.billing.attribute_set import AttributeSet
@@ -17,6 +18,7 @@ class UnbilledReconciliation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.partners.billing.UnbilledReconciliation"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["PartnerBilling.Read.All"], application=["PartnerBilling.Read.All"])
     def export(self, currency_code: str, billing_period: BillingPeriod, attribute_set: AttributeSet) -> Operation:
         """export operation.

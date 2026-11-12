@@ -9,6 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.search.acronyms.acronym import Acronym
 from office365.search.bookmarks.bookmark import Bookmark
 from office365.search.entity_type import EntityType
@@ -25,6 +26,7 @@ class SearchEntity(Entity):
     in Graph, but serves as an anchor to the query action.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "Mail.Read",

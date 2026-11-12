@@ -9,6 +9,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.security.object_definition import ObjectDefinition
 
 if TYPE_CHECKING:
@@ -65,6 +66,7 @@ class DirectoryDefinition(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DirectoryDefinition"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],

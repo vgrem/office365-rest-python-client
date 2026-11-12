@@ -18,6 +18,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class AuthenticationStrengthPolicy(Entity):
@@ -28,6 +29,7 @@ class AuthenticationStrengthPolicy(Entity):
     may be built-in or custom (defined by the tenant) and may or may not fulfill the requirements to grant an MFA claim.
     """
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Policy.Read.All"], application=["Policy.Read.All"])
     def usage(self) -> ClientResult[AuthenticationStrengthUsage]:
         """
@@ -42,6 +44,7 @@ class AuthenticationStrengthPolicy(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Policy.ReadWrite.AuthenticationMethod"], application=["Policy.ReadWrite.AuthenticationMethod"]
     )

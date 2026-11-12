@@ -22,6 +22,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.activationscope import ActivationScope
@@ -153,6 +154,7 @@ class Workflow(Entity):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "LifecycleWorkflows-Workflow.Activate",
@@ -204,6 +206,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "LifecycleWorkflows-Workflow.Activate",
@@ -227,6 +230,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -242,6 +246,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     def clear_quarantine(self) -> Workflow:
         """clearQuarantine operation."""
         from office365.directory.identitygovernance.workflow.workflow import Workflow
@@ -251,6 +256,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -269,6 +275,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -282,6 +289,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -297,6 +305,7 @@ class Workflow(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows-Workflow.ReadWrite.All", "LifecycleWorkflows.ReadWrite.All"],

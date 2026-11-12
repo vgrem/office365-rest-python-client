@@ -12,6 +12,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.booking.building_map import BuildingMap
@@ -43,6 +44,7 @@ class Building(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Building"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Place.ReadWrite.All"], application=["Place.ReadWrite.All"])
     def ingest_map_file(self, file: str, import_setting: ImportBuildingMapSetting) -> Self:
         """ingestMapFile operation.

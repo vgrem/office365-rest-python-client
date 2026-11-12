@@ -10,6 +10,7 @@ from office365.directory.recovery.recovery_status import RecoveryStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class RecoveryJobBase(Entity):
@@ -59,6 +60,7 @@ class RecoveryJobBase(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.entraRecoveryServices.RecoveryJobBase"
 
+    @verb(role="action", effect="write")
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)

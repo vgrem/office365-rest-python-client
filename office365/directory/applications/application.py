@@ -54,6 +54,7 @@ from office365.runtime.paths.v4.entity import EntityPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.policies.app_management import AppManagementPolicy
@@ -243,6 +244,7 @@ class Application(DirectoryObject):
             return self.context.service_principals.find_by_name(value, required=True)
         return self.context.service_principals.get_by_app_id(value)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_password(self, display_name: str) -> ClientResult[PasswordCredential]:
         """Adds a strong password to an application.
@@ -256,6 +258,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return result
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def remove_password(self, key_id: str) -> Self:
         """Remove a password from an application.
@@ -282,6 +285,7 @@ class Application(DirectoryObject):
             deleted_app.delete_object(ignore_missing=ignore_missing)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def set_verified_publisher(self, verified_publisher_id: str) -> Self:
         """Set the verifiedPublisher on an application.
@@ -295,6 +299,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def unset_verified_publisher(self) -> Self:
         """Unset the verifiedPublisher previously set on an application, removing all verified publisher properties.
@@ -304,6 +309,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def add_key(
         self, key_credential: KeyCredential, password_credential: PasswordCredential, proof: str
@@ -326,6 +332,7 @@ class Application(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Application.ReadWrite.All"], application=["Application.ReadWrite.All"])
     def remove_key(self, key_id: str, proof: str) -> Self:
         """Remove a key credential from an application.

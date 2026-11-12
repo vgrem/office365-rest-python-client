@@ -12,6 +12,7 @@ from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 @limit(*IDENTITY_QUOTAS)
@@ -19,6 +20,7 @@ class DirectoryObject(Entity):
     """Represents an Azure Active Directory object. The directoryObject type is the base type for many other
     directory entity types."""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.Read.All", "GroupMember.Read.All"],
         application=["Directory.Read.All", "GroupMember.Read.All"],
@@ -36,6 +38,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.Read.All", "GroupMember.Read.All"],
         application=["Directory.Read.All", "GroupMember.Read.All"],
@@ -53,6 +56,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.Read.All", "GroupMember.Read.All"],
         application=["Directory.Read.All", "GroupMember.Read.All"],
@@ -73,6 +77,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.Read.All", "GroupMember.Read.All"],
         application=["Directory.Read.All", "GroupMember.Read.All"],
@@ -95,6 +100,7 @@ class DirectoryObject(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.ReadWrite.All", "Application.ReadWrite.All", "Group.ReadWrite.All", "User.ReadWrite.All"],
         application=[

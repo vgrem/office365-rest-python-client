@@ -15,6 +15,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.externalconnectors.external_activity_result import ExternalActivityResult
@@ -56,6 +57,7 @@ class ExternalItem(Entity):
         """Gets the informationProtectionLabel property"""
         return self.properties.get("informationProtectionLabel", None)
 
+    @verb(role="action", effect="write")
     @require_permission(
         application=["ExternalItem.ReadWrite.OwnedBy", "ExternalItem.ReadWrite.All"],
     )

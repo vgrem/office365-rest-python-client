@@ -14,6 +14,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
@@ -144,6 +145,7 @@ class UnifiedRoleEligibilityScheduleRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.UnifiedRoleEligibilityScheduleRequest"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
         application=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],

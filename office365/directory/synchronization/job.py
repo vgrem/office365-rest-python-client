@@ -16,6 +16,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.key_value_pair import KeyValuePair
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.job_application_parameters import SynchronizationJobApplicationParameters
@@ -32,6 +33,7 @@ class SynchronizationJob(Entity):
     to read and write objects in your target directory, and customize the job's synchronization schema.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Synchronization.ReadWrite.All"], application=["Synchronization.ReadWrite.All"])
     def pause(self):
         """
@@ -42,6 +44,7 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Synchronization.ReadWrite.All"], application=["Synchronization.ReadWrite.All"])
     def start(self):
         """
@@ -98,6 +101,7 @@ class SynchronizationJob(Entity):
         """Gets the schedule property"""
         return self.properties.get("schedule", SynchronizationSchedule())
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
@@ -118,6 +122,7 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
@@ -133,6 +138,7 @@ class SynchronizationJob(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],

@@ -17,6 +17,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.domains.domain import Domain
@@ -36,6 +37,7 @@ class Domain(Entity):
     authentication, etc.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def verify(self) -> "Domain":
         """Validates the ownership of the domain."""
@@ -213,6 +215,7 @@ class Domain(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Domain"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def force_delete(self, disable_user_accounts: bool) -> Self:
         """forceDelete operation.
@@ -227,6 +230,7 @@ class Domain(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Domain.ReadWrite.All"], application=["Domain.ReadWrite.All"])
     def promote(self) -> ClientResult[bool]:
         """promote operation."""

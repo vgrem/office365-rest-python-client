@@ -7,6 +7,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 from office365.security.attacksimulations.repeat_offender import (
     AttackSimulationRepeatOffender,
 )
@@ -24,6 +25,7 @@ class SecurityReportsRoot(Entity):
     provides the ability to launch a realistic simulated phishing attack that organizations can learn from.
     """
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["AttackSimulation.Read.All"], application=["AttackSimulation.Read.All"])
     def get_attack_simulation_repeat_offenders(
         self,
@@ -36,6 +38,7 @@ class SecurityReportsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["AttackSimulation.Read.All"], application=["AttackSimulation.Read.All"])
     def get_attack_simulation_simulation_user_coverage(
         self,
@@ -52,6 +55,7 @@ class SecurityReportsRoot(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.SecurityReportsRoot"
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["AttackSimulation.Read.All"], application=["AttackSimulation.Read.All"])
     def get_attack_simulation_training_user_coverage(
         self,

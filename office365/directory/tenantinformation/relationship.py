@@ -13,6 +13,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.delegatedadmin.customer import DelegatedAdminCustomer
@@ -24,6 +25,7 @@ if TYPE_CHECKING:
 class TenantRelationship(Entity):
     """Represent the various type of tenant relationships."""
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
         application=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
@@ -42,6 +44,7 @@ class TenantRelationship(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],
         application=["CrossTenantInformation.ReadBasic.All", "Organization.Read.All"],

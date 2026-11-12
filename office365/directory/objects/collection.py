@@ -11,6 +11,7 @@ from office365.permissions import require_permission
 from office365.runtime.http.http_method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 
 def _resolve_directory_type(odata_type: object) -> Type[DirectoryObject]:
@@ -49,6 +50,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
             self._item_type = _resolve_directory_type(value.get("__odata_type"))
         return super().set_property(name, value, persist_changes)
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Directory.Read.All"], application=["Directory.Read.All"])
     def get_by_ids(self, ids: List[str], types: list[str] | None = None) -> DirectoryObjectCollection:
         """Returns the directory objects specified in a list of IDs.
@@ -94,6 +96,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         directory_object.ensure_property("id").after_execute(lambda _: _add())
         return directory_object
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Directory.Read.All"], application=["Directory.Read.All"])
     def get_available_extension_properties(self, is_synced_from_on_premises=None):
         """
@@ -151,6 +154,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
 
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Directory.ReadWrite.All", "Group.ReadWrite.All"],
         application=["Directory.ReadWrite.All", "Group.ReadWrite.All"],

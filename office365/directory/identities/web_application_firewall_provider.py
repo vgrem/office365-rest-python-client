@@ -6,6 +6,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identities.web_application_firewall_verification_model import (
@@ -24,6 +25,7 @@ class WebApplicationFirewallProvider(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.WebApplicationFirewallProvider"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["RiskPreventionProviders.ReadWrite.All"])
     def verify(self, host_name: str) -> WebApplicationFirewallVerificationModel:
         """verify operation.

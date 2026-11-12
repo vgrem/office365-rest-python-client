@@ -12,6 +12,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.group_policy_setting_mapping import GroupPolicySettingMapping
@@ -130,6 +131,7 @@ class GroupPolicyMigrationReport(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.GroupPolicyMigrationReport"
 
+    @verb(role="action", effect="write")
     def update_scope_tags(self, role_scope_tag_ids: list[str]) -> ClientResult[str]:
         """updateScopeTags operation.
 

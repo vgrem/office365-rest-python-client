@@ -13,9 +13,11 @@ from office365.permissions import require_permission
 from office365.runtime.converters.scalars import iso_z
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class ServiceApp(Entity):
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["BackupRestore-Control.ReadWrite.All"],
         application=["BackupRestore-Control.ReadWrite.All"],
@@ -31,6 +33,7 @@ class ServiceApp(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["BackupRestore-Control.ReadWrite.All"],
         application=["BackupRestore-Control.ReadWrite.All"],

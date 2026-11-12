@@ -7,6 +7,7 @@ from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.backuprestore.artifact_query import ArtifactQuery
@@ -26,6 +27,7 @@ class RestorePointCollection(EntityCollection[RestorePoint]):
     plain enumeration; use :meth:`search` to locate the point to restore from.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["BackupRestore-Search.Read.All"],
         application=["BackupRestore-Search.Read.All"],

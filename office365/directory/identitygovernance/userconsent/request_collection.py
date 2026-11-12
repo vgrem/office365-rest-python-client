@@ -4,6 +4,7 @@ from office365.directory.identitygovernance.userconsent.request import (
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 
 
 class UserConsentRequestCollection(EntityCollection[UserConsentRequest]):
@@ -12,6 +13,7 @@ class UserConsentRequestCollection(EntityCollection[UserConsentRequest]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, UserConsentRequest, resource_path)
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["ConsentRequest.Read.All", "ConsentRequest.ReadWrite.All"])
     def filter_by_current_user(self, on) -> "UserConsentRequestCollection":
         """Retrieve a collection of userConsentRequest objects for accessing a specified app, for which the current

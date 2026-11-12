@@ -8,6 +8,7 @@ from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class MultiTenantOrganizationIdentitySyncPolicyTemplate(Entity):
@@ -27,6 +28,7 @@ class MultiTenantOrganizationIdentitySyncPolicyTemplate(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.MultiTenantOrganizationIdentitySyncPolicyTemplate"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Policy.ReadWrite.CrossTenantAccess"],
         application=["Policy.ReadWrite.CrossTenantAccess"],

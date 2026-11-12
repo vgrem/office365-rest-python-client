@@ -8,6 +8,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.toptasksinsightssummary import TopTasksInsightsSummary
@@ -21,6 +22,7 @@ class Insights(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.identityGovernance.Insights"
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -48,6 +50,7 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -75,6 +78,7 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
@@ -102,6 +106,7 @@ class Insights(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],
         application=["LifecycleWorkflows.Read.All", "LifecycleWorkflows.ReadWrite.All"],

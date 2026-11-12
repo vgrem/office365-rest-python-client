@@ -8,6 +8,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.distribution_list import DistributionList
@@ -67,6 +68,7 @@ class DistributionList(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.DistributionList"
 
+    @verb(role="action", effect="write")
     def add_members(self, members: ClientValueCollection[Member]) -> DistributionList:
         """addMembers operation.
 
@@ -81,6 +83,7 @@ class DistributionList(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     def delete_members(self, members: ClientValueCollection[Member]) -> DistributionList:
         """deleteMembers operation.
 

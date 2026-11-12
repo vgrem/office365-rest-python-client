@@ -17,6 +17,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.duration import timedelta
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class BookingAppointment(Entity):
@@ -224,6 +225,7 @@ class BookingAppointment(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingAppointment"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["BookingsAppointment.ReadWrite.All", "Bookings.ReadWrite.All", "Bookings.Manage.All"],
         application=["Bookings.ReadWrite.All", "Bookings.Manage.All"],

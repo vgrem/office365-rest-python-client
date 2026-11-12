@@ -8,11 +8,13 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class AuthenticationMethodsRoot(Entity):
     """Container for navigation properties for Azure AD authentication methods resources."""
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
         application=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
@@ -25,6 +27,7 @@ class AuthenticationMethodsRoot(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],
         application=["AuditLog.Read.All", "UserAuthenticationMethod.Read.All"],

@@ -11,6 +11,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.mailbox_folder import MailboxFolder
@@ -34,6 +35,7 @@ class Mailbox(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.Mailbox"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["MailboxItem.ImportExport"], application=["MailboxItem.ImportExport.All"])
     def create_import_session(self) -> ClientResult[MailboxItemImportSession]:
         """createImportSession operation."""
@@ -44,6 +46,7 @@ class Mailbox(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["MailboxItem.Export", "MailboxItem.ImportExport"],
         application=["MailboxItem.Export.All", "MailboxItem.ImportExport.All"],

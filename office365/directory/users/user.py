@@ -109,6 +109,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.duration import Duration
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 from office365.teams.chats.collection import ChatCollection
 from office365.teams.collection import TeamCollection
 from office365.teams.internal.paths.joined_teams import JoinedTeamsPath
@@ -211,6 +212,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def assign_license(
         self, add_licenses: list[str] | list[AssignedLicense], remove_licenses: list[str] | None = None
@@ -276,6 +278,7 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_execute(_construct_request)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["User.ReadWrite"], application=["User.ReadWrite.All"])
     def change_password(self, current_password: str, new_password: str) -> Self:
         """Enable the user to update their password. Any user can update their password without belonging
@@ -291,6 +294,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def follow_site(self, site: str | Site) -> Self:
         """follow a site"""
@@ -308,6 +312,7 @@ class User(DirectoryObject):
             _follow_site(str(site))
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Sites.ReadWrite.All"], application=["Sites.ReadWrite.All"])
     def unfollow_site(self, site: str | Site) -> Self:
         """Unfollow a user's site or multiple sites."""
@@ -351,6 +356,7 @@ class User(DirectoryObject):
         self.context.directory_roles.get().after_execute(_directory_roles_loaded)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Read", "Mail.ReadWrite"], application=["Mail.Read", "Mail.ReadWrite"])
     def get_mail_tips(
         self, email_addresses: list[str], mail_tips_options: str | None = None
@@ -380,6 +386,7 @@ class User(DirectoryObject):
         self.ensure_property("mySite").after_execute(lambda _: _loaded())
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Mail.Send"], application=["Mail.Send"])
     def send_mail(
         self,
@@ -420,6 +427,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["User.Export.All"], application=["User.Export.All"])
     def export_personal_data(self, storage_location) -> Self:
         """Submit a data policy operation request from a company administrator or an application to
@@ -436,6 +444,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.Read.All"], application=["DeviceManagementManagedDevices.Read.All"]
     )
@@ -446,6 +455,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
     )
@@ -513,6 +523,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
     )
@@ -536,6 +547,7 @@ class User(DirectoryObject):
         self.context.add_query(qry).before_execute(_construct_request)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Calendars.Read", "Calendars.ReadWrite"], application=["Calendars.Read", "Calendars.ReadWrite"]
     )
@@ -555,6 +567,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["DeviceManagementApps.Read.All"], application=["DeviceManagementApps.Read.All"])
     def get_managed_app_diagnostic_statuses(self) -> ClientResult[ClientValueCollection[ManagedAppDiagnosticStatus]]:
         """Gets diagnostics validation status for a given user."""
@@ -563,6 +576,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["DeviceManagementApps.Read.All"], application=["DeviceManagementApps.Read.All"])
     def get_managed_app_policies(self) -> EntityCollection[ManagedAppPolicy]:
         """Gets app restrictions for a given user."""
@@ -588,6 +602,7 @@ class User(DirectoryObject):
             deleted_user.delete_object(ignore_missing=ignore_missing)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["User.ReadWrite.All"], application=["User.ReadWrite.All"])
     def revoke_signin_sessions(self) -> ClientResult[bool]:
         """
@@ -603,6 +618,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return result
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["User.ReadWrite.All", "LicenseAssignment.ReadWrite.All"],
         application=["User.ReadWrite.All", "LicenseAssignment.ReadWrite.All"],
@@ -618,6 +634,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
         application=["DeviceManagementManagedDevices.PrivilegedOperations.All"],
@@ -630,6 +647,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["DeviceManagementApps.ReadWrite.All"], application=["DeviceManagementApps.ReadWrite.All"]
     )
@@ -644,6 +662,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["User.Read.All", "User.ReadWrite.All"], application=["User.Read.All", "User.ReadWrite.All"]
     )
@@ -1752,6 +1771,7 @@ class User(DirectoryObject):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=[
             "User.ReadWrite",
@@ -1773,6 +1793,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Calendars.ReadBasic", "Calendars.Read", "Calendars.ReadWrite"],
         application=["Calendars.Read", "Calendars.ReadWrite"],
@@ -1795,6 +1816,7 @@ class User(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=[
             "DeviceManagementConfiguration.Read.All",

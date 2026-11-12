@@ -11,6 +11,7 @@ from office365.entity import Entity
 from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
@@ -94,6 +95,7 @@ class ConditionalAccessPolicy(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.ConditionalAccessPolicy"
 
+    @verb(role="action", effect="write")
     def restore(self) -> ConditionalAccessPolicy:
         """restore operation."""
         from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy

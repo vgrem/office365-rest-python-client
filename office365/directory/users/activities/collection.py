@@ -4,6 +4,7 @@ from office365.directory.users.activities.activity import UserActivity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
+from office365.runtime.verbs import verb
 
 
 class UserActivityCollection(EntityCollection[UserActivity]):
@@ -12,6 +13,7 @@ class UserActivityCollection(EntityCollection[UserActivity]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, UserActivity, resource_path)
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["UserActivity.ReadWrite.CreatedByApp"])
     def recent(self) -> UserActivityCollection:
         """

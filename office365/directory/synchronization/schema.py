@@ -16,6 +16,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.filter_operator_schema import FilterOperatorSchema
@@ -33,6 +34,7 @@ class SynchronizationSchema(Entity):
     The following sections describe the high-level components of the synchronization schema.
     """
 
+    @verb(role="action", effect="read")
     @require_permission(delegated=["Synchronization.Read.All"], application=["Synchronization.Read.All"])
     def functions(self) -> EntityCollection[AttributeMappingFunctionSchema]:
         """List all the functions currently supported in the attributeMappingSource."""
@@ -68,6 +70,7 @@ class SynchronizationSchema(Entity):
             "synchronizationRules", ClientValueCollection[SynchronizationRule](SynchronizationRule)
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],
@@ -103,6 +106,7 @@ class SynchronizationSchema(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Synchronization.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Synchronization.ReadWrite.All"],

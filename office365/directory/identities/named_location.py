@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identities.named_location import NamedLocation
@@ -44,6 +45,7 @@ class NamedLocation(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.NamedLocation"
 
+    @verb(role="action", effect="write")
     def restore(self) -> NamedLocation:
         """restore operation."""
         from office365.directory.identities.named_location import NamedLocation

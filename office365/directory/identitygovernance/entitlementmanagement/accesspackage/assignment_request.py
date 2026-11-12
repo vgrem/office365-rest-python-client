@@ -34,6 +34,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.extensions.custom.data import CustomExtensionData
@@ -131,6 +132,7 @@ class AccessPackageAssignmentRequest(Entity):
         """Gets the schedule property"""
         return self.properties.get("schedule", EntitlementManagementSchedule())
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["EntitlementMgmt-SubjectAccess.ReadWrite", "EntitlementManagement.ReadWrite.All"],
     )
@@ -140,6 +142,7 @@ class AccessPackageAssignmentRequest(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["EntitlementManagement.ReadWrite.All"],
         application=["EntitlementManagement.ReadWrite.All"],
@@ -150,6 +153,7 @@ class AccessPackageAssignmentRequest(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["EntitlementManagement.ReadWrite.All"],
         application=["EntitlementManagement.ReadWrite.All"],

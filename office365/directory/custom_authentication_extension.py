@@ -10,6 +10,7 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.authentication.configuration.validation import AuthenticationConfigurationValidation
@@ -26,6 +27,7 @@ class CustomAuthenticationExtension(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.CustomAuthenticationExtension"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["CustomAuthenticationExtension.Read.All", "CustomAuthenticationExtension.ReadWrite.All"],
         application=["CustomAuthenticationExtension.Read.All", "CustomAuthenticationExtension.ReadWrite.All"],

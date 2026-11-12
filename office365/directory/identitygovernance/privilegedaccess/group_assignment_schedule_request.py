@@ -15,6 +15,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.identitygovernance.privilegedaccess.group_assignment_schedule_request import (
@@ -85,6 +86,7 @@ class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.PrivilegedAccessGroupAssignmentScheduleRequest"
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["PrivilegedAssignmentSchedule.ReadWrite.AzureADGroup"],
         application=["PrivilegedAssignmentSchedule.ReadWrite.AzureADGroup"],
@@ -95,6 +97,7 @@ class PrivilegedAccessGroupAssignmentScheduleRequest(Entity):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["PrivilegedAssignmentSchedule.ReadWrite.AzureADGroup"],
         application=["PrivilegedAssignmentSchedule.ReadWrite.AzureADGroup"],

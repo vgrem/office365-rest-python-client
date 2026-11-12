@@ -37,6 +37,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.endpoint import Endpoint
@@ -64,6 +65,7 @@ class ServicePrincipal(DirectoryObject):
     def __str__(self):
         return self.display_name or ""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
@@ -96,6 +98,7 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
@@ -112,6 +115,7 @@ class ServicePrincipal(DirectoryObject):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
@@ -358,6 +362,7 @@ class ServicePrincipal(DirectoryObject):
         )
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Application.ReadWrite.All", "Application.ReadWrite.OwnedBy", "Directory.ReadWrite.All"],
@@ -882,6 +887,7 @@ class ServicePrincipal(DirectoryObject):
             ),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Application.ReadWrite.All", "Directory.ReadWrite.All"],
         application=["Application.ReadWrite.OwnedBy", "Application.ReadWrite.All", "Directory.ReadWrite.All"],

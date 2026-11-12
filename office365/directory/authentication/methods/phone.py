@@ -8,6 +8,7 @@ from office365.directory.authentication.phonetype import AuthenticationPhoneType
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class PhoneAuthenticationMethod(AuthenticationMethod):
@@ -25,6 +26,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
     An office phone can only receive voice calls, not SMS messages.
     """
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["UserAuthenticationMethod.ReadWrite.All"], application=["UserAuthenticationMethod.ReadWrite.All"]
     )
@@ -37,6 +39,7 @@ class PhoneAuthenticationMethod(AuthenticationMethod):
         self.context.add_query(qry)
         return self
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["UserAuthenticationMethod.ReadWrite.All"], application=["UserAuthenticationMethod.ReadWrite.All"]
     )

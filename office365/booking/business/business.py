@@ -23,6 +23,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class BookingBusiness(Entity):
@@ -30,6 +31,7 @@ class BookingBusiness(Entity):
     It contains business information and related business objects such as appointments, customers, services,
     and staff members."""
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Bookings.Read.All", "Bookings.ReadWrite.All", "Bookings.Manage.All"],
         application=["Bookings.Read.All"],
@@ -57,6 +59,7 @@ class BookingBusiness(Entity):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Bookings.Manage.All"],
         application=["Bookings.Manage.All"],
@@ -253,6 +256,7 @@ class BookingBusiness(Entity):
     def entity_type_name(self) -> str:
         return "microsoft.graph.BookingBusiness"
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Bookings.Manage.All"], application=["Bookings.Manage.All"])
     def unpublish(self) -> Self:
         """unpublish operation."""
