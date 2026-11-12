@@ -129,6 +129,32 @@ uses); the object it is called on is the one the walk reached.
 
 Reaching a noun by an ``{id}`` is therefore the next *model* question, not the next CLI question.
 
+### 2.2 The path is the user's; the walk is only a guess
+
+The grammar is ``<product> <noun> [navigation ...] [action]``. The words after the noun are the
+getters the line wants walked, so ``o365 sharepoint web lists list`` is ``web.lists.get()`` — a
+getter per word, checked against the model, with no URL composed and no second table:
+
+* a word is an **action** when the type it lands on answers one (``Route.commands``);
+* otherwise it must be a **getter** the type holds (``routing._links``), and it is walked;
+* if the words end without an action, the actions of the type they reached are printed.
+
+This matters because two routes to one type are two different URLs, and only the caller knows
+which was meant. Measured on the noun ``list``: ``chain`` answers ``('web',
+'access_requests_list')`` — a real feed of the wrong list — because breadth-first finds the first
+getter declared to return a ``ListCollection``, and ``Web.access_requests_list`` is one. Spelling
+``web lists`` gives ``https://<site>/_api/Web/lists``. So a route is still walked when the line
+does not say how, but the walk is a **guess**, ``--help`` prints which one it will take
+(``Walk web -> lists, then get() on ListCollection``), and the spelled path is the answer to it.
+
+A word that resolves to neither is refused with both inventories, or with the closest names:
+``o365: sharepoint web foder holds no 'foder'; did you mean folders, root_folder?`` and
+``o365: sharepoint web lis holds no 'lis'; did you mean list, lists?`` — an action and a getter in
+one suggestion, which is exactly the ambiguity a user has.
+
+The cost, measured cold: 1.29 s for ``sharepoint web lists`` (the index dominates), 1.31 s adding
+a word, 0.23 s for ``outlook message attachments``.
+
 ## 3. Decisions proposed
 
 **S1 — One store, keyed by audience.** A session belongs to an *audience* (``graph``,
@@ -147,8 +173,11 @@ correctly: ``login`` is a verb of ``ClientContext``, not of a noun inside it.
 **S3 — Grammar.**
 ```
 o365 login|logout|whoami|sessions [--audience graph|sharepoint|exchange] [flags]
-o365 <product> <noun> <action> [flags]        # what routing.route() already resolves
+o365 <product> <noun> [navigation ...] [action] [flags]   # what routing.route() resolves
 ```
+The words between the noun and the action are getters the model states, so the command line
+names its own URL and the model only checks it (§2.2). An action ends the line; a word after one
+is refused rather than read as a further step.
 An audience word is only read when a session verb follows it, because ``sharepoint`` is both an
 audience and a product: ``o365 sharepoint login`` is the session, ``o365 sharepoint web get`` is
 the product. ``graph`` is an audience and no product at all, so its nouns are addressed by product
@@ -294,9 +323,17 @@ shape) and a live run, not just ``--offline``.
 ## 7. Completion — possible, and what it costs
 
 The grammar is already a tree: products (22, 0.16 s to enumerate), nouns (``nouns(product)``),
-actions (``Route.commands``), flags (a method signature). Completion is a fourth reader of those,
-never a fourth source, and it is one hidden verb plus a six-line shell function that
-``o365 completion bash|zsh`` prints.
+navigation words *or* actions at every level after the noun (``_links`` for one, ``Route.commands``
+for the other — the same two maps the run reads), flags (a method signature). Completion is a
+fourth reader of those, never a fourth source, and it is one hidden verb plus a six-line shell
+function that ``o365 completion bash|zsh`` prints.
+
+Following a spoken path costs nothing extra: the partial line is resolved by ``route(product,
+*complete_words)`` — the same function that runs it — and the candidates are
+``sorted({*_links(here), *commands})``. Measured: 50 candidates at ``sharepoint web <TAB>`` in
+0.98 s (``list``, ``list_templates``, ``lists`` all offered for ``lis``), and one at ``web lists
+<TAB>``. The single ordering judgement is that an action is offered before a getter of the same
+name, because ``list`` is both.
 
 Cost is the whole question, measured per level, cold:
 

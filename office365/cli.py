@@ -87,7 +87,9 @@ def main(argv: "list[str] | None" = None) -> int:
         print(f"o365: unknown command {word!r}\n{_usage()}", file=sys.stderr)
         return 2
     noun, rest = rest[0], rest[1:]
-    return command(word, noun, rest[0] if rest else "", rest[1:])
+    # The words name the route and stop where the first flag starts; a flag's value is not a word.
+    cut = next((position for position, item in enumerate(rest) if item.startswith("-")), len(rest))
+    return command(word, [noun, *rest[:cut]], rest[cut:])
 
 
 def login(audience: str, argv: "list[str]") -> int:
@@ -177,28 +179,32 @@ def _refuse(message: str, code: int = 2) -> int:
     return code
 
 
-def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
-    """Run ``<product> <noun> <action>``: the route is read, the flags are the method's own."""
+def command(product: str, words: "list[str]", argv: "list[str]") -> int:
+    """Run ``<product> <noun> [navigation ...] [action]``: the words are the route, the flags are
+    the method's own.
+    """
     from office365.routing import chain, route
 
+    spoken = " ".join(words)
     try:
-        found = route(product, noun, action)
+        found = route(product, *words)
     except LookupError as err:
         return _refuse(str(err))
-    if not action:
-        print(f"{product} {found.noun}: " + ", ".join(sorted(found.commands)))
+    if found.verb is None:
+        print(f"{product} {spoken}: " + ", ".join(sorted(found.commands)))
         return 0
-    target = found.target
+    target = found.here
     if target is None:
-        return _refuse(f"{product} {noun} does not answer {action!r}")
+        return _refuse(f"{product} {spoken} does not answer {words[-1]!r}")
     method = getattr(target, found.method)
     # The walk reads types only, so the route to the noun is known before a token is: help and
     # a bad flag are answered without a session, and only the request itself needs one.
-    path = chain(_root(_audience(found.entity)), target)
+    path = chain(_root(_audience(found.entity)), found.entity)
+    walk = path + found.walk if path is not None else None
     parser = argparse.ArgumentParser(
-        prog=f"o365 {product} {noun} {action}",
-        description=f"Walk {' -> '.join(path)}, then {found.method}() on {target.__name__}"
-        if path
+        prog=f"o365 {product} {spoken}",
+        description=f"Walk {' -> '.join(walk)}, then {found.method}() on {target.__name__}"
+        if walk
         else f"{found.method}() on {target.__name__}",
     )
     _flags(parser, method, set())
@@ -208,12 +214,12 @@ def command(product: str, noun: str, action: str, argv: "list[str]") -> int:
         client = _client(_audience(found.entity))
     except LookupError as err:
         return _refuse(str(err))
-    if path is None:
+    if walk is None:
         return _refuse(
-            f"{product} {noun} is declared, but nothing walks there from {type(client).__name__}:"
+            f"{product} {spoken} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
         )
-    return _send(client, getattr(functools.reduce(getattr, path, client), found.method), given)
+    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given)
 
 
 def _send(client: Any, method: Any, given: "Mapping[str, Any]") -> int:

@@ -1,13 +1,15 @@
 """Finding a type by the words a command line uses.
 
-A command line is ``<product> <noun> <verb> <arguments>``, and the first three levels are
-already statements of the model, so none of them is spelled a second time here:
+A command line is ``<product> <noun> [navigation ...] [verb] <arguments>``, and each level is
+already a statement of the model, so none of them is spelled a second time here:
 
 * the product is the package a type lives in, and the package says so (``__product__``, read
   by :func:`office365.runtime.schema.service_of`);
 * the noun is the type's own name, singular - ``outlook message list`` reads like
   ``az vm list`` - and a feed answers the same noun because it states what it holds
   (``ClientObjectCollection.item_type()``);
+* the words after the noun are the getters the line wants walked, so ``sharepoint web lists
+  get`` is ``web.lists.get()`` and not whichever other route to a list the model could name;
 * the verb is stamped on the method (:mod:`office365.runtime.verbs`), and the arguments are
   that method's own parameters.
 
@@ -42,11 +44,14 @@ from office365.runtime.verbs import VerbMeta, command_word, verbs_of
 
 @dataclass(frozen=True)
 class Route:
-    """What a command line resolved to: one noun, and the half a verb was found on.
+    """What a command line resolved to: one noun, the words walked after it, and the half a verb
+    was found on.
 
     :attr:`entity` is the item and :attr:`collection` the feed that holds it, ``None`` for a
-    type that states no feed. The last three are filled in only when an action was asked for:
-    the declaration, the class that answers it and the attribute on it, so a caller reads the
+    type that states no feed. :attr:`walk` holds the getters the line spelled (``web lists`` is
+    ``("lists",)``), so a caller commits to the URL the user asked for; :attr:`here` is the type
+    those words reached. The last three are filled in only when an action was asked for: the
+    declaration, the class that answers it and the attribute on it, so a caller reads the
     arguments of the method that will do the work instead of looking it up a second time.
     """
 
@@ -54,8 +59,9 @@ class Route:
     noun: str
     entity: type
     collection: type | None = None
+    walk: tuple[str, ...] = ()
+    here: type | None = None
     verb: VerbMeta | None = None
-    target: type | None = None
     method: str = ""
 
     @cached_property
@@ -66,7 +72,7 @@ class Route:
         inherits), and the declaration says which half means what.
         """
         answers: dict[str, tuple[type, str, VerbMeta]] = {}
-        for half in (self.entity, self.collection):
+        for half in (self.here or self.entity, self.collection):
             if half is not None:
                 for method, meta in verbs_of(half).items():
                     if meta.expose:
@@ -74,28 +80,53 @@ class Route:
         return MappingProxyType(answers)
 
 
-def route(product: str, noun: str, action: str = "") -> Route:
-    """The type ``<product> <noun> <action>`` names, or a failure saying what was close.
+def route(product: str, *words: str) -> Route:
+    """The type ``<product> <noun> [navigation ...] [action]`` names, or a failure saying what was close.
+
+    The noun is one word; the words after it are the getters this command line wants walked, and
+    the last of them is an action when the type it lands on answers one. So the path is the
+    user's and the model only checks it - two routes to the same type are different URLs, and only
+    the caller knows which one was meant.
 
     Raises:
-        LookupError: the product publishes no types, the noun is spelled with other letters,
-            or no exposed command on either half answers ``action``. The message lists what
-            does exist, because a command line's job is to be tried.
+        LookupError: the product publishes no types, the noun is spelled with other letters, a
+            word is neither held nor answered by the type it lands on, or an action is asked for
+            after one was already taken. The message lists what does exist, because a command
+            line's job is to be tried.
     """
     index = nouns(product)
-    key = _fold(noun)
-    found = index.get(key)
+    noun = words[0] if words else ""
+    found = index.get(_fold(noun))
     if found is None:
         spoken = {_fold(entry.noun): entry.noun for entry in index.values()}
-        near = ", ".join(spoken[one] for one in get_close_matches(key, spoken, n=5))
+        near = ", ".join(spoken[one] for one in get_close_matches(_fold(noun), spoken, n=5))
         raise LookupError(f"no {noun!r} in {product!r}" + (f"; did you mean {near}?" if near else ""))
-    if not action:
-        return found
-    if action not in found.commands:
-        spoken = ", ".join(sorted(found.commands))
-        raise LookupError(f"{product} {noun} does not answer {action!r}; it answers: {spoken}")
-    target, method, verb = found.commands[action]
-    return replace(found, verb=verb, target=target, method=method)
+    for position, word in enumerate(words[1:], start=2):
+        found = _step(found, word, " ".join((product, *words[:position])))
+    return found
+
+
+def _step(found: Route, word: str, so_far: str) -> Route:
+    """One word further: an exposed action of the type reached, or a getter it holds."""
+    if found.verb is not None:
+        raise LookupError(f"{word!r} comes after an action; {found.method}() is the end of the line")
+    action = found.commands.get(word)
+    if action is not None:
+        target, method, verb = action
+        return replace(found, verb=verb, here=target, method=method)
+    current = found.here or found.entity
+    links = _links(current)
+    held = links.get(word)
+    if held is None:
+        held_names = sorted(links)
+        near = get_close_matches(word, [*held_names, *found.commands], n=3)
+        if near:
+            raise LookupError(f"{so_far} holds no {word!r}; did you mean {', '.join(near)}?")
+        holds = ", ".join(held_names[:8]) or "-"
+        answers = ", ".join(sorted(found.commands)) or "-"
+        raise LookupError(f"{so_far} holds no {word!r}; it holds: {holds}; it answers: {answers}")
+    feed = held if issubclass(held, ClientObjectCollection) else None
+    return replace(found, here=held, collection=feed, walk=found.walk + (word,))
 
 
 def chain(root: object, target: type) -> tuple[str, ...] | None:
