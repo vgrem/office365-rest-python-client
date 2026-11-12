@@ -9,6 +9,7 @@ from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.onenote.pages.collection import OnenotePageCollection
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 class OnenoteSection(OnenoteEntityHierarchyModel):
     """A section in a OneNote notebook. Sections can contain pages."""
 
+    @verb(role="action", effect="write")
     @require_permission(delegated=["Notes.ReadWrite", "Notes.ReadWrite.All"], application=["Notes.ReadWrite.All"])
     def copy_to_section_group(
         self,
@@ -112,6 +114,7 @@ class OnenoteSection(OnenoteEntityHierarchyModel):
         """Gets the pagesUrl property"""
         return self.properties.get("pagesUrl", None)
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Notes.Create", "Notes.ReadWrite", "Notes.ReadWrite.All"],
         application=["Notes.ReadWrite.All"],

@@ -7,11 +7,13 @@ from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
+from office365.runtime.verbs import verb
 
 
 class OnenoteResource(OnenoteEntityBaseModel):
     """An image or other file resource on a OneNote page."""
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
         application=["Notes.Read.All", "Notes.ReadWrite.All"],

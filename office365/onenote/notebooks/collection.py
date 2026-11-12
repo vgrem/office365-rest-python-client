@@ -8,6 +8,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.odata.literals import escape_odata_string
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.verbs import verb
 
 
 class NotebookCollection(EntityCollection[Notebook]):
@@ -63,6 +64,7 @@ class NotebookCollection(EntityCollection[Notebook]):
             find=lambda: self.find_by_display_name(display_name, required=True),
         )
 
+    @verb(role="action", effect="write")
     @require_permission(
         delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
         application=["Notes.Read.All", "Notes.ReadWrite.All"],
@@ -81,6 +83,7 @@ class NotebookCollection(EntityCollection[Notebook]):
         self.context.add_query(qry)
         return return_type
 
+    @verb(role="action", effect="read")
     @require_permission(
         delegated=["Notes.Read", "Notes.Read.All", "Notes.ReadWrite", "Notes.ReadWrite.All"],
         application=["Notes.Read.All", "Notes.ReadWrite.All"],
