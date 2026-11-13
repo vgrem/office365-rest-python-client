@@ -97,6 +97,16 @@ transaction, readable while the run is live
 more bytes and more time per save than JSON — take it for the queryable view and the
 single-transaction write, not for speed.
 
+A resume does **not** start where the crash was: the source is read again from the
+beginning of the list and each item is matched against the checkpoint, then skipped.
+Measured on a dev tenant: 200 already-done items across three lists cost 1 m 09 s and
+851 requests, and re-ensured the four folders — they have no `source_id`, so their key
+is the path and their branch is idempotent, which is why they are counted as written.
+Prefer `job.resume()` while the process is alive: it keeps the adapter, and so the
+caches built during the first attempt. A run that needs the target principals again
+(authorship preservation) re-ensures each distinct login once per **process**, not per
+item.
+
 ## Idempotency & conflicts
 
 A re-run must not duplicate content. Two mechanisms cooperate:
