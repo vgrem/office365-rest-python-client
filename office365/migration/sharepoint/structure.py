@@ -1384,7 +1384,11 @@ def _create_web_column(web: Web, schema_xml: str, name: str, report: WebScopePro
     SharePoint Online registers the column and *then* raises
     ``SPFieldValidationException`` ("The object has been updated by another user
     since it was last fetched"), so the exception is not evidence of failure: what
-    the web carries afterwards is.
+    the web carries afterwards is. The one exception is a name that is already
+    taken: the server refuses the create with "A duplicate field name ... was
+    found", and the web's own collection read does not have to list it (a subsite
+    can answer that read with nothing at all), so the refusal is the only evidence
+    that the name is reachable — and it is not a failure to copy onto it.
     """
     error: Optional[BaseException] = None
     try:
@@ -1394,6 +1398,9 @@ def _create_web_column(web: Web, schema_xml: str, name: str, report: WebScopePro
         logger.debug("create web column '%s' raised: %s", name, e)
     if _web_column_exists(web, name):
         report.created.append(name)
+        return
+    if error is not None and "duplicate field name" in str(error).lower():
+        report.present.append(name)
         return
     report.failed[name] = str(error or "the column is not on the web after the create")
 

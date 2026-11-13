@@ -44,6 +44,7 @@ from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import AUTHORSHIP, MODERATION, PERMISSIONS
 from office365.sharepoint.exceptions import SPFieldValidationException
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
+from office365.sharepoint.fields.field import Field
 from office365.sharepoint.fields.lookup import FieldLookup
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
@@ -56,7 +57,6 @@ from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueColl
 
 if TYPE_CHECKING:
     from office365.migration.map import ContentTypeMap
-    from office365.sharepoint.fields.field import Field
     from office365.sharepoint.files.file import File
     from office365.sharepoint.folders.folder import Folder
     from office365.sharepoint.lists.list import List as SPList
