@@ -81,8 +81,21 @@ job.export_reports("reports/")
 Runs are **idempotent and resumable**: pass `manifest_path` / `checkpoint_path`
 and a paused or failed run continues where it stopped (`job.resume()`). Set
 `MigrationOptions(incremental=True)` to skip items at or below the persisted
-watermark. Checkpoints are persisted **atomically** (temp file → `fsync` →
-rename), so a crash mid-save never corrupts the file the next run resumes from.
+watermark. Checkpoints are persisted **atomically** (temp file → flush → rename),
+so a crash mid-save never corrupts the file the next run resumes from.
+
+An item is checkpointed under its **source** identity — `source_id` when the
+adapter reports one, otherwise its source path — so a resume still recognises an
+item the target path was resolved differently for (a rename policy, a collision
+suffix). A checkpoint written by an earlier version keys the target path and is
+simply re-driven; the default `SKIP` policy makes that a no-op on the target.
+
+Give `checkpoint_path` a `.sqlite` / `.sqlite3` / `.db` extension to keep the same
+state in a SQLite ledger instead of JSON: one row per item, written in a single
+transaction, readable while the run is live
+(`sqlite3 state/run.sqlite 'select status, count(*) from item group by 1'`). It costs
+more bytes and more time per save than JSON — take it for the queryable view and the
+single-transaction write, not for speed.
 
 ## Idempotency & conflicts
 

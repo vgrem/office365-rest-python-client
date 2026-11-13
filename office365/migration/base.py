@@ -82,11 +82,14 @@ class MigrationItem:
     error_code: str | None = None  # failure category/code (e.g. exception type name)
     modified: str | None = None  # source last-modified (ISO-8601), for incremental
     created: str | None = None  # source created (ISO-8601)
-    source_id: str | None = None  # source item identity (e.g. file UniqueId), for the old→new map
+    # The item's identity in the source (e.g. a file's UniqueId). Stable across runs, which is
+    # why the checkpoint is keyed by it; the old→new map uses it too. Optional: an adapter that
+    # cannot report one is checkpointed by ``source_path``.
+    source_id: str | None = None
     version_label: str | None = None  # current version label (e.g. ``"3.0"``)
     # Older versions, oldest first, as ``(label, content)`` — populated only for a
     # target that preserves version history (server-side package). Transient: NOT
-    # persisted in the checkpoint (keyed by ``dest_path``), so no blobs on disk.
+    # persisted in the checkpoint, so no blobs on disk.
     versions: list[tuple[str, bytes]] | None = None
     # Resolved authorship identities (server-side package path only). Persisted in
     # the manifest (they are small, JSON-safe dicts), never checkpointed.

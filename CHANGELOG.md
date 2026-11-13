@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Breaking changes
 
+- **A checkpoint is keyed by the item's source identity.** `Checkpoint.items` was keyed by
+  `dest_path`, so a resume could address a different key for the same work: a `RENAME`
+  conflict policy, or a different target root, re-drove items that were already written. It is
+  now keyed by `source_id` when the adapter reports one and by the source path otherwise —
+  the same identity space `IdentityMap` and the delta report use. A checkpoint written by an
+  earlier release keys the target path, so the first resume after upgrading re-drives its
+  items once; the default `SKIP` policy makes that a no-op on the target, and nothing guesses
+  which convention a file follows.
+
 - **`TypeSchema.content_columns` is now `serializable`.** The old name said *content*,
   which in SharePoint already means a content type; the property answers one question — does
   a request serialize this name? — and it is a frozenset for the same reason `.readonly` is:
@@ -29,6 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   gets a resolver error instead of a traceback.
 
 ### Added
+
+- **A resumable run can keep its state in a SQLite ledger.** Give `checkpoint_path` a
+  `.sqlite` / `.sqlite3` / `.db` extension and the same `Checkpoint` writes rows instead of
+  one JSON document: `run` (one row) and `item` (one row per item), in one transaction per
+  save, so a kill mid-save leaves the previous state whole rather than a truncated file. The
+  ledger is readable while the run is live — `select status, count(*) from item group by 1`
+  answers "how far am I" without loading the file — and it is the store session state and the
+  old→new map plug into. It is not a speed win: a row costs more than a line, measured at
+  ~2× the bytes and ~2.5× the time of JSON at 100 000 items, so take it for the single
+  transaction and the queryable view. `sqlite3` only, no new dependency.
 
 - **A method can say it is a command.** `@verb(role=...)` declares what a method is to a
   caller that drives the library from outside Python: `list`, `get`, `create`, `update`,
