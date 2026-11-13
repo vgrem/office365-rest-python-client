@@ -174,7 +174,7 @@ def _sharepoint_dimensions(source: Any, target: Any) -> tuple[dict[str, str], di
 
     set_("content", status.DELIVERED)
 
-    if getattr(target, "supports_versions", False) and _supports(source, "read_version_history"):
+    if target.supports_versions and _supports(source, "read_version_history"):
         set_(
             "versions",
             status.BEST_EFFORT,
@@ -193,7 +193,7 @@ def _sharepoint_dimensions(source: Any, target: Any) -> tuple[dict[str, str], di
     else:
         set_("timestamps", status.UNSUPPORTED, "target.apply_timestamps(item) is not implemented")
 
-    if callable(getattr(target, "apply_authorship", None)) or getattr(target, "supports_authorship", False):
+    if callable(getattr(target, "apply_authorship", None)) or target.supports_authorship:
         set_(
             "authorship",
             status.BEST_EFFORT,
@@ -216,7 +216,7 @@ def _sharepoint_dimensions(source: Any, target: Any) -> tuple[dict[str, str], di
             "needs source.read_permissions(item) and target.apply_permissions(item, permissions)",
         )
 
-    if getattr(source, "supports_attachments", False) and getattr(target, "supports_attachments", False):
+    if source.supports_attachments and target.supports_attachments:
         set_("attachments", status.DELIVERED)
     else:
         set_("attachments", status.UNSUPPORTED, "list-item attachments are carried only between list adapters")
@@ -322,13 +322,13 @@ def describe_fidelity(source: Any, target: Any, options: MigrationOptions) -> Fi
         (
             "authorship",
             options.preserve_authorship,
-            _supports(target, "apply_authorship") or bool(getattr(target, "supports_authorship", False)),
+            _supports(target, "apply_authorship") or target.supports_authorship,
             "target.apply_authorship(item) or a supports_authorship target (server-side Migration API)",
         ),
         (
             "versions",
             options.preserve_versions,
-            bool(getattr(target, "supports_versions", False)) and _supports(source, "read_version_history"),
+            target.supports_versions and _supports(source, "read_version_history"),
             "a version-preserving target (server-side Migration API) and source.read_version_history(item)",
         ),
     )

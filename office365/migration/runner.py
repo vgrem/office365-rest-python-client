@@ -45,7 +45,7 @@ def _assert_fidelity_supported(options: MigrationOptions, source, target: DataTa
     silently migrating without the requested fidelity.
     """
     if options.preserve_versions and not (
-        getattr(target, "supports_versions", False) and callable(getattr(source, "read_version_history", None))
+        target.supports_versions and callable(getattr(source, "read_version_history", None))
     ):
         raise NotImplementedError(
             "preserve_versions is not supported by this adapter pair: REST cannot restore version "
@@ -58,7 +58,7 @@ def _assert_fidelity_supported(options: MigrationOptions, source, target: DataTa
             "preserve_timestamps is not supported by this target: it does not implement apply_timestamps(item)."
         )
     if options.preserve_authorship and not (
-        callable(getattr(target, "apply_authorship", None)) or getattr(target, "supports_authorship", False)
+        callable(getattr(target, "apply_authorship", None)) or target.supports_authorship
     ):
         raise NotImplementedError(
             "preserve_authorship is not supported by this target: it does not implement apply_authorship(item) "
@@ -438,7 +438,7 @@ def _load_versions(source, target: DataTarget, item: MigrationItem) -> None:
     the optional ``read_version_history`` hook. Version bytes are transient — they
     live only on the in-flight item and are never checkpointed.
     """
-    if not getattr(target, "supports_versions", False):
+    if not target.supports_versions:
         return
     read = getattr(source, "read_version_history", None)
     if not callable(read):

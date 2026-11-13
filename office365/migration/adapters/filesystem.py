@@ -11,14 +11,14 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from office365.migration.adapters import MigrationProgress, checksum_file
+from office365.migration.adapters import DataSource, DataTarget, MigrationProgress, checksum_file
 from office365.migration.base import MigrationItem
 from office365.runtime.converters.json_file import record_to_json
 from office365.runtime.converters.scalars import iso
 from office365.runtime.operations import emit_progress
 
 
-class FileSystemSource:
+class FileSystemSource(DataSource):
     """Enumerates and reads files under a root directory."""
 
     def __init__(self, root: str | Path) -> None:
@@ -58,7 +58,7 @@ class FileSystemSource:
         pass
 
 
-class FileSystemTarget:
+class FileSystemTarget(DataTarget):
     """Writes files under a root directory."""
 
     def __init__(self, root: str | Path, include_folders: bool = False) -> None:
@@ -108,7 +108,7 @@ class FileSystemTarget:
         pass
 
 
-class JsonFileSource:
+class JsonFileSource(DataSource):
     """Reads record payloads (one JSON file per item) — the import counterpart
     of :class:`JsonFileTarget`. Enables records round-trips through the filesystem.
     """

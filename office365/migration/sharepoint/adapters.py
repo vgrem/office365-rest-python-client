@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from typing_extensions import TypeAlias
 
-from office365.migration.adapters import MigrationProgress, checksum
+from office365.migration.adapters import DataSource, DataTarget, MigrationProgress, checksum
 from office365.migration.base import (
     MigrationItem,
     PermissionEntry,
@@ -697,7 +697,7 @@ def _read_role_assignments(
     return result
 
 
-class SharePointListSource:
+class SharePointListSource(DataSource):
     """Enumerates a SharePoint list's items into record migration items."""
 
     # Marks this source as emitting list-item attachments as extra items (see DataSource).
@@ -1253,7 +1253,7 @@ class SharePointListSource:
         pass
 
 
-class SharePointListTarget:
+class SharePointListTarget(DataTarget):
     """Imports record payloads into a SharePoint list.
 
     Pass ``key`` (one or more natural-key columns) to make the target idempotent:
@@ -2200,7 +2200,7 @@ class SharePointListTarget:
         pass
 
 
-class SharePointLibrarySource:
+class SharePointLibrarySource(DataSource):
     """Enumerates a document library's files and folders (recursively) for migration.
 
     Folder entries (``item_type="folder"``, trailing ``/`` on the destination)
@@ -2609,7 +2609,7 @@ class SharePointLibrarySource:
         pass
 
 
-class SharePointLibraryTarget:
+class SharePointLibraryTarget(DataTarget):
     """Writes files into a document library, creating folders as needed.
 
     Uses the simple upload for files up to ~4MB; ``write_many`` (parallel,

@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.migration.adapters import DataTarget
 from office365.migration.base import MigrationItem, PermissionEntry, Principal, is_puid
 from office365.migration.package.builder import PackageBuilder
 from office365.migration.package.staging import create_staging
@@ -49,7 +50,7 @@ def _resolve_site_url(site, site_url: str | None) -> str:
 _PACKAGE_ITEM_TYPES = frozenset({"file", "folder"})
 
 
-class SharePointPackageTarget:
+class SharePointPackageTarget(DataTarget):
     """A ``DataTarget`` that builds a package and submits a server-side ingestion job.
 
     The only path that preserves version history: the runner reads each file's

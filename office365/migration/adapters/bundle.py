@@ -31,7 +31,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from office365.migration.adapters import MigrationProgress, checksum_file
+from office365.migration.adapters import DataSource, DataTarget, MigrationProgress, checksum_file
 from office365.migration.base import MigrationItem
 from office365.runtime.converters.json_file import record_to_json
 from office365.runtime.converters.scalars import utc_now_iso
@@ -169,7 +169,7 @@ class _Bundle:
         return self._root / CONTENT_DIR / digest[:2] / digest
 
 
-class BundleTarget(_Bundle):
+class BundleTarget(_Bundle, DataTarget):
     """Writes a migration into a content-addressed bundle directory.
 
     Idempotent by construction: a payload is stored under the digest of its
@@ -238,7 +238,7 @@ class BundleTarget(_Bundle):
         pass
 
 
-class BundleSource(_Bundle):
+class BundleSource(_Bundle, DataSource):
     """Reads a bundle back as a source, so an export can be imported elsewhere.
 
     The items it lists are the ones the export recorded — same destinations, same

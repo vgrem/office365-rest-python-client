@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable, ClassVar, Optional
 
 from office365.migration.base import ConflictResolution, MigrationItem
 
@@ -59,12 +59,13 @@ class DataSource(ABC):
     - ``read_version_history(item) -> (label, older)`` — the current version
       label and the older versions (oldest first, current excluded), used by a
       version-preserving target (the server-side package target) so history
-      survives the migration;
-    - ``supports_attachments`` — a class attribute set True by a source that
-      emits list-item attachments as extra ``item_type="attachment"`` items.
+      survives the migration.
 
     Absent when the source does not expose them.
     """
+
+    #: True when the source emits list-item attachments as extra ``item_type="attachment"`` items.
+    supports_attachments: ClassVar[bool] = False
 
     @abstractmethod
     def list_items(self, progress: MigrationProgress = None) -> list[MigrationItem]:
@@ -92,19 +93,16 @@ class DataTarget(ABC):
       after a successful write;
     - ``read_permissions(item)`` / ``read_metadata(item)`` — the read
       counterparts the validator diffs against the source (needed to *verify*
-      that the requested fidelity actually landed);
-    - ``supports_versions`` — a class attribute set True by a target that can
-      restore version history (the server-side package target). The runner then
-      reads ``source.read_version_history(item)`` into ``item.version_label`` /
-      ``item.versions`` before the write, so history is preserved whenever the
-      source can supply it;
-    - ``supports_authorship`` — a class attribute set True by a target that
-      restores ``Author``/``ModifiedBy`` while building the payload (the
-      server-side package target); client-side targets expose ``apply_authorship``
-      instead (both best-effort, resolved users only);
-    - ``supports_attachments`` — a class attribute set True by a target that
-      accepts ``item_type="attachment"`` items.
+      that the requested fidelity actually landed).
     """
+
+    #: True when the target restores version history from ``source.read_version_history(item)``.
+    supports_versions: ClassVar[bool] = False
+    #: True when the target restores ``Author``/``ModifiedBy`` while building the payload (the
+    #: server-side package target); a client-side target exposes ``apply_authorship`` instead.
+    supports_authorship: ClassVar[bool] = False
+    #: True when the target accepts ``item_type="attachment"`` items.
+    supports_attachments: ClassVar[bool] = False
 
     @abstractmethod
     def exists(self, item: MigrationItem) -> bool:

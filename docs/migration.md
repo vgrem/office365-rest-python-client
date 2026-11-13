@@ -1653,8 +1653,9 @@ to apply the mapped principal is still caught — and a run with no map is uncha
 
 `report.dimensions` reports **every** dimension the engine models — each
 `delivered`, `best-effort`, `unsupported`, or `handoff` — so a gap is never
-implicit. The matrix is probed from the adapter pair's capability attributes
-(`supports_versions`, `supports_authorship`, `supports_attachments`) and optional
+implicit. The matrix is read from the port's capability flags
+(`DataTarget.supports_versions`/`supports_authorship`/`supports_attachments`,
+`DataSource.supports_attachments`, all `False` by default) and from the optional
 hooks (`apply_timestamps`, `read_permissions`/`apply_permissions`); a non-delivered
 dimension always carries a reason in `report.dimension_notes`.
 
