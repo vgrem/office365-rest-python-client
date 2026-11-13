@@ -877,27 +877,36 @@ class Tenant(Entity):
         return return_type
 
     @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)
-    def create_site(self, url: str, owner: str, title: Optional[str] = None) -> SpoOperation:
+    def create_site(
+        self, url: str, owner: str, title: Optional[str] = None, template: Optional[str] = None
+    ) -> SpoOperation:
         """Queues a site collection for creation with the specified properties.
 
         Args:
             title (str): Sets the new site’s title.
             url (str): Sets the new site’s URL.
             owner (str): Sets the login name of the owner of the new site.
+            template (str): Sets the web template of the new site. Without one the site is
+                created classic (``STS``), which has no modern pages.
         """
         return_type = SpoOperation(self.context)
-        payload = {"siteCreationProperties": SiteCreationProperties(Title=title, Url=url, Owner=owner)}
+        payload = {
+            "siteCreationProperties": SiteCreationProperties(Title=title, Url=url, Owner=owner, Template=template)
+        }
         qry = ServiceOperationQuery(self, "CreateSite", None, payload, None, return_type)
         self.context.add_query(qry)
         return return_type
 
-    def create_site_sync(self, url: str, owner: str, title: Optional[str] = None) -> Site:
+    def create_site_sync(
+        self, url: str, owner: str, title: Optional[str] = None, template: Optional[str] = None
+    ) -> Site:
         """Creates a site collection
 
         Args:
             title (str): Sets the new site’s title.
             url (str): Sets the new site’s URL.
             owner (str): Sets the login name of the owner of the new site.
+            template (str): Sets the web template of the new site.
         """
         return_type = Site(self.context)
 
@@ -906,7 +915,7 @@ class Tenant(Entity):
             if not op.is_complete:
                 self._poll_site_status(url, op.polling_interval_secs or 0)
 
-        self.create_site(url, owner, title).after_execute(_ensure_status)
+        self.create_site(url, owner, title, template).after_execute(_ensure_status)
         return return_type
 
     @site_access(SiteLevel.FULL_CONTROL, role=DirectoryRole.SharePointAdministrator)

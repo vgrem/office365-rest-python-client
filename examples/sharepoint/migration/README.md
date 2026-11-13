@@ -14,6 +14,7 @@ migration/
   assess/          # Step 2 — scan and assess (+ reports/ for the SMAT scan reports)
   migrate/         # Step 3 — create and run a migration task
   monitor/         # Step 4 — monitor and report
+  fixtures/        # Step 1 — build a source worth migrating from (versions, ACLs, pages)
 ```
 
 ---
