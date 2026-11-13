@@ -1,4 +1,4 @@
-"""Six ratchets that walk the whole package and fail on *this* tree.
+"""Seven ratchets that walk the whole package and fail on *this* tree.
 
 The first is ``Compare`` rules: each must say something its field's type can bear
 (see ``runtime/compare_check.py``). The second is a dataclass field default: it
@@ -10,16 +10,20 @@ it is the one its declarations describe. The fifth is the write direction of a t
 the migration layer creates: a column nobody has said the service owns is a name a
 caller may still send, so the count of those may only fall. The sixth states that
 the third's walk reaches models that project both kinds of member, or a projection
-with nothing in it proves nothing.
+with nothing in it proves nothing. The seventh is a ledger of the name lists the
+migration layer keeps by hand: a constant that spells column names instead of asking
+the schema is allowed, but it is counted here so that adding one is a decision.
 """
 
 from __future__ import annotations
 
+import ast
 import dataclasses
 import importlib
 import pkgutil
 from dataclasses import field, replace
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, Iterator, List, Optional
 
 import office365
@@ -269,3 +273,70 @@ def test_a_created_type_says_which_columns_it_does_not_send() -> None:
         if undeclared > _UNDECLARED[name]
     }
     assert grown == {}, f"these created types gained a column with no declared direction: {grown}"
+
+
+#: The name lists the migration layer keeps by hand, measured on 2026-11-13. Each spells two or more
+#: declared column names where the schema could have answered -- a ``$select``, a write order, a
+#: family of settings that are always set together. A list is allowed because the model does not
+#: state the *grouping* (``_LIST_SETTING_ORDER`` is an order, which is a fact about the service);
+#: what is not allowed is a new one appearing silently, so the key is the file and the constant and
+#: the number may only fall. Recording an addition is the decision; a typo in a column name cannot
+#: hide here, because a name no schema declares is not counted at all.
+_NAME_LISTS = {
+    "sharepoint/assessor.py:_UNIQUE_ITEM_SCAN_SELECT": 2,
+    "sharepoint/handoff.py:_FORM_URL_PROPERTIES": 3,
+    "sharepoint/handoff.py:_LIST_SELECT": 6,
+    "sharepoint/resolvers.py:LIST_SCOPE_SELECT": 9,
+    "sharepoint/security.py:_GROUP_FLAGS": 4,
+    "sharepoint/site_scope.py:_REGIONAL_PROPERTIES": 10,
+    "sharepoint/site_settings.py:_CARRIED": 2,
+    "sharepoint/structure.py:_FIELD_SELECT": 16,
+    "sharepoint/structure.py:_LIST_SETTING_ORDER": 10,
+    "sharepoint/structure.py:_LIBRARY_SETTING_NAMES": 3,
+    "sharepoint/structure.py:_VALIDATION_SETTING_NAMES": 2,
+    "sharepoint/structure.py:_WEB_FIELD_SELECT": 6,
+    "sharepoint/structure.py:_WEB_CONTENT_TYPE_SELECT": 2,
+}
+
+
+def _name_lists() -> Dict[str, List[str]]:
+    """Every constant under ``office365/migration`` that spells only declared column names."""
+    columns = {name for model in _package_models() for name in TypeSchema.of(model).columns}
+    root = Path(office365.__file__).parent / "migration"
+    found: Dict[str, List[str]] = {}
+    for path in sorted(root.rglob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, (ast.Assign, ast.AnnAssign)) or node.value is None:
+                continue
+            value = node.value
+            if isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.args:
+                value = value.args[0]
+            if not isinstance(value, (ast.Tuple, ast.List, ast.Set)):
+                continue
+            names = [item.value for item in value.elts if isinstance(item, ast.Constant) and isinstance(item.value, str)]
+            if len(names) != len(value.elts) or not value.elts[1:]:  # every element is a string, two or more
+                continue
+            if not all(name[:1].isupper() and name.isalnum() and name in columns for name in names):
+                continue
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            label = next((target.id for target in targets if isinstance(target, ast.Name)), "")
+            if label != "__all__":
+                found[f"{path.relative_to(root).as_posix()}:{label}"] = names
+    return found
+
+
+def test_a_name_list_in_the_migration_layer_is_a_ledger_entry() -> None:
+    # The migration layer is the one place allowed to know SharePoint's spellings, and the price of
+    # that permission is this ledger: a constant listing column names where ``TypeSchema`` could
+    # answer is a decision, so it is written down. A new list fails here, a longer one fails here,
+    # and a deleted one prunes its row -- the count may only fall.
+    found = _name_lists()
+    reached = {"sharepoint/structure.py:_FIELD_SELECT", "sharepoint/security.py:_GROUP_FLAGS"}
+    assert reached <= set(found), "the walk misses a list it used to find, so it proves nothing"
+    unknown = sorted(set(found) ^ set(_NAME_LISTS))
+    assert unknown == [], (
+        "these name lists are new or gone; record the addition (and why the schema cannot answer) "
+        f"or prune the row: {unknown}"
+    )
+    grown = {key: len(names) for key, names in found.items() if len(names) > _NAME_LISTS[key]}
+    assert grown == {}, f"these name lists grew: {grown}"
