@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 import json
+import ssl
 import sys
 import types
 
 import pytest
 from office365.cli import main
 from office365.graph_client import GraphClient
+from office365.runtime.auth.certificate import (
+    build_client_credential,
+    certificate_thumbprint,
+)
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 
-#: What argparse exits with when it cannot build a command at all.
 USAGE_ERROR = 2
 
 
@@ -125,3 +129,31 @@ def test_a_login_is_kept_and_answers_whoami(monkeypatch, tmp_path):
     with pytest.raises(SystemExit) as refused:
         main(["login", "--tenant", "contoso.onmicrosoft.com"])
     assert refused.value.code == USAGE_ERROR
+
+
+# Offline tests for the certificate authentication helpers.
+DER = bytes.fromhex("3082010a0282010100deadbeefcafe1234")
+
+
+PEM = ssl.DER_cert_to_PEM_cert(DER)
+
+
+def test_build_client_credential_derives_thumbprint_from_public_certificate():
+    credential = build_client_credential(private_key="KEY", public_certificate=PEM)
+    assert credential["thumbprint"] == certificate_thumbprint(PEM)
+    assert credential["private_key"] == "KEY"
+    assert "public_certificate" not in credential
+
+
+def test_build_client_credential_derives_thumbprint_from_path(tmp_path):
+    cert_path = tmp_path / "cert.crt"
+    cert_path.write_text(PEM, encoding="utf-8")
+    credential = build_client_credential(private_key="KEY", public_certificate=cert_path)
+    assert credential["thumbprint"] == certificate_thumbprint(DER)
+
+
+def test_build_client_credential_sni_passes_public_certificate():
+    pytest.importorskip("cryptography")
+    credential = build_client_credential(private_key="KEY", public_certificate=PEM, use_sni=True)
+    assert credential == {"private_key": "KEY", "public_certificate": PEM}
+    assert "thumbprint" not in credential

@@ -8,11 +8,23 @@ import uuid
 from office365.graph_client import GraphClient
 from office365.migration.offline import offline_sharepoint_context
 from office365.onedrive.internal.paths.url import UrlPath
+from office365.runtime.http.prefer import (
+    BYPASS_SHARED_LOCK,
+    RESPOND_ASYNC,
+    RETURN_REPRESENTATION,
+    TRY_FILTER_LAST_MODIFIED_DATE_TIME,
+    add_prefer,
+    prefer_create_if_missing,
+    prefer_return_representation,
+)
+from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.literals import odata_literal
+from office365.runtime.odata.query_options import QueryOptions
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
+from tests._scripted_transport import RecordingTransport
 
 
 class TestGraphPathBuilding(unittest.TestCase):
@@ -115,3 +127,65 @@ def test_a_web_addresses_itself_at_web_not_at_the_collection_it_came_from():
     web = Web(ctx)
     web.set_property("Url", "https://contoso.sharepoint.com/sites/other")
     assert web.resource_url == "https://contoso.sharepoint.com/sites/other/_api/Web"
+
+
+# What each query option is called in a request.
+def test_a_standard_option_is_spelled_the_way_the_specification_spells_it():
+    options = QueryOptions(
+        select=["subject"],
+        filter="isRead eq false",
+        order_by="receivedDateTime asc",
+        top=5,
+        skip=10,
+    )
+    assert options.to_url() == ("$select=subject&$filter=isRead eq false&$orderby=receivedDateTime asc&$top=5&$skip=10")
+
+
+def test_a_custom_key_is_emitted_as_the_caller_spelled_it():
+    options = QueryOptions(custom={"token": "latest", "$orderby": "id desc"})
+    assert options.to_url() == "token=latest&$orderby=id desc"
+
+
+# ``Prefer`` is one header, so layering a preference must merge rather than replace.
+def _request(prefer: str | None = None) -> RequestOptions:
+    request = RequestOptions("https://graph.microsoft.com/v1.0/me")
+    if prefer is not None:
+        request.set_header("Prefer", prefer)
+    return request
+
+
+def test_two_preferences_are_comma_joined_in_order():
+    request = _request()
+    prefer_create_if_missing(request)
+    prefer_return_representation(request)
+
+    assert request.headers["Prefer"] == f"create-if-missing, {RETURN_REPRESENTATION}"
+
+
+def test_a_value_already_present_is_not_duplicated():
+    request = _request(f"{BYPASS_SHARED_LOCK}, {RESPOND_ASYNC}")
+    add_prefer(request, RESPOND_ASYNC, RETURN_REPRESENTATION)
+
+    assert request.headers["Prefer"] == f"{BYPASS_SHARED_LOCK}, {RESPOND_ASYNC}, {RETURN_REPRESENTATION}"
+
+
+def test_nothing_is_attached_when_no_value_is_given():
+    request = _request()
+    add_prefer(request, "")
+
+    assert "Prefer" not in request.headers
+
+
+def test_a_caller_preference_survives_the_one_the_query_requires():
+    """The collection layers its capability's preference on top of the caller's."""
+    transport = RecordingTransport([{"value": []}])
+    client = GraphClient()
+    request = client.pending_request()
+    request.beforeExecute.clear()
+    request.transport = transport
+    request.before_execute(lambda options: options.set_header("Prefer", RESPOND_ASYNC))
+
+    client.me.drive.root.children.filter("lastModifiedDateTime gt 2020-01-01T00:00:00Z").get().execute_query()
+
+    values = [value.strip() for value in transport.requests[-1].headers["Prefer"].split(",")]
+    assert values == [RESPOND_ASYNC, TRY_FILTER_LAST_MODIFIED_DATE_TIME]

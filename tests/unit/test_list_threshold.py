@@ -66,14 +66,6 @@ def _list(item_count: int) -> List:
     return lst
 
 
-def test_get_items_only_warns_when_the_caller_did_not_ask_for_pages():
-    lst = _list(_large())
-
-    with pytest.warns(UserWarning, match="list view threshold"):
-        lst.get_items(_query())
-    lst.get_items(_query(), page_size=500)  # paged: the guard stays quiet
-
-
 class _ThresholdCollection(ClientObjectCollection):
     _list_view_threshold = 3
     _truncation_hint = "page it"

@@ -1,97 +1,78 @@
-"""What a failure says, and what it does not.
+"""What a failure says: the message a caller reads, and the type the runtime dispatches to.
 
-``ClientRequest`` hands an error to whichever handler is registered and then re-raises it, so
-a handler must not swallow the failures that follow. And a refused call names the grant the
-*called API* declares - the hint ``@require_permission`` attaches to the query - while an
-unrelated failure, and a call that declares nothing, say nothing.
+Nothing is sent here. A payload is handed to the parser the way the runtime hands it over,
+and the file's claims are about the text that comes back and the class it comes back as.
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+import json
 
-import pytest
-from office365.graph_client import GraphClient
-from office365.runtime.exceptions import AccessDeniedException, ObjectNotFoundException
-from tests._scripted_transport import graph, sharepoint
+from office365.runtime.client_request_exception import (
+    ClientRequestException,
+    ErrorPayload,
+    _clean_message,
+)
+from office365.runtime.exceptions import FileLockedException
+from requests import Response
 
-_NOT_FOUND = {
-    "http_status": 404,
-    "body": {"error": {"code": "Request_ResourceNotFound", "message": "Resource not found"}},
-}
+#: The Intune proxy wraps ``error.message`` in a JSON object.
+INTUNE_MESSAGE = json.dumps({"_version": 3, "Message": "Application is not authorized to perform this operation."})
 
-_OK = {"d": {"Title": "Site"}}
+#: Some services append support diagnostics to an otherwise plain message.
+SUPPORT_TAIL = " - Operation ID (for customer support): 00000000-0000-0000-0000-000000000000"
 
-_DENIED = ("deny",)
-
-_SERVER_ERROR = {
-    "http_status": 500,
-    "body": {"error": {"code": "InternalServerError", "message": "The server is unwell."}},
-}
-
-
-def test_scoped_handler_left_by_finished_query_does_not_swallow_later_failure():
-    # q1 succeeds; the handler registered for it stays on the request. q2 then
-    # fails and must propagate because that stale handler no longer matches.
-    ctx = sharepoint([_OK, _NOT_FOUND])[0]
-    ctx.web.get()
-    ctx.on_error(lambda _e: None)  # scoped to q1
-    ctx.web.get()  # q2
-
-    with pytest.raises(ObjectNotFoundException):
-        ctx.execute_query()
+#: A shared lock, as SharePoint spells it: the HRESULT first, then the .NET type.
+LOCKED_BODY = (
+    b'{"error":{"code":"-2147018894, Microsoft.SharePoint.SPFileLockException",'
+    b'"message":"The file report.xlsx is locked for shared use by John Doe [membership]."}}'
+)
 
 
-def test_handler_once_is_removed_after_match():
-    ctx = sharepoint([_NOT_FOUND, _NOT_FOUND])[0]
-    handled = []
-    ctx.pending_request().on_error(handled.append, once=True, condition=lambda: True)
-
-    ctx.web.get().execute_query()
-    with pytest.raises(ObjectNotFoundException):
-        ctx.web.get().execute_query()
-
-    assert len(handled) == 1
+def _response(body: bytes = LOCKED_BODY, status: int = 423) -> Response:
+    response = Response()
+    response.status_code = status
+    response.url = "https://contoso.sharepoint.com/_api/web"
+    response._content = body
+    return response
 
 
-def _subscribe(client: GraphClient):
-    return client.subscriptions.add(
-        change_type="updated",
-        notification_url="https://contoso.com/notify",
-        resource="users",
-        expiration=datetime.now(timezone.utc) + timedelta(hours=1),
-    )
+def test_the_intune_proxy_message_is_unwrapped_to_its_inner_text():
+    assert _clean_message(INTUNE_MESSAGE) == "Application is not authorized to perform this operation."
 
 
-def test_a_denied_declared_call_names_the_scope_it_needs():
-    with pytest.raises(AccessDeniedException) as denied:
-        _subscribe(graph([_DENIED])[0]).execute_query()
-
-    (hint,) = denied.value.hints
-    assert "Subscription.Read.All" in hint
-    assert hint in str(denied.value)
+def test_a_support_tail_is_dropped_from_a_plain_message():
+    assert _clean_message("Access denied." + SUPPORT_TAIL) == "Access denied."
 
 
-def test_a_denied_call_on_another_api_names_that_api():
-    context = sharepoint([_DENIED])[0]
-
-    with pytest.raises(AccessDeniedException) as denied:
-        context.site.get_migration_status().execute_query()
-
-    (hint,) = denied.value.hints
-    assert "SharePoint" in hint
+def test_a_plain_message_is_returned_unchanged():
+    assert _clean_message("Access denied.") == "Access denied."
 
 
-def test_a_failure_that_is_not_a_denial_carries_no_hint():
-    with pytest.raises(Exception) as failed:
-        _subscribe(graph([_SERVER_ERROR])[0]).execute_query()
+def test_a_sharepoint_code_splits_into_an_hresult_and_a_type_name():
+    payload = ErrorPayload(code="-2147018894, Microsoft.SharePoint.SPFileLockException")
 
-    assert getattr(failed.value, "hints", ()) == ()
+    assert payload.hresult == "-2147018894"
+    assert payload.error_type == "Microsoft.SharePoint.SPFileLockException"
 
 
-def test_a_denied_call_that_declares_nothing_says_nothing():
-    """``Entity.get`` declares no permission, so it has none to name."""
-    with pytest.raises(AccessDeniedException) as denied:
-        graph([_DENIED])[0].me.get().execute_query()
+def test_a_symbolic_graph_code_has_neither_hresult_nor_type_name():
+    payload = ErrorPayload(code="Authorization_RequestDenied")
 
-    assert denied.value.hints == ()
+    assert payload.hresult is None
+    assert payload.error_type is None
+
+
+def test_a_locked_file_arrives_as_the_lock_exception_and_names_its_owner():
+    failed = ClientRequestException.from_response(_response())
+
+    assert isinstance(failed, FileLockedException)
+    assert "John Doe" in str(failed)
+    assert "shared lock" in str(failed)
+
+
+def test_a_hint_is_rendered_below_the_message_and_a_blank_one_is_ignored():
+    failed = ClientRequestException("Access denied.").add_hint("").add_hint("Requires Sites.Read.All.")
+
+    assert failed.hints == ("Requires Sites.Read.All.",)
+    assert str(failed).splitlines() == ["Access denied.", "Requires Sites.Read.All."]

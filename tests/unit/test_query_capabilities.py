@@ -13,7 +13,6 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
 from office365.onedrive.driveitems.collection import DriveItemCollection
-from office365.runtime.http.prefer import TRY_FILTER_LAST_MODIFIED_DATE_TIME
 from office365.runtime.query_capabilities import (
     QueryOptionNotSupportedError,
     QueryPropertyNotSupportedError,
@@ -22,7 +21,6 @@ from office365.runtime.query_capabilities import (
 )
 from office365.security.labels.retention.collection import RetentionLabelCollection
 from office365.security.triggertypes.collection import RetentionEventTypeCollection
-from tests._scripted_transport import RecordingTransport, graph
 
 
 def test_call_records_declares_top_unsupported():
@@ -91,9 +89,6 @@ def test_declaration_validation():
         query_capabilities(unsupported={"top"}, on_unsupported="nope")
 
 
-# --- property-level capabilities -------------------------------------------------
-
-
 def test_property_violation_warn_keeps_the_expression():
     @query_capabilities(unsupported_filter={"size"}, on_unsupported="warn")
     class _WarnProperty(EntityCollection):
@@ -115,13 +110,3 @@ def test_drive_item_capability():
     with pytest.raises(QueryPropertyNotSupportedError):
         col.filter("size gt 0")
     col.order_by("size desc")  # allowed
-
-
-def test_prefer_header_injected_for_last_modified_filter():
-    transport = RecordingTransport([{"value": []}])
-    client = graph(transport)[0]
-
-    client.me.drive.root.children.filter("lastModifiedDateTime gt 2020-01-01T00:00:00Z").get().execute_query()
-
-    prefer = transport.requests[-1].headers.get("Prefer", "")
-    assert TRY_FILTER_LAST_MODIFIED_DATE_TIME in prefer

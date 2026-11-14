@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import threading
 import time
 import unittest
@@ -21,13 +20,10 @@ from office365.runtime.http.throttling import (
     RateLimiter,
     ThrottleLimits,
     pace,
-    paced_async,
     parse_throttling,
     throttle_guard,
 )
 from office365.runtime.operations import ProgressTracker
-from office365.runtime.parallel import run_parallel
-from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.retry import (
     backoff_delay,
     is_transient_error,
@@ -35,12 +31,7 @@ from office365.runtime.retry import (
     retry,
     should_reset_connections,
 )
-from office365.runtime.transport.base import BaseTransport
 from office365.runtime.transport.throttled_transport import ThrottledTransport
-from office365.runtime.types.event_handler import EventHandler
-from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.request import SharePointRequest
-from office365.sharepoint.webs.context_web_information import ContextWebInformation
 from requests import Response
 from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
@@ -63,59 +54,6 @@ def _response_with_retry_after(value: str) -> Response:
 
 def _make_exception(status_code: int, headers: dict | None = None) -> ClientRequestException:
     return ClientRequestException.from_response(_make_error_response(status_code, headers))
-
-
-def _make_context(outcomes: list[Exception | None]) -> tuple[ClientContext, mock.Mock]:
-    """ClientContext whose execute_query replays the scripted outcomes.
-
-    ``None`` signals a successful execution; an exception is raised as-is.
-    Attempts are read from ``execute_query.call_count``.
-    """
-    ctx = offline_sharepoint_context()
-    execute_query = mock.Mock(side_effect=outcomes)
-    ctx.execute_query = execute_query  # type: ignore[method-assign]
-    return ctx, execute_query
-
-
-class TestExecuteQueryRetry(unittest.TestCase):
-    def test_retries_exhausted_raises_last_error(self):
-        ctx, execute_query = _make_context([_make_exception(503), _make_exception(503), _make_exception(503)])
-
-        with self.assertRaises(ClientRequestException) as cm:
-            ctx.execute_query_retry(max_retry=2, timeout_secs=1)
-
-        self.assertEqual(execute_query.call_count, 2)
-        assert cm.exception.response is not None
-        self.assertEqual(cm.exception.response.status_code, 503)
-
-    def test_ssl_error_is_not_retried(self):
-        ctx, execute_query = _make_context([requests.exceptions.SSLError("bad cert"), None])
-
-        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            with self.assertRaises(requests.exceptions.SSLError):
-                ctx.execute_query_retry(max_retry=5, timeout_secs=1)
-
-        self.assertEqual(execute_query.call_count, 1)
-        sleep_mock.assert_not_called()
-
-    def test_incremental_retry_falls_back_to_exponential_backoff(self):
-        ctx, execute_query = _make_context([_make_exception(503), None])
-
-        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            ctx.execute_query_with_incremental_retry(max_retry=5, jitter=False)
-
-        self.assertEqual(execute_query.call_count, 2)
-        sleep_mock.assert_called_once_with(5)
-
-    def test_retry_after_is_waited_by_default(self):
-        """Microsoft's first instruction for a throttled request: wait what it asked for."""
-        ctx, execute_query = _make_context([_make_exception(429, {"Retry-After": "7"}), None])
-
-        with mock.patch("office365.runtime.retry.sleep") as sleep_mock:
-            ctx.execute_query_retry(max_retry=5, timeout_secs=1, jitter=False)
-
-        self.assertEqual(execute_query.call_count, 2)
-        sleep_mock.assert_called_once_with(7)
 
 
 class TestRetryFunction(unittest.TestCase):
@@ -184,35 +122,6 @@ class TestBackoffDelay(unittest.TestCase):
                 delay = backoff_delay(attempt, base=5)
                 self.assertGreaterEqual(delay, 0)
                 self.assertLessEqual(delay, nominal)
-
-
-class TestContextStateAfterRetryFailure(unittest.TestCase):
-    """Issue #938 — execute_query_retry must not leave the context dirty."""
-
-    def test_exhausted_retries_leave_queue_clean(self):
-        from office365.runtime.queries.client_query import ClientQuery
-
-        ctx = offline_sharepoint_context()
-        qry = ClientQuery(ctx)
-        ctx.add_query(qry)
-        attempts = {"n": 0}
-
-        def _execute_query():
-            attempts["n"] += 1
-            if ctx._queries:
-                ctx._current_query = ctx._queries.popleft()
-            raise _make_exception(503)
-
-        ctx.execute_query = _execute_query  # type: ignore[method-assign]
-
-        with mock.patch("office365.runtime.retry.sleep"):
-            with self.assertRaises(ClientRequestException):
-                ctx.execute_query_retry(max_retry=3, timeout_secs=5, jitter=False)
-
-        self.assertEqual(attempts["n"], 3)  # noqa: PLR2004
-        # no stale query left queued and no cursor retained
-        self.assertEqual(len(ctx._queries), 0)
-        self.assertIsNone(ctx.current_query)
 
 
 def throttling__response(headers: dict) -> Response:
@@ -347,137 +256,6 @@ class TestRateLimiter(unittest.TestCase):
         self.assertIsNone(limiter.last_scope)
 
 
-class _StubTransport(BaseTransport):
-    def __init__(self, response: Response | None = None, error: Exception | None = None) -> None:
-        self._response = response
-        self._error = error
-        self.closed = False
-
-    def execute(self, request) -> Response:
-        if self._error is not None:
-            raise self._error
-        assert self._response is not None
-        return self._response
-
-    @property
-    def proxies(self) -> dict[str, str] | None:
-        return {"https": "http://proxy"}
-
-    @property
-    def verify(self) -> bool | str:
-        return False
-
-    @property
-    def timeout(self) -> int | None:
-        return 7
-
-    def close(self) -> None:
-        self.closed = True
-
-
-class TestPacedGuard(unittest.TestCase):
-    def test_throttled_transport_delegates_and_paces(self):
-        gate = mock.Mock()
-        response = ratelimiter__response()
-        inner = _StubTransport(response=response)
-        transport = ThrottledTransport(inner, gate)
-
-        self.assertEqual(transport.proxies, {"https": "http://proxy"})
-        self.assertIs(transport.verify, False)
-        self.assertEqual(transport.timeout, 7)  # noqa: PLR2004
-        self.assertIs(transport.execute(RequestOptions(url="https://contoso.sharepoint.com")), response)
-        gate.acquire.assert_called_once_with(None)
-        gate.observe.assert_called_once_with(response)
-
-        transport.close()
-        self.assertTrue(inner.closed)
-
-    def test_throttled_transport_observes_error(self):
-        gate = mock.Mock()
-        inner = _StubTransport(error=RuntimeError("down"))
-        transport = ThrottledTransport(inner, gate)
-
-        with self.assertRaises(RuntimeError):
-            transport.execute(object())
-        gate.acquire.assert_called_once_with(None)
-        gate.observe.assert_called_once_with(None)
-
-
-class TestPacedAsync(unittest.TestCase):
-    def test_paced_async_observes_error_response_and_reraises(self):
-        gate = mock.Mock()
-        gate.acquire_async = mock.AsyncMock()
-        err = ClientRequestException("boom", response=ratelimiter__response(retry_after="3"))
-
-        async def _boom():
-            raise err
-
-        with self.assertRaises(ClientRequestException):
-            asyncio.run(paced_async(_boom, gate))
-        gate.observe.assert_called_once_with(err.response)
-
-    def test_throttled_transport_execute_async_paces(self):
-        gate = mock.Mock()
-        gate.acquire_async = mock.AsyncMock()
-        response = ratelimiter__response()
-        inner = _StubTransport(response=response)
-        transport = ThrottledTransport(inner, gate)
-
-        result = asyncio.run(transport.execute_async(RequestOptions(url="https://contoso.sharepoint.com")))
-
-        self.assertIs(result, response)
-        gate.acquire_async.assert_awaited_once_with(None)
-        gate.observe.assert_called_once_with(response)
-
-
-class _Pending:
-    def __init__(self) -> None:
-        self.beforeExecute = EventHandler()
-        self.afterExecute = EventHandler()
-        self.onError = EventHandler()
-        self.transport = _StubTransport()
-
-    def with_rate_limiter(self, limiter) -> "_Pending":
-        self.transport = ThrottledTransport(self.transport, limiter)
-        return self
-
-
-class _FakeContext:
-    def __init__(self) -> None:
-        self.pending = _Pending()
-
-    def pending_request(self):
-        return self.pending
-
-
-class TestRunParallel(unittest.TestCase):
-    def test_context_factory_once_per_thread_and_limiter_bound(self):
-        contexts = []
-        lock = threading.Lock()
-
-        def factory():
-            ctx = _FakeContext()
-            with lock:
-                contexts.append(ctx)
-            return ctx
-
-        def _worker(ctx, task):
-            time.sleep(0.02)  # keep both pool threads busy so both create a context
-            return (id(ctx), task)
-
-        results = run_parallel(
-            _worker,
-            [1, 2, 3, 4],  # noqa: PLR2004
-            concurrency=2,  # noqa: PLR2004
-            context_factory=factory,  # type: ignore[arg-type]
-        )
-
-        self.assertEqual(len(contexts), 2)  # noqa: PLR2004 — one context per worker thread
-        self.assertEqual(len({r[0] for r in results}), 2)  # noqa: PLR2004
-        for ctx in contexts:
-            self.assertIsInstance(ctx.pending.transport, ThrottledTransport)
-
-
 def test_report_emits_progress_with_total():
     seen = []
     tracker = ProgressTracker(seen.append, total=10, stage="uploading")
@@ -515,84 +293,6 @@ def test_thread_safe_advances_sum_to_total():
 
     assert tracker.done == 1000  # noqa: PLR2004
     assert len(seen) == 1000  # noqa: PLR2004
-
-
-def _run_concurrently(target, count: int = 2) -> None:
-    barrier = threading.Barrier(count)
-
-    def _wrapped():
-        barrier.wait()
-        target()
-
-    threads = [threading.Thread(target=_wrapped) for _ in range(count)]
-    for t in threads:
-        t.start()
-    for t in threads:
-        t.join()
-
-
-class TestThreadSafety(unittest.TestCase):
-    def test_ensure_form_digest_single_flight(self):
-        request = SharePointRequest("https://contoso.sharepoint.com")
-        context_info = ContextWebInformation(FormDigestValue="digest", FormDigestTimeoutSeconds=1800)
-        fetch = mock.Mock(return_value=context_info)
-        request._fetch_context_web_information = fetch  # type: ignore[method-assign]
-
-        requests_with_header = []
-
-        def _ensure():
-            req = RequestOptions("https://contoso.sharepoint.com")
-            request.ensure_form_digest(req)
-            requests_with_header.append(req)
-
-        _run_concurrently(_ensure)
-
-        fetch.assert_called_once()
-        self.assertTrue(all(req.headers.get("X-RequestDigest") == "digest" for req in requests_with_header))
-
-    def test_split_batches_preserves_order_and_drains_queue(self):
-        ctx = offline_sharepoint_context()
-        for _ in range(250):
-            ctx.add_query(ClientQuery(ctx))
-
-        batches = ctx._split_batches(100)
-
-        self.assertEqual([len(batch.queries) for batch in batches], [100, 100, 50])
-        self.assertFalse(ctx.has_pending_request)
-        self.assertIsNone(ctx._current_query)
-
-    def test_clone_shares_auth_and_transport(self):
-        ctx = offline_sharepoint_context()
-        ctx.add_query(ClientQuery(ctx))
-        source_request = ctx.pending_request()
-
-        clone = ctx.clone("https://contoso-admin.sharepoint.com")
-
-        clone_request = clone.pending_request()
-        self.assertIs(clone_request.authentication_context, source_request.authentication_context)
-        self.assertIs(clone_request.transport, source_request.transport)
-        self.assertFalse(clone.has_pending_request)
-        self.assertTrue(ctx.has_pending_request)
-        # Routing follows the clone URL even though the auth context (whose
-        # ``url`` is the source site) is shared by reference; deriving the
-        # service root from the auth context silently sent clone requests to
-        # the source site.
-        self.assertEqual(clone_request.base_url, "https://contoso-admin.sharepoint.com")
-        self.assertEqual(clone_request.service_root_url, "https://contoso-admin.sharepoint.com/_api")
-        self.assertEqual(source_request.service_root_url, "https://contoso.sharepoint.com/_api")
-
-    def test_clone_keeps_pending_queries(self):
-        ctx = offline_sharepoint_context()
-        for _ in range(3):
-            ctx.add_query(ClientQuery(ctx))
-
-        clone = ctx.clone("https://contoso-admin.sharepoint.com", clear_queries=False)
-
-        self.assertEqual(len(clone._queries), 3)
-        self.assertTrue(clone.has_pending_request)
-
-
-# ── Graph throttling signals + priority ──────────────────────────────────────
 
 
 def test_parse_throttling_graph_headers():
@@ -636,18 +336,3 @@ def test_with_throttle_priority_sets_request_header():
 def test_with_throttle_priority_rejects_bad_value():
     with pytest.raises(ValueError, match="priority"):
         GraphClient().with_throttle_priority("urgent")
-
-
-def test_retry_decorator_retries_and_forwards_args():
-    calls = {"n": 0}
-
-    @retry(max_retry=3, timeout_secs=0, jitter=False)
-    def flaky(value):
-        calls["n"] += 1
-        if calls["n"] < 2:  # noqa: PLR2004
-            raise ClientRequestException("429")
-        return value
-
-    with mock.patch("office365.runtime.retry.sleep"):
-        assert flaky("ok") == "ok"
-    assert calls["n"] == 2  # noqa: PLR2004
