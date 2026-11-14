@@ -283,3 +283,43 @@ def test_a_type_that_names_nothing_is_reported_not_refused():
 def test_something_that_is_neither_a_type_nor_a_call_is_refused():
     with pytest.raises(TypeError):
         capabilities_of("DriveItem")
+
+
+#: Every operation in the tree that declares a licence, and the licence its own page names. One
+#: entry, because the library gates on a licence once; a second entry is a decision somebody makes
+#: against a published table, not a line of code that slips in with a harvest. The operation names
+#: its licence per flow and both flows name the same seat, so the map records the set once.
+LICENSED: dict[str, tuple[str, ...]] = {
+    "office365.search.entity:SearchEntity.query": ("SPE_E5",),
+}
+
+
+def test_a_licence_gate_is_a_decision():
+    """A licence is a packaging fact the docs state, not a name to be guessed or inferred.
+
+    Naming one changes what a tenant has to buy before a call works, which is a decision about
+    who can use the library - so it is written down here with the operation it gates, and adding
+    one is a diff a reviewer sees twice.
+    """
+    named: dict[str, set[str]] = {}
+    for operation in LIBRARY.declared():
+        declaration = operation.declaration
+        if declaration is None:
+            continue
+        for requirement in declaration.requirements():
+            if requirement.licenses:
+                named.setdefault(operation.fqn, set()).update(requirement.licenses)
+
+    assert {key: tuple(sorted(names)) for key, names in named.items()} == LICENSED
+
+
+def test_a_licence_name_is_the_services_spelling():
+    """A licence is a part number or a plan id - never the product name a person reads.
+
+    ``SPE_E5`` is the SKU, ``Microsoft 365 E5`` is what the invoice calls it; declaring the second
+    one would read like a licence and match nothing the service reports.
+    """
+    for names in LICENSED.values():
+        for name in names:
+            assert name.isupper(), f"{name!r} is not the spelling subscribedSkus reports"
+            assert " " not in name, f"{name!r} is a product name, not a licence"

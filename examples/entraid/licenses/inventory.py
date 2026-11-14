@@ -13,7 +13,6 @@ https://learn.microsoft.com/en-us/graph/api/subscribedsku-list
 
 import argparse
 
-from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
@@ -24,11 +23,13 @@ def main() -> None:
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
-    for sku in sorted(Licences.of_tenant(client).skus, key=lambda item: item.sku_part_number or ""):
+    held = client.licences.get_all().execute_query().value
+    for sku in sorted(held.skus, key=lambda item: item.sku_part_number or ""):
         total, used = sku.prepaid_units.enabled or 0, sku.consumed_units or 0
         print(f"{sku.sku_part_number}: {used}/{total} seats, {total - used} left, {sku.capability_status}")
         for plan in sku.service_plans if args.plans else ():
             print(f"  {plan.servicePlanName} {plan.provisioningStatus}")
+    print(f"unassigned seats: {', '.join(sku.sku_part_number or '' for sku in held.unassigned) or 'none'}")
     print(f"{client.users.get_unlicensed().count().execute_query().value} users hold no licence")
 
 

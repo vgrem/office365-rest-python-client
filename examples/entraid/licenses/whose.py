@@ -17,7 +17,7 @@ https://learn.microsoft.com/en-us/graph/api/user-list-licensess
 
 import argparse
 
-from office365.directory.licenses.tenant import Licences
+from office365.directory.licenses.tenant import LicencesReport
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant, user_principal
 
@@ -42,7 +42,7 @@ def main() -> None:
             print(f"  {user.user_principal_name}")
         return
     details = client.users.get_by_principal_name(args.user).license_details.get().execute_query()
-    for licence in Licences(details):
+    for licence in LicencesReport(skus=list(details)).skus:
         print(licence.sku_part_number)
         for plan in licence.service_plans:
             print(f"  {plan.servicePlanName} {plan.provisioningStatus}")

@@ -1,7 +1,7 @@
 """Whether a seat, or a capability inside it, is actually held.
 
 ``require_license`` stops the run before the first request when the tenant owns no matching
-SKU. ``Licences`` answers the same question as a value — and it is the only answer that
+SKU. ``client.licences`` answers the same question as a value — and it is the only answer that
 survives the trap: a SKU part number is packaging, a service plan is capability, so
 ``DEVELOPERPACK_E5`` carries ``RECORDS_MANAGEMENT`` even though no retail SKU does.
 
@@ -15,7 +15,6 @@ https://learn.microsoft.com/en-us/graph/api/subscribedsku-list
 
 import argparse
 
-from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
 from tests.settings import client_id, client_secret, tenant
 
@@ -27,13 +26,16 @@ def main() -> None:
     args = parser.parse_args()
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret).require_license(args.sku)
-    held = Licences.of_tenant(client)
+    held = client.licences.get_all().execute_query().value
     print(f"{len(held)} licences held: {', '.join(sorted(held.names))}")
     if args.plan:
         carriers = [sku.sku_part_number for sku in held.carrying(args.plan)]
         if not carriers:
             raise SystemExit(f"no held licence carries {args.plan}")
         print(f"{args.plan} comes from {', '.join(carriers)}")
+    spare = [sku.sku_part_number for sku in held.unassigned]
+    if spare:
+        print(f"seats bought and unused: {', '.join(spare)}")
 
 
 if __name__ == "__main__":

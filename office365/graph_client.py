@@ -32,7 +32,7 @@ from office365.directory.identitygovernance.governance import IdentityGovernance
 from office365.directory.internal.paths.me import MePath
 from office365.directory.invitations.collection import InvitationCollection
 from office365.directory.licenses.collection import SubscribedSkuCollection
-from office365.directory.licenses.tenant import Licences
+from office365.directory.licenses.tenant import LicenceManager
 from office365.directory.objects.collection import DirectoryObjectCollection
 from office365.directory.organizations.contact import OrgContact
 from office365.directory.organizations.organization import Organization
@@ -331,7 +331,7 @@ class GraphClient(ClientRuntimeContext):
             return self
         matched = [
             sku.sku_part_number
-            for sku in Licences.of_tenant(self)
+            for sku in self.licences.get_all().execute_query().value.skus
             if any(keyword.lower() in (sku.sku_part_number or "").lower() for keyword in keywords)
         ]
         if not matched:
@@ -754,6 +754,21 @@ class GraphClient(ClientRuntimeContext):
     def subscribed_skus(self) -> SubscribedSkuCollection:
         """Get the list of commercial subscriptions that an organization has acquired"""
         return SubscribedSkuCollection(self, ResourcePath("subscribedSkus"))
+
+    @property
+    def licences(self) -> LicenceManager:
+        """The licensing questions: the tenant's bought SKUs, and the signed-in user's own seats.
+
+        Reaching this sends nothing. ``get_all()`` queues ``subscribedSkus`` and ``get_user(user)``
+        queues ``/users/{id}/licenseDetails`` - ``client.me`` addresses the signed-in identity;
+        ``execute_query()`` sends the read, and the report it answers with then answers any number
+        of questions without another round trip.
+
+            >>> held = client.licences.get_all().execute_query().value
+            >>> held.holds("SPE_E5")
+            >>> [sku.sku_part_number for sku in held.unassigned]
+        """
+        return LicenceManager(self)
 
     @property
     def group_lifecycle_policies(self) -> EntityCollection[GroupLifecyclePolicy]:

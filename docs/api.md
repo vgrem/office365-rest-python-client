@@ -304,18 +304,23 @@ capabilities_of(Message.send).declarations["send"].delegated  # ('Mail.Send',)
 
 ### Licensing
 
-`capabilities_of` says what a declaration *asks* for; `Licences` says what an identity or a
-tenant actually *has*. Two licence lists look alike and answer different questions:
+`capabilities_of` says what a declaration *asks* for; the licence report says what an identity or
+a tenant actually *has*. Two licence lists look alike and answer different questions:
 `me/licenseDetails` is what the signed-in user was assigned, `subscribedSkus` is what the
 tenant bought — a bought SKU assigned to nobody appears only in the second.
 
-```python
-from office365.directory.licenses.tenant import Licences
+Nothing is read until it is asked for: `client.licences` is a manager, `get_all()` /
+`get_user(user)` queue the read, and `execute_query()` on the result sends it.
 
-held = Licences.of_user(client)  # or Licences.of_tenant(client)
+```python
+held = client.licences.get_all().execute_query().value  # get_user(client.me) for the signed-in user
 held.holds("M365_E5", "SPE_E5")  # one of these seats is enough
 held.names  # SKU part numbers and provisioned plan names
+held.plans  # the provisioned plan names alone - capability without the packaging
 [sku.sku_part_number for sku in held.carrying("RECORDS_MANAGEMENT")]
+[sku.sku_part_number for sku in held.unassigned]  # bought, nobody using it
+[sku.sku_part_number for sku in held.suspended]  # bought, cannot be assigned from
+held.plan_id("RECORDS_MANAGEMENT")  # the id both sides of an assignment spell the same
 ```
 
 - A **SKU part number is packaging, not capability.** `DEVELOPERPACK_E5` carries
@@ -324,12 +329,14 @@ held.names  # SKU part numbers and provisioned plan names
   requirement names whichever one answers the question it asks.
 - Only a plan whose `provisioningStatus` is `Success` counts. A plan the tenant bought but has
   not provisioned is not held yet.
-- Nothing is cached: licences change while a program runs, and a memoised answer is the wrong
-  one right after the grant that made it true. Cache where you know when to forget.
-- It reads only what this tenant owns. The public SKU × service-plan catalogue is Microsoft's
-  published data, not something Graph returns: a product nobody has bought cannot be
-  discovered this way, so "does the tenant own it" and "is this seat entitled to it" stay
-  two questions.
+- The read is **deferred and unkept**. `client.licences` sends nothing, and what a read answered
+  is not remembered: a licence is granted while a program runs, so an answer kept for the run is
+  one nobody knows is stale. Read once, ask the report as many questions as you like, and read
+  again after the assignment that changed the tenant.
+- It reads only what **this** tenant owns. The public SKU × service-plan catalogue is
+  Microsoft's published data, not something Graph returns: a product nobody has bought cannot
+  be discovered this way, so "does the tenant own it" and "is this seat entitled to it" stay
+  two questions - and the second one is a licensing page, not a library.
 
 An assignment is a child of the user, not a column of it, and Graph will not project it:
 `$expand=assignedLicenses` answers *"not a navigation property or complex property"* and

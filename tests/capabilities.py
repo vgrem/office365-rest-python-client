@@ -24,7 +24,6 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any, Iterable
 
-from office365.directory.licenses.tenant import Licences
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
     _cached_delegated_permissions,
@@ -39,12 +38,12 @@ from office365.runtime.client_request_exception import ClientRequestException
 def _cached_licenses(client: GraphClient) -> frozenset[str]:
     """The license names the signed-in user holds, memoised for the life of a run.
 
-    The projection is the library's - :attr:`~office365.directory.licenses.tenant.Licences.names`
+    The projection is the library's - :attr:`~office365.directory.licenses.tenant.LicencesReport.names`
     returns SKU part numbers *and* provisioned plan names, which is the vocabulary a declaration
     may name. Only the cache is the harness's, because the harness is what knows when a grant
     makes it stale.
     """
-    return Licences.of_user(client).names
+    return client.licences.get_user(client.me).execute_query().value.names
 
 
 def forget_cached_tenant_facts() -> None:
