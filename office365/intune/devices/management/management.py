@@ -75,6 +75,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.configurations.configuration import (
         DeviceConfiguration,
     )
+    from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
     from office365.intune.devices.management.apple_push_notification_certificate import (
         ApplePushNotificationCertificate,
     )
@@ -208,6 +209,7 @@ if TYPE_CHECKING:
         DeviceManagementTroubleshootingEvent,
     )
     from office365.intune.devices.shell_script import DeviceShellScript
+    from office365.intune.windows_driver_update_profile import WindowsDriverUpdateProfile
     from office365.intune.windows_feature_update_profile import WindowsFeatureUpdateProfile
     from office365.intune.windows_quality_update_profile import WindowsQualityUpdateProfile
 
@@ -1822,5 +1824,33 @@ class DeviceManagement(Entity):
             "deviceShellScripts",
             EntityCollection[DeviceShellScript](
                 self.context, DeviceShellScript, ResourcePath("deviceShellScripts", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceCustomAttributeShellScripts", beta=True, navigation=True)
+    @property
+    def device_custom_attribute_shell_scripts(self) -> EntityCollection[DeviceCustomAttributeShellScript]:
+        """Gets the deviceCustomAttributeShellScripts property"""
+        from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
+
+        return self.properties.get(
+            "deviceCustomAttributeShellScripts",
+            EntityCollection[DeviceCustomAttributeShellScript](
+                self.context,
+                DeviceCustomAttributeShellScript,
+                ResourcePath("deviceCustomAttributeShellScripts", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsDriverUpdateProfiles", beta=True, navigation=True)
+    @property
+    def windows_driver_update_profiles(self) -> EntityCollection[WindowsDriverUpdateProfile]:
+        """Gets the windowsDriverUpdateProfiles property"""
+        from office365.intune.windows_driver_update_profile import WindowsDriverUpdateProfile
+
+        return self.properties.get(
+            "windowsDriverUpdateProfiles",
+            EntityCollection[WindowsDriverUpdateProfile](
+                self.context, WindowsDriverUpdateProfile, ResourcePath("windowsDriverUpdateProfiles", self.resource_path)
             ),
         )

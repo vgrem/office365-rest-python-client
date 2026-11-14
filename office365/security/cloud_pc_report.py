@@ -10,7 +10,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_recommendation_report_type import (
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.recommendation_report_type import (
         CloudPcRecommendationReportType,
     )
 

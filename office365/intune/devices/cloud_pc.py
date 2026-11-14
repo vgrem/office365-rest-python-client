@@ -16,10 +16,10 @@ from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_operating_system import (
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.operating_system import (
         CloudPcOperatingSystem,
     )
-    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_user_account_type import (
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.user_account_type import (
         CloudPcUserAccountType,
     )
 
