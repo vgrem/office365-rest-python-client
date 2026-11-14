@@ -341,9 +341,23 @@ class _GuardedMember:
         if instance is None:
             return self._func
         if addresses_version(instance):
-            declared = self.__odata__  # type: ignore[attr-defined]
-            require_declared_member(declared.name, declared.beta, request_version(getattr(instance, "context", None)))
+            self._refuse(instance)
         return self._func.__get__(instance, owner)
+
+    def __call__(self, instance: Any, *args: Any, **kwargs: Any) -> Any:
+        """Called when another decorator holds this instead of the bound method.
+
+        ``@require_permission`` wraps the member below it, so it receives this object and
+        calls it with the instance first: that is the same access ``__get__`` answers, one
+        frame further out, and the gate belongs here for the same reason.
+        """
+        if addresses_version(instance):
+            self._refuse(instance)
+        return self._func.__get__(instance, type(instance))(*args, **kwargs)
+
+    def _refuse(self, instance: Any) -> None:
+        declared = self.__odata__  # type: ignore[attr-defined]
+        require_declared_member(declared.name, declared.beta, request_version(getattr(instance, "context", None)))
 
 
 _Cls = TypeVar("_Cls", bound=type)
