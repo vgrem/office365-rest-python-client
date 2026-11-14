@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.verbs import verb
+from office365.security.search.search import Search
 
 if TYPE_CHECKING:
     from office365.security.cases.exportfilestructure import ExportFileStructure
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from office365.security.ediscovery.ediscovery_review_tag import EdiscoveryReviewTag
 
 
-class EdiscoveryReviewSetQuery(Entity):
+class EdiscoveryReviewSetQuery(Search):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.security.EdiscoveryReviewSetQuery"

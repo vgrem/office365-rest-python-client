@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
@@ -19,6 +18,7 @@ from office365.security.ediscovery.operations.add_to_review_set import (
 )
 from office365.security.search.data_source import DataSource
 from office365.security.search.datasourcescopes import DataSourceScopes
+from office365.security.search.search import Search
 
 if TYPE_CHECKING:
     from office365.security.cases.additionaloptions import AdditionalOptions
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from office365.security.search.documentversion import DocumentVersion
 
 
-class EdiscoverySearch(Entity):
+class EdiscoverySearch(Search):
     @odata(name="dataSourceScopes")
     @property
     def data_source_scopes(self) -> DataSourceScopes:
