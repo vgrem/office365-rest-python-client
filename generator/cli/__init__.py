@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Optional, Sequence
 
@@ -242,6 +244,7 @@ def audit_model(
     package: Optional[str] = None,
     report_path: Optional[str] = None,
     fail: bool = False,
+    ratchet: Optional[str] = None,
 ) -> int:
     """Measure the rendered model against the metadata it was generated from.
 
@@ -268,7 +271,31 @@ def audit_model(
     if report_path:
         write_report(findings, report_path)
     print(render(findings, REPO_ROOT))
+    if ratchet:
+        return _ratchet(ratchet, root, Counter(finding.kind for finding in findings))
     return 1 if fail and gaps(findings) else 0
+
+
+def _ratchet(path: str, root: Path, counts: Counter) -> int:
+    """Compare an audit against its ledger, which may only shrink.
+
+    One row per audited directory, so the same file answers for a product and for the
+    whole model. A kind the row does not name has a baseline of zero, and a row that is
+    missing altogether is refused: a new scope must be recorded, not assumed clean.
+    """
+    scope = root.relative_to(REPO_ROOT).as_posix() if REPO_ROOT in root.parents else str(root)
+    ledger_path = Path(path)
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8")) if ledger_path.exists() else {}
+    if scope not in ledger:
+        recorded = json.dumps(dict(sorted(counts.items())), separators=(", ", ": "))
+        log.error(f"error: {path} has no row for {scope}; record {recorded}")
+        return 1
+    grown = {
+        kind: (ledger[scope].get(kind, 0), count) for kind, count in counts.items() if count > ledger[scope].get(kind, 0)
+    }
+    for kind, (was, now) in sorted(grown.items()):
+        log.error(f"error: {scope}: {kind} {was} -> {now} (the ledger may only shrink)")
+    return 1 if grown else 0
 
 
 def fetch_services() -> None:
@@ -310,7 +337,7 @@ def _run_standalone_command(args) -> Optional[int]:
         suggest_routing(args.service)
         return 0
     if args.audit is not None:
-        return audit_model(args.service, args.audit or None, args.audit_report, args.audit_fail)
+        return audit_model(args.service, args.audit or None, args.audit_report, args.audit_fail, args.audit_ratchet)
     return None
 
 
@@ -424,6 +451,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dest="audit_fail",
         action="store_true",
         help="with --audit: exit non-zero when the model and the metadata disagree",
+    )
+    parser.add_argument(
+        "--audit-ratchet",
+        dest="audit_ratchet",
+        metavar="PATH",
+        help="with --audit: exit non-zero when a kind outgrows its row in this ledger",
     )
     parser.add_argument(
         "--diff-metadata",

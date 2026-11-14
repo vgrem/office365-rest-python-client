@@ -70,6 +70,10 @@ jobs:
         run: |
           uv run python -m generator graph --dry-run --fail-on-write
           uv run python -m generator sharepoint --dry-run --fail-on-write
+      - name: Assert the model did not drift further from the metadata
+        run: |
+          uv run python -m generator graph --audit --audit-ratchet generator/audit-baseline.json
+          uv run python -m generator graph --audit office365/intune --audit-ratchet generator/audit-baseline.json
 
   deps:
     runs-on: ubuntu-latest
