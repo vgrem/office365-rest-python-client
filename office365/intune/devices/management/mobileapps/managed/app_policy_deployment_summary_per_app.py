@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.intune.devices.management.mobileapps.mobile_app_identifier import (
+from office365.intune.devices.management.mobileapps.identifier import (
     MobileAppIdentifier,
 )
 from office365.runtime.client_value import ClientValue

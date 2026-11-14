@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.intune.devices.management.mobileapps.mobile_app_install_time_settings import (
+from office365.intune.devices.management.mobileapps.install_time_settings import (
     MobileAppInstallTimeSettings,
 )
 from office365.intune.devices.management.mobileapps.win32.deliveryoptimizationpriority import (

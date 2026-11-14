@@ -27,6 +27,7 @@ from office365.runtime.verbs import verb
 if TYPE_CHECKING:
     from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
     from office365.common.policy_set import PolicySet
+    from office365.intune.devices.management.managed.app.mobile.configuration import ManagedDeviceMobileAppConfiguration
     from office365.intune.devices.management.managed.app.protections.android import (
         AndroidManagedAppProtection,
     )
@@ -38,9 +39,6 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.managed.app.status import ManagedAppStatus
     from office365.intune.devices.management.managed.ebook.e_book_category import ManagedEBookCategory
-    from office365.intune.devices.management.managed.mobile_app_configuration import (
-        ManagedDeviceMobileAppConfiguration,
-    )
     from office365.intune.devices.management.mdm_windows_information_protection_policy import (
         MdmWindowsInformationProtectionPolicy,
     )
@@ -161,7 +159,7 @@ class DeviceAppManagement(Entity):
     @property
     def mobile_app_configurations(self) -> EntityCollection[ManagedDeviceMobileAppConfiguration]:
         """Gets the mobileAppConfigurations property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration import (
+        from office365.intune.devices.management.managed.app.mobile.configuration import (
             ManagedDeviceMobileAppConfiguration,
         )
 

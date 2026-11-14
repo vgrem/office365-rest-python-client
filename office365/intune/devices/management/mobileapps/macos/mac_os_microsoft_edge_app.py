@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.intune.devices.compliance.microsoftedgechannel import MicrosoftEdgeChannel
+from office365.intune.devices.management.mobileapps.microsoftedgechannel import MicrosoftEdgeChannel
 from office365.intune.devices.management.mobileapps.mobile_app import MobileApp
 from office365.runtime.types.odata_property import odata
 

@@ -13,10 +13,10 @@ from office365.runtime.types.key_value_pair import KeyValuePair
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
+    from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
     from office365.intune.devices.management.managed.app.policy_deployment_summary import (
         ManagedAppPolicyDeploymentSummary,
     )
-    from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
 
 
 class DefaultManagedAppProtection(ManagedAppProtection):
@@ -88,7 +88,7 @@ class DefaultManagedAppProtection(ManagedAppProtection):
     @property
     def apps(self) -> EntityCollection[ManagedMobileApp]:
         """Gets the apps property"""
-        from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
+        from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
 
         return self.properties.get(
             "apps",

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
@@ -28,3 +28,27 @@ class MobileAppTroubleshootingEvent(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.MobileAppTroubleshootingEvent"
+
+    @odata(name="applicationId", beta=True)
+    @property
+    def application_id(self) -> Optional[str]:
+        """Gets the applicationId property"""
+        return self.properties.get("applicationId", None)
+
+    @odata(name="deviceId", beta=True)
+    @property
+    def device_id(self) -> Optional[str]:
+        """Gets the deviceId property"""
+        return self.properties.get("deviceId", None)
+
+    @odata(name="managedDeviceIdentifier", beta=True)
+    @property
+    def managed_device_identifier(self) -> Optional[str]:
+        """Gets the managedDeviceIdentifier property"""
+        return self.properties.get("managedDeviceIdentifier", None)
+
+    @odata(name="userId", beta=True)
+    @property
+    def user_id(self) -> Optional[str]:
+        """Gets the userId property"""
+        return self.properties.get("userId", None)

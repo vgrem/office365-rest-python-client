@@ -4,7 +4,7 @@ from office365.directory.policies.conditionalaccess.device_and_app_management_as
     DeviceAndAppManagementAssignmentTarget,
 )
 from office365.entity import Entity
-from office365.intune.devices.management.mobileapps.mobile_app_assignment_settings import MobileAppAssignmentSettings
+from office365.intune.devices.management.mobileapps.assignment_settings import MobileAppAssignmentSettings
 from office365.intune.policies.installintent import InstallIntent
 from office365.runtime.types.odata_property import odata
 

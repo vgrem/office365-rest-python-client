@@ -16,19 +16,19 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.mobile_app_configuration_assignment import (
+    from office365.intune.devices.management.managed.app.mobile.configuration_assignment import (
         ManagedDeviceMobileAppConfigurationAssignment,
     )
-    from office365.intune.devices.management.managed.mobile_app_configuration_device_status import (
+    from office365.intune.devices.management.managed.app.mobile.configuration_device_status import (
         ManagedDeviceMobileAppConfigurationDeviceStatus,
     )
-    from office365.intune.devices.management.managed.mobile_app_configuration_device_summary import (
+    from office365.intune.devices.management.managed.app.mobile.configuration_device_summary import (
         ManagedDeviceMobileAppConfigurationDeviceSummary,
     )
-    from office365.intune.devices.management.managed.mobile_app_configuration_user_status import (
+    from office365.intune.devices.management.managed.app.mobile.configuration_user_status import (
         ManagedDeviceMobileAppConfigurationUserStatus,
     )
-    from office365.intune.devices.management.managed.mobile_app_configuration_user_summary import (
+    from office365.intune.devices.management.managed.app.mobile.configuration_user_summary import (
         ManagedDeviceMobileAppConfigurationUserSummary,
     )
 
@@ -74,7 +74,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     @property
     def assignments(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration_assignment import (
+        from office365.intune.devices.management.managed.app.mobile.configuration_assignment import (
             ManagedDeviceMobileAppConfigurationAssignment,
         )
 
@@ -91,7 +91,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     @property
     def device_statuses(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationDeviceStatus]:
         """Gets the deviceStatuses property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration_device_status import (
+        from office365.intune.devices.management.managed.app.mobile.configuration_device_status import (
             ManagedDeviceMobileAppConfigurationDeviceStatus,
         )
 
@@ -108,7 +108,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     @property
     def device_status_summary(self) -> ManagedDeviceMobileAppConfigurationDeviceSummary:
         """Gets the deviceStatusSummary property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration_device_summary import (
+        from office365.intune.devices.management.managed.app.mobile.configuration_device_summary import (
             ManagedDeviceMobileAppConfigurationDeviceSummary,
         )
 
@@ -123,7 +123,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     @property
     def user_statuses(self) -> EntityCollection[ManagedDeviceMobileAppConfigurationUserStatus]:
         """Gets the userStatuses property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration_user_status import (
+        from office365.intune.devices.management.managed.app.mobile.configuration_user_status import (
             ManagedDeviceMobileAppConfigurationUserStatus,
         )
 
@@ -140,7 +140,7 @@ class ManagedDeviceMobileAppConfiguration(Entity):
     @property
     def user_status_summary(self) -> ManagedDeviceMobileAppConfigurationUserSummary:
         """Gets the userStatusSummary property"""
-        from office365.intune.devices.management.managed.mobile_app_configuration_user_summary import (
+        from office365.intune.devices.management.managed.app.mobile.configuration_user_summary import (
             ManagedDeviceMobileAppConfigurationUserSummary,
         )
 
@@ -170,3 +170,9 @@ class ManagedDeviceMobileAppConfiguration(Entity):
         qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, None)
         self.context.add_query(qry)
         return self
+
+    @odata(name="roleScopeTagIds", beta=True)
+    @property
+    def role_scope_tag_ids(self) -> StringCollection:
+        """Gets the roleScopeTagIds property"""
+        return self.properties.get("roleScopeTagIds", StringCollection())

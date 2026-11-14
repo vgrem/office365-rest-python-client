@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.intune.devices.configurations.ios.minimum_operating_system import IosMinimumOperatingSystem
+from office365.intune.devices.management.managed.app.mobile.lob_app import ManagedMobileLobApp
 from office365.intune.devices.management.mobileapps.ios.type import IosDeviceType
-from office365.intune.managed_mobile_lob_app import ManagedMobileLobApp
 from office365.runtime.types.odata_property import odata
 
 

@@ -13,7 +13,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
+    from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
 
 
 class ManagedAppPolicy(Entity):

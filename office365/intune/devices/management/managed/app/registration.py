@@ -8,7 +8,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.app.flaggedreason import (
     ManagedAppFlaggedReason,
 )
-from office365.intune.devices.management.mobileapps.mobile_app_identifier import MobileAppIdentifier
+from office365.intune.devices.management.mobileapps.identifier import MobileAppIdentifier
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

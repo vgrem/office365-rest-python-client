@@ -124,7 +124,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.mobile_threat_defense_connector import (
         MobileThreatDefenseConnector,
     )
-    from office365.intune.devices.management.mobileapps.mobile_app_troubleshooting_event import (
+    from office365.intune.devices.management.mobileapps.troubleshooting_event import (
         MobileAppTroubleshootingEvent,
     )
     from office365.intune.devices.management.notification_message_template import (
@@ -661,7 +661,7 @@ class DeviceManagement(Entity):
     @property
     def mobile_app_troubleshooting_events(self) -> EntityCollection[MobileAppTroubleshootingEvent]:
         """Gets the mobileAppTroubleshootingEvents property"""
-        from office365.intune.devices.management.mobileapps.mobile_app_troubleshooting_event import (
+        from office365.intune.devices.management.mobileapps.troubleshooting_event import (
             MobileAppTroubleshootingEvent,
         )
 

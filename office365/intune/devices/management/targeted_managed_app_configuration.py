@@ -14,13 +14,13 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
+    from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
     from office365.intune.devices.management.managed.app.policy_deployment_summary import (
         ManagedAppPolicyDeploymentSummary,
     )
     from office365.intune.devices.management.managed.app.protections.targeted_managed_app_policy_assignment import (
         TargetedManagedAppPolicyAssignment,
     )
-    from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
 
 
 class TargetedManagedAppConfiguration(ManagedAppConfiguration):
@@ -40,7 +40,7 @@ class TargetedManagedAppConfiguration(ManagedAppConfiguration):
     @property
     def apps(self) -> EntityCollection[ManagedMobileApp]:
         """Gets the apps property"""
-        from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
+        from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
 
         return self.properties.get(
             "apps",
