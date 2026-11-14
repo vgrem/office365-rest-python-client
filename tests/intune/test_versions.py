@@ -18,6 +18,7 @@ from office365.entity_collection import EntityCollection
 from office365.graph_version import GraphVersion
 from office365.intune.devices.management.intent import DeviceManagementIntent
 from office365.intune.devices.management.managed.collection import ManagedDeviceCollection
+from office365.intune.devices.management.mobileapps.mobile_app_catalog_package import MobileAppCatalogPackage
 from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly import (
     UserExperienceAnalyticsAnomaly,
 )
@@ -95,3 +96,16 @@ class TestTheServiceRoot(GraphDelegatedTestCase):
 
         with self.assertRaises(NotSupportedInVersion):
             UserExperienceAnalyticsAnomaly(self.client)
+
+    def test_08_the_app_records_arrived_beta_only(self):
+        """The record families of ``deviceAppManagement`` are absent from ``Graph.xml`` too.
+
+        Same gate, second root: a caller reaching for a catalog package on v1.0 is told the
+        member is a preview member, not sent to a path that does not exist there.
+        """
+        with self.assertRaises(NotSupportedInVersion) as refused:
+            _ = self.client.device_app_management.mobile_app_catalog_packages
+        self.assertIn("mobileAppCatalogPackages", str(refused.exception))
+
+        with self.assertRaises(NotSupportedInVersion):
+            MobileAppCatalogPackage(self.client)

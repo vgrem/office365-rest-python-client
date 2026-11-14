@@ -136,6 +136,17 @@ type_routing:
   ManagedDeviceEncryptionState*: office365.intune.devices.management
   ManagedAllDeviceCertificateState*: office365.intune.devices.management
   RestrictedAppsViolation*: office365.intune.devices.compliance
+  # App-management families: `Ios*` and `Windows*` land at the Intune root, so the ones that
+  # belong to an app subtree say which.  A provisioning configuration is the iOS payload that
+  # sits beside its assignment, the Windows app-protection family is one more `protections`
+  # file *and* the three enums it reads, the Windows management agent is the per-device record
+  # the service root exposes, and a WDAC supplemental policy is uploaded content, like the
+  # code-signing certificates.
+  IosLobAppProvisioningConfiguration*: office365.intune.devices.management.mobileapps.ios
+  MobileAppProvisioningConfig*: office365.intune.devices.management.mobileapps.ios
+  WindowsManagedApp*: office365.intune.devices.management.managed.app.protections
+  WindowsManagementApp*: office365.intune.devices.management
+  WindowsDefenderApplicationControlSupplementalPolicy*: office365.intune.devices.management
   # Entra types the Intune adjectives used to swallow.
   DeviceRegistrationPolicy: office365.directory.policies
   DevicesFilter: office365.directory.policies

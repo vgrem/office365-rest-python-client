@@ -27,6 +27,7 @@ from office365.runtime.verbs import verb
 if TYPE_CHECKING:
     from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
     from office365.common.policy_set import PolicySet
+    from office365.intune.devices.management.app_management_task import DeviceAppManagementTask
     from office365.intune.devices.management.managed.app.mobile.configuration import ManagedDeviceMobileAppConfiguration
     from office365.intune.devices.management.managed.app.protections.android import (
         AndroidManagedAppProtection,
@@ -37,18 +38,35 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.protections.ios import (
         IosManagedAppProtection,
     )
+    from office365.intune.devices.management.managed.app.protections.windows_managed_app_protection import (
+        WindowsManagedAppProtection,
+    )
     from office365.intune.devices.management.managed.app.status import ManagedAppStatus
     from office365.intune.devices.management.managed.ebook.e_book_category import ManagedEBookCategory
     from office365.intune.devices.management.mdm_windows_information_protection_policy import (
         MdmWindowsInformationProtectionPolicy,
     )
+    from office365.intune.devices.management.mobileapps.ios.lob_app_provisioning_configuration import (
+        IosLobAppProvisioningConfiguration,
+    )
+    from office365.intune.devices.management.mobileapps.mobile_app_catalog_package import MobileAppCatalogPackage
     from office365.intune.devices.management.symantec_code_signing_certificate import SymantecCodeSigningCertificate
     from office365.intune.devices.management.targeted_managed_app_configuration import (
         TargetedManagedAppConfiguration,
     )
+    from office365.intune.devices.management.windows_defender_application_control_supplemental_policy import (
+        WindowsDefenderApplicationControlSupplementalPolicy,
+    )
+    from office365.intune.devices.management.windows_information_protection_device_registration import (
+        WindowsInformationProtectionDeviceRegistration,
+    )
     from office365.intune.devices.management.windows_information_protection_policy import (
         WindowsInformationProtectionPolicy,
     )
+    from office365.intune.devices.management.windows_information_protection_wipe_action import (
+        WindowsInformationProtectionWipeAction,
+    )
+    from office365.intune.devices.management.windows_management_app import WindowsManagementApp
 
 
 class DeviceAppManagement(Entity):
@@ -348,4 +366,128 @@ class DeviceAppManagement(Entity):
             SymantecCodeSigningCertificate(
                 self.context, ResourcePath("symantecCodeSigningCertificate", self.resource_path)
             ),
+        )
+
+    @odata(name="deviceAppManagementTasks", beta=True, navigation=True)
+    @property
+    def device_app_management_tasks(self) -> EntityCollection[DeviceAppManagementTask]:
+        """Gets the deviceAppManagementTasks property"""
+        from office365.intune.devices.management.app_management_task import DeviceAppManagementTask
+
+        return self.properties.get(
+            "deviceAppManagementTasks",
+            EntityCollection[DeviceAppManagementTask](
+                self.context, DeviceAppManagementTask, ResourcePath("deviceAppManagementTasks", self.resource_path)
+            ),
+        )
+
+    @odata(name="iosLobAppProvisioningConfigurations", beta=True, navigation=True)
+    @property
+    def ios_lob_app_provisioning_configurations(self) -> EntityCollection[IosLobAppProvisioningConfiguration]:
+        """Gets the iosLobAppProvisioningConfigurations property"""
+        from office365.intune.devices.management.mobileapps.ios.lob_app_provisioning_configuration import (
+            IosLobAppProvisioningConfiguration,
+        )
+
+        return self.properties.get(
+            "iosLobAppProvisioningConfigurations",
+            EntityCollection[IosLobAppProvisioningConfiguration](
+                self.context,
+                IosLobAppProvisioningConfiguration,
+                ResourcePath("iosLobAppProvisioningConfigurations", self.resource_path),
+            ),
+        )
+
+    @odata(name="mobileAppCatalogPackages", beta=True, navigation=True)
+    @property
+    def mobile_app_catalog_packages(self) -> EntityCollection[MobileAppCatalogPackage]:
+        """Gets the mobileAppCatalogPackages property"""
+        from office365.intune.devices.management.mobileapps.mobile_app_catalog_package import MobileAppCatalogPackage
+
+        return self.properties.get(
+            "mobileAppCatalogPackages",
+            EntityCollection[MobileAppCatalogPackage](
+                self.context, MobileAppCatalogPackage, ResourcePath("mobileAppCatalogPackages", self.resource_path)
+            ),
+        )
+
+    @odata(name="wdacSupplementalPolicies", beta=True, navigation=True)
+    @property
+    def wdac_supplemental_policies(self) -> EntityCollection[WindowsDefenderApplicationControlSupplementalPolicy]:
+        """Gets the wdacSupplementalPolicies property"""
+        from office365.intune.devices.management.windows_defender_application_control_supplemental_policy import (
+            WindowsDefenderApplicationControlSupplementalPolicy,
+        )
+
+        return self.properties.get(
+            "wdacSupplementalPolicies",
+            EntityCollection[WindowsDefenderApplicationControlSupplementalPolicy](
+                self.context,
+                WindowsDefenderApplicationControlSupplementalPolicy,
+                ResourcePath("wdacSupplementalPolicies", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsInformationProtectionDeviceRegistrations", beta=True, navigation=True)
+    @property
+    def windows_information_protection_device_registrations(
+        self,
+    ) -> EntityCollection[WindowsInformationProtectionDeviceRegistration]:
+        """Gets the windowsInformationProtectionDeviceRegistrations property"""
+        from office365.intune.devices.management.windows_information_protection_device_registration import (
+            WindowsInformationProtectionDeviceRegistration,
+        )
+
+        return self.properties.get(
+            "windowsInformationProtectionDeviceRegistrations",
+            EntityCollection[WindowsInformationProtectionDeviceRegistration](
+                self.context,
+                WindowsInformationProtectionDeviceRegistration,
+                ResourcePath("windowsInformationProtectionDeviceRegistrations", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsInformationProtectionWipeActions", beta=True, navigation=True)
+    @property
+    def windows_information_protection_wipe_actions(self) -> EntityCollection[WindowsInformationProtectionWipeAction]:
+        """Gets the windowsInformationProtectionWipeActions property"""
+        from office365.intune.devices.management.windows_information_protection_wipe_action import (
+            WindowsInformationProtectionWipeAction,
+        )
+
+        return self.properties.get(
+            "windowsInformationProtectionWipeActions",
+            EntityCollection[WindowsInformationProtectionWipeAction](
+                self.context,
+                WindowsInformationProtectionWipeAction,
+                ResourcePath("windowsInformationProtectionWipeActions", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsManagedAppProtections", beta=True, navigation=True)
+    @property
+    def windows_managed_app_protections(self) -> EntityCollection[WindowsManagedAppProtection]:
+        """Gets the windowsManagedAppProtections property"""
+        from office365.intune.devices.management.managed.app.protections.windows_managed_app_protection import (
+            WindowsManagedAppProtection,
+        )
+
+        return self.properties.get(
+            "windowsManagedAppProtections",
+            EntityCollection[WindowsManagedAppProtection](
+                self.context,
+                WindowsManagedAppProtection,
+                ResourcePath("windowsManagedAppProtections", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsManagementApp", beta=True, navigation=True)
+    @property
+    def windows_management_app(self) -> WindowsManagementApp:
+        """Gets the windowsManagementApp property"""
+        from office365.intune.devices.management.windows_management_app import WindowsManagementApp
+
+        return self.properties.get(
+            "windowsManagementApp",
+            WindowsManagementApp(self.context, ResourcePath("windowsManagementApp", self.resource_path)),
         )
