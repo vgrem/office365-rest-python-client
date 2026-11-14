@@ -89,6 +89,11 @@ RBAC = (
     "DeviceManagementRBAC.ReadWrite.All",
 )
 
+#: Local administrator passwords: `hardwarePasswordDetails` answers ``403`` naming this single
+#: scope, which is Intune's privileged-operation gate rather than a read scope. Provenance:
+#: measured, and quoted verbatim (``docs/intune-endpoints.md``, "What the refusals name").
+PRIVILEGED_OPERATIONS = ("DeviceManagementManagedDevices.PrivilegedOperations.All",)
+
 #: The only licence the published Intune tables turn into a capability: endpoint analytics is
 #: Intune Plan 2 (which an E5 suite carries as the ``INTUNE_P2`` service plan). One name, so a
 #: tenant that bought the Intune Suite under another plan name shows up as a skip to widen

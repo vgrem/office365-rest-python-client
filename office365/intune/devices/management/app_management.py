@@ -37,12 +37,14 @@ if TYPE_CHECKING:
         IosManagedAppProtection,
     )
     from office365.intune.devices.management.managed.app.status import ManagedAppStatus
+    from office365.intune.devices.management.managed.ebook.e_book_category import ManagedEBookCategory
     from office365.intune.devices.management.managed.mobile_app_configuration import (
         ManagedDeviceMobileAppConfiguration,
     )
     from office365.intune.devices.management.mdm_windows_information_protection_policy import (
         MdmWindowsInformationProtectionPolicy,
     )
+    from office365.intune.devices.management.symantec_code_signing_certificate import SymantecCodeSigningCertificate
     from office365.intune.devices.management.targeted_managed_app_configuration import (
         TargetedManagedAppConfiguration,
     )
@@ -322,4 +324,30 @@ class DeviceAppManagement(Entity):
         return self.properties.get(
             "policySets",
             EntityCollection[PolicySet](self.context, PolicySet, ResourcePath("policySets", self.resource_path)),
+        )
+
+    @odata(name="managedEBookCategories", beta=True, navigation=True)
+    @property
+    def managed_e_book_categories(self) -> EntityCollection[ManagedEBookCategory]:
+        """Gets the managedEBookCategories property"""
+        from office365.intune.devices.management.managed.ebook.e_book_category import ManagedEBookCategory
+
+        return self.properties.get(
+            "managedEBookCategories",
+            EntityCollection[ManagedEBookCategory](
+                self.context, ManagedEBookCategory, ResourcePath("managedEBookCategories", self.resource_path)
+            ),
+        )
+
+    @odata(name="symantecCodeSigningCertificate", beta=True, navigation=True)
+    @property
+    def symantec_code_signing_certificate(self) -> SymantecCodeSigningCertificate:
+        """Gets the symantecCodeSigningCertificate property"""
+        from office365.intune.devices.management.symantec_code_signing_certificate import SymantecCodeSigningCertificate
+
+        return self.properties.get(
+            "symantecCodeSigningCertificate",
+            SymantecCodeSigningCertificate(
+                self.context, ResourcePath("symantecCodeSigningCertificate", self.resource_path)
+            ),
         )

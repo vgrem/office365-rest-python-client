@@ -77,7 +77,11 @@ if TYPE_CHECKING:
         ApplePushNotificationCertificate,
     )
     from office365.intune.devices.management.assignment_filter import DeviceAndAppManagementAssignmentFilter
+    from office365.intune.devices.management.cart_to_class_association import CartToClassAssociation
+    from office365.intune.devices.management.certificate_connector_details import CertificateConnectorDetails
+    from office365.intune.devices.management.chrome_os_onboarding_settings import ChromeOSOnboardingSettings
     from office365.intune.devices.management.compliance_policy import DeviceManagementCompliancePolicy
+    from office365.intune.devices.management.config_manager_collection import ConfigManagerCollection
     from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
     from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
     from office365.intune.devices.management.configuration_policy_template import (
@@ -89,10 +93,13 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.configuration_setting_template import (
         DeviceManagementConfigurationSettingTemplate,
     )
+    from office365.intune.devices.management.data_sharing_consent import DataSharingConsent
     from office365.intune.devices.management.detected_app import DetectedApp
     from office365.intune.devices.management.exchangeconnectors.exchange_connector import (
         DeviceManagementExchangeConnector,
     )
+    from office365.intune.devices.management.hardware_password_detail import HardwarePasswordDetail
+    from office365.intune.devices.management.hardware_password_info import HardwarePasswordInfo
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
     )
@@ -128,6 +135,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
+    from office365.intune.devices.management.user_pfx_certificate import UserPFXCertificate
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version_details import (  # noqa: E501
         UserExperienceAnalyticsAppHealthAppPerformanceByAppVersionDetails,
     )
@@ -196,6 +204,9 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_work_from_anywhere_model_performance import (  # noqa: E501
         UserExperienceAnalyticsWorkFromAnywhereModelPerformance,
+    )
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_connectivity_issue import (
+        CloudPCConnectivityIssue,
     )
     from office365.intune.devices.management.windows_autopilot_deployment_profile import (
         WindowsAutopilotDeploymentProfile,
@@ -1880,5 +1891,126 @@ class DeviceManagement(Entity):
             "intents",
             EntityCollection[DeviceManagementIntent](
                 self.context, DeviceManagementIntent, ResourcePath("intents", self.resource_path)
+            ),
+        )
+
+    @odata(name="chromeOSOnboardingSettings", beta=True, navigation=True)
+    @property
+    def chrome_os_onboarding_settings(self) -> EntityCollection[ChromeOSOnboardingSettings]:
+        """Gets the chromeOSOnboardingSettings property"""
+        from office365.intune.devices.management.chrome_os_onboarding_settings import ChromeOSOnboardingSettings
+
+        return self.properties.get(
+            "chromeOSOnboardingSettings",
+            EntityCollection[ChromeOSOnboardingSettings](
+                self.context, ChromeOSOnboardingSettings, ResourcePath("chromeOSOnboardingSettings", self.resource_path)
+            ),
+        )
+
+    @odata(name="cartToClassAssociations", beta=True, navigation=True)
+    @property
+    def cart_to_class_associations(self) -> EntityCollection[CartToClassAssociation]:
+        """Gets the cartToClassAssociations property"""
+        from office365.intune.devices.management.cart_to_class_association import CartToClassAssociation
+
+        return self.properties.get(
+            "cartToClassAssociations",
+            EntityCollection[CartToClassAssociation](
+                self.context, CartToClassAssociation, ResourcePath("cartToClassAssociations", self.resource_path)
+            ),
+        )
+
+    @odata(name="hardwarePasswordDetails", beta=True, navigation=True)
+    @property
+    def hardware_password_details(self) -> EntityCollection[HardwarePasswordDetail]:
+        """Gets the hardwarePasswordDetails property"""
+        from office365.intune.devices.management.hardware_password_detail import HardwarePasswordDetail
+
+        return self.properties.get(
+            "hardwarePasswordDetails",
+            EntityCollection[HardwarePasswordDetail](
+                self.context, HardwarePasswordDetail, ResourcePath("hardwarePasswordDetails", self.resource_path)
+            ),
+        )
+
+    @odata(name="hardwarePasswordInfo", beta=True, navigation=True)
+    @property
+    def hardware_password_info(self) -> EntityCollection[HardwarePasswordInfo]:
+        """Gets the hardwarePasswordInfo property"""
+        from office365.intune.devices.management.hardware_password_info import HardwarePasswordInfo
+
+        return self.properties.get(
+            "hardwarePasswordInfo",
+            EntityCollection[HardwarePasswordInfo](
+                self.context, HardwarePasswordInfo, ResourcePath("hardwarePasswordInfo", self.resource_path)
+            ),
+        )
+
+    @odata(name="cloudPCConnectivityIssues", beta=True, navigation=True)
+    @property
+    def cloud_pc_connectivity_issues(self) -> EntityCollection[CloudPCConnectivityIssue]:
+        """Gets the cloudPCConnectivityIssues property"""
+        from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_connectivity_issue import (
+            CloudPCConnectivityIssue,
+        )
+
+        return self.properties.get(
+            "cloudPCConnectivityIssues",
+            EntityCollection[CloudPCConnectivityIssue](
+                self.context, CloudPCConnectivityIssue, ResourcePath("cloudPCConnectivityIssues", self.resource_path)
+            ),
+        )
+
+    @odata(name="dataSharingConsents", beta=True, navigation=True)
+    @property
+    def data_sharing_consents(self) -> EntityCollection[DataSharingConsent]:
+        """Gets the dataSharingConsents property"""
+        from office365.intune.devices.management.data_sharing_consent import DataSharingConsent
+
+        return self.properties.get(
+            "dataSharingConsents",
+            EntityCollection[DataSharingConsent](
+                self.context, DataSharingConsent, ResourcePath("dataSharingConsents", self.resource_path)
+            ),
+        )
+
+    @odata(name="configManagerCollections", beta=True, navigation=True)
+    @property
+    def config_manager_collections(self) -> EntityCollection[ConfigManagerCollection]:
+        """Gets the configManagerCollections property"""
+        from office365.intune.devices.management.config_manager_collection import ConfigManagerCollection
+
+        return self.properties.get(
+            "configManagerCollections",
+            EntityCollection[ConfigManagerCollection](
+                self.context, ConfigManagerCollection, ResourcePath("configManagerCollections", self.resource_path)
+            ),
+        )
+
+    @odata(name="certificateConnectorDetails", beta=True, navigation=True)
+    @property
+    def certificate_connector_details(self) -> EntityCollection[CertificateConnectorDetails]:
+        """Gets the certificateConnectorDetails property"""
+        from office365.intune.devices.management.certificate_connector_details import CertificateConnectorDetails
+
+        return self.properties.get(
+            "certificateConnectorDetails",
+            EntityCollection[CertificateConnectorDetails](
+                self.context,
+                CertificateConnectorDetails,
+                ResourcePath("certificateConnectorDetails", self.resource_path),
+            ),
+        )
+
+    @odata(name="userPfxCertificates", beta=True, navigation=True)
+    @property
+    def user_pfx_certificates(self) -> EntityCollection[UserPFXCertificate]:
+        """Gets the userPfxCertificates property"""
+        from office365.intune.devices.management.user_pfx_certificate import UserPFXCertificate
+
+        return self.properties.get(
+            "userPfxCertificates",
+            EntityCollection[UserPFXCertificate](
+                self.context, UserPFXCertificate, ResourcePath("userPfxCertificates", self.resource_path)
             ),
         )

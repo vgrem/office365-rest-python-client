@@ -107,6 +107,17 @@ type_routing:
   Ios*: office365.intune
   Mac*: office365.intune
   Oma*: office365.intune.devices.configurations
+  # Device-management singletons no prefix claims: each one is a navigation of the
+  # service root, so without a rule it would fall to `office365.common`.
+  HardwarePassword*: office365.intune.devices.management
+  CartToClassAssociation: office365.intune.devices.management
+  CertificateConnectorDetails: office365.intune.devices.management
+  ChromeOSOnboardingSettings: office365.intune.devices.management
+  ConfigManagerCollection: office365.intune.devices.management
+  DataSharingConsent: office365.intune.devices.management
+  SymantecCodeSigningCertificate: office365.intune.devices.management
+  UserPFXCertificate*: office365.intune.devices.management
+  ManagedEBook*: office365.intune.devices.management.managed.ebook
   # Entra types the Intune adjectives used to swallow.
   DeviceRegistrationPolicy: office365.directory.policies
   DevicesFilter: office365.directory.policies
