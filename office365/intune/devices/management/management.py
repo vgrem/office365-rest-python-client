@@ -54,32 +54,29 @@ if TYPE_CHECKING:
         AndroidManagedStoreAccountEnterpriseSettings,
     )
     from office365.intune.android_managed_store_app_configuration_schema import AndroidManagedStoreAppConfigurationSchema
-    from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
-    from office365.intune.devices.and_app_management_role_assignment import (
-        DeviceAndAppManagementRoleAssignment,
-    )
     from office365.intune.devices.compliance.management_partner import (
         ComplianceManagementPartner,
     )
     from office365.intune.devices.compliance.policy import DeviceCompliancePolicy
-    from office365.intune.devices.compliance_policy_device_state_summary import (
+    from office365.intune.devices.compliance.policy_device_state_summary import (
         DeviceCompliancePolicyDeviceStateSummary,
     )
-    from office365.intune.devices.compliance_policy_setting_state_summary import (
+    from office365.intune.devices.compliance.policy_setting_state_summary import (
         DeviceCompliancePolicySettingStateSummary,
     )
-    from office365.intune.devices.compliance_script import DeviceComplianceScript
-    from office365.intune.devices.configuration_device_state_summary import (
-        DeviceConfigurationDeviceStateSummary,
-    )
+    from office365.intune.devices.compliance.script import DeviceComplianceScript
     from office365.intune.devices.configurations.configuration import (
         DeviceConfiguration,
+    )
+    from office365.intune.devices.configurations.device_state_summary import (
+        DeviceConfigurationDeviceStateSummary,
     )
     from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
     from office365.intune.devices.health_script import DeviceHealthScript
     from office365.intune.devices.management.apple_push_notification_certificate import (
         ApplePushNotificationCertificate,
     )
+    from office365.intune.devices.management.assignment_filter import DeviceAndAppManagementAssignmentFilter
     from office365.intune.devices.management.detected_app import DetectedApp
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
@@ -103,6 +100,9 @@ if TYPE_CHECKING:
         RemoteAssistancePartner,
     )
     from office365.intune.devices.management.resource_operation import ResourceOperation
+    from office365.intune.devices.management.role_assignment import (
+        DeviceAndAppManagementRoleAssignment,
+    )
     from office365.intune.devices.management.software_update_status_summary import (
         SoftwareUpdateStatusSummary,
     )
@@ -371,7 +371,7 @@ class DeviceManagement(Entity):
     @property
     def device_compliance_policy_device_state_summary(self) -> DeviceCompliancePolicyDeviceStateSummary:
         """Gets the deviceCompliancePolicyDeviceStateSummary property"""
-        from office365.intune.devices.compliance_policy_device_state_summary import (
+        from office365.intune.devices.compliance.policy_device_state_summary import (
             DeviceCompliancePolicyDeviceStateSummary,
         )
 
@@ -388,7 +388,7 @@ class DeviceManagement(Entity):
         self,
     ) -> EntityCollection[DeviceCompliancePolicySettingStateSummary]:
         """Gets the deviceCompliancePolicySettingStateSummaries property"""
-        from office365.intune.devices.compliance_policy_setting_state_summary import (
+        from office365.intune.devices.compliance.policy_setting_state_summary import (
             DeviceCompliancePolicySettingStateSummary,
         )
 
@@ -405,7 +405,7 @@ class DeviceManagement(Entity):
     @property
     def device_configuration_device_state_summaries(self) -> DeviceConfigurationDeviceStateSummary:
         """Gets the deviceConfigurationDeviceStateSummaries property"""
-        from office365.intune.devices.configuration_device_state_summary import (
+        from office365.intune.devices.configurations.device_state_summary import (
             DeviceConfigurationDeviceStateSummary,
         )
 
@@ -1091,7 +1091,7 @@ class DeviceManagement(Entity):
     @property
     def role_assignments(self) -> EntityCollection[DeviceAndAppManagementRoleAssignment]:
         """Gets the roleAssignments property"""
-        from office365.intune.devices.and_app_management_role_assignment import (
+        from office365.intune.devices.management.role_assignment import (
             DeviceAndAppManagementRoleAssignment,
         )
 
@@ -1264,7 +1264,7 @@ class DeviceManagement(Entity):
     @property
     def assignment_filters(self) -> EntityCollection[DeviceAndAppManagementAssignmentFilter]:
         """Gets the assignmentFilters property"""
-        from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
+        from office365.intune.devices.management.assignment_filter import DeviceAndAppManagementAssignmentFilter
 
         return self.properties.get(
             "assignmentFilters",
@@ -1794,7 +1794,7 @@ class DeviceManagement(Entity):
     @property
     def device_compliance_scripts(self) -> EntityCollection[DeviceComplianceScript]:
         """Gets the deviceComplianceScripts property"""
-        from office365.intune.devices.compliance_script import DeviceComplianceScript
+        from office365.intune.devices.compliance.script import DeviceComplianceScript
 
         return self.properties.get(
             "deviceComplianceScripts",

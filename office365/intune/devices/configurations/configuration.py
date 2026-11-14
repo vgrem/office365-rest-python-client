@@ -18,19 +18,19 @@ if TYPE_CHECKING:
     from office365.intune.devices.compliance.setting_state_device_summary import (
         SettingStateDeviceSummary,
     )
-    from office365.intune.devices.configuration_assignment import (
+    from office365.intune.devices.configurations.assignment import (
         DeviceConfigurationAssignment,
     )
-    from office365.intune.devices.configuration_device_overview import (
+    from office365.intune.devices.configurations.device_overview import (
         DeviceConfigurationDeviceOverview,
     )
-    from office365.intune.devices.configuration_device_status import (
+    from office365.intune.devices.configurations.device_status import (
         DeviceConfigurationDeviceStatus,
     )
-    from office365.intune.devices.configuration_user_overview import (
+    from office365.intune.devices.configurations.user_overview import (
         DeviceConfigurationUserOverview,
     )
-    from office365.intune.devices.configuration_user_status import (
+    from office365.intune.devices.configurations.user_status import (
         DeviceConfigurationUserStatus,
     )
 
@@ -72,7 +72,7 @@ class DeviceConfiguration(Entity):
     @property
     def assignments(self) -> EntityCollection[DeviceConfigurationAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.configuration_assignment import (
+        from office365.intune.devices.configurations.assignment import (
             DeviceConfigurationAssignment,
         )
 
@@ -102,7 +102,7 @@ class DeviceConfiguration(Entity):
     @property
     def device_statuses(self) -> EntityCollection[DeviceConfigurationDeviceStatus]:
         """Gets the deviceStatuses property"""
-        from office365.intune.devices.configuration_device_status import (
+        from office365.intune.devices.configurations.device_status import (
             DeviceConfigurationDeviceStatus,
         )
 
@@ -117,7 +117,7 @@ class DeviceConfiguration(Entity):
     @property
     def device_status_overview(self) -> DeviceConfigurationDeviceOverview:
         """Gets the deviceStatusOverview property"""
-        from office365.intune.devices.configuration_device_overview import (
+        from office365.intune.devices.configurations.device_overview import (
             DeviceConfigurationDeviceOverview,
         )
 
@@ -130,7 +130,7 @@ class DeviceConfiguration(Entity):
     @property
     def user_statuses(self) -> EntityCollection[DeviceConfigurationUserStatus]:
         """Gets the userStatuses property"""
-        from office365.intune.devices.configuration_user_status import (
+        from office365.intune.devices.configurations.user_status import (
             DeviceConfigurationUserStatus,
         )
 
@@ -145,7 +145,7 @@ class DeviceConfiguration(Entity):
     @property
     def user_status_overview(self) -> DeviceConfigurationUserOverview:
         """Gets the userStatusOverview property"""
-        from office365.intune.devices.configuration_user_overview import (
+        from office365.intune.devices.configurations.user_overview import (
             DeviceConfigurationUserOverview,
         )
 
@@ -172,7 +172,7 @@ class DeviceConfiguration(Entity):
             assignments (ClientValueCollection[DeviceConfigurationAssignment]):
                 assignments parameter
         """
-        from office365.intune.devices.configuration_assignment import DeviceConfigurationAssignment
+        from office365.intune.devices.configurations.assignment import DeviceConfigurationAssignment
 
         return_type = EntityCollection(self.context, DeviceConfigurationAssignment)
         qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, return_type)

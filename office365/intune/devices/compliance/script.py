@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.compliance_script_platform_type import DeviceComplianceScriptPlatformType
+from office365.intune.devices.compliance.script_platform_type import DeviceComplianceScriptPlatformType
 from office365.intune.devices.management.mobileapps.runasaccounttype import RunAsAccountType
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -17,8 +17,8 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance_script_device_state import DeviceComplianceScriptDeviceState
-    from office365.intune.devices.compliance_script_run_summary import DeviceComplianceScriptRunSummary
+    from office365.intune.devices.compliance.script_device_state import DeviceComplianceScriptDeviceState
+    from office365.intune.devices.compliance.script_run_summary import DeviceComplianceScriptRunSummary
     from office365.intune.devices.health_script_assignment import DeviceHealthScriptAssignment
 
 
@@ -113,7 +113,7 @@ class DeviceComplianceScript(Entity):
     @property
     def device_run_states(self) -> EntityCollection[DeviceComplianceScriptDeviceState]:
         """Gets the deviceRunStates property"""
-        from office365.intune.devices.compliance_script_device_state import DeviceComplianceScriptDeviceState
+        from office365.intune.devices.compliance.script_device_state import DeviceComplianceScriptDeviceState
 
         return self.properties.get(
             "deviceRunStates",
@@ -126,7 +126,7 @@ class DeviceComplianceScript(Entity):
     @property
     def run_summary(self) -> DeviceComplianceScriptRunSummary:
         """Gets the runSummary property"""
-        from office365.intune.devices.compliance_script_run_summary import DeviceComplianceScriptRunSummary
+        from office365.intune.devices.compliance.script_run_summary import DeviceComplianceScriptRunSummary
 
         return self.properties.get(
             "runSummary", DeviceComplianceScriptRunSummary(self.context, ResourcePath("runSummary", self.resource_path))

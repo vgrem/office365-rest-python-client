@@ -40,7 +40,7 @@ from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.users.collection import UserCollection
-    from office365.intune.devices.configuration_state import DeviceConfigurationState
+    from office365.intune.devices.configurations.state import DeviceConfigurationState
     from office365.intune.devices.log_collection_response import (
         DeviceLogCollectionResponse,
     )
@@ -555,7 +555,7 @@ class ManagedDevice(Entity):
     @property
     def device_configuration_states(self) -> EntityCollection[DeviceConfigurationState]:
         """Gets the deviceConfigurationStates property"""
-        from office365.intune.devices.configuration_state import (
+        from office365.intune.devices.configurations.state import (
             DeviceConfigurationState,
         )
 

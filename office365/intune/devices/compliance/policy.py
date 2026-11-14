@@ -15,25 +15,25 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
+    from office365.intune.devices.compliance.device_overview import (
+        DeviceComplianceDeviceOverview,
+    )
+    from office365.intune.devices.compliance.device_status import (
+        DeviceComplianceDeviceStatus,
+    )
+    from office365.intune.devices.compliance.policy_assignment import (
+        DeviceCompliancePolicyAssignment,
+    )
+    from office365.intune.devices.compliance.scheduled_action_for_rule import (
+        DeviceComplianceScheduledActionForRule,
+    )
     from office365.intune.devices.compliance.setting_state_device_summary import (
         SettingStateDeviceSummary,
     )
-    from office365.intune.devices.compliance_device_overview import (
-        DeviceComplianceDeviceOverview,
-    )
-    from office365.intune.devices.compliance_device_status import (
-        DeviceComplianceDeviceStatus,
-    )
-    from office365.intune.devices.compliance_policy_assignment import (
-        DeviceCompliancePolicyAssignment,
-    )
-    from office365.intune.devices.compliance_scheduled_action_for_rule import (
-        DeviceComplianceScheduledActionForRule,
-    )
-    from office365.intune.devices.compliance_user_overview import (
+    from office365.intune.devices.compliance.user_overview import (
         DeviceComplianceUserOverview,
     )
-    from office365.intune.devices.compliance_user_status import (
+    from office365.intune.devices.compliance.user_status import (
         DeviceComplianceUserStatus,
     )
 
@@ -76,7 +76,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def assignments(self) -> EntityCollection[DeviceCompliancePolicyAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.compliance_policy_assignment import (
+        from office365.intune.devices.compliance.policy_assignment import (
             DeviceCompliancePolicyAssignment,
         )
 
@@ -106,7 +106,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def device_statuses(self) -> EntityCollection[DeviceComplianceDeviceStatus]:
         """Gets the deviceStatuses property"""
-        from office365.intune.devices.compliance_device_status import (
+        from office365.intune.devices.compliance.device_status import (
             DeviceComplianceDeviceStatus,
         )
 
@@ -121,7 +121,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def device_status_overview(self) -> DeviceComplianceDeviceOverview:
         """Gets the deviceStatusOverview property"""
-        from office365.intune.devices.compliance_device_overview import (
+        from office365.intune.devices.compliance.device_overview import (
             DeviceComplianceDeviceOverview,
         )
 
@@ -134,7 +134,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def scheduled_actions_for_rule(self) -> EntityCollection[DeviceComplianceScheduledActionForRule]:
         """Gets the scheduledActionsForRule property"""
-        from office365.intune.devices.compliance_scheduled_action_for_rule import (
+        from office365.intune.devices.compliance.scheduled_action_for_rule import (
             DeviceComplianceScheduledActionForRule,
         )
 
@@ -151,7 +151,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def user_statuses(self) -> EntityCollection[DeviceComplianceUserStatus]:
         """Gets the userStatuses property"""
-        from office365.intune.devices.compliance_user_status import (
+        from office365.intune.devices.compliance.user_status import (
             DeviceComplianceUserStatus,
         )
 
@@ -166,7 +166,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def user_status_overview(self) -> DeviceComplianceUserOverview:
         """Gets the userStatusOverview property"""
-        from office365.intune.devices.compliance_user_overview import (
+        from office365.intune.devices.compliance.user_overview import (
             DeviceComplianceUserOverview,
         )
 
@@ -205,7 +205,7 @@ class DeviceCompliancePolicy(Entity):
             assignments (ClientValueCollection[DeviceCompliancePolicyAssignment]):
                 assignments parameter
         """
-        from office365.intune.devices.compliance_policy_assignment import DeviceCompliancePolicyAssignment
+        from office365.intune.devices.compliance.policy_assignment import DeviceCompliancePolicyAssignment
 
         return_type = EntityCollection(self.context, DeviceCompliancePolicyAssignment)
         qry = ServiceOperationQuery(self, "assign", None, {"assignments": assignments}, None, return_type)
