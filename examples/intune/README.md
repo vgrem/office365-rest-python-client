@@ -33,7 +33,7 @@ flowchart LR
 |---|---|---|
 | **1. Enrol** | Who and what may enrol, and how? | [`enrollment/`](./enrollment/README.md) |
 | **2. Register** | Which devices does Intune now manage? | [`devices/`](./devices/README.md) |
-| **3. Configure** | What settings and compliance rules apply? | [`policies/`](./policies/README.md) |
+| **3. Configure** | What settings and compliance rules apply? Who do they reach? | [`policies/`](./policies/README.md) |
 | **4. Protect** | Which apps may access corporate data? | [`apps/`](./apps/README.md) |
 | **5. Manage** | What can I do to a device right now? | [`devices/`](./devices/README.md) |
 | **6. Govern** | Is the fleet healthy? Why did enrolment fail? | [`reports/`](./reports/README.md) |
