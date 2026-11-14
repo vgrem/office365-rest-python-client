@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identity_set import IdentitySet
 
 
-class ChatMessageFromIdentitySet(ClientValue):
-    pass
+class ChatMessageFromIdentitySet(IdentitySet):
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.ChatMessageFromIdentitySet"

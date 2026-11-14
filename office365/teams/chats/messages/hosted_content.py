@@ -2,21 +2,14 @@ from __future__ import annotations
 
 from typing import AnyStr
 
-from office365.entity import Entity
+from office365.common.teamwork_hosted_content import TeamworkHostedContent
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
-from office365.runtime.types.odata_property import odata
 
 
-class ChatMessageHostedContent(Entity):
+class ChatMessageHostedContent(TeamworkHostedContent):
     """Content in a chat or channel message hosted by Teams (e.g. an inline image)."""
-
-    @odata(name="contentType")
-    @property
-    def content_type(self) -> str | None:
-        """The media type of the hosted content (e.g. ``image/png``)."""
-        return self.properties.get("contentType")
 
     @require_permission(
         delegated=["Chat.Read", "ChannelMessage.Read.All"],
@@ -32,4 +25,4 @@ class ChatMessageHostedContent(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.chatMessageHostedContent"
+        return "microsoft.graph.ChatMessageHostedContent"

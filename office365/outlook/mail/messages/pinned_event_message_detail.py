@@ -4,10 +4,10 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.runtime.client_value import ClientValue
+from office365.teams.chats.event_message_detail import EventMessageDetail
 
 
-class MessagePinnedEventMessageDetail(ClientValue):
+class MessagePinnedEventMessageDetail(EventMessageDetail):
     eventDateTime: datetime | None = field(default_factory=lambda: datetime.min)
     initiator: IdentitySet = field(default_factory=IdentitySet)
 

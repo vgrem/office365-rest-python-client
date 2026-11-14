@@ -17,3 +17,7 @@ class UserScopeTeamsAppInstallation(TeamsAppInstallation):
         The chat between the user and Teams app.
         """
         return self.properties.get("chat", Chat(self.context, ResourcePath("chat", self.resource_path)))
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.UserScopeTeamsAppInstallation"

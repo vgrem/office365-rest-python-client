@@ -74,6 +74,7 @@ jobs:
         run: |
           uv run python -m generator graph --audit --audit-ratchet generator/audit-baseline.json
           uv run python -m generator graph --audit office365/intune --audit-ratchet generator/audit-baseline.json
+          uv run python -m generator graph --audit office365/teams --audit-ratchet generator/audit-baseline.json
 
   deps:
     runs-on: ubuntu-latest

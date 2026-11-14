@@ -23,7 +23,7 @@ import ast
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
+from typing import Dict, FrozenSet, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
 
 from generator.core.config import split_ignored
 from generator.odata.model import ODataModel
@@ -249,6 +249,7 @@ def audit(
     ignored_props = frozenset(ignored_properties)
     declared_facts = declared_members(csdl)
     holders = _by_type(models)
+    served = _served_by_type(holders)
     findings: List[Finding] = []
     for model in models:
         facts = declared_facts.get(model.type_name)
@@ -263,7 +264,7 @@ def audit(
             elif _is_ignored_type(fact.type_name, exact_ignored, prefix_ignored):
                 findings.append(_ignored(model, name, fact.type_name))
             else:
-                findings.extend(_disagreements(model, name, fact))
+                findings.extend(_disagreements(model, name, fact, served[model.type_name]))
         findings.extend(_extras(model, facts))
     return findings
 
@@ -275,6 +276,19 @@ def _by_type(models: Iterable[DeclaredModel]) -> Dict[str, List[DeclaredModel]]:
         if model.type_name:
             holders.setdefault(model.type_name, []).append(model)
     return holders
+
+
+def _served_by_type(holders: Mapping[str, Sequence[DeclaredModel]]) -> Dict[str, FrozenSet[str]]:
+    """For each type name, the members every class claiming it serves between them.
+
+    Two classes may state one name on purpose -- ``ConversationMember`` answers
+    ``aadUserConversationMember`` because Graph refuses the abstract type on writes, and
+    the concrete class answers it because that is its own name. The members are then
+    served by the pair, and a column present on either is not a column the model lacks.
+    """
+    return {
+        name: frozenset(member for model in claimants for member in model.members) for name, claimants in holders.items()
+    }
 
 
 def _uninherited_base(
@@ -347,13 +361,14 @@ def write_report(findings: Sequence[Finding], path: str) -> None:
     Path(path).write_text(json.dumps([finding.to_dict() for finding in findings], indent=2), encoding="utf-8")
 
 
-def _disagreements(model: DeclaredModel, name: str, fact: _Fact) -> Iterator[Finding]:
+def _disagreements(model: DeclaredModel, name: str, fact: _Fact, served: FrozenSet[str]) -> Iterator[Finding]:
     def _finding(kind: str, detail: str = "") -> Finding:
         return Finding(kind, model.name, model.type_name, name, detail, str(model.path))
 
     declared = model.members.get(name)
     if declared is None:
-        yield _finding(MISSING, fact.type_name)
+        if name not in served:
+            yield _finding(MISSING, fact.type_name)
         return
     if not declared.declared:
         yield _finding(UNDECLARED, _FIELD)

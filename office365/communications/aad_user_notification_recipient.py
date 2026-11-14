@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.teams.teamwork.notification_recipient import TeamworkNotificationRecipient
 
 
-class AadUserNotificationRecipient(ClientValue):
+class AadUserNotificationRecipient(TeamworkNotificationRecipient):
     userId: str | None = None
 
     @property

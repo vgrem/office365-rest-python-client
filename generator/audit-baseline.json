@@ -1,8 +1,8 @@
 {
   "office365": {
-    "missing": 131,
-    "undeclared": 5103,
-    "extra": 313,
+    "missing": 97,
+    "undeclared": 5111,
+    "extra": 315,
     "readonly": 19,
     "ignored": 16
   },
@@ -10,5 +10,10 @@
     "missing": 12,
     "undeclared": 723,
     "extra": 124
+  },
+  "office365/teams": {
+    "missing": 0,
+    "undeclared": 210,
+    "extra": 8
   }
 }

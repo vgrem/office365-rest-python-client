@@ -5,12 +5,12 @@ from datetime import timedelta
 
 from office365.communications.call_participant_info import CallParticipantInfo
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.teamwork.calleventtype import TeamworkCallEventType
 
 
-class CallEndedEventMessageDetail(ClientValue):
+class CallEndedEventMessageDetail(EventMessageDetail):
     callDuration: timedelta | None = None
     callEventType: TeamworkCallEventType = TeamworkCallEventType.call
     callId: str | None = None

@@ -21,3 +21,7 @@ class DeletedTeam(Entity):
             "channels",
             ChannelCollection(self.context, ResourcePath("channels", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.DeletedTeam"

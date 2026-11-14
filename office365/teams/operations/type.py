@@ -18,4 +18,4 @@ class TeamsAsyncOperationType(Enum):
 
     @property
     def entity_type_name(self):
-        return "microsoft.graph.teamsAsyncOperationType"
+        return "microsoft.graph.TeamsAsyncOperationType"

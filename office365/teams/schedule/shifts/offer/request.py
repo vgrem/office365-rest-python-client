@@ -39,3 +39,7 @@ class OfferShiftRequest(ScheduleChangeRequest):
         User ID of the sender of the offer shift request.
         """
         return self.properties.get("senderShiftId", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.OfferShiftRequest"

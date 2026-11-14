@@ -10,3 +10,7 @@ class AssociatedTeamInfo(TeamInfo):
         - A user can be a direct member of a team.
         - A user can be a member of a shared channel that is hosted inside a team.
     """
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AssociatedTeamInfo"

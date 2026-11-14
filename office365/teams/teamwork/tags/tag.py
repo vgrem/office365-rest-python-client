@@ -59,3 +59,7 @@ class TeamworkTag(Entity):
             "members",
             EntityCollection(self.context, TeamworkTagMember, ResourcePath("members", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamworkTag"

@@ -16,3 +16,7 @@ class AppCatalogs(Entity):
             "teamsApps",
             EntityCollection(self.context, TeamsApp, ResourcePath("teamsApps", self.resource_path)),
         )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.AppCatalogs"

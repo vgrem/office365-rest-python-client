@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.runtime.client_value import ClientValue
+from office365.teams.chats.event_message_detail import EventMessageDetail
 
 
-class CallTranscriptEventMessageDetail(ClientValue):
+class CallTranscriptEventMessageDetail(EventMessageDetail):
     callId: str | None = None
     callTranscriptICalUid: str | None = None
     meetingOrganizer: IdentitySet = field(default_factory=IdentitySet)

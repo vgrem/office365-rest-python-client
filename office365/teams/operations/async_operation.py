@@ -234,3 +234,7 @@ class TeamsAsyncOperation(PollableOperation, Entity):
         This URL should be treated as an opaque value and not parsed into its component paths.
         """
         return self.properties.get("targetResourceLocation", None)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.TeamsAsyncOperation"
