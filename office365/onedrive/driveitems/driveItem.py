@@ -76,7 +76,7 @@ from office365.runtime.transfer import UPLOAD_CHUNK_DEFAULT, check_chunk_size
 from office365.runtime.transport.base import HeadersCallback
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.runtime.types.odata_property import odata
-from office365.search.search_result import SearchResult
+from office365.search.result import SearchResult
 from office365.subscriptions.collection import SubscriptionCollection
 
 

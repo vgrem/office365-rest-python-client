@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.search.alteration import SearchAlteration
 from office365.search.alterationtype import SearchAlterationType
-from office365.search.search_alteration import SearchAlteration
 
 
 class AlterationResponse(ClientValue):

@@ -10,7 +10,7 @@ from office365.externalconnectors.content_category import ContentCategory
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.search.external.configuration import Configuration
-from office365.search.external.search_settings import SearchSettings
+from office365.search.external.settings import SearchSettings
 
 if TYPE_CHECKING:
     from office365.externalconnectors.connection_operation import ConnectionOperation

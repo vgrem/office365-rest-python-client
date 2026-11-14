@@ -5,10 +5,10 @@ from dataclasses import field
 from office365.copilot.retrieval_entity_type import RetrievalEntityType
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.search.retrieval_extract import RetrievalExtract
-from office365.search.search_resource_metadata_dictionary import (
+from office365.search.resource_metadata_dictionary import (
     SearchResourceMetadataDictionary,
 )
+from office365.search.retrieval_extract import RetrievalExtract
 from office365.security.sensitivity_label_info import SensitivityLabelInfo
 
 
