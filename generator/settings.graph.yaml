@@ -126,6 +126,16 @@ type_routing:
   AndroidForWorkSettings*: office365.intune.devices.enrollment
   DepOnboardingSetting*: office365.intune.devices.enrollment
   ImportedDeviceIdentit*: office365.intune.devices.enrollment
+  # Reporting and RBAC families the generic rules miss.  Each one is a navigation of the
+  # service root with no claim on a prefix, so without a rule it falls to `office365.common`:
+  # a remote-audit entry is the audit log, a scope tag belongs beside the role definition it
+  # scopes, and the per-device state records sit with the other `*State` types.
+  RemoteActionAudit*: office365.intune.audit
+  RoleScopeTag*: office365.intune.devices.management
+  ComanagementEligibleDevice*: office365.intune.devices.management
+  ManagedDeviceEncryptionState*: office365.intune.devices.management
+  ManagedAllDeviceCertificateState*: office365.intune.devices.management
+  RestrictedAppsViolation*: office365.intune.devices.compliance
   # Entra types the Intune adjectives used to swallow.
   DeviceRegistrationPolicy: office365.directory.policies
   DevicesFilter: office365.directory.policies

@@ -57,6 +57,7 @@ if TYPE_CHECKING:
         AndroidManagedStoreAccountEnterpriseSettings,
     )
     from office365.intune.android_managed_store_app_configuration_schema import AndroidManagedStoreAppConfigurationSchema
+    from office365.intune.audit.remote_action_audit import RemoteActionAudit
     from office365.intune.devices.compliance.management_partner import (
         ComplianceManagementPartner,
     )
@@ -67,13 +68,16 @@ if TYPE_CHECKING:
     from office365.intune.devices.compliance.policy_setting_state_summary import (
         DeviceCompliancePolicySettingStateSummary,
     )
+    from office365.intune.devices.compliance.restricted_apps_violation import RestrictedAppsViolation
     from office365.intune.devices.compliance.script import DeviceComplianceScript
     from office365.intune.devices.configurations.configuration import (
         DeviceConfiguration,
     )
+    from office365.intune.devices.configurations.conflict_summary import DeviceConfigurationConflictSummary
     from office365.intune.devices.configurations.state_summary import (
         DeviceConfigurationDeviceStateSummary,
     )
+    from office365.intune.devices.configurations.user_state_summary import DeviceConfigurationUserStateSummary
     from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
     from office365.intune.devices.enrollment.android_device_owner_enrollment_profile import (
         AndroidDeviceOwnerEnrollmentProfile,
@@ -94,6 +98,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.cart_to_class_association import CartToClassAssociation
     from office365.intune.devices.management.certificate_connector_details import CertificateConnectorDetails
     from office365.intune.devices.management.chrome_os_onboarding_settings import ChromeOSOnboardingSettings
+    from office365.intune.devices.management.comanagement_eligible_device import ComanagementEligibleDevice
     from office365.intune.devices.management.compliance_policy import DeviceManagementCompliancePolicy
     from office365.intune.devices.management.config_manager_collection import ConfigManagerCollection
     from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
@@ -109,6 +114,7 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.data_sharing_consent import DataSharingConsent
     from office365.intune.devices.management.detected_app import DetectedApp
+    from office365.intune.devices.management.domain_join_connector import DeviceManagementDomainJoinConnector
     from office365.intune.devices.management.exchangeconnectors.exchange_connector import (
         DeviceManagementExchangeConnector,
     )
@@ -119,6 +125,8 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management.intent import DeviceManagementIntent
     from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
+    from office365.intune.devices.management.managed.all_device_certificate_state import ManagedAllDeviceCertificateState
+    from office365.intune.devices.management.managed.encryption_state import ManagedDeviceEncryptionState
     from office365.intune.devices.management.managed.managed import ManagedDevice
     from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
     from office365.intune.devices.management.mobile_threat_defense_connector import (
@@ -142,6 +150,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.role_assignment import (
         DeviceAndAppManagementRoleAssignment,
     )
+    from office365.intune.devices.management.role_scope_tag import RoleScopeTag
     from office365.intune.devices.management.script import DeviceManagementScript
     from office365.intune.devices.management.software_update_status_summary import (
         SoftwareUpdateStatusSummary,
@@ -2583,5 +2592,136 @@ class DeviceManagement(Entity):
             "autopilotEvents",
             EntityCollection[DeviceManagementAutopilotEvent](
                 self.context, DeviceManagementAutopilotEvent, ResourcePath("autopilotEvents", self.resource_path)
+            ),
+        )
+
+    @odata(name="comanagementEligibleDevices", beta=True, navigation=True)
+    @property
+    def comanagement_eligible_devices(self) -> EntityCollection[ComanagementEligibleDevice]:
+        """Gets the comanagementEligibleDevices property"""
+        from office365.intune.devices.management.comanagement_eligible_device import ComanagementEligibleDevice
+
+        return self.properties.get(
+            "comanagementEligibleDevices",
+            EntityCollection[ComanagementEligibleDevice](
+                self.context, ComanagementEligibleDevice, ResourcePath("comanagementEligibleDevices", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceConfigurationConflictSummary", beta=True, navigation=True)
+    @property
+    def device_configuration_conflict_summary(self) -> EntityCollection[DeviceConfigurationConflictSummary]:
+        """Gets the deviceConfigurationConflictSummary property"""
+        from office365.intune.devices.configurations.conflict_summary import DeviceConfigurationConflictSummary
+
+        return self.properties.get(
+            "deviceConfigurationConflictSummary",
+            EntityCollection[DeviceConfigurationConflictSummary](
+                self.context,
+                DeviceConfigurationConflictSummary,
+                ResourcePath("deviceConfigurationConflictSummary", self.resource_path),
+            ),
+        )
+
+    @odata(name="deviceConfigurationUserStateSummaries", beta=True, navigation=True)
+    @property
+    def device_configuration_user_state_summaries(self) -> DeviceConfigurationUserStateSummary:
+        """Gets the deviceConfigurationUserStateSummaries property"""
+        from office365.intune.devices.configurations.user_state_summary import DeviceConfigurationUserStateSummary
+
+        return self.properties.get(
+            "deviceConfigurationUserStateSummaries",
+            DeviceConfigurationUserStateSummary(
+                self.context, ResourcePath("deviceConfigurationUserStateSummaries", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceConfigurationRestrictedAppsViolations", beta=True, navigation=True)
+    @property
+    def device_configuration_restricted_apps_violations(self) -> EntityCollection[RestrictedAppsViolation]:
+        """Gets the deviceConfigurationRestrictedAppsViolations property"""
+        from office365.intune.devices.compliance.restricted_apps_violation import RestrictedAppsViolation
+
+        return self.properties.get(
+            "deviceConfigurationRestrictedAppsViolations",
+            EntityCollection[RestrictedAppsViolation](
+                self.context,
+                RestrictedAppsViolation,
+                ResourcePath("deviceConfigurationRestrictedAppsViolations", self.resource_path),
+            ),
+        )
+
+    @odata(name="deviceConfigurationsAllManagedDeviceCertificateStates", beta=True, navigation=True)
+    @property
+    def device_configurations_all_managed_device_certificate_states(
+        self,
+    ) -> EntityCollection[ManagedAllDeviceCertificateState]:
+        """Gets the deviceConfigurationsAllManagedDeviceCertificateStates property"""
+        from office365.intune.devices.management.managed.all_device_certificate_state import (
+            ManagedAllDeviceCertificateState,
+        )
+
+        return self.properties.get(
+            "deviceConfigurationsAllManagedDeviceCertificateStates",
+            EntityCollection[ManagedAllDeviceCertificateState](
+                self.context,
+                ManagedAllDeviceCertificateState,
+                ResourcePath("deviceConfigurationsAllManagedDeviceCertificateStates", self.resource_path),
+            ),
+        )
+
+    @odata(name="domainJoinConnectors", beta=True, navigation=True)
+    @property
+    def domain_join_connectors(self) -> EntityCollection[DeviceManagementDomainJoinConnector]:
+        """Gets the domainJoinConnectors property"""
+        from office365.intune.devices.management.domain_join_connector import DeviceManagementDomainJoinConnector
+
+        return self.properties.get(
+            "domainJoinConnectors",
+            EntityCollection[DeviceManagementDomainJoinConnector](
+                self.context,
+                DeviceManagementDomainJoinConnector,
+                ResourcePath("domainJoinConnectors", self.resource_path),
+            ),
+        )
+
+    @odata(name="managedDeviceEncryptionStates", beta=True, navigation=True)
+    @property
+    def managed_device_encryption_states(self) -> EntityCollection[ManagedDeviceEncryptionState]:
+        """Gets the managedDeviceEncryptionStates property"""
+        from office365.intune.devices.management.managed.encryption_state import ManagedDeviceEncryptionState
+
+        return self.properties.get(
+            "managedDeviceEncryptionStates",
+            EntityCollection[ManagedDeviceEncryptionState](
+                self.context,
+                ManagedDeviceEncryptionState,
+                ResourcePath("managedDeviceEncryptionStates", self.resource_path),
+            ),
+        )
+
+    @odata(name="remoteActionAudits", beta=True, navigation=True)
+    @property
+    def remote_action_audits(self) -> EntityCollection[RemoteActionAudit]:
+        """Gets the remoteActionAudits property"""
+        from office365.intune.audit.remote_action_audit import RemoteActionAudit
+
+        return self.properties.get(
+            "remoteActionAudits",
+            EntityCollection[RemoteActionAudit](
+                self.context, RemoteActionAudit, ResourcePath("remoteActionAudits", self.resource_path)
+            ),
+        )
+
+    @odata(name="roleScopeTags", beta=True, navigation=True)
+    @property
+    def role_scope_tags(self) -> EntityCollection[RoleScopeTag]:
+        """Gets the roleScopeTags property"""
+        from office365.intune.devices.management.role_scope_tag import RoleScopeTag
+
+        return self.properties.get(
+            "roleScopeTags",
+            EntityCollection[RoleScopeTag](
+                self.context, RoleScopeTag, ResourcePath("roleScopeTags", self.resource_path)
             ),
         )

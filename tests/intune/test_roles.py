@@ -8,6 +8,8 @@ so the declaration is the scope and there is no ``bypass_roles``.
 
 from __future__ import annotations
 
+from office365.intune.devices.management.role_scope_tag import RoleScopeTag
+
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
 
@@ -30,3 +32,14 @@ class TestIntuneRbac(GraphDelegatedTestCase):
         self.assertTrue(str(definitions.resource_path).endswith("/roleDefinitions"))
 
         definitions.top(5).get().execute_query()
+
+    @requires_delegated("DeviceManagementRBAC.Read.All", "DeviceManagementRBAC.ReadWrite.All")
+    def test_03_role_scope_tags_are_listed(self):
+        """A tag is what an assignment scopes: a group plus a role, limited to one tag."""
+        tags = self.client_beta.device_management.role_scope_tags
+        self.assertTrue(str(tags.resource_path).endswith("/deviceManagement/roleScopeTags"))
+
+        rows = tags.top(5).get().execute_query()
+
+        if len(rows):
+            self.assertIsInstance(rows[0], RoleScopeTag)
