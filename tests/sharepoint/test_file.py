@@ -248,3 +248,24 @@ class TestSharePointFile(SPTestCase):
         size_1mb = 1000000
         file = folder.files.create_upload_session(path, size_1mb).execute_query()
         self.assertEqual(file_size, file.length)
+
+    def test_20_read_and_write_a_path_that_holds_an_apostrophe(self):
+        """A file name with a quote and a space is addressable by server-relative path.
+
+        Uploaded from an in-memory stream, so the length comes from the stream and its position
+        survives. Read and write both go through ``getFileByServerRelativePath(DecodedUrl='...')``:
+        the value is quoted (a quote is doubled) while the call syntax around it stays literal
+        (#884/#978), and the two halves have to agree or a real document library is unreadable.
+        """
+        folder = TestSharePointFile.folder_from
+        assert folder is not None
+        name = "Sample's file.txt"
+
+        uploaded = folder.files.upload_file(BytesIO(self.text_content), file_name=name).execute_query()
+        uploaded_server_relative_url = uploaded.get().execute_query().server_relative_url
+        self.assertTrue(uploaded_server_relative_url.endswith(name))
+
+        self.assertEqual(File.open_binary(self.client, uploaded_server_relative_url).content, self.text_content)
+
+        File.save_binary(self.client, uploaded_server_relative_url, b"content written by path")
+        self.assertEqual(File.open_binary(self.client, uploaded_server_relative_url).content, b"content written by path")

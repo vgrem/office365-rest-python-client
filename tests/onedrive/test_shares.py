@@ -42,6 +42,12 @@ class TestShares(GraphDelegatedTestCase):
     def test1_get_file_by_abs_url(self):
         """Get a file by its absolute URL"""
         file_abs_url = f"{test_team_site_url}/Shared Documents/{self.file_name}"
-        result = self.client.shares.by_url(file_abs_url).drive_item.get().execute_query()
+        share = self.client.shares.by_url(file_abs_url)
+        # A share is addressed by a base64url token of its URL with every '=' stripped (#875):
+        # one left in place is part of the path, and the service answers 400.
+        assert share.resource_path is not None
+        self.assertTrue(str(share.resource_path).startswith("/shares/u!"))
+        self.assertNotIn("=", str(share.resource_path))
+        result = share.drive_item.get().execute_query()
         self.assertIsNotNone(result.resource_path)
         self.assertTrue(result.is_file)
