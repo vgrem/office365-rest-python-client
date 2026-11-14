@@ -64,6 +64,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   payloads. What the tenant grants them is a permission question, not a model one: the
   methods name no permission yet, and the ratchet records that count.
 
+### Fixed
+
+- `FileCollection.upload_content` failed on Windows for content larger than `chunk_size`
+  with `PermissionError: [Errno 13]` (#1076). The content was staged to a
+  `NamedTemporaryFile` and reopened by name, which Windows refuses while the file is open;
+  the upload session now reads the bytes from memory.
+
 ## [3.3.1] - 2026-11-07
 
 Two changes shape this line. Model types now declare what they read: every getter names
