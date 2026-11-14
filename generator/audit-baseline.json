@@ -2,13 +2,13 @@
   "office365": {
     "missing": 131,
     "undeclared": 5111,
-    "extra": 240,
+    "extra": 243,
     "readonly": 19,
     "ignored": 16
   },
   "office365/intune": {
     "missing": 12,
     "undeclared": 727,
-    "extra": 51
+    "extra": 54
   }
 }

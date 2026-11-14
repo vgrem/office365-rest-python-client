@@ -68,6 +68,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.compliance_policy_setting_state_summary import (
         DeviceCompliancePolicySettingStateSummary,
     )
+    from office365.intune.devices.compliance_script import DeviceComplianceScript
     from office365.intune.devices.configuration_device_state_summary import (
         DeviceConfigurationDeviceStateSummary,
     )
@@ -202,9 +203,11 @@ if TYPE_CHECKING:
     )
     from office365.intune.devices.management_partner import DeviceManagementPartner
     from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
+    from office365.intune.devices.management_script import DeviceManagementScript
     from office365.intune.devices.management_troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
+    from office365.intune.devices.shell_script import DeviceShellScript
     from office365.intune.windows_feature_update_profile import WindowsFeatureUpdateProfile
     from office365.intune.windows_quality_update_profile import WindowsQualityUpdateProfile
 
@@ -1780,5 +1783,44 @@ class DeviceManagement(Entity):
             "microsoftTunnelSites",
             EntityCollection[MicrosoftTunnelSite](
                 self.context, MicrosoftTunnelSite, ResourcePath("microsoftTunnelSites", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceComplianceScripts", beta=True, navigation=True)
+    @property
+    def device_compliance_scripts(self) -> EntityCollection[DeviceComplianceScript]:
+        """Gets the deviceComplianceScripts property"""
+        from office365.intune.devices.compliance_script import DeviceComplianceScript
+
+        return self.properties.get(
+            "deviceComplianceScripts",
+            EntityCollection[DeviceComplianceScript](
+                self.context, DeviceComplianceScript, ResourcePath("deviceComplianceScripts", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceManagementScripts", beta=True, navigation=True)
+    @property
+    def device_management_scripts(self) -> EntityCollection[DeviceManagementScript]:
+        """Gets the deviceManagementScripts property"""
+        from office365.intune.devices.management_script import DeviceManagementScript
+
+        return self.properties.get(
+            "deviceManagementScripts",
+            EntityCollection[DeviceManagementScript](
+                self.context, DeviceManagementScript, ResourcePath("deviceManagementScripts", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceShellScripts", beta=True, navigation=True)
+    @property
+    def device_shell_scripts(self) -> EntityCollection[DeviceShellScript]:
+        """Gets the deviceShellScripts property"""
+        from office365.intune.devices.shell_script import DeviceShellScript
+
+        return self.properties.get(
+            "deviceShellScripts",
+            EntityCollection[DeviceShellScript](
+                self.context, DeviceShellScript, ResourcePath("deviceShellScripts", self.resource_path)
             ),
         )
