@@ -476,9 +476,13 @@ class ClientObject:
         Returns:
             The property value or default value
         """
-        name = type(self)._schema.canonical(name)
+        schema = type(self)._schema
+        if type(schema) is not TypeSchema:
+            name = schema.canonical(name)
+        elif schema.canonical_names:
+            name = schema.canonical_names.get(name, name)
         if default_value is None:
-            meta = type(self)._schema.properties.get(name)
+            meta = schema.properties.get(name)
             if meta is not None:
                 try:
                     return getattr(self, meta.attr)
@@ -488,11 +492,12 @@ class ClientObject:
                     # root does not declare reads as absent here rather than raising, so a
                     # response or sidecar holding one still serializes whole.
                     return self._properties.get(name, None)
-            normalized_name = name[0].lower() + name[1:]
+            lowercase = type(name) is str and name.islower()
+            normalized_name = name if lowercase else name[0].lower() + name[1:]
             default_value = getattr(self, normalized_name, None)
             if default_value is None:
                 # Multi-word names (``onlineMeeting``) map to a snake_case getter.
-                default_value = getattr(self, to_snake_case(name), None)
+                default_value = getattr(self, name if lowercase else to_snake_case(name), None)
         return self._properties.get(name, default_value)
 
     def set_property(self, name: str, value: Any, persist_changes: bool = True) -> Self:
