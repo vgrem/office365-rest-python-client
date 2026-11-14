@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
+from office365.directory.device_local_credential import DeviceLocalCredential
 from office365.entity import Entity
-from office365.intune.devices.local_credential import DeviceLocalCredential
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 

@@ -16,7 +16,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.security.cloud_pc_user_setting_assignment import (
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_user_setting_assignment import (
         CloudPcUserSettingAssignment,
     )
 
@@ -62,7 +62,7 @@ class CloudPcUserSetting(Entity):
     @property
     def assignments(self) -> EntityCollection[CloudPcUserSettingAssignment]:
         """Gets the assignments property"""
-        from office365.security.cloud_pc_user_setting_assignment import (
+        from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_user_setting_assignment import (
             CloudPcUserSettingAssignment,
         )
 

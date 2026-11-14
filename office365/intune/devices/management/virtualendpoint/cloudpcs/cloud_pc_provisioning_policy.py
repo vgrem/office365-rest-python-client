@@ -6,7 +6,7 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.cloud_pc_windows_setting import CloudPcWindowsSetting
+from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_windows_setting import CloudPcWindowsSetting
 from office365.intune.devices.management.virtualendpoint.cloudpcs.domainjoinconfiguration import (  # noqa: E501
     CloudPcDomainJoinConfiguration,
 )
@@ -28,7 +28,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.security.cloud_pc_provisioning_policy_assignment import (
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_provisioning_policy_assignment import (
         CloudPcProvisioningPolicyAssignment,
     )
 
@@ -137,7 +137,7 @@ class CloudPcProvisioningPolicy(Entity):
     @property
     def assignments(self) -> EntityCollection[CloudPcProvisioningPolicyAssignment]:
         """Gets the assignments property"""
-        from office365.security.cloud_pc_provisioning_policy_assignment import (
+        from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_provisioning_policy_assignment import (  # noqa: E501
             CloudPcProvisioningPolicyAssignment,
         )
 

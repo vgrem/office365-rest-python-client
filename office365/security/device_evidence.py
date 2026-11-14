@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.intune.devices.healthstatus import DeviceHealthStatus
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.security.alerts.defenderavstatus import DefenderAvStatus
 from office365.security.alerts.evidence import AlertEvidence
+from office365.security.device_health_status import DeviceHealthStatus
 from office365.security.logged_on_user import LoggedOnUser
 from office365.security.onboarding_status import OnboardingStatus
 from office365.security.resource_access_event import ResourceAccessEvent

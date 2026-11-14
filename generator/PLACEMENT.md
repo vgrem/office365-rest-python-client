@@ -83,6 +83,14 @@ module that is a prefix of another is not clipped.
 - **Sticky**: attached types resolve to their existing file and are never moved.
 - **No gaps**: every in-scope type resolves to a module — the fallback bucket
   guarantees it (nothing is silently unrouted).
+- **Agreement**: the rule that would route a type points at the directory the file is
+  in (or an ancestor of it, for a family the descent has not finished splitting).
+  `tests/tooling/test_generator_routing_agreement.py` reads the tree and the rules
+  together: a type inside `office365.intune` may not route out of it or to a distant
+  branch, and no type outside may route into it. This is what keeps a catch-all from
+  silently swallowing another product's types — `Device*` used to route Entra's
+  `DeviceRegistrationPolicy` into Intune, and `Cloud*` sent the whole cloud PC family
+  to `office365.security` while the tree kept it in the Intune virtual endpoint.
 
 ## One module, two types
 
@@ -107,6 +115,15 @@ then a placement question, and the audit reports it rather than rewriting it.
 3. `python -m generator <service> --force` generates.
 
 The tool proposes; a human commits. **Routing is never written automatically.**
+
+A family rule names the directory the tree already uses, so a new type needs no
+`--place` run to land correctly. What it must never do is name a *category*: `Cloud*`
+is a word any cloud product may start with, so the rule that owns the cloud PC family
+is `CloudPc*`/`CloudPC*`, and `Cloud*` keeps only what no longer-specific rule claims.
+The same reading applies to adjectives: `Windows*`, `Android*`, `Ios*` and `Mac*` each
+name a configuration *and* an app subtree, so they stay at the Intune root and the
+descent picks the family from the type name; `Win32*`, `WindowsMalware*` and
+`WindowsInformationProtection*` name one family each and point at it.
 
 ## Declared property metadata
 

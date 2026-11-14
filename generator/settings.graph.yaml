@@ -71,10 +71,49 @@ type_routing:
   Education*: office365.education
   Rubric*: office365.education
   Challenging*: office365.education
+  # Intune: the device-management tree, family by family.  A rule names the
+  # directory the tree already uses, so a new type lands in its family instead of
+  # relying on the placement descent.  The adjective rules (Ios*, Windows*, Mac*)
+  # span both the configuration and the app subtree, so they stay coarse.
+  DeviceCompliance*: office365.intune.devices.compliance
+  ComplianceStatus: office365.intune.devices.compliance
+  DeviceConfiguration*: office365.intune.devices.configurations
+  DeviceEnrollment*: office365.intune.devices.enrollment
+  DeviceManagementExchangeConnector*: office365.intune.devices.management.exchangeconnectors
+  DeviceManagementReport*: office365.intune.devices.management.reports
+  DeviceManagement*: office365.intune.devices.management
+  DeviceAppManagement*: office365.intune.devices.management
+  DeviceAndAppManagementRole*: office365.intune.devices.management
+  ComplianceManagementPartner: office365.intune.devices.management
+  ConfigurationManager*: office365.intune.devices.management
+  WindowsAutopilot*: office365.intune.devices.management
+  WindowsInformationProtection*: office365.intune.devices.management
+  Device*: office365.intune.devices
+  Mobile*: office365.intune.devices.management.mobileapps
+  Win32*: office365.intune.devices.management.mobileapps.win32
+  WindowsMalware*: office365.intune.devices.management.windowsmalware
+  UserExperienceAnalytics*: office365.intune.devices.management.userexperienceanalytics
+  CloudPc*: office365.intune.devices.management.virtualendpoint.cloudpcs
+  CloudPC*: office365.intune.devices.management.virtualendpoint.cloudpcs
+  VirtualEndpoint: office365.intune.devices.management.virtualendpoint
+  PrinterShare*: office365.intune.print.shares
+  Printer*: office365.intune.print.printers
+  Print*: office365.intune.print
+  PrintUsage*: office365.reports
+  # The platform adjectives name a configuration *and* an app subtree, so they stay
+  # coarse and the placement descent picks the family from the type name.
   Windows*: office365.intune
-  Win32*: office365.intune
-  Ios*: office365.intune
   Android*: office365.intune
+  Ios*: office365.intune
+  Mac*: office365.intune
+  Oma*: office365.intune.devices.configurations
+  # Entra types the Intune adjectives used to swallow.
+  DeviceRegistrationPolicy: office365.directory.policies
+  DevicesFilter: office365.directory.policies
+  DeviceInfo: office365.directory.policies.conditionalaccess
+  DeviceAndAppManagementAssignmentTarget: office365.directory.policies.conditionalaccess
+  DeviceLocalCredential*: office365.directory
+  WindowsSetting*: office365.directory.users
   # Platform-specific types live under the existing devices/ subpackages.
   AndroidCustomConfiguration: office365.intune.devices.configurations.android
   AndroidGeneralDeviceConfiguration: office365.intune.devices.configurations.android
@@ -85,12 +124,6 @@ type_routing:
   AndroidCompliancePolicy: office365.intune.devices.compliance
   AndroidWorkProfileCompliancePolicy: office365.intune.devices.compliance
   AndroidManagedAppRegistration: office365.intune.devices.management
-  Oma*: office365.intune
-  Printer*: office365.intune
-  Print*: office365.intune
-  Device*: office365.intune
-  Mobile*: office365.intune
-  Mac*: office365.intune
   Planner*: office365.planner
   Booking*: office365.booking
   Call*: office365.communications
@@ -104,9 +137,6 @@ type_routing:
   Cloud*: office365.security
   Access*: office365.directory.identitygovernance
   Copilot*: office365.copilot
-  UserExperienceAnalytics*: office365.intune
-  ConfigurationManager*: office365.intune
-  Compliance*: office365.intune
   M365Capability*: office365.intune
   AppsInstallationOptions*: office365.intune
   EdgeSearchEngine*: office365.intune

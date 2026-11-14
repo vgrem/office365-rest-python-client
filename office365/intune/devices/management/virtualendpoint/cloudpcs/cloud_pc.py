@@ -15,7 +15,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_launch_detail import CloudPcLaunchDetail
     from office365.intune.devices.management.virtualendpoint.cloudpcs.operating_system import (
         CloudPcOperatingSystem,
     )
@@ -197,7 +197,9 @@ class CloudPC(Entity):
     @require_permission(delegated=["CloudPC.Read.All", "CloudPC.ReadWrite.All"])
     def retrieve_cloud_pc_launch_detail(self) -> ClientResult[CloudPcLaunchDetail]:
         """retrieveCloudPcLaunchDetail operation."""
-        from office365.intune.devices.cloud_pc_launch_detail import CloudPcLaunchDetail
+        from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_launch_detail import (
+            CloudPcLaunchDetail,
+        )
 
         return_type = ClientResult(self.context, CloudPcLaunchDetail())
         qry = FunctionQuery(self, "retrieveCloudPcLaunchDetail", None, return_type)

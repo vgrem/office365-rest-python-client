@@ -128,10 +128,10 @@ if TYPE_CHECKING:
         InferenceClassification,
     )
     from office365.directory.users.note import Note
-    from office365.intune.devices.cloud_pc import CloudPC
     from office365.intune.devices.management.troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
+    from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc import CloudPC
     from office365.security.cloud_clipboard_root import CloudClipboardRoot
 
 
@@ -1665,7 +1665,7 @@ class User(DirectoryObject):
     @property
     def cloud_pcs(self) -> EntityCollection[CloudPC]:
         """Gets the cloudPCs property"""
-        from office365.intune.devices.cloud_pc import CloudPC
+        from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc import CloudPC
 
         return self.properties.get(
             "cloudPCs", EntityCollection[CloudPC](self.context, CloudPC, ResourcePath("cloudPCs", self.resource_path))

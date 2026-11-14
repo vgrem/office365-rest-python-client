@@ -90,7 +90,7 @@ if TYPE_CHECKING:
         DeviceManagementConfigurationSettingTemplate,
     )
     from office365.intune.devices.management.detected_app import DetectedApp
-    from office365.intune.devices.management.exchange_connector import (
+    from office365.intune.devices.management.exchangeconnectors.exchange_connector import (
         DeviceManagementExchangeConnector,
     )
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
@@ -506,7 +506,7 @@ class DeviceManagement(Entity):
     @property
     def exchange_connectors(self) -> EntityCollection[DeviceManagementExchangeConnector]:
         """Gets the exchangeConnectors property"""
-        from office365.intune.devices.management.exchange_connector import (
+        from office365.intune.devices.management.exchangeconnectors.exchange_connector import (
             DeviceManagementExchangeConnector,
         )
 
