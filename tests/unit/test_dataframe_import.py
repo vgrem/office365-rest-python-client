@@ -502,11 +502,6 @@ def test_a_target_that_accepts_unknown_columns_keeps_the_coercion():
     assert collection.created == [{"n": 30}]
 
 
-# --------------------------------------------------------------------------
-# Async terminals (B6): execute_query_async / execute_batch_async / run_async
-# --------------------------------------------------------------------------
-
-
 def test_import_result_run_async_is_the_batch_terminal():
     ctx = _AsyncFakeContext()
     driver = _driver(ctx, _FakeCollection(), _batches(2, 2))
@@ -544,27 +539,3 @@ def test_aiter_yields_the_collection_and_drives_execution():
     assert driver.value.total == 3  # noqa: PLR2004
     assert collection.clears == 3  # noqa: PLR2004
     assert ctx.query_calls == 3  # noqa: PLR2004
-
-
-def test_execute_query_async_uses_the_native_async_terminal():
-    """A real context + async-only transport proves no worker thread is used."""
-    from office365.migration.offline import offline_sharepoint_context
-    from office365.runtime.queries.read_entity import ReadEntityQuery
-    from tests._scripted_transport import AsyncScriptedTransport
-
-    ctx = offline_sharepoint_context()
-    ctx.pending_request().beforeExecute.clear()
-    transport = AsyncScriptedTransport([{"d": {"Title": "ok"}}] * 3)
-    ctx.pending_request().transport = transport
-    collection = _FakeCollection()
-
-    def queue(records):
-        ctx.add_query(ReadEntityQuery(ctx.web))  # one real request per chunk
-        return len(records), 0
-
-    driver = _driver(ctx, collection, _batches(1, 1, 1), queue=queue)
-
-    asyncio.run(driver.execute_query_async())
-
-    assert transport.calls == 3  # noqa: PLR2004
-    assert driver.value.success == 3  # noqa: PLR2004

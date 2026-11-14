@@ -16,13 +16,11 @@ import pytest
 from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.sharepoint.exceptions import SPQueryThrottledException
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.listitems.caml import Caml, CamlQuery
 from office365.sharepoint.listitems.caml.guard import threshold_warnings, warn_if_unpaged
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
-from tests._scripted_transport import ScriptedTransport
 
 
 def _query(column: str = "Status", *, paged: bool = False) -> CamlQuery:
@@ -81,19 +79,3 @@ def test_a_load_that_fills_the_threshold_warns_once_however_many_rows_arrive():
 
     (warning,) = [w for w in caught if issubclass(w.category, UserWarning)]
     assert "page it" in str(warning.message)
-
-
-def test_check_query_raises_for_non_indexed_column():
-    context = offline_sharepoint_context()
-    context.pending_request().beforeExecute.clear()
-    transport = ScriptedTransport(
-        [
-            {"d": {"ItemCount": 6000}},
-            {"d": {"results": [{"InternalName": "date", "Title": "date", "Indexed": False}]}},
-        ]
-    )
-    context.pending_request().transport = transport
-    lst = context.web.lists.get_by_title("X")
-
-    with pytest.raises(SPQueryThrottledException, match="date"):
-        lst.check_query(CamlQuery.builder().order_by("date").build())

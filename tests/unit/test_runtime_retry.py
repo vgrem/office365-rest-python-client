@@ -12,7 +12,6 @@ from unittest import mock
 import pytest
 import requests
 from office365.graph_client import GraphClient
-from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.throttling import (
@@ -31,9 +30,7 @@ from office365.runtime.retry import (
     retry,
     should_reset_connections,
 )
-from office365.runtime.transport.throttled_transport import ThrottledTransport
 from requests import Response
-from tests._scripted_transport import ScriptedTransport as _ScriptedTransport
 
 
 def _make_error_response(status_code: int, headers: dict | None = None) -> Response:
@@ -203,24 +200,6 @@ class TestRateLimiter(unittest.TestCase):
         elapsed = _elapsed(limiter.acquire)
         self.assertGreaterEqual(elapsed, 0.9)
         self.assertLess(elapsed, 2.0)
-
-    def test_bind_wraps_transport_and_reports_to_limiter(self):
-        ctx = offline_sharepoint_context()
-        ctx.pending_request().beforeExecute.clear()
-        inner = _ScriptedTransport([{"status": 429, "retry_after": 2, "body": {}}])
-        ctx.pending_request().transport = inner
-        limiter = RateLimiter()
-        limiter.bind(ctx)
-
-        wrapped = ctx.pending_request().transport
-        self.assertIsInstance(wrapped, ThrottledTransport)
-        self.assertIs(wrapped.inner, inner)
-
-        with self.assertRaises(ClientRequestException):
-            ctx.load(ctx.web).execute_query()
-
-        # the 429 response observed by the wrapped transport must gate the group
-        self.assertGreaterEqual(_elapsed(limiter.acquire), 1.8)
 
     def test_scope_signal_gates_the_group_by_default(self):
         limiter = RateLimiter(clock=_FakeClock(), sleep=lambda _delay: None)

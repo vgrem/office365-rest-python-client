@@ -13,6 +13,7 @@ from unittest import mock
 
 import pytest
 from office365.directory.users.user import User
+from office365.graph_client import GraphClient
 from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.converters import registry
 from office365.runtime.converters.dataframe import dataframe_from_bytes, dataframe_to_bytes
@@ -20,8 +21,6 @@ from office365.runtime.converters.streamers import streamer_for
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.record_collection import RecordCollection
 from office365.sharepoint.folders.folder import Folder
-from office365.sharepoint.lists.list import List
-from tests._scripted_transport import graph, sharepoint
 
 pd = pytest.importorskip("pandas")
 
@@ -36,24 +35,11 @@ _GRAPH_NEXT = "https://graph.microsoft.com/v1.0/users?$skiptoken=abc"
 
 
 def _collection(records=RECORDS) -> RecordCollection:
-    col = RecordCollection(graph()[0], User, None)
+    col = RecordCollection(GraphClient(), User, None)
     for props in records:
         col.add_child(col.create_typed_object(props))
     col.query_options.select = list(records[0].keys())
     return col
-
-
-def _list(payloads) -> List:
-    """A SharePoint list whose items answer from ``payloads``, in call order."""
-    ctx = sharepoint(payloads)[0]
-    lst = List(ctx, ResourcePath("Web/Lists/getByTitle('Tasks')"))
-    # ``List.items`` builds a fresh collection on each access; pin one instance.
-    lst.properties["Items"] = lst.items
-    return lst
-
-
-def _sp_page(records) -> dict:
-    return {"d": {"results": records}}
 
 
 def _read(fmt: str, path) -> list:

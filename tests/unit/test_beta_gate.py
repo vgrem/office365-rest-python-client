@@ -37,7 +37,6 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, odata
-from tests._scripted_transport import graph
 from typing_extensions import Self
 
 TENANT = "contoso.onmicrosoft.com"
@@ -54,7 +53,7 @@ class _Dropped(ClientObject):
 
 def _client(version=None):
     """A client at ``version``, or at the default one when no version is given."""
-    return graph(tenant=TENANT, version=version)[0] if version else graph(tenant=TENANT)[0]
+    return GraphClient(tenant=TENANT, version=version) if version else GraphClient(tenant=TENANT)
 
 
 def _url(obj):
