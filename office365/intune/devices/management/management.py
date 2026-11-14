@@ -46,7 +46,10 @@ if TYPE_CHECKING:
     from office365.common.group_policy_migration_report import GroupPolicyMigrationReport
     from office365.common.group_policy_object_file import GroupPolicyObjectFile
     from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
+    from office365.common.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
+    from office365.common.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
     from office365.common.role_definition import RoleDefinition
+    from office365.intune.android_managed_store_app_configuration_schema import AndroidManagedStoreAppConfigurationSchema
     from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
     from office365.intune.devices.and_app_management_role_assignment import (
         DeviceAndAppManagementRoleAssignment,
@@ -198,6 +201,8 @@ if TYPE_CHECKING:
     from office365.intune.devices.management_troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
+    from office365.intune.windows_feature_update_profile import WindowsFeatureUpdateProfile
+    from office365.intune.windows_quality_update_profile import WindowsQualityUpdateProfile
 
 
 class DeviceManagement(Entity):
@@ -1666,3 +1671,82 @@ class DeviceManagement(Entity):
         qry = FunctionQuery(self, "scopedForResource", {"resource": resource}, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @odata(name="androidManagedStoreAppConfigurationSchemas", beta=True, navigation=True)
+    @property
+    def android_managed_store_app_configuration_schemas(
+        self,
+    ) -> EntityCollection[AndroidManagedStoreAppConfigurationSchema]:
+        """Gets the androidManagedStoreAppConfigurationSchemas property"""
+        from office365.intune.android_managed_store_app_configuration_schema import (
+            AndroidManagedStoreAppConfigurationSchema,
+        )
+
+        return self.properties.get(
+            "androidManagedStoreAppConfigurationSchemas",
+            EntityCollection[AndroidManagedStoreAppConfigurationSchema](
+                self.context,
+                AndroidManagedStoreAppConfigurationSchema,
+                ResourcePath("androidManagedStoreAppConfigurationSchemas", self.resource_path),
+            ),
+        )
+
+    @odata(name="microsoftTunnelConfigurations", beta=True, navigation=True)
+    @property
+    def microsoft_tunnel_configurations(self) -> EntityCollection[MicrosoftTunnelConfiguration]:
+        """Gets the microsoftTunnelConfigurations property"""
+        from office365.common.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
+
+        return self.properties.get(
+            "microsoftTunnelConfigurations",
+            EntityCollection[MicrosoftTunnelConfiguration](
+                self.context,
+                MicrosoftTunnelConfiguration,
+                ResourcePath("microsoftTunnelConfigurations", self.resource_path),
+            ),
+        )
+
+    @odata(name="microsoftTunnelHealthThresholds", beta=True, navigation=True)
+    @property
+    def microsoft_tunnel_health_thresholds(self) -> EntityCollection[MicrosoftTunnelHealthThreshold]:
+        """Gets the microsoftTunnelHealthThresholds property"""
+        from office365.common.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
+
+        return self.properties.get(
+            "microsoftTunnelHealthThresholds",
+            EntityCollection[MicrosoftTunnelHealthThreshold](
+                self.context,
+                MicrosoftTunnelHealthThreshold,
+                ResourcePath("microsoftTunnelHealthThresholds", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsFeatureUpdateProfiles", beta=True, navigation=True)
+    @property
+    def windows_feature_update_profiles(self) -> EntityCollection[WindowsFeatureUpdateProfile]:
+        """Gets the windowsFeatureUpdateProfiles property"""
+        from office365.intune.windows_feature_update_profile import WindowsFeatureUpdateProfile
+
+        return self.properties.get(
+            "windowsFeatureUpdateProfiles",
+            EntityCollection[WindowsFeatureUpdateProfile](
+                self.context,
+                WindowsFeatureUpdateProfile,
+                ResourcePath("windowsFeatureUpdateProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="windowsQualityUpdateProfiles", beta=True, navigation=True)
+    @property
+    def windows_quality_update_profiles(self) -> EntityCollection[WindowsQualityUpdateProfile]:
+        """Gets the windowsQualityUpdateProfiles property"""
+        from office365.intune.windows_quality_update_profile import WindowsQualityUpdateProfile
+
+        return self.properties.get(
+            "windowsQualityUpdateProfiles",
+            EntityCollection[WindowsQualityUpdateProfile](
+                self.context,
+                WindowsQualityUpdateProfile,
+                ResourcePath("windowsQualityUpdateProfiles", self.resource_path),
+            ),
+        )
