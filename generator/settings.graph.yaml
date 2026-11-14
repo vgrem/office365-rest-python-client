@@ -259,7 +259,22 @@ type_routing:
   DelegatedAdministration*: office365.directory
   ExternalSponsors: office365.directory
   InternalSponsors: office365.directory
-  Unified*: office365.directory
+  # PIM is three navigation roots, not one prefix: `roleManagement.directory` reaches the
+  # schedules and resource namespaces, `/policies` reaches the policies and their rules. A
+  # type follows the getter that can reach it, so no `Unified*` bucket survives here.
+  UnifiedRoleManagementPolicy*: office365.directory.policies.unifiedrolemanagement
+  UnifiedRoleManagementAlert*: office365.directory.rolemanagement
+  UnifiedRole*: office365.directory.rolemanagement.unifiedrole
+  UnifiedRbacResource*: office365.directory.rolemanagement.unifiedrole
+  UnifiedRbacApplication*: office365.directory.rolemanagement
+  RoleManagement: office365.directory.rolemanagement
+  RbacApplication: office365.directory.rolemanagement
+  # Moved by the same rule's removal: each of these stays beside the type that reads it.
+  # The `microsoft.graph.security` namespace answers for the group and simulation
+  # records on their own, so no rule is written for them here.
+  UnifiedApprovalStage: office365.directory
+  UnifiedRoot: office365.directory.identitygovernance.accessreview
+  UnifiedStorageQuota: office365.directory.users
   ApprovalSettings: office365.directory
   RequestSchedule: office365.directory
   RoleTemplate: office365.directory

@@ -130,3 +130,60 @@ def test_print_usage_is_a_report_not_a_printer() -> None:
     assert router.module_for("microsoft.graph.Printer") == "office365.intune.print.printers"
     assert router.module_for("microsoft.graph.PrintConnector") == "office365.intune.print"
     assert router.module_for("microsoft.graph.PrintService") == "office365.intune.print"
+
+
+def _unified() -> list[tuple[str, str, str]]:
+    """``(class name, OData type name, package)`` for every ``Unified*`` type in the tree."""
+    return [row for row in _typed_classes() if row[1].rsplit(".", 1)[-1].lower().startswith("unified")]
+
+
+def test_a_unified_type_keeps_the_root_that_reaches_it() -> None:
+    """PIM is three getters, not one prefix.
+
+    ``Unified*`` put the role schedules, the role policies and three unrelated types in
+    one directory. Every rule now names the getter that reads the type, so a type that
+    lives in ``office365.directory`` has to route back into it.
+    """
+    router = _router()
+
+    disagreements = [
+        f"{name:52} {package:64} -> {routed}"
+        for name, odata, package in _unified()
+        if _inside(package, "office365.directory")
+        for routed in [router.module_for(odata, allow_fallback=False)]
+        if not (routed and _inside(routed, "office365.directory") and _agrees(package, routed))
+    ]
+
+    assert disagreements == [], "\n".join(disagreements)
+
+
+def test_no_unified_type_outside_the_directory_tree_routes_into_it() -> None:
+    """The group and simulation records read as Entra types; they are security records."""
+    router = _router()
+
+    intrusions = [
+        f"{name:52} {package:64} -> {routed}"
+        for name, odata, package in _unified()
+        if not _inside(package, "office365.directory")
+        for routed in [router.module_for(odata, allow_fallback=False)]
+        if routed and _inside(routed, "office365.directory")
+    ]
+
+    assert intrusions == [], "\n".join(intrusions)
+
+
+def test_the_role_family_follows_its_two_getters() -> None:
+    """``rbacApplication`` reaches the schedules; ``/policies`` reaches the policies."""
+    router = _router()
+
+    assert router.module_for("microsoft.graph.UnifiedRoleAssignmentSchedule") == (
+        "office365.directory.rolemanagement.unifiedrole"
+    )
+    assert router.module_for("microsoft.graph.UnifiedRbacResourceNamespace") == (
+        "office365.directory.rolemanagement.unifiedrole"
+    )
+    assert router.module_for("microsoft.graph.UnifiedRoleManagementPolicyRule") == (
+        "office365.directory.policies.unifiedrolemanagement"
+    )
+    assert router.module_for("microsoft.graph.UnifiedApprovalStage") == "office365.directory"
+    assert router.module_for("microsoft.graph.UnifiedStorageQuota") == "office365.directory.users"

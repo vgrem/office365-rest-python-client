@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from office365.directory.policies.ownerless_group_policy import OwnerlessGroupPolicy
     from office365.directory.policies.token_issuance import TokenIssuancePolicy
     from office365.directory.policies.token_lifetime import TokenLifetimePolicy
-    from office365.directory.unified_role_management_policy_assignment import (
+    from office365.directory.policies.unifiedrolemanagement.assignment import (
         UnifiedRoleManagementPolicyAssignment,
     )
 
@@ -361,7 +361,7 @@ class PolicyRoot(Entity):
     @property
     def role_management_policy_assignments(self) -> EntityCollection[UnifiedRoleManagementPolicyAssignment]:
         """Gets the roleManagementPolicyAssignments property"""
-        from office365.directory.unified_role_management_policy_assignment import (
+        from office365.directory.policies.unifiedrolemanagement.assignment import (
             UnifiedRoleManagementPolicyAssignment,
         )
 

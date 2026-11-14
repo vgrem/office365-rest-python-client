@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import field
 from typing import TYPE_CHECKING
 
-from office365.directory.policies.unifiedrolemanagement.policyruletargetoperations import (
+from office365.directory.policies.unifiedrolemanagement.rule_target_operations import (
     UnifiedRoleManagementPolicyRuleTargetOperations,
 )
 from office365.entity_collection import EntityCollection

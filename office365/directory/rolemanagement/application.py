@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.directory.policies.unifiedrolemanagement.unified_role_assignment_schedule_request import (
-    UnifiedRoleAssignmentScheduleRequest,
-)
 from office365.directory.rolemanagement.unifiedrole.assignment import (
     UnifiedRoleAssignment,
+)
+from office365.directory.rolemanagement.unifiedrole.assignment_schedule_request import (
+    UnifiedRoleAssignmentScheduleRequest,
 )
 from office365.directory.rolemanagement.unifiedrole.definition import (
     UnifiedRoleDefinition,
@@ -20,23 +20,23 @@ if TYPE_CHECKING:
     from office365.directory.rolemanagement.roles.management_deleted_item_container import (
         DirectoryRoleManagementDeletedItemContainer,
     )
-    from office365.directory.unified_rbac_resource_namespace import (
-        UnifiedRbacResourceNamespace,
-    )
-    from office365.directory.unified_role_assignment_schedule import (
+    from office365.directory.rolemanagement.unifiedrole.assignment_schedule import (
         UnifiedRoleAssignmentSchedule,
     )
-    from office365.directory.unified_role_assignment_schedule_instance import (
+    from office365.directory.rolemanagement.unifiedrole.assignment_schedule_instance import (
         UnifiedRoleAssignmentScheduleInstance,
     )
-    from office365.directory.unified_role_eligibility_schedule import (
+    from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
         UnifiedRoleEligibilitySchedule,
     )
-    from office365.directory.unified_role_eligibility_schedule_instance import (
+    from office365.directory.rolemanagement.unifiedrole.eligibility_schedule_instance import (
         UnifiedRoleEligibilityScheduleInstance,
     )
-    from office365.directory.unified_role_eligibility_schedule_request import (
+    from office365.directory.rolemanagement.unifiedrole.eligibility_schedule_request import (
         UnifiedRoleEligibilityScheduleRequest,
+    )
+    from office365.directory.rolemanagement.unifiedrole.resource_namespace import (
+        UnifiedRbacResourceNamespace,
     )
 
 
@@ -91,7 +91,7 @@ class RbacApplication(Entity):
     @property
     def resource_namespaces(self) -> EntityCollection[UnifiedRbacResourceNamespace]:
         """Gets the resourceNamespaces property"""
-        from office365.directory.unified_rbac_resource_namespace import (
+        from office365.directory.rolemanagement.unifiedrole.resource_namespace import (
             UnifiedRbacResourceNamespace,
         )
 
@@ -106,7 +106,7 @@ class RbacApplication(Entity):
     @property
     def role_assignment_schedule_instances(self) -> EntityCollection[UnifiedRoleAssignmentScheduleInstance]:
         """Gets the roleAssignmentScheduleInstances property"""
-        from office365.directory.unified_role_assignment_schedule_instance import (
+        from office365.directory.rolemanagement.unifiedrole.assignment_schedule_instance import (
             UnifiedRoleAssignmentScheduleInstance,
         )
 
@@ -123,7 +123,7 @@ class RbacApplication(Entity):
     @property
     def role_assignment_schedules(self) -> EntityCollection[UnifiedRoleAssignmentSchedule]:
         """Gets the roleAssignmentSchedules property"""
-        from office365.directory.unified_role_assignment_schedule import (
+        from office365.directory.rolemanagement.unifiedrole.assignment_schedule import (
             UnifiedRoleAssignmentSchedule,
         )
 
@@ -138,7 +138,7 @@ class RbacApplication(Entity):
     @property
     def role_eligibility_schedule_instances(self) -> EntityCollection[UnifiedRoleEligibilityScheduleInstance]:
         """Gets the roleEligibilityScheduleInstances property"""
-        from office365.directory.unified_role_eligibility_schedule_instance import (
+        from office365.directory.rolemanagement.unifiedrole.eligibility_schedule_instance import (
             UnifiedRoleEligibilityScheduleInstance,
         )
 
@@ -155,7 +155,7 @@ class RbacApplication(Entity):
     @property
     def role_eligibility_schedule_requests(self) -> EntityCollection[UnifiedRoleEligibilityScheduleRequest]:
         """Gets the roleEligibilityScheduleRequests property"""
-        from office365.directory.unified_role_eligibility_schedule_request import (
+        from office365.directory.rolemanagement.unifiedrole.eligibility_schedule_request import (
             UnifiedRoleEligibilityScheduleRequest,
         )
 
@@ -172,7 +172,7 @@ class RbacApplication(Entity):
     @property
     def role_eligibility_schedules(self) -> EntityCollection[UnifiedRoleEligibilitySchedule]:
         """Gets the roleEligibilitySchedules property"""
-        from office365.directory.unified_role_eligibility_schedule import (
+        from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
             UnifiedRoleEligibilitySchedule,
         )
 

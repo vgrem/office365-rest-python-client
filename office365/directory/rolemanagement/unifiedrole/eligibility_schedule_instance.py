@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.unified_role_schedule_instance_base import UnifiedRoleScheduleInstanceBase
+from office365.directory.rolemanagement.unifiedrole.schedule_instance_base import UnifiedRoleScheduleInstanceBase
 from office365.runtime.types.odata_property import odata
 
 

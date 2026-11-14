@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
-    UnifiedRoleScheduleRequestActions,
-)
 from office365.directory.request import Request
 from office365.directory.request_schedule import RequestSchedule
+from office365.directory.rolemanagement.unifiedrole.schedule_request_actions import (  # noqa: E501
+    UnifiedRoleScheduleRequestActions,
+)
 from office365.directory.ticket_info import TicketInfo
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
@@ -19,15 +19,26 @@ from office365.runtime.verbs import verb
 if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
     from office365.directory.rolemanagement.app_scope import AppScope
+    from office365.directory.rolemanagement.unifiedrole.assignment_schedule import (
+        UnifiedRoleAssignmentSchedule,
+    )
+    from office365.directory.rolemanagement.unifiedrole.assignment_schedule_request import (
+        UnifiedRoleAssignmentScheduleRequest,
+    )
     from office365.directory.rolemanagement.unifiedrole.definition import (
         UnifiedRoleDefinition,
     )
-    from office365.directory.unified_role_eligibility_schedule import (
+    from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
         UnifiedRoleEligibilitySchedule,
     )
+    from office365.security.evaluation_outcome import EvaluationOutcome
 
 
-class UnifiedRoleEligibilityScheduleRequest(Request):
+class UnifiedRoleAssignmentScheduleRequest(Request):
+    """In PIM, represents a request for an active role assignment to a principal. The role assignment can be
+    permanently active with or without an expiry date, or temporarily active after activation of an eligible
+    assignment. Inherits from request."""
+
     @odata(name="action")
     @property
     def action(self) -> UnifiedRoleScheduleRequestActions:
@@ -88,6 +99,19 @@ class UnifiedRoleEligibilityScheduleRequest(Request):
         """Gets the ticketInfo property"""
         return self.properties.get("ticketInfo", TicketInfo())
 
+    @odata(name="activatedUsing", navigation=True)
+    @property
+    def activated_using(self) -> UnifiedRoleEligibilitySchedule:
+        """Gets the activatedUsing property"""
+        from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
+            UnifiedRoleEligibilitySchedule,
+        )
+
+        return self.properties.get(
+            "activatedUsing",
+            UnifiedRoleEligibilitySchedule(self.context, ResourcePath("activatedUsing", self.resource_path)),
+        )
+
     @odata(name="appScope", navigation=True)
     @property
     def app_scope(self) -> AppScope:
@@ -130,28 +154,69 @@ class UnifiedRoleEligibilityScheduleRequest(Request):
 
     @odata(name="targetSchedule", navigation=True)
     @property
-    def target_schedule(self) -> UnifiedRoleEligibilitySchedule:
+    def target_schedule(self) -> UnifiedRoleAssignmentSchedule:
         """Gets the targetSchedule property"""
-        from office365.directory.unified_role_eligibility_schedule import (
-            UnifiedRoleEligibilitySchedule,
+        from office365.directory.rolemanagement.unifiedrole.assignment_schedule import (
+            UnifiedRoleAssignmentSchedule,
         )
 
         return self.properties.get(
             "targetSchedule",
-            UnifiedRoleEligibilitySchedule(self.context, ResourcePath("targetSchedule", self.resource_path)),
+            UnifiedRoleAssignmentSchedule(self.context, ResourcePath("targetSchedule", self.resource_path)),
         )
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.UnifiedRoleEligibilityScheduleRequest"
+        return "microsoft.graph.UnifiedRoleAssignmentScheduleRequest"
 
     @verb(role="action", effect="write")
     @require_permission(
-        delegated=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
-        application=["RoleEligibilitySchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+        delegated=["RoleAssignmentSchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+        application=["RoleAssignmentSchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
     )
     def cancel(self) -> Self:
         """cancel operation."""
         qry = ServiceOperationQuery(self, "cancel", None, {}, None, None)
         self.context.add_query(qry)
         return self
+
+    @verb(role="action", effect="write")
+    @require_permission(
+        delegated=["RoleAssignmentSchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+        application=["RoleAssignmentSchedule.ReadWrite.Directory", "RoleManagement.ReadWrite.Directory"],
+    )
+    def update_request(
+        self, evaluation_id: str, evaluation_outcome: EvaluationOutcome, schedule_info: RequestSchedule, reason: str
+    ) -> UnifiedRoleAssignmentScheduleRequest:
+        """updateRequest operation.
+
+        Args:
+            evaluation_id (str):
+                evaluationId parameter
+            evaluation_outcome (EvaluationOutcome):
+                evaluationOutcome parameter
+            schedule_info (RequestSchedule):
+                scheduleInfo parameter
+            reason (str):
+                reason parameter
+        """
+        from office365.directory.rolemanagement.unifiedrole.assignment_schedule_request import (
+            UnifiedRoleAssignmentScheduleRequest,
+        )
+
+        return_type = UnifiedRoleAssignmentScheduleRequest(self.context)
+        qry = ServiceOperationQuery(
+            self,
+            "updateRequest",
+            None,
+            {
+                "evaluationId": evaluation_id,
+                "evaluationOutcome": evaluation_outcome,
+                "scheduleInfo": schedule_info,
+                "reason": reason,
+            },
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

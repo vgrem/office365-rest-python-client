@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.request_schedule import RequestSchedule
-from office365.directory.unified_role_schedule_base import UnifiedRoleScheduleBase
+from office365.directory.rolemanagement.unifiedrole.schedule_base import UnifiedRoleScheduleBase
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.unified_role_eligibility_schedule import (
+    from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
         UnifiedRoleEligibilitySchedule,
     )
 
@@ -36,7 +36,7 @@ class UnifiedRoleAssignmentSchedule(UnifiedRoleScheduleBase):
     @property
     def activated_using(self) -> UnifiedRoleEligibilitySchedule:
         """Gets the activatedUsing property"""
-        from office365.directory.unified_role_eligibility_schedule import (
+        from office365.directory.rolemanagement.unifiedrole.eligibility_schedule import (
             UnifiedRoleEligibilitySchedule,
         )
 

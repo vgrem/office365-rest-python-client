@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.directory.unified_role_management_policy_rule import UnifiedRoleManagementPolicyRule
+from office365.directory.policies.unifiedrolemanagement.rule import UnifiedRoleManagementPolicyRule
 from office365.runtime.types.odata_property import odata
 
 

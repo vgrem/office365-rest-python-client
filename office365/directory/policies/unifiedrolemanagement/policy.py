@@ -10,7 +10,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.unified_role_management_policy_rule import (
+    from office365.directory.policies.unifiedrolemanagement.rule import (
         UnifiedRoleManagementPolicyRule,
     )
 
@@ -71,7 +71,7 @@ class UnifiedRoleManagementPolicy(Entity):
     @property
     def effective_rules(self) -> EntityCollection[UnifiedRoleManagementPolicyRule]:
         """Gets the effectiveRules property"""
-        from office365.directory.unified_role_management_policy_rule import (
+        from office365.directory.policies.unifiedrolemanagement.rule import (
             UnifiedRoleManagementPolicyRule,
         )
 
@@ -86,7 +86,7 @@ class UnifiedRoleManagementPolicy(Entity):
     @property
     def rules(self) -> EntityCollection[UnifiedRoleManagementPolicyRule]:
         """Gets the rules property"""
-        from office365.directory.unified_role_management_policy_rule import (
+        from office365.directory.policies.unifiedrolemanagement.rule import (
             UnifiedRoleManagementPolicyRule,
         )
 

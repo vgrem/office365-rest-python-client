@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from office365.directory.identitygovernance.accessreview.schedule_definition import (
         AccessReviewScheduleDefinition,
     )
-    from office365.directory.unified_root import UnifiedRoot
+    from office365.directory.identitygovernance.accessreview.unified_root import UnifiedRoot
 
 
 class AccessReviewSet(Entity):
@@ -59,6 +59,6 @@ class AccessReviewSet(Entity):
     @property
     def unified(self) -> UnifiedRoot:
         """Gets the unified property"""
-        from office365.directory.unified_root import UnifiedRoot
+        from office365.directory.identitygovernance.accessreview.unified_root import UnifiedRoot
 
         return self.properties.get("unified", UnifiedRoot(self.context, ResourcePath("unified", self.resource_path)))

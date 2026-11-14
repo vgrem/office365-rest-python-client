@@ -17,8 +17,8 @@ if TYPE_CHECKING:
     from office365.security.ediscovery.ediscovery_index_operation import (
         EdiscoveryIndexOperation,
     )
+    from office365.security.ediscovery.unified_group_source import UnifiedGroupSource
     from office365.security.site_source import SiteSource
-    from office365.security.unified_group_source import UnifiedGroupSource
     from office365.security.user_source import UserSource
 
 
@@ -67,7 +67,7 @@ class EdiscoveryCustodian(DataSourceContainer):
     @property
     def unified_group_sources(self) -> EntityCollection[UnifiedGroupSource]:
         """Gets the unifiedGroupSources property"""
-        from office365.security.unified_group_source import UnifiedGroupSource
+        from office365.security.ediscovery.unified_group_source import UnifiedGroupSource
 
         return self.properties.get(
             "unifiedGroupSources",

@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.unified_rbac_resource_action import (
+    from office365.directory.rolemanagement.unifiedrole.resource_action import (
         UnifiedRbacResourceAction,
     )
 
@@ -24,7 +24,7 @@ class UnifiedRbacResourceNamespace(Entity):
     @property
     def resource_actions(self) -> EntityCollection[UnifiedRbacResourceAction]:
         """Gets the resourceActions property"""
-        from office365.directory.unified_rbac_resource_action import (
+        from office365.directory.rolemanagement.unifiedrole.resource_action import (
             UnifiedRbacResourceAction,
         )
 
