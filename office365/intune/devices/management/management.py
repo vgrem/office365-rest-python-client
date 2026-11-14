@@ -48,7 +48,11 @@ if TYPE_CHECKING:
     from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
     from office365.common.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
     from office365.common.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
+    from office365.common.microsoft_tunnel_site import MicrosoftTunnelSite
     from office365.common.role_definition import RoleDefinition
+    from office365.intune.android_managed_store_account_enterprise_settings import (
+        AndroidManagedStoreAccountEnterpriseSettings,
+    )
     from office365.intune.android_managed_store_app_configuration_schema import AndroidManagedStoreAppConfigurationSchema
     from office365.intune.devices.and_app_management_assignment_filter import DeviceAndAppManagementAssignmentFilter
     from office365.intune.devices.and_app_management_role_assignment import (
@@ -1748,5 +1752,33 @@ class DeviceManagement(Entity):
                 self.context,
                 WindowsQualityUpdateProfile,
                 ResourcePath("windowsQualityUpdateProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="androidManagedStoreAccountEnterpriseSettings", beta=True, navigation=True)
+    @property
+    def android_managed_store_account_enterprise_settings(self) -> AndroidManagedStoreAccountEnterpriseSettings:
+        """Gets the androidManagedStoreAccountEnterpriseSettings property"""
+        from office365.intune.android_managed_store_account_enterprise_settings import (
+            AndroidManagedStoreAccountEnterpriseSettings,
+        )
+
+        return self.properties.get(
+            "androidManagedStoreAccountEnterpriseSettings",
+            AndroidManagedStoreAccountEnterpriseSettings(
+                self.context, ResourcePath("androidManagedStoreAccountEnterpriseSettings", self.resource_path)
+            ),
+        )
+
+    @odata(name="microsoftTunnelSites", beta=True, navigation=True)
+    @property
+    def microsoft_tunnel_sites(self) -> EntityCollection[MicrosoftTunnelSite]:
+        """Gets the microsoftTunnelSites property"""
+        from office365.common.microsoft_tunnel_site import MicrosoftTunnelSite
+
+        return self.properties.get(
+            "microsoftTunnelSites",
+            EntityCollection[MicrosoftTunnelSite](
+                self.context, MicrosoftTunnelSite, ResourcePath("microsoftTunnelSites", self.resource_path)
             ),
         )

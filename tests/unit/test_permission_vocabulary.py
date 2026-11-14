@@ -39,11 +39,12 @@ LIBRARY = index(office365)
 #: are reached through the products that inherit them, so the ledger would be naming the filing
 #: cabinet rather than the service that has to grant the permission.
 #:
-#: These 13 are what a fill that read one table per operation - from the docs as published - could
+#: These 14 are what a fill that read one table per operation - from the docs as published - could
 #: not read, and neither reason is a judgement about which permission is *right*:
 #:
-#: * nine name a member the REST reference publishes no operation page for, so there is no table to
+#: * ten name a member the REST reference publishes no operation page for, so there is no table to
 #:   read - ``AccessReviewScheduleDefinition.stop``, ``AiInteractionHistory.get_all_enterprise_interactions``,
+#:   ``AndroidManagedStoreAccountEnterpriseSettings.create_zero_touch_web_token``,
 #:   ``CalendarSharingMessage.accept``, ``DeviceManagementCompliancePolicy.assign``,
 #:   ``DeviceManagementConfigurationPolicy.assign``,
 #:   ``DeviceManagementReports.retrieve_device_app_installation_status_report``,
@@ -55,7 +56,7 @@ PENDING: dict[str, int] = {
     "copilot": 1,
     "directory": 5,
     "exchange": 1,
-    "intune": 3,
+    "intune": 4,
     "onenote": 2,
     "outlook": 1,
 }
