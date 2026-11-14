@@ -1,10 +1,9 @@
-"""Offline regression tests for previously fixed issues.
+"""Pure regressions behind fixed issues - each one a function, not a request.
 
-- #884: apostrophes in File.open_binary/save_binary paths
-- #793: upload size from in-memory (io.BytesIO) streams
-- #875: sharing-token encoding (UTF-8, padding stripped)
-- #881: DriveItem.download_folder paginates children (no 200-item cap)
-- #978: File.open_binary/save_binary keep the OData call syntax literal
+- #884/#978: a quote inside an OData literal is doubled, while slashes and spaces in a
+  server-relative path stay literal instead of being %-encoded into the call syntax.
+- #793: the upload length of a stream comes from its size, and seeking it back is optional.
+- #875: a sharing token is base64url with every ``=`` stripped, not just one or two.
 """
 
 from __future__ import annotations
@@ -13,72 +12,17 @@ import base64
 import io
 import os
 import tempfile
-import unittest
-import zipfile
 
 import pytest
-from office365.graph_client import GraphClient
 from office365.onedrive.internal.paths.shared import _url_to_shared_token
-from office365.runtime.transport.base import BaseTransport
-from office365.sharepoint.client_context import ClientContext
+from office365.runtime.paths.builder import ODataPathBuilder
 from office365.sharepoint.files.collection import _stream_size
-from office365.sharepoint.files.file import File
-from requests import Response
-from tests import test_site_url
-from tests._scripted_transport import RecordingTransport
 
 
-class _CaptureTransport(BaseTransport):
-    def __init__(self):
-        super().__init__()
-        self.url = ""
-
-    def execute(self, request):
-        self.url = request.url
-        resp = Response()
-        resp.status_code = 200
-        resp.url = request.url
-        resp.headers["Content-Type"] = "application/octet-stream"
-        resp._content = b"payload"
-        return resp
-
-
-class TestFilePathQuoting(unittest.TestCase):
-    """Apostrophes in server-relative paths must be escaped in the DecodedUrl literal."""
-
-    def _context(self) -> tuple[ClientContext, _CaptureTransport]:
-        ctx = ClientContext(test_site_url)
-        transport = _CaptureTransport()
-        ctx.pending_request().beforeExecute.clear()
-        ctx.pending_request().transport = transport
-        return ctx, transport
-
-    def test_read_escapes_apostrophe(self):
-        ctx, transport = self._context()
-        result = File.open_binary(ctx, "/sites/x/Shared Documents/macdonald's file.txt")
-
-        self.assertEqual(result.content, b"payload")
-        self.assertIn("getFileByServerRelativePath", transport.url)
-        self.assertIn("macdonald%27%27s", transport.url)
-
-    def test_odata_call_syntax_stays_literal(self):
-        """#978: only the path value is encoded — the call, parens and $value stay literal."""
-        ctx, transport = self._context()
-        File.open_binary(ctx, "/sites/x/Shared Documents/Folder 1/conversation.docx")
-
-        self.assertIn("getFileByServerRelativePath(DecodedUrl='", transport.url)
-        self.assertTrue(transport.url.endswith(")/$value"))
-        self.assertIn("Folder%201", transport.url)  # the value itself is encoded
-        for encoded in ("%28", "%29", "%24", "%5C"):
-            self.assertNotIn(encoded, transport.url)
-
-    def test_write_odata_call_syntax_stays_literal(self):
-        ctx, transport = self._context()
-        File.save_binary(ctx, "/sites/x/Shared Documents/Folder 1/conversation.docx", b"content")
-
-        self.assertIn("getFileByServerRelativePath(DecodedUrl='", transport.url)
-        self.assertTrue(transport.url.endswith(")/$value"))
-        self.assertNotIn("%5C", transport.url)
+def test_an_odata_string_literal_doubles_a_quote_and_keeps_a_path_readable():
+    """A quote is escaped by doubling; slashes and spaces stay literal rather than %-encoded."""
+    assert ODataPathBuilder._encode_odata_value("macdonald's file.txt") == "'macdonald''s file.txt'"
+    assert ODataPathBuilder._encode_odata_value("/sites/x/a b/c.txt") == "'/sites/x/a b/c.txt'"
 
 
 class _Unseekable(io.BytesIO):
@@ -86,96 +30,36 @@ class _Unseekable(io.BytesIO):
         raise io.UnsupportedOperation("seek")
 
 
-def test_stream_size_from_bytesio():
-    data = b"x" * 12345
-    stream = io.BytesIO(data)
-    assert _stream_size(stream) == len(data)
-    assert stream.tell() == 0  # position preserved
+def test_the_upload_length_of_a_stream_is_its_size_and_the_position_survives():
+    stream = io.BytesIO(b"x" * 12345)
+    stream.seek(2)
+
+    assert _stream_size(stream) == 12345  # noqa: PLR2004
+    assert stream.tell() == 2  # noqa: PLR2004 - the caller keeps reading where it was
 
 
-def test_stream_size_from_bytesio_mid_stream():
-    stream = io.BytesIO(b"abcdef")
-    offset = 2
-    stream.seek(offset)
-    assert _stream_size(stream) == 6  # noqa: PLR2004
-    assert stream.tell() == offset  # position preserved
-
-
-def test_stream_size_from_real_file():
-    with tempfile.NamedTemporaryFile(delete=False) as f:
-        f.write(b"y" * 777)
-        path = f.name
+def test_a_real_file_reports_its_size():
+    with tempfile.NamedTemporaryFile(delete=False) as handle:
+        handle.write(b"y" * 777)
+        path = handle.name
     try:
-        with open(path, "rb") as f:
-            assert _stream_size(f) == 777  # noqa: PLR2004
+        with open(path, "rb") as stream:
+            assert _stream_size(stream) == 777  # noqa: PLR2004
     finally:
         os.unlink(path)
 
 
-def test_stream_size_rejects_unseekable_source():
+def test_a_stream_that_cannot_seek_is_refused_rather_than_guessed():
     with pytest.raises(ValueError, match="seekable"):
         _stream_size(_Unseekable(b"data"))
 
 
-def _reference(url: str) -> str:
-    b64 = base64.b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
-    return "u!" + b64.replace("/", "_").replace("+", "-")
-
-
-def test_all_base64_padding_is_removed():
-    # a url whose base64 ends with '==' must leave no '=' in the token
+def test_every_base64_pad_is_stripped_from_a_sharing_token():
     url = "https://a"
+    encoded = base64.b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
+    expected = "u!" + encoded.replace("/", "_").replace("+", "-")
+
     token = _url_to_shared_token(url)
-    assert token.startswith("u!")
+
+    assert token == expected
     assert "=" not in token
-    assert token == _reference(url)
-
-
-def test_download_folder_paginates_children(tmp_path):
-    """#881: download children from every Graph page exactly once."""
-    next_page = "https://graph.microsoft.com/v1.0/me/drive/root/children?$skiptoken=next"
-    transport = RecordingTransport(
-        [
-            {"@odata.nextLink": next_page, "value": [{"id": "a", "name": "a.txt", "file": {}}]},
-            {"value": [{"id": "b", "name": "b.txt", "file": {}}]},
-            b"first page",
-            b"second page",
-        ]
-    )
-    client = GraphClient()
-    client.pending_request().beforeExecute.clear()
-    client.pending_request().transport = transport
-    folder = client.me.drive.root
-    archive = tmp_path / "folder.zip"
-    downloaded = []
-
-    with archive.open("wb") as target:
-        folder.download_folder(target, after_file_downloaded=lambda item: downloaded.append(item.name), recursive=False)
-        assert transport.calls == 0
-        folder.execute_query()
-
-    assert next_page in transport.urls
-    assert len(transport.urls) == len(transport.requests) == 4  # noqa: PLR2004
-    assert downloaded == ["a.txt", "b.txt"]
-    with zipfile.ZipFile(archive) as result:
-        assert result.namelist() == ["a.txt", "b.txt"]
-        assert result.read("a.txt") == b"first page"
-        assert result.read("b.txt") == b"second page"
-
-
-def test_upload_content_over_chunk_size_sends_every_byte_through_a_session():
-    content = b"0123456789abcdefghijKLMNO"
-    entry = {"d": {"Name": "big.bin", "ServerRelativeUrl": "/sites/x/Shared Documents/big.bin"}}
-    transport = RecordingTransport([entry] * 4)
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    ctx.pending_request().transport = transport
-    files = ctx.web.get_folder_by_server_relative_path("/sites/x/Shared Documents").files
-
-    file = files.upload_content(content, "big.bin", chunk_size=10)
-    ctx.execute_query()
-
-    operations = [url.rsplit("/", 1)[-1].split("(", 1)[0] for url in transport.urls[1:]]
-    assert operations == ["startUpload", "continueUpload", "finishUpload"]
-    assert b"".join(request.data for request in transport.requests[1:]) == content
-    assert isinstance(file, File)

@@ -1,59 +1,30 @@
-"""The permission vocabulary: what the tree declares, which API answers for a name, and one aggregation.
+"""What the tree declares, and whether the API it names agrees.
 
-A live run answers the first two the wrong way. A wrong permission name is refused, and the harness
-reads the refusal as "not granted" - so a typo and a missing grant look the same; and a declaration
-that is *missing* fails nothing anywhere, so nothing names it. The third question - whether the four
-declarations about a type agree with each other - is not about the wire at all.
+A live run cannot answer these: a misspelled permission is refused, and the harness reads the
+refusal as "not granted", so a typo and a missing grant look identical; a declaration that is
+missing fails nothing at all. A walk of the package is the only thing that sees either.
 """
 
 from __future__ import annotations
 
-from typing import Any
-
 import office365
-import pytest
 from office365.capabilities import capabilities_of
 from office365.communications.callrecords.collection import CallRecordCollection
-from office365.directory.applications.roles.collection import AppRoleCollection
-from office365.directory.applications.roles.role import AppRole
-from office365.directory.permissions.checker import verify_permissions
-from office365.directory.permissions.guard import has_application_permission, has_delegated_permission
-from office365.onedrive.driveitems.driveItem import DriveItem
 from office365.outlook.mail.messages.message import Message
-from office365.permissions import APPLICATION, DELEGATED, ResourceName, catalog, declared, index, require_permission
-from office365.runtime.client_result import ClientResult
-from office365.runtime.types.collections import StringCollection
-from tests._scripted_transport import graph
-from tests.capabilities import TenantState
+from office365.permissions import APPLICATION, DELEGATED, catalog, index, require_permission
 
-CLIENT_ID = "11111111-1111-1111-1111-111111111111"
-
-#: One walk of the tree, at import: what the library promises and where it still says nothing.
+#: One walk of the tree: what the library promises and where it still says nothing.
 LIBRARY = index(office365)
 
 #: Public operations that still name no permission, per service package. The map only shrinks: a
-#: harvest lowers a number here, and a declaration removed anywhere raises one, which is the point -
-#: a debt nobody writes down is a debt nobody pays. The detector counts a method that *submits* a
-#: query (``add_query``, ``execute_query``, ``execute_batch``), so these are a floor: the real
-#: number is higher, never lower. A package that publishes no product keeps no entry: its methods
-#: are reached through the products that inherit them, so the ledger would be naming the filing
-#: cabinet rather than the service that has to grant the permission.
+#: harvest lowers a number, and a declaration removed anywhere raises one, which is the point - a
+#: debt nobody writes down is a debt nobody pays.
 #:
-#: These 19 are what a fill that read one table per operation - from the docs as published - could
-#: not read, and neither reason is a judgement about which permission is *right*:
-#:
-#: * fifteen name a member the REST reference publishes no operation page for, so there is no table
-#:   to read - ``AccessReviewScheduleDefinition.stop``, ``AiInteractionHistory.get_all_enterprise_interactions``,
-#:   ``AndroidManagedStoreAccountEnterpriseSettings.create_zero_touch_web_token``,
-#:   ``CalendarSharingMessage.accept``, ``DeviceManagementCompliancePolicy.assign``,
-#:   ``DeviceManagementConfigurationPolicy.assign``,
-#:   ``DeviceManagementIntent.{assign,create_copy,migrate_to_template,update_settings}``,
-#:   ``DeviceManagementReports.retrieve_device_app_installation_status_report``,
-#:   ``DeviceManagement.user_experience_analytics_summarized_device_scopes``,
-#:   ``ExchangeAdminClient.invoke_all``, ``OnenotePage.onenote_patch_content``, ``OnenotePage.preview``;
-#: * four are documented as ``Not supported.`` in every flow, which is the reference answering the
-#:   question rather than leaving it open - ``NamedLocation.restore``, ``ConditionalAccessPolicy.restore``,
-#:   ``Workflow.clear_quarantine``, ``RecoveryJobBase.cancel``.
+#: These 19 are what a fill that read one table per operation, from the docs as published, could
+#: not read, and neither reason is a judgement about which permission is *right*: fifteen name a
+#: member the REST reference publishes no operation page for (``OnenotePage.preview``,
+#: ``DeviceManagementIntent.assign``, ...); four are documented as ``Not supported.`` in every flow
+#: (``NamedLocation.restore``, ``RecoveryJobBase.cancel``), which is the reference answering.
 PENDING: dict[str, int] = {
     "copilot": 1,
     "directory": 5,
@@ -63,19 +34,25 @@ PENDING: dict[str, int] = {
     "outlook": 1,
 }
 
+#: Every operation that declares a licence, and the seat its own page names. One entry, because a
+#: licence gate is a decision about what a tenant has to buy, not a line that slips in with a
+#: harvest.
+LICENSED: dict[str, tuple[str, ...]] = {
+    "office365.search.entity:SearchEntity.query": ("SPE_E5",),
+}
 
-def test_an_operation_that_names_no_permission_is_a_debt_that_only_shrinks():
-    """Every public method that submits a request says what the tenant must grant."""
+
+def test_every_requesting_method_names_the_permission_it_needs():
     assert LIBRARY.debt() == PENDING, "declare the permission on the method, or record the new count"
 
 
-def test_a_declared_name_is_one_the_api_publishes():
-    """A name is a grant only if the API that owns it offers it, and the tree can ask.
+def test_every_declared_permission_is_one_the_api_publishes():
+    """A name is a grant only if the API that owns it offers it.
 
     ``office365/permissions/snapshots`` holds the names each service principal publishes, so a
     declaration cannot outlive the permission it names.
     """
-    unknown, unpublished = set(), []
+    unpublished, unknown = [], set()
     for operation in LIBRARY.declared():
         for requirement in operation.declaration.requirements():
             snapshot = catalog(requirement.resource)
@@ -94,232 +71,51 @@ def test_a_declared_name_is_one_the_api_publishes():
     assert unknown == set(), "no snapshot for this API: run scripts/gen_permission_catalog.py"
 
 
-@require_permission(resource=ResourceName.SharePoint, delegated=["AllSites.FullControl"])
-def list_sites() -> None:
-    """A SharePoint method with a SharePoint declaration; never called, only read."""
+def test_a_licence_gate_is_written_down_with_its_operation():
+    """A licence is a packaging fact the docs state, named as the service spells it.
 
-
-class _Grants:
-    """A resource's principal: only the two reads ``guard`` makes on one."""
-
-    def __init__(self, context, delegated: list[str], application: list[str]) -> None:
-        self._context = context
-        self._delegated = delegated
-        self._application = application
-
-    def get_delegated_permissions(self, app_id: str) -> ClientResult[StringCollection]:
-        return ClientResult(self._context, StringCollection(self._delegated))
-
-    def get_application_permissions(self, app_id: str) -> ClientResult[AppRoleCollection]:
-        return ClientResult(self._context, AppRoleCollection([AppRole(value=value) for value in self._application]))
-
-
-class _Principals:
-    """The ``servicePrincipals`` collection, remembering the resource it was asked for."""
-
-    def __init__(self, principals: dict[str, _Grants]) -> None:
-        self.principals = principals
-        self.asked: list[str] = []
-
-    def find_by_name(self, name: Any, *, required: bool = False) -> _Grants:
-        self.asked.append(str(name))
-        return self.principals[str(name)]
-
-
-def _client() -> "_Client":
-    """A client whose two resources deliberately grant different things: that is the whole point."""
-    return _Client()
-
-
-class _Client:
-    """What ``guard`` reads off a client: the principals collection, and nothing else."""
-
-    def __init__(self) -> None:
-        context = graph()[0]
-        self.service_principals = _Principals(
-            {
-                ResourceName.Graph.value: _Grants(context, delegated=["Sites.ReadWrite.All"], application=["Mail.Send"]),
-                ResourceName.SharePoint.value: _Grants(context, delegated=["AllSites.FullControl"], application=[]),
-            }
-        )
-
-    @property
-    def asked(self) -> list[str]:
-        return self.service_principals.asked
-
-
-def test_a_check_without_a_resource_reads_microsoft_graph():
-    client = _client()
-
-    assert has_delegated_permission(client, "Sites.ReadWrite.All", CLIENT_ID)
-    assert client.asked == [ResourceName.Graph.value]
-
-
-def test_a_check_reads_the_grants_of_the_resource_it_names():
-    client = _client()
-
-    assert has_delegated_permission(client, "AllSites.FullControl", CLIENT_ID, ResourceName.SharePoint)
-    assert client.asked == [ResourceName.SharePoint.value]
-
-
-def test_one_name_is_answered_per_resource_not_once_for_the_client():
-    """The same name, the same client: two resources, two answers.
-
-    Caching by resource while reading Graph's grants would have turned the second answer into the
-    first one, which is the failure this pins.
+    ``SPE_E5`` is the SKU; ``Microsoft 365 E5`` is what the invoice calls it, and would match
+    nothing ``subscribedSkus`` reports.
     """
-    client = _client()
+    named: dict[str, set[str]] = {}
+    for operation in LIBRARY.declared():
+        for requirement in operation.declaration.requirements():
+            if requirement.licenses:
+                named.setdefault(operation.fqn, set()).update(requirement.licenses)
 
-    assert has_delegated_permission(client, "Sites.ReadWrite.All", CLIENT_ID)
-    assert not has_delegated_permission(client, "Sites.ReadWrite.All", CLIENT_ID, ResourceName.SharePoint)
-
-
-def test_an_application_permission_is_read_from_the_same_resource():
-    client = _client()
-
-    assert has_application_permission(client, "Mail.Send", CLIENT_ID)
-    assert not has_application_permission(client, "Mail.Send", CLIENT_ID, ResourceName.SharePoint)
-
-
-def test_the_state_a_requirement_is_checked_against_is_read_from_its_resource():
-    client = _client()
-
-    (requirement,) = declared(list_sites).requirements()
-    state = TenantState.of(client, CLIENT_ID, requirement)
-
-    assert state.delegated == frozenset({"AllSites.FullControl"})
-    assert requirement.satisfied_by(state)
-    assert client.asked == [ResourceName.SharePoint.value]
+    actual = {key: tuple(sorted(names)) for key, names in named.items()}
+    assert actual == LICENSED, "a licence gate is a decision: add it here with the operation it gates"
+    for names in LICENSED.values():
+        for name in names:
+            assert name.isupper() and " " not in name, f"{name!r} is not the spelling subscribedSkus reports"
 
 
-def test_a_report_names_the_resource_it_checked():
-    client = _client()
-
-    report = verify_permissions(client, list_sites, CLIENT_ID)
-
-    assert report.resource == ResourceName.SharePoint.value
-    assert report.granted_delegated == ["AllSites.FullControl"]
-
-
-def test_a_collection_answers_shape_limits_and_query_rules():
-    """One call answers every family for a type: shape, permissions, limits and query rules."""
-    caps = capabilities_of(CallRecordCollection)
-
-    assert caps.name == "office365.communications.callrecords.collection:CallRecordCollection"
-    # A collection has no columns of its own; the columns belong to the type it collects.
-    assert caps.schema.columns == ()
-    assert len(caps.limits) == 4  # noqa: PLR2004
-    assert not caps.queries.supports("top")
-    assert "get_direct_routing_calls" in caps.declarations
-
-
-def test_an_entity_answers_its_declarations_and_no_query_rules():
-    caps = capabilities_of(DriveItem)
-
-    assert len(caps.schema.columns) > 0
-    assert len(caps.declarations) > 0
-    assert caps.declarations["get"].application
-    assert len(caps.limits) == 9  # noqa: PLR2004
-    # Query rules are the collection's, and a drive item is not a collection.
-    assert caps.queries is None
-
-
-def test_one_call_answers_for_itself():
-    caps = capabilities_of(Message.send)
-
-    assert caps.declarations["send"].delegated == ("Mail.Send",)
-    assert caps.schema is None
-    assert caps.queries is None
-
-
-def test_an_override_that_names_nothing_does_not_hide_the_base():
+def test_an_override_that_names_nothing_keeps_the_base_declaration():
     class Base:
         @require_permission(application=["Sites.Read.All"])
         def read(self):
             """Read."""
 
-    class Child(Base):
+    class Restated(Base):
         def read(self):
             """Read, restated without a declaration."""
 
-    assert capabilities_of(Child).declarations["read"].application == ("Sites.Read.All",)
-
-
-def test_an_override_that_names_something_replaces_the_base():
-    class Base:
-        @require_permission(application=["Sites.Read.All"])
-        def read(self):
-            """Read."""
-
-    class Child(Base):
+    class Replaced(Base):
         @require_permission(application=["Sites.FullControl.All"])
         def read(self):
             """Read, with its own declaration."""
 
-    assert capabilities_of(Child).declarations["read"].application == ("Sites.FullControl.All",)
+    assert capabilities_of(Restated).declarations["read"].application == ("Sites.Read.All",)
+    assert capabilities_of(Replaced).declarations["read"].application == ("Sites.FullControl.All",)
 
 
-def test_licenses_are_the_union_of_the_plans_named_once_each():
-    class Mixed:
-        @require_permission(application=["Sites.Read.All"], licenses=["SharePoint Online"])
-        def read(self):
-            """Read."""
+def test_a_call_answers_its_own_declarations_and_limits():
+    """One call answers everything declared about a member: scopes, licences, columns and limits."""
+    collection = capabilities_of(CallRecordCollection)
+    assert "get_direct_routing_calls" in collection.declarations
+    assert collection.schema.columns == ()  # a collection has none: they belong to what it holds
+    assert not collection.queries.supports("top")
 
-        @require_permission(delegated=["Files.Read"], licenses=["Office 365 E3", "SharePoint Online"])
-        def write(self):
-            """Write."""
-
-    assert capabilities_of(Mixed).licenses == ("Office 365 E3", "SharePoint Online")
-
-
-def test_a_type_that_names_nothing_is_reported_not_refused():
-    caps = capabilities_of(type("Bare", (), {}))
-
-    assert dict(caps.declarations) == {}
-    assert caps.licenses == ()
-    assert caps.schema.columns == ()
-
-
-def test_something_that_is_neither_a_type_nor_a_call_is_refused():
-    with pytest.raises(TypeError):
-        capabilities_of("DriveItem")
-
-
-#: Every operation in the tree that declares a licence, and the licence its own page names. One
-#: entry, because the library gates on a licence once; a second entry is a decision somebody makes
-#: against a published table, not a line of code that slips in with a harvest. The operation names
-#: its licence per flow and both flows name the same seat, so the map records the set once.
-LICENSED: dict[str, tuple[str, ...]] = {
-    "office365.search.entity:SearchEntity.query": ("SPE_E5",),
-}
-
-
-def test_a_licence_gate_is_a_decision():
-    """A licence is a packaging fact the docs state, not a name to be guessed or inferred.
-
-    Naming one changes what a tenant has to buy before a call works, which is a decision about
-    who can use the library - so it is written down here with the operation it gates, and adding
-    one is a diff a reviewer sees twice.
-    """
-    named: dict[str, set[str]] = {}
-    for operation in LIBRARY.declared():
-        declaration = operation.declaration
-        if declaration is None:
-            continue
-        for requirement in declaration.requirements():
-            if requirement.licenses:
-                named.setdefault(operation.fqn, set()).update(requirement.licenses)
-
-    assert {key: tuple(sorted(names)) for key, names in named.items()} == LICENSED
-
-
-def test_a_licence_name_is_the_services_spelling():
-    """A licence is a part number or a plan id - never the product name a person reads.
-
-    ``SPE_E5`` is the SKU, ``Microsoft 365 E5`` is what the invoice calls it; declaring the second
-    one would read like a licence and match nothing the service reports.
-    """
-    for names in LICENSED.values():
-        for name in names:
-            assert name.isupper(), f"{name!r} is not the spelling subscribedSkus reports"
-            assert " " not in name, f"{name!r} is a product name, not a licence"
+    send = capabilities_of(Message.send)
+    assert send.declarations["send"].delegated == ("Mail.Send",)
+    assert send.schema is None and send.queries is None

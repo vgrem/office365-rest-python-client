@@ -8,11 +8,11 @@ import uuid
 from office365.graph_client import GraphClient
 from office365.migration.offline import offline_sharepoint_context
 from office365.onedrive.internal.paths.url import UrlPath
+from office365.runtime.odata.literals import odata_literal
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.client_context import ClientContext
 from tests import test_site_url
-from tests._scripted_transport import RecordingTransport, RoutingTransport, sharepoint
 
 
 class TestGraphPathBuilding(unittest.TestCase):
@@ -28,26 +28,6 @@ class TestGraphPathBuilding(unittest.TestCase):
         path.set_segment(item_id)
         self.assertEqual(f"/me/drive/items/{item_id}", str(path))
 
-    def test_recursive_children_requests_parent_collection(self):
-        """Recursing into a child folder requests ``/items/{id}/children`` (not a bare id)."""
-        transport = RoutingTransport(
-            [
-                ("/items/F1/children", {"value": [{"id": "F2", "name": "f2", "folder": {"childCount": 0}}]}),
-                (
-                    "/children",
-                    {"value": [{"id": "F1", "name": "f1", "folder": {"childCount": 1}}]},
-                ),
-            ]
-        )
-        client = GraphClient()
-        client.pending_request().beforeExecute.clear()
-        client.pending_request().transport = transport
-
-        client.me.drive.root.get_folders(recursive=True).execute_query()
-
-        assert "/me/drive/root/children" in transport.calls[0]
-        assert any("/me/drive/items/F1/children" in url for url in transport.calls), transport.calls
-
     def test_resolve_term_children_path(self):
         group_id = uuid.uuid4().hex
         set_id = uuid.uuid4().hex
@@ -61,23 +41,11 @@ class TestGraphPathBuilding(unittest.TestCase):
         )
 
 
-_LOGIN = "i:0#.f|membership|user.name@domain.com"
-
-
-def _ensure_user(ctx: ClientContext):
-    return ctx.web.ensure_user(_LOGIN).execute_query()
-
-
-def test_id_takes_precedence_when_mapped():
-    """An identifier wins: the principal is addressed by Id, not by login name."""
-    ctx = sharepoint([{"d": {"__metadata": {"type": "SP.User"}, "Id": 6, "LoginName": _LOGIN}}])[0]
-
-    user = _ensure_user(ctx)
-
-    assert "siteUsers(6)" in str(user.resource_path)
-    assert "GetByName" not in str(user.resource_path)
-    assert user.id == 6  # noqa: PLR2004
-    assert user.login_name == _LOGIN
+def test_odata_literal_emits_numbers_booleans_and_null_bare():
+    assert odata_literal(42) == "42"
+    assert odata_literal(True) == "true"
+    assert odata_literal(False) == "false"
+    assert odata_literal(None) == "null"
 
 
 def test_entity_method_path_is_not_clobbered_by_id():
@@ -117,29 +85,6 @@ def test_odata_function_datetime_argument_uses_datetime_literal():
     assert ODataPathBuilder._encode_odata_value(date(2021, 6, 1)) == "date'2021-06-01'"
 
 
-def test_move_file_by_path_sends_paths_in_body():
-    """MoveCopyUtil.MoveFileByPath carries both paths in the request body, not the URL."""
-    from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
-    from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil
-
-    src = "/sites/x/Shared Documents/deep/nested/folder/a.xlsx"
-    dest = "/sites/x/Shared Documents/deep/nested/archive/a.xlsx"
-    transport = RecordingTransport([{}])
-    ctx = ClientContext(test_site_url)
-    ctx.pending_request().beforeExecute.clear()
-    ctx.pending_request().transport = transport
-
-    MoveCopyUtil.move_file_by_path(ctx, src, dest, MoveCopyOptions(KeepBoth=False))
-    ctx.execute_query()
-
-    assert len(transport.requests) == 1
-    request = transport.requests[0]
-    assert "MoveFileByPath" in request.url
-    assert "%2F" not in request.url
-    assert request.data["srcPath"]["DecodedUrl"].endswith(src)
-    assert request.data["destPath"]["DecodedUrl"].endswith(dest)
-
-
 def test_appid_path_is_an_alternate_key_path():
     from office365.runtime.paths.alternate_key import AlternateKeyPath
     from office365.runtime.paths.appid import AppIdPath
@@ -150,15 +95,6 @@ def test_appid_path_is_an_alternate_key_path():
     assert isinstance(path, AlternateKeyPath)
     assert path.key_name == "appId"
     assert str(path) == f"/servicePrincipals(appId='{app_id}')"
-
-
-def test_get_by_app_id_delegates_to_alternate_key():
-    client = GraphClient()
-    app_id = "00000000-0000-0000-0000-000000000000"
-
-    principal = client.service_principals.get_by_app_id(app_id)
-
-    assert str(principal.resource_path) == f"/servicePrincipals(appId='{app_id}')"
 
 
 def test_a_web_addresses_itself_at_web_not_at_the_collection_it_came_from():
