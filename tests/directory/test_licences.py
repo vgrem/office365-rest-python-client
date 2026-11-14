@@ -23,14 +23,20 @@ class TestLicences(GraphDelegatedTestCase):
     def test_sku_carries_its_provisioned_service_plans(self):
         for sku in self.report.skus:
             for plan in sku.service_plans:
-                if plan.provisioningStatus == "Success" and plan.servicePlanName:
-                    self.assertIn(plan.servicePlanName, self.report.plans)
-                    self.assertIn(sku, self.report.carrying(plan.servicePlanName))
+                if plan.provisioning_status == "Success" and plan.service_plan_name:
+                    self.assertIn(plan.service_plan_name, self.report.plans)
+                    self.assertIn(sku, self.report.carrying(plan.service_plan_name))
 
     def test_sku_without_enabled_seats_is_suspended(self):
         for sku in self.report.skus:
             if sku.capability_status in ("Suspended", "LockedOut", "Deleted"):
                 self.assertIn(sku, self.report.suspended)
+
+    def test_a_row_is_a_sku_with_its_seats(self):
+        for sku, row in zip(self.report.skus, self.report.to_rows(), strict=True):
+            self.assertEqual(row["skuPartNumber"], sku.sku_part_number)
+            self.assertEqual(row["prepaidUnits"], sku.prepaid_units.enabled or 0)
+            self.assertEqual(row["spareUnits"], row["prepaidUnits"] - row["consumedUnits"])
 
     def test_spare_seats_are_unassigned(self):
         for sku in self.report.skus:

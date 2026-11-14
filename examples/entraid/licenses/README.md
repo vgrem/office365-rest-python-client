@@ -1,6 +1,6 @@
 # Licensing
 
-Six examples, in the order the questions are asked: what the tenant owns, what one person
+Seven examples, in the order the questions are asked: what the tenant owns, what one person
 holds, whether a call may rely on it, who has what, how to change it, and what the change did
 to the plans. Two more carry that state as a list: `export_licences.py` writes it, and
 `import_licences.py` reads it back into `assignLicense` calls, sent as one batch.
@@ -18,7 +18,8 @@ to the plans. Two more carry that state as a list: `export_licences.py` writes i
 
 | Example | Writes | Question |
 |---|---|---|
-| [`inventory.py`](./inventory.py) | — | What does the tenant own — seats, state, how many are left? `--plans` lists the plans inside each SKU |
+| [`inventory.py`](./inventory.py) | — | What does the tenant own — seats, state, how many are left? `--plans` lists the plans inside each SKU, `--csv` writes one row per SKU |
+| [`matrix.py`](./matrix.py) | — | Who holds which SKU, and which service plans inside it are enabled or `disabledPlans`. `--out licences.csv`, `--sku SPE_E5` |
 | [`whose.py`](./whose.py) | — | Who holds this SKU (`--sku`), or what does this person hold (`--user`) with each plan's provisioning status? |
 | [`check.py`](./check.py) | — | Is the seat — or the capability inside it — actually held? `--plan RECORDS_MANAGEMENT` |
 | [`assign.py`](./assign.py) | ✓ | Add or `--remove` one licence, refusing the calls Graph would refuse: no `usageLocation`, no seat left, already assigned. `--dry-run` stops before the write |
@@ -43,19 +44,23 @@ A SKU part number is packaging, a service plan is capability — and a seat may 
 retail SKU name suggests:
 
 ```python
-from office365.directory.licenses.tenant import Licences
 from office365.graph_client import GraphClient
 
 client = GraphClient(tenant="contoso.onmicrosoft.com").with_client_secret("client_id", "client_secret")
 
-held = Licences.of_tenant(client)
+held = client.licences.get_all().execute_query().value
 print(sorted(held.names))  # SKU part numbers and provisioned plan names
 print(held.holds("RECORDS_MANAGEMENT"))  # True for DEVELOPERPACK_E5
 print([sku.sku_part_number for sku in held.carrying("RECORDS_MANAGEMENT")])
+print(held.to_rows())  # one row per SKU: seats bought, handed out, left
+
+mine = client.licences.get_user(client.me).execute_query().value  # a user's licenseDetails
 ```
 
-Only a plan whose `provisioningStatus` is `Success` counts, and nothing is cached: a grant
-changes the answer, and the library is not the level that knows when.
+`client.licences` is a manager and sends nothing; `get_all()` / `get_user(user)` return a
+`ClientResult` that `execute_query()` submits. Only a plan whose `provisioningStatus` is
+`Success` counts, and nothing is cached: a grant changes the answer, and the library is not the
+level that knows when.
 
 ---
 

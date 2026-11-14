@@ -312,7 +312,7 @@ class GraphClient(ClientRuntimeContext):
         return self
 
     def require_license(self, *keywords: str) -> Self:
-        """Exit if the tenant has no subscribed SKU matching any of the given keywords.
+        """Exit if the tenant holds no licence matching any of the given keywords.
 
         Typical usage at the top of example scripts that require a paid
         add-on license:
@@ -323,17 +323,18 @@ class GraphClient(ClientRuntimeContext):
                 .require_license("BACKUP")
             )
 
+        A licence is matched by a SKU part number (``SPE_E5``) or by a service plan the tenant
+        has provisioned (``RECORDS_MANAGEMENT``), since a capability can be carried by a seat
+        whose part number says nothing about it.
+
         Args:
-            *keywords: Substrings to match against SKU part numbers
+            *keywords: Substrings to match against the licence names
                 (case-insensitive); at least one must match
         """
         if not keywords:
             return self
-        matched = [
-            sku.sku_part_number
-            for sku in self.licences.get_all().execute_query().value.skus
-            if any(keyword.lower() in (sku.sku_part_number or "").lower() for keyword in keywords)
-        ]
+        names = self.licences.get_all().execute_query().value.names
+        matched = [name for name in names if any(keyword.lower() in name.lower() for keyword in keywords)]
         if not matched:
             print(f"Missing required license: no subscribed SKU matches: {', '.join(keywords)}")
             sys.exit(1)

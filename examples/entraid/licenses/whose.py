@@ -45,7 +45,7 @@ def main() -> None:
     for licence in LicencesReport(skus=list(details)).skus:
         print(licence.sku_part_number)
         for plan in licence.service_plans:
-            print(f"  {plan.servicePlanName} {plan.provisioningStatus}")
+            print(f"  {plan.service_plan_name} {plan.provisioning_status}")
 
 
 if __name__ == "__main__":

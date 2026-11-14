@@ -321,6 +321,8 @@ held.plans  # the provisioned plan names alone - capability without the packagin
 [sku.sku_part_number for sku in held.unassigned]  # bought, nobody using it
 [sku.sku_part_number for sku in held.suspended]  # bought, cannot be assigned from
 held.plan_id("RECORDS_MANAGEMENT")  # the id both sides of an assignment spell the same
+held.by_id  # skuId -> SKU, the key an assignment names the SKU by
+held.to_rows()  # one row per SKU: prepaidUnits, consumedUnits, spareUnits, capabilityStatus
 ```
 
 - A **SKU part number is packaging, not capability.** `DEVELOPERPACK_E5` carries

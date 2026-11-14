@@ -42,7 +42,7 @@ of them.
 from __future__ import annotations
 
 from dataclasses import field
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 from office365.directory.licenses.subscribed_sku import SubscribedSku
 from office365.permissions import require_permission
@@ -128,6 +128,30 @@ class LicencesReport(ClientValue):
         return tuple(sku for sku in self._tenant_skus() if _has_spare_seat(sku))
 
     @property
+    def by_id(self) -> Dict[str, SubscribedSku]:
+        """The tenant SKUs keyed by ``skuId``, which is how an assignment names the SKU it holds."""
+        return {sku.sku_id: sku for sku in self._tenant_skus() if sku.sku_id}
+
+    def to_rows(self) -> List[Dict[str, Any]]:
+        """One row per tenant SKU, with the columns spelled the way the service spells them.
+
+        What a licence report is asked for - seats bought, seats handed out, seats left - in the
+        shape ``csv.DictWriter`` and a dataframe both take.
+        """
+        return [
+            {
+                "skuId": sku.sku_id,
+                "skuPartNumber": sku.sku_part_number,
+                "capabilityStatus": sku.capability_status,
+                "prepaidUnits": sku.prepaid_units.enabled or 0,
+                "consumedUnits": sku.consumed_units or 0,
+                "spareUnits": max((sku.prepaid_units.enabled or 0) - (sku.consumed_units or 0), 0),
+                "servicePlans": len(_provisioned_plans(sku)),
+            }
+            for sku in self._tenant_skus()
+        ]
+
+    @property
     def suspended(self) -> Tuple[SubscribedSku, ...]:
         """The SKUs whose ``capabilityStatus`` says the seats cannot be assigned from."""
         return tuple(sku for sku in self._tenant_skus() if (sku.capability_status or "") in _UNUSABLE)
@@ -156,7 +180,7 @@ class LicencesReport(ClientValue):
     def plan_name(self, plan_id: str) -> Optional[str]:
         """The name of the plan with this id, or ``None`` when no licence here carries it."""
         for sku in self._tenant_skus():
-            if any(plan.servicePlanId == plan_id for plan in sku.service_plans):
+            if any(plan.service_plan_id == plan_id for plan in sku.service_plans):
                 return sku.plan_name(plan_id)
         return None
 
@@ -187,7 +211,9 @@ def _provisioned_plans(sku: LicenseDetails | SubscribedSku) -> Tuple[str, ...]:
     Graph reports the state a plan reached (``Success``, ``PendingProvisioning``, ``Suspended``,
     ...); only one that reached ``Success`` is a plan a call can rely on.
     """
-    return tuple(plan.servicePlanName or "" for plan in sku.service_plans or () if plan.provisioningStatus == "Success")
+    return tuple(
+        plan.service_plan_name or "" for plan in sku.service_plans or () if plan.provisioning_status == "Success"
+    )
 
 
 def _has_spare_seat(sku: SubscribedSku) -> bool:

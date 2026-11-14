@@ -29,9 +29,9 @@ def main() -> None:
 
     client = GraphClient(tenant=tenant).with_client_secret(client_id, client_secret)
     sku = client.subscribed_skus.find_by_part_number(args.sku, required=True).execute_query()
-    plans = {plan.servicePlanName: plan for plan in sku.service_plans}
+    plans = {plan.service_plan_name: plan for plan in sku.service_plans}
     for name, plan in plans.items():
-        print(f"{name} {plan.servicePlanId} {plan.provisioningStatus}")
+        print(f"{name} {plan.service_plan_id} {plan.provisioning_status}")
     if not args.plan_off:
         return
     if not args.user:
@@ -39,7 +39,7 @@ def main() -> None:
     unknown = [name for name in args.plan_off if name not in plans]
     if unknown:
         raise SystemExit(f"{sku.sku_part_number} has no plan named {', '.join(unknown)}")
-    disabled = StringCollection([plans[name].servicePlanId or "" for name in args.plan_off])
+    disabled = StringCollection([plans[name].service_plan_id or "" for name in args.plan_off])
     client.users.get_by_principal_name(args.user).assign_license(
         add_licenses=[AssignedLicense(skuId=sku.sku_id, disabledPlans=disabled)], remove_licenses=[]
     ).execute_query()
