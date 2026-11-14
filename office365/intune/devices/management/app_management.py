@@ -37,7 +37,7 @@ if TYPE_CHECKING:
         IosManagedAppProtection,
     )
     from office365.intune.devices.management.managed.app.status import ManagedAppStatus
-    from office365.intune.devices.management.managed.device_mobile_app_configuration import (
+    from office365.intune.devices.management.managed.mobile_app_configuration import (
         ManagedDeviceMobileAppConfiguration,
     )
     from office365.intune.devices.management.mdm_windows_information_protection_policy import (
@@ -159,7 +159,7 @@ class DeviceAppManagement(Entity):
     @property
     def mobile_app_configurations(self) -> EntityCollection[ManagedDeviceMobileAppConfiguration]:
         """Gets the mobileAppConfigurations property"""
-        from office365.intune.devices.management.managed.device_mobile_app_configuration import (
+        from office365.intune.devices.management.managed.mobile_app_configuration import (
             ManagedDeviceMobileAppConfiguration,
         )
 

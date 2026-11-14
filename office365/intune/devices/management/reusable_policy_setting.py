@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management_configuration_setting_instance import (
+from office365.intune.devices.management.configuration_setting_instance import (
     DeviceManagementConfigurationSettingInstance,
 )
 from office365.permissions import require_permission
@@ -15,8 +15,8 @@ from office365.runtime.types.odata_property import odata, version
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
-    from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
+    from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
+    from office365.intune.devices.management.reusable_policy_setting import DeviceManagementReusablePolicySetting
 
 
 @version("beta")
@@ -73,7 +73,7 @@ class DeviceManagementReusablePolicySetting(Entity):
     @property
     def referencing_configuration_policies(self) -> EntityCollection[DeviceManagementConfigurationPolicy]:
         """Gets the referencingConfigurationPolicies property"""
-        from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
+        from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
 
         return self.properties.get(
             "referencingConfigurationPolicies",
@@ -95,7 +95,7 @@ class DeviceManagementReusablePolicySetting(Entity):
     )
     def clone(self) -> DeviceManagementReusablePolicySetting:
         """clone operation."""
-        from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
+        from office365.intune.devices.management.reusable_policy_setting import DeviceManagementReusablePolicySetting
 
         return_type = DeviceManagementReusablePolicySetting(self.context)
         qry = ServiceOperationQuery(self, "clone", None, {}, None, return_type)

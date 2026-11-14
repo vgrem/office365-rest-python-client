@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from office365.intune.devices.management_configuration_device_mode import DeviceManagementConfigurationDeviceMode
-from office365.intune.devices.management_configuration_platforms import DeviceManagementConfigurationPlatforms
-from office365.intune.devices.management_configuration_technologies import DeviceManagementConfigurationTechnologies
+from office365.intune.devices.management.configuration_device_mode import DeviceManagementConfigurationDeviceMode
+from office365.intune.devices.management.configuration_platforms import DeviceManagementConfigurationPlatforms
+from office365.intune.devices.management.configuration_technologies import DeviceManagementConfigurationTechnologies
 from office365.runtime.client_value import ClientValue
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.intune.devices.management.managed.device_mobile_app_configuration import (
+from office365.intune.devices.management.managed.mobile_app_configuration import (
     ManagedDeviceMobileAppConfiguration,
 )
 from office365.intune.devices.management.mobileapps.app_configuration_setting_item import AppConfigurationSettingItem

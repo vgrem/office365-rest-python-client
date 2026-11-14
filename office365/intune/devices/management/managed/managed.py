@@ -21,15 +21,15 @@ from office365.intune.devices.management.exchangeaccessstatereason import (
     DeviceManagementExchangeAccessStateReason,
 )
 from office365.intune.devices.management.health_attestation_state import DeviceHealthAttestationState
-from office365.intune.devices.management.managed.compliancestate import ComplianceState
-from office365.intune.devices.management.managed.managementagenttype import (
+from office365.intune.devices.management.managed.agent_type import (
     ManagementAgentType,
 )
-from office365.intune.devices.management.managed.managementstate import ManagementState
+from office365.intune.devices.management.managed.compliancestate import ComplianceState
 from office365.intune.devices.management.managed.ownertype import ManagedDeviceOwnerType
 from office365.intune.devices.management.managed.partnerreportedhealthstate import (
     ManagedDevicePartnerReportedHealthState,
 )
+from office365.intune.devices.management.managed.state import ManagementState
 from office365.intune.devices.registrationstate import DeviceRegistrationState
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection

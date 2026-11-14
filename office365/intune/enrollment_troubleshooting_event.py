@@ -4,7 +4,7 @@ from typing import Optional
 
 from office365.intune.devices.enrollment.failurereason import DeviceEnrollmentFailureReason
 from office365.intune.devices.enrollment.type import DeviceEnrollmentType
-from office365.intune.devices.management_troubleshooting_event import DeviceManagementTroubleshootingEvent
+from office365.intune.devices.management.troubleshooting_event import DeviceManagementTroubleshootingEvent
 from office365.runtime.types.odata_property import odata
 
 

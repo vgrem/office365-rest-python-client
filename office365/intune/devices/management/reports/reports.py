@@ -13,7 +13,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_export_job import DeviceManagementExportJob
+    from office365.intune.devices.management.export_job import DeviceManagementExportJob
 
 
 class DeviceManagementReports(Entity):
@@ -23,7 +23,7 @@ class DeviceManagementReports(Entity):
     @property
     def export_jobs(self) -> EntityCollection[DeviceManagementExportJob]:
         """Gets the exportJobs property"""
-        from office365.intune.devices.management_export_job import (
+        from office365.intune.devices.management.export_job import (
             DeviceManagementExportJob,
         )
 

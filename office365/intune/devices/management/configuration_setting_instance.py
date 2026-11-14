@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.intune.devices.management_configuration_setting_instance_template_reference import (
+from office365.intune.devices.management.configuration_setting_instance_template_reference import (
     DeviceManagementConfigurationSettingInstanceTemplateReference,
 )
 from office365.runtime.client_value import ClientValue

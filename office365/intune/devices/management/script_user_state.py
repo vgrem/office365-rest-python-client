@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_script_device_state import DeviceManagementScriptDeviceState
+    from office365.intune.devices.management.script_device_state import DeviceManagementScriptDeviceState
 
 
 @version("beta")
@@ -35,7 +35,7 @@ class DeviceManagementScriptUserState(Entity):
     @property
     def device_run_states(self) -> EntityCollection[DeviceManagementScriptDeviceState]:
         """Gets the deviceRunStates property"""
-        from office365.intune.devices.management_script_device_state import DeviceManagementScriptDeviceState
+        from office365.intune.devices.management.script_device_state import DeviceManagementScriptDeviceState
 
         return self.properties.get(
             "deviceRunStates",

@@ -10,7 +10,7 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.device_metadata import DeviceMetadata
+    from office365.intune.devices.metadata import DeviceMetadata
     from office365.security.datasecurity.integrated_application_metadata import IntegratedApplicationMetadata
     from office365.security.datasecurity.policy_location import PolicyLocation
     from office365.security.datasecurity.policy_tenant_scope import PolicyTenantScope

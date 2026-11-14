@@ -15,11 +15,11 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.compliance.device_overview import (
-        DeviceComplianceDeviceOverview,
-    )
     from office365.intune.devices.compliance.device_status import (
         DeviceComplianceDeviceStatus,
+    )
+    from office365.intune.devices.compliance.overview import (
+        DeviceComplianceDeviceOverview,
     )
     from office365.intune.devices.compliance.policy_assignment import (
         DeviceCompliancePolicyAssignment,
@@ -121,7 +121,7 @@ class DeviceCompliancePolicy(Entity):
     @property
     def device_status_overview(self) -> DeviceComplianceDeviceOverview:
         """Gets the deviceStatusOverview property"""
-        from office365.intune.devices.compliance.device_overview import (
+        from office365.intune.devices.compliance.overview import (
             DeviceComplianceDeviceOverview,
         )
 

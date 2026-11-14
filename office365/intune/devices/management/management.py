@@ -15,19 +15,19 @@ from office365.intune.devices.category_collection import DeviceCategoryCollectio
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
 )
-from office365.intune.devices.management.device_protection_overview import DeviceProtectionOverview
 from office365.intune.devices.management.managed.collection import (
     ManagedDeviceCollection,
 )
+from office365.intune.devices.management.protection_overview import DeviceProtectionOverview
 from office365.intune.devices.management.reports.reports import DeviceManagementReports
 from office365.intune.devices.management.settings import DeviceManagementSettings
 from office365.intune.devices.management.subscriptionstate import DeviceManagementSubscriptionState
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
-from office365.intune.devices.management.user_experience_analytics_settings import UserExperienceAnalyticsSettings
+from office365.intune.devices.management.userexperienceanalytics.settings import UserExperienceAnalyticsSettings
 from office365.intune.devices.management.virtualendpoint.virtual_endpoint import (
     VirtualEndpoint,
 )
-from office365.intune.devices.management.windows_malware_overview import WindowsMalwareOverview
+from office365.intune.devices.management.windowsmalware.overview import WindowsMalwareOverview
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -68,7 +68,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.configurations.configuration import (
         DeviceConfiguration,
     )
-    from office365.intune.devices.configurations.device_state_summary import (
+    from office365.intune.devices.configurations.state_summary import (
         DeviceConfigurationDeviceStateSummary,
     )
     from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
@@ -77,13 +77,29 @@ if TYPE_CHECKING:
         ApplePushNotificationCertificate,
     )
     from office365.intune.devices.management.assignment_filter import DeviceAndAppManagementAssignmentFilter
+    from office365.intune.devices.management.compliance_policy import DeviceManagementCompliancePolicy
+    from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
+    from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
+    from office365.intune.devices.management.configuration_policy_template import (
+        DeviceManagementConfigurationPolicyTemplate,
+    )
+    from office365.intune.devices.management.configuration_setting_definition import (
+        DeviceManagementConfigurationSettingDefinition,
+    )
+    from office365.intune.devices.management.configuration_setting_template import (
+        DeviceManagementConfigurationSettingTemplate,
+    )
     from office365.intune.devices.management.detected_app import DetectedApp
+    from office365.intune.devices.management.exchange_connector import (
+        DeviceManagementExchangeConnector,
+    )
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
     )
+    from office365.intune.devices.management.intent import DeviceManagementIntent
     from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
-    from office365.intune.devices.management.managed.device_overview import ManagedDeviceOverview
     from office365.intune.devices.management.managed.managed import ManagedDevice
+    from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
     from office365.intune.devices.management.mobile_threat_defense_connector import (
         MobileThreatDefenseConnector,
     )
@@ -96,15 +112,21 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.on_premises_conditional_access_settings import (
         OnPremisesConditionalAccessSettings,
     )
+    from office365.intune.devices.management.partner import DeviceManagementPartner
     from office365.intune.devices.management.remoteassistance.partner import (
         RemoteAssistancePartner,
     )
     from office365.intune.devices.management.resource_operation import ResourceOperation
+    from office365.intune.devices.management.reusable_policy_setting import DeviceManagementReusablePolicySetting
     from office365.intune.devices.management.role_assignment import (
         DeviceAndAppManagementRoleAssignment,
     )
+    from office365.intune.devices.management.script import DeviceManagementScript
     from office365.intune.devices.management.software_update_status_summary import (
         SoftwareUpdateStatusSummary,
+    )
+    from office365.intune.devices.management.troubleshooting_event import (
+        DeviceManagementTroubleshootingEvent,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version_details import (  # noqa: E501
         UserExperienceAnalyticsAppHealthAppPerformanceByAppVersionDetails,
@@ -188,28 +210,6 @@ if TYPE_CHECKING:
         WindowsInformationProtectionNetworkLearningSummary,
     )
     from office365.intune.devices.management.windowsmalware.windows_malware_information import WindowsMalwareInformation
-    from office365.intune.devices.management_compliance_policy import DeviceManagementCompliancePolicy
-    from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
-    from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
-    from office365.intune.devices.management_configuration_policy_template import (
-        DeviceManagementConfigurationPolicyTemplate,
-    )
-    from office365.intune.devices.management_configuration_setting_definition import (
-        DeviceManagementConfigurationSettingDefinition,
-    )
-    from office365.intune.devices.management_configuration_setting_template import (
-        DeviceManagementConfigurationSettingTemplate,
-    )
-    from office365.intune.devices.management_exchange_connector import (
-        DeviceManagementExchangeConnector,
-    )
-    from office365.intune.devices.management_intent import DeviceManagementIntent
-    from office365.intune.devices.management_partner import DeviceManagementPartner
-    from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
-    from office365.intune.devices.management_script import DeviceManagementScript
-    from office365.intune.devices.management_troubleshooting_event import (
-        DeviceManagementTroubleshootingEvent,
-    )
     from office365.intune.devices.shell_script import DeviceShellScript
     from office365.intune.windows_driver_update_profile import WindowsDriverUpdateProfile
     from office365.intune.windows_feature_update_profile import WindowsFeatureUpdateProfile
@@ -405,7 +405,7 @@ class DeviceManagement(Entity):
     @property
     def device_configuration_device_state_summaries(self) -> DeviceConfigurationDeviceStateSummary:
         """Gets the deviceConfigurationDeviceStateSummaries property"""
-        from office365.intune.devices.configurations.device_state_summary import (
+        from office365.intune.devices.configurations.state_summary import (
             DeviceConfigurationDeviceStateSummary,
         )
 
@@ -493,7 +493,7 @@ class DeviceManagement(Entity):
     @property
     def device_management_partners(self) -> EntityCollection[DeviceManagementPartner]:
         """Gets the deviceManagementPartners property"""
-        from office365.intune.devices.management_partner import DeviceManagementPartner
+        from office365.intune.devices.management.partner import DeviceManagementPartner
 
         return self.properties.get(
             "deviceManagementPartners",
@@ -506,7 +506,7 @@ class DeviceManagement(Entity):
     @property
     def exchange_connectors(self) -> EntityCollection[DeviceManagementExchangeConnector]:
         """Gets the exchangeConnectors property"""
-        from office365.intune.devices.management_exchange_connector import (
+        from office365.intune.devices.management.exchange_connector import (
             DeviceManagementExchangeConnector,
         )
 
@@ -564,7 +564,7 @@ class DeviceManagement(Entity):
     @property
     def managed_device_overview(self) -> ManagedDeviceOverview:
         """Gets the managedDeviceOverview property"""
-        from office365.intune.devices.management.managed.device_overview import ManagedDeviceOverview
+        from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
 
         return self.properties.get(
             "managedDeviceOverview",
@@ -1134,7 +1134,7 @@ class DeviceManagement(Entity):
     @property
     def troubleshooting_events(self) -> EntityCollection[DeviceManagementTroubleshootingEvent]:
         """Gets the troubleshootingEvents property"""
-        from office365.intune.devices.management_troubleshooting_event import (
+        from office365.intune.devices.management.troubleshooting_event import (
             DeviceManagementTroubleshootingEvent,
         )
 
@@ -1279,7 +1279,7 @@ class DeviceManagement(Entity):
     @property
     def compliance_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
         """Gets the complianceCategories property"""
-        from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
+        from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
 
         return self.properties.get(
             "complianceCategories",
@@ -1294,7 +1294,7 @@ class DeviceManagement(Entity):
     @property
     def compliance_policies(self) -> EntityCollection[DeviceManagementCompliancePolicy]:
         """Gets the compliancePolicies property"""
-        from office365.intune.devices.management_compliance_policy import DeviceManagementCompliancePolicy
+        from office365.intune.devices.management.compliance_policy import DeviceManagementCompliancePolicy
 
         return self.properties.get(
             "compliancePolicies",
@@ -1307,7 +1307,7 @@ class DeviceManagement(Entity):
     @property
     def compliance_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the complianceSettings property"""
-        from office365.intune.devices.management_configuration_setting_definition import (
+        from office365.intune.devices.management.configuration_setting_definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1324,7 +1324,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
         """Gets the configurationCategories property"""
-        from office365.intune.devices.management_configuration_category import DeviceManagementConfigurationCategory
+        from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
 
         return self.properties.get(
             "configurationCategories",
@@ -1339,7 +1339,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_policies(self) -> EntityCollection[DeviceManagementConfigurationPolicy]:
         """Gets the configurationPolicies property"""
-        from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
+        from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
 
         return self.properties.get(
             "configurationPolicies",
@@ -1354,7 +1354,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_policy_templates(self) -> EntityCollection[DeviceManagementConfigurationPolicyTemplate]:
         """Gets the configurationPolicyTemplates property"""
-        from office365.intune.devices.management_configuration_policy_template import (
+        from office365.intune.devices.management.configuration_policy_template import (
             DeviceManagementConfigurationPolicyTemplate,
         )
 
@@ -1371,7 +1371,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the configurationSettings property"""
-        from office365.intune.devices.management_configuration_setting_definition import (
+        from office365.intune.devices.management.configuration_setting_definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1388,7 +1388,7 @@ class DeviceManagement(Entity):
     @property
     def reusable_policy_settings(self) -> EntityCollection[DeviceManagementReusablePolicySetting]:
         """Gets the reusablePolicySettings property"""
-        from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
+        from office365.intune.devices.management.reusable_policy_setting import DeviceManagementReusablePolicySetting
 
         return self.properties.get(
             "reusablePolicySettings",
@@ -1403,7 +1403,7 @@ class DeviceManagement(Entity):
     @property
     def reusable_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the reusableSettings property"""
-        from office365.intune.devices.management_configuration_setting_definition import (
+        from office365.intune.devices.management.configuration_setting_definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1420,7 +1420,7 @@ class DeviceManagement(Entity):
     @property
     def template_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingTemplate]:
         """Gets the templateSettings property"""
-        from office365.intune.devices.management_configuration_setting_template import (
+        from office365.intune.devices.management.configuration_setting_template import (
             DeviceManagementConfigurationSettingTemplate,
         )
 
@@ -1807,7 +1807,7 @@ class DeviceManagement(Entity):
     @property
     def device_management_scripts(self) -> EntityCollection[DeviceManagementScript]:
         """Gets the deviceManagementScripts property"""
-        from office365.intune.devices.management_script import DeviceManagementScript
+        from office365.intune.devices.management.script import DeviceManagementScript
 
         return self.properties.get(
             "deviceManagementScripts",
@@ -1874,7 +1874,7 @@ class DeviceManagement(Entity):
     @property
     def intents(self) -> EntityCollection[DeviceManagementIntent]:
         """Gets the intents property"""
-        from office365.intune.devices.management_intent import DeviceManagementIntent
+        from office365.intune.devices.management.intent import DeviceManagementIntent
 
         return self.properties.get(
             "intents",

@@ -96,6 +96,27 @@ navigation, and that a facet names one of the declared roles. Run it after touch
 
 ---
 
+## Keep the tree where the routing says it belongs
+
+Placement descends: a type whose class name repeats the package it lives in belongs in
+the subpackage that consumes the name. New types follow that rule, and `--place`
+re-applies it to files written before their subpackage existed:
+
+```bash
+uv run python -m generator graph --place office365/intune               # what it would move
+uv run python -m generator graph --place office365/intune --apply-place # move, rewrite imports
+```
+
+It reads the tree rather than the metadata, so it answers in a second; `--apply-place`
+moves the files and rewrites every module that imported them. Running it on a placed tree
+proposes nothing, which is the invariant
+`tests/tooling/test_generator_placement_pass.py` pins for Intune -- so a new beta type
+that lands flat is caught by re-running it, not by a reviewer noticing.
+See `generator/PLACEMENT.md` for the rules it enforces and for why it will not lengthen a
+stem.
+
+---
+
 ## Set up live authentication
 
 Credentials live in one `.env` at the repo root (loaded automatically, nothing to

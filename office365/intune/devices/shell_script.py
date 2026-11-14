@@ -18,11 +18,11 @@ from office365.runtime.types.odata_property import odata, version
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from office365.intune.devices.management_script_assignment import DeviceManagementScriptAssignment
-    from office365.intune.devices.management_script_device_state import DeviceManagementScriptDeviceState
-    from office365.intune.devices.management_script_group_assignment import DeviceManagementScriptGroupAssignment
-    from office365.intune.devices.management_script_run_summary import DeviceManagementScriptRunSummary
-    from office365.intune.devices.management_script_user_state import DeviceManagementScriptUserState
+    from office365.intune.devices.management.script_assignment import DeviceManagementScriptAssignment
+    from office365.intune.devices.management.script_device_state import DeviceManagementScriptDeviceState
+    from office365.intune.devices.management.script_group_assignment import DeviceManagementScriptGroupAssignment
+    from office365.intune.devices.management.script_run_summary import DeviceManagementScriptRunSummary
+    from office365.intune.devices.management.script_user_state import DeviceManagementScriptUserState
 
 
 @version("beta")
@@ -97,7 +97,7 @@ class DeviceShellScript(Entity):
     @property
     def assignments(self) -> EntityCollection[DeviceManagementScriptAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.management_script_assignment import DeviceManagementScriptAssignment
+        from office365.intune.devices.management.script_assignment import DeviceManagementScriptAssignment
 
         return self.properties.get(
             "assignments",
@@ -110,7 +110,7 @@ class DeviceShellScript(Entity):
     @property
     def device_run_states(self) -> EntityCollection[DeviceManagementScriptDeviceState]:
         """Gets the deviceRunStates property"""
-        from office365.intune.devices.management_script_device_state import DeviceManagementScriptDeviceState
+        from office365.intune.devices.management.script_device_state import DeviceManagementScriptDeviceState
 
         return self.properties.get(
             "deviceRunStates",
@@ -123,7 +123,7 @@ class DeviceShellScript(Entity):
     @property
     def group_assignments(self) -> EntityCollection[DeviceManagementScriptGroupAssignment]:
         """Gets the groupAssignments property"""
-        from office365.intune.devices.management_script_group_assignment import DeviceManagementScriptGroupAssignment
+        from office365.intune.devices.management.script_group_assignment import DeviceManagementScriptGroupAssignment
 
         return self.properties.get(
             "groupAssignments",
@@ -136,7 +136,7 @@ class DeviceShellScript(Entity):
     @property
     def run_summary(self) -> DeviceManagementScriptRunSummary:
         """Gets the runSummary property"""
-        from office365.intune.devices.management_script_run_summary import DeviceManagementScriptRunSummary
+        from office365.intune.devices.management.script_run_summary import DeviceManagementScriptRunSummary
 
         return self.properties.get(
             "runSummary", DeviceManagementScriptRunSummary(self.context, ResourcePath("runSummary", self.resource_path))
@@ -146,7 +146,7 @@ class DeviceShellScript(Entity):
     @property
     def user_run_states(self) -> EntityCollection[DeviceManagementScriptUserState]:
         """Gets the userRunStates property"""
-        from office365.intune.devices.management_script_user_state import DeviceManagementScriptUserState
+        from office365.intune.devices.management.script_user_state import DeviceManagementScriptUserState
 
         return self.properties.get(
             "userRunStates",

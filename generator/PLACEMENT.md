@@ -1,8 +1,8 @@
 # Placement contract
 
-How the generator decides where a generated type lives. This is a decision
-table, not a test: `tests/tooling` covers an end-to-end run and the
-preservation of hand-written code, not placement.
+How the generator decides where a generated type lives: the decision table the
+generator follows, the one pass that re-applies it to files already written, and the
+invariant `tests/tooling/test_generator_placement_pass.py` pins.
 
 ## Target levels
 
@@ -46,6 +46,34 @@ Then **hierarchical descent**: if the routed directory contains a subpackage
 whose (underscore-insensitive) name matches the class-name prefix, the file goes
 into it with the prefix stripped —
 `AccessReviewError → …/accessreview/error.py`, `PrintSettings → …/print/settings.py`.
+
+## Applying the descent to files already written
+
+Descent answers for a **new** type, and rule 1 makes placement sticky, so nothing ever
+revisited the files written before their subpackage existed. A tree therefore grows one
+flat layer beside its own subpackages: `devices/management_intent.py` next to
+`devices/management/intent.py`. `--place` is that revisit:
+
+```bash
+uv run python -m generator graph --place office365/intune            # what it would move
+uv run python -m generator graph --place office365/intune --apply-place
+uv run python -m generator graph --place                             # the whole model
+```
+
+It reads the tree, not the metadata, so it answers in a second and takes the same
+`PACKAGE` scope `--audit` does. Two rules keep it from arguing with the tree:
+
+- **a move may shorten a stem, never lengthen one.** `device_status.py` is a decision;
+  renaming it back to `device_compliance_device_status.py` re-adds the prefix the parent
+  package already says. Such files stay where they are.
+- **a move descends, never climbs**, so applying the plan to its own output terminates
+  and a second run proposes nothing. `--place` on an already-placed tree is a no-op, and
+  that is the invariant the test asserts for `office365/intune`.
+
+A target file that is already taken is reported as **blocked** rather than overwritten:
+that is a duplicate to review, not a move to make. Moved modules have their importers
+rewritten in the same pass — textually, over `.py` and `.md`, whole tokens only, so a
+module that is a prefix of another is not clipped.
 
 ## Invariants
 

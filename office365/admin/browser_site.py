@@ -5,7 +5,7 @@ from typing import Optional
 
 from office365.directory.identity_set import IdentitySet
 from office365.entity import Entity
-from office365.intune.browser.browser_site_history import BrowserSiteHistory
+from office365.intune.browser.site_history import BrowserSiteHistory
 from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibilityMode
 from office365.intune.browser.sitemergetype import BrowserSiteMergeType
 from office365.intune.browser.sitestatus import BrowserSiteStatus

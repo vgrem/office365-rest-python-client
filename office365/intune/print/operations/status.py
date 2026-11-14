@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.intune.print.operationprocessingstate import (
+from office365.intune.print.operations.processing_state import (
     PrintOperationProcessingState,
 )
 from office365.runtime.client_value import ClientValue

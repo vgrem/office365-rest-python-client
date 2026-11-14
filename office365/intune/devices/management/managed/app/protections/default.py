@@ -13,7 +13,7 @@ from office365.runtime.types.key_value_pair import KeyValuePair
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.app_policy_deployment_summary import (
+    from office365.intune.devices.management.managed.app.policy_deployment_summary import (
         ManagedAppPolicyDeploymentSummary,
     )
     from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
@@ -99,7 +99,7 @@ class DefaultManagedAppProtection(ManagedAppProtection):
     @property
     def deployment_summary(self) -> ManagedAppPolicyDeploymentSummary:
         """Gets the deploymentSummary property"""
-        from office365.intune.devices.management.managed.app_policy_deployment_summary import (
+        from office365.intune.devices.management.managed.app.policy_deployment_summary import (
             ManagedAppPolicyDeploymentSummary,
         )
 

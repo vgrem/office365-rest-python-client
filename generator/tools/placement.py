@@ -87,12 +87,20 @@ class PlacementPlan:
     root: str
     moves: List[PlacementMove] = field(default_factory=list)
     skipped: List[str] = field(default_factory=list)
+    #: Moves the descent wanted but the tree refused: the target file is taken by a
+    #: module that defines the same class, which is a duplicate to review, not to merge.
+    blocked: List[PlacementMove] = field(default_factory=list)
 
     def is_empty(self) -> bool:
         return not self.moves
 
     def to_dict(self) -> dict:
-        return {"root": self.root, "moves": [move.to_dict() for move in self.moves], "skipped": list(self.skipped)}
+        return {
+            "root": self.root,
+            "moves": [move.to_dict() for move in self.moves],
+            "blocked": [move.to_dict() for move in self.blocked],
+            "skipped": list(self.skipped),
+        }
 
     def render(self, base: Optional[str] = None) -> str:
         """The plan as a report: one line per move, then the count that matters."""
@@ -105,8 +113,11 @@ class PlacementPlan:
         shortened = sum(1 for move in self.moves if move.stem != move.new_stem)
         lines.append(
             f"placement: {len(self.moves)} move(s) in {self.root} "
-            f"({shortened} shortening a stem, {len(self.skipped)} module(s) unreadable)"
+            f"({shortened} shortening a stem, {len(self.blocked)} blocked, {len(self.skipped)} module(s) unreadable)"
         )
+        for move in self.blocked:
+            pair = f"{_relative(move.path, base)}  ->  {_relative(move.new_path, base)}"
+            lines.append(f"  blocked: {pair}  (target taken)")
         return "\n".join(lines)
 
 
@@ -142,6 +153,7 @@ def plan_placement(root: Path | str, output_base: str, repo_root: Path | str) ->
     """
     base = Path(repo_root)
     moves: List[PlacementMove] = []
+    blocked: List[PlacementMove] = []
     skipped: List[str] = []
     for path in sorted(Path(root).rglob("*.py")):
         if PRUNED & set(path.parts) or path.name == "__init__.py":
@@ -162,8 +174,12 @@ def plan_placement(root: Path | str, output_base: str, repo_root: Path | str) ->
         # `device_status.py`), which is the derivation arguing with the tree.
         if len(new_stem) > len(stem) or (Path(new_path).parent == Path(relative).parent and new_stem == stem):
             continue
-        moves.append(PlacementMove(path=relative, new_path=new_path, class_name=class_name))
-    return PlacementPlan(root=_relative(str(Path(root)), str(base)), moves=moves, skipped=skipped)
+        move = PlacementMove(path=relative, new_path=new_path, class_name=class_name)
+        if (base / new_path).exists():
+            blocked.append(move)
+        else:
+            moves.append(move)
+    return PlacementPlan(root=_relative(str(Path(root)), str(base)), moves=moves, skipped=skipped, blocked=blocked)
 
 
 def rewrite_imports(
@@ -199,6 +215,8 @@ def rewrite_imports(
 def _move(path: Path, new_path: Path, repo_root: Path) -> None:
     """``git mv`` when the tree is a repository, so the rename stays a rename."""
     new_path.parent.mkdir(parents=True, exist_ok=True)
+    if new_path.exists():
+        raise FileExistsError(f"placement would overwrite {new_path}")
     if (repo_root / ".git").exists():
         result = subprocess.run(
             ["git", "mv", str(path), str(new_path)], cwd=str(repo_root), capture_output=True, text=True, check=False
@@ -241,15 +259,16 @@ def place(
     """
     root_path = Path(root)
     moves: List[PlacementMove] = []
+    blocked: List[PlacementMove] = []
     skipped: List[str] = []
     for _ in range(limit if apply else 1):
         plan = plan_placement(root_path, output_base, repo_root)
         moves.extend(plan.moves)
-        skipped = plan.skipped
+        blocked, skipped = plan.blocked, plan.skipped
         if plan.is_empty() or not apply:
             break
         apply_placement(plan, repo_root)
-    return PlacementPlan(root=_relative(str(root_path), str(repo_root)), moves=moves, skipped=skipped)
+    return PlacementPlan(root=_relative(str(root_path), str(repo_root)), moves=moves, skipped=skipped, blocked=blocked)
 
 
 __all__ = [

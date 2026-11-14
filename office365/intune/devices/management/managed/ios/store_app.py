@@ -4,7 +4,7 @@ from typing import Optional
 
 from office365.intune.devices.configurations.ios.minimum_operating_system import IosMinimumOperatingSystem
 from office365.intune.devices.management.managed.app.app import ManagedApp
-from office365.intune.devices.management.mobileapps.ios.ios_device_type import IosDeviceType
+from office365.intune.devices.management.mobileapps.ios.type import IosDeviceType
 from office365.runtime.types.odata_property import odata
 
 

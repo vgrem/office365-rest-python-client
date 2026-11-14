@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.intune.devices.configurations.ios.iosnotificationalerttype import (
+from office365.intune.devices.configurations.ios.notification_alert_type import (
     IosNotificationAlertType,
 )
 from office365.runtime.client_value import ClientValue

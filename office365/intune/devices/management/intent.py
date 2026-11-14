@@ -14,17 +14,17 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_intent import DeviceManagementIntent
-    from office365.intune.devices.management_intent_assignment import DeviceManagementIntentAssignment
-    from office365.intune.devices.management_intent_device_setting_state_summary import (
+    from office365.intune.devices.management.intent import DeviceManagementIntent
+    from office365.intune.devices.management.intent_assignment import DeviceManagementIntentAssignment
+    from office365.intune.devices.management.intent_device_setting_state_summary import (
         DeviceManagementIntentDeviceSettingStateSummary,
     )
-    from office365.intune.devices.management_intent_device_state import DeviceManagementIntentDeviceState
-    from office365.intune.devices.management_intent_device_state_summary import DeviceManagementIntentDeviceStateSummary
-    from office365.intune.devices.management_intent_setting_category import DeviceManagementIntentSettingCategory
-    from office365.intune.devices.management_intent_user_state import DeviceManagementIntentUserState
-    from office365.intune.devices.management_intent_user_state_summary import DeviceManagementIntentUserStateSummary
-    from office365.intune.devices.management_setting_instance import DeviceManagementSettingInstance
+    from office365.intune.devices.management.intent_device_state import DeviceManagementIntentDeviceState
+    from office365.intune.devices.management.intent_device_state_summary import DeviceManagementIntentDeviceStateSummary
+    from office365.intune.devices.management.intent_setting_category import DeviceManagementIntentSettingCategory
+    from office365.intune.devices.management.intent_user_state import DeviceManagementIntentUserState
+    from office365.intune.devices.management.intent_user_state_summary import DeviceManagementIntentUserStateSummary
+    from office365.intune.devices.management.setting_instance import DeviceManagementSettingInstance
 
 
 @version("beta")
@@ -75,7 +75,7 @@ class DeviceManagementIntent(Entity):
     @property
     def assignments(self) -> EntityCollection[DeviceManagementIntentAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.management_intent_assignment import DeviceManagementIntentAssignment
+        from office365.intune.devices.management.intent_assignment import DeviceManagementIntentAssignment
 
         return self.properties.get(
             "assignments",
@@ -88,7 +88,7 @@ class DeviceManagementIntent(Entity):
     @property
     def categories(self) -> EntityCollection[DeviceManagementIntentSettingCategory]:
         """Gets the categories property"""
-        from office365.intune.devices.management_intent_setting_category import DeviceManagementIntentSettingCategory
+        from office365.intune.devices.management.intent_setting_category import DeviceManagementIntentSettingCategory
 
         return self.properties.get(
             "categories",
@@ -101,7 +101,7 @@ class DeviceManagementIntent(Entity):
     @property
     def device_setting_state_summaries(self) -> EntityCollection[DeviceManagementIntentDeviceSettingStateSummary]:
         """Gets the deviceSettingStateSummaries property"""
-        from office365.intune.devices.management_intent_device_setting_state_summary import (
+        from office365.intune.devices.management.intent_device_setting_state_summary import (
             DeviceManagementIntentDeviceSettingStateSummary,
         )
 
@@ -118,7 +118,7 @@ class DeviceManagementIntent(Entity):
     @property
     def device_states(self) -> EntityCollection[DeviceManagementIntentDeviceState]:
         """Gets the deviceStates property"""
-        from office365.intune.devices.management_intent_device_state import DeviceManagementIntentDeviceState
+        from office365.intune.devices.management.intent_device_state import DeviceManagementIntentDeviceState
 
         return self.properties.get(
             "deviceStates",
@@ -131,7 +131,7 @@ class DeviceManagementIntent(Entity):
     @property
     def device_state_summary(self) -> DeviceManagementIntentDeviceStateSummary:
         """Gets the deviceStateSummary property"""
-        from office365.intune.devices.management_intent_device_state_summary import (
+        from office365.intune.devices.management.intent_device_state_summary import (
             DeviceManagementIntentDeviceStateSummary,
         )
 
@@ -146,7 +146,7 @@ class DeviceManagementIntent(Entity):
     @property
     def settings(self) -> EntityCollection[DeviceManagementSettingInstance]:
         """Gets the settings property"""
-        from office365.intune.devices.management_setting_instance import DeviceManagementSettingInstance
+        from office365.intune.devices.management.setting_instance import DeviceManagementSettingInstance
 
         return self.properties.get(
             "settings",
@@ -159,7 +159,7 @@ class DeviceManagementIntent(Entity):
     @property
     def user_states(self) -> EntityCollection[DeviceManagementIntentUserState]:
         """Gets the userStates property"""
-        from office365.intune.devices.management_intent_user_state import DeviceManagementIntentUserState
+        from office365.intune.devices.management.intent_user_state import DeviceManagementIntentUserState
 
         return self.properties.get(
             "userStates",
@@ -172,7 +172,7 @@ class DeviceManagementIntent(Entity):
     @property
     def user_state_summary(self) -> DeviceManagementIntentUserStateSummary:
         """Gets the userStateSummary property"""
-        from office365.intune.devices.management_intent_user_state_summary import DeviceManagementIntentUserStateSummary
+        from office365.intune.devices.management.intent_user_state_summary import DeviceManagementIntentUserStateSummary
 
         return self.properties.get(
             "userStateSummary",
@@ -203,7 +203,7 @@ class DeviceManagementIntent(Entity):
             description (str):
                 description parameter
         """
-        from office365.intune.devices.management_intent import DeviceManagementIntent
+        from office365.intune.devices.management.intent import DeviceManagementIntent
 
         return_type = DeviceManagementIntent(self.context)
         qry = ServiceOperationQuery(

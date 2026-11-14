@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_setting_instance import DeviceManagementSettingInstance
+    from office365.intune.devices.management.setting_instance import DeviceManagementSettingInstance
 
 
 @version("beta")
@@ -17,7 +17,7 @@ class DeviceManagementIntentSettingCategory(Entity):
     @property
     def settings(self) -> EntityCollection[DeviceManagementSettingInstance]:
         """Gets the settings property"""
-        from office365.intune.devices.management_setting_instance import DeviceManagementSettingInstance
+        from office365.intune.devices.management.setting_instance import DeviceManagementSettingInstance
 
         return self.properties.get(
             "settings",

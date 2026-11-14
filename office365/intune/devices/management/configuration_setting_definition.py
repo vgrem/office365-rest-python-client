@@ -3,24 +3,24 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
-from office365.intune.devices.management_configuration_control_type import DeviceManagementConfigurationControlType
-from office365.intune.devices.management_configuration_referred_setting_information import (
+from office365.intune.devices.management.configuration_control_type import DeviceManagementConfigurationControlType
+from office365.intune.devices.management.configuration_referred_setting_information import (
     DeviceManagementConfigurationReferredSettingInformation,
 )
-from office365.intune.devices.management_configuration_setting_access_types import (
+from office365.intune.devices.management.configuration_setting_access_types import (
     DeviceManagementConfigurationSettingAccessTypes,
 )
-from office365.intune.devices.management_configuration_setting_applicability import (
+from office365.intune.devices.management.configuration_setting_applicability import (
     DeviceManagementConfigurationSettingApplicability,
 )
-from office365.intune.devices.management_configuration_setting_occurrence import (
+from office365.intune.devices.management.configuration_setting_occurrence import (
     DeviceManagementConfigurationSettingOccurrence,
 )
-from office365.intune.devices.management_configuration_setting_risk_level import (
+from office365.intune.devices.management.configuration_setting_risk_level import (
     DeviceManagementConfigurationSettingRiskLevel,
 )
-from office365.intune.devices.management_configuration_setting_usage import DeviceManagementConfigurationSettingUsage
-from office365.intune.devices.management_configuration_setting_visibility import (
+from office365.intune.devices.management.configuration_setting_usage import DeviceManagementConfigurationSettingUsage
+from office365.intune.devices.management.configuration_setting_visibility import (
     DeviceManagementConfigurationSettingVisibility,
 )
 from office365.runtime.client_value_collection import ClientValueCollection

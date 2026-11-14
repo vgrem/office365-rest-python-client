@@ -6,7 +6,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.configurations.windows.minimum_operating_system import WindowsMinimumOperatingSystem
 from office365.intune.devices.management.mobileapps.mobile_lob_app import MobileLobApp
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
-from office365.intune.devices.management.mobileapps.windows.devicetype import WindowsDeviceType
+from office365.intune.devices.management.mobileapps.windows.type import WindowsDeviceType
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 

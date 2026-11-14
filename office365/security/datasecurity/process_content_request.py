@@ -8,7 +8,7 @@ from office365.directory.identitygovernance.process_content_metadata_base import
 from office365.directory.policies.protected_application_metadata import (
     ProtectedApplicationMetadata,
 )
-from office365.intune.devices.device_metadata import DeviceMetadata
+from office365.intune.devices.metadata import DeviceMetadata
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.activity_metadata import ActivityMetadata

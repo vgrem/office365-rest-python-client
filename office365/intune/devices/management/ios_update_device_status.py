@@ -5,7 +5,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.intune.devices.compliance.status import ComplianceStatus
-from office365.intune.devices.configurations.ios.iosupdatesinstallstatus import IosUpdatesInstallStatus
+from office365.intune.devices.configurations.ios.updates_install_status import IosUpdatesInstallStatus
 from office365.runtime.types.odata_property import odata
 
 

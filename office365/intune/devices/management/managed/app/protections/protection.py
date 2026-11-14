@@ -3,10 +3,10 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Optional
 
+from office365.intune.devices.management.managed.app.browser_type import ManagedBrowserType
 from office365.intune.devices.management.managed.app.clipboardsharinglevel import ManagedAppClipboardSharingLevel
 from office365.intune.devices.management.managed.app.datastoragelocation import ManagedAppDataStorageLocation
 from office365.intune.devices.management.managed.app.datatransferlevel import ManagedAppDataTransferLevel
-from office365.intune.devices.management.managed.app.managedbrowsertype import ManagedBrowserType
 from office365.intune.devices.management.managed.app.pincharacterset import ManagedAppPinCharacterSet
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.client_value_collection import ClientValueCollection

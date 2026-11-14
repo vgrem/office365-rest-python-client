@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management_configuration_setting_instance_template import (
+from office365.intune.devices.management.configuration_setting_instance_template import (
     DeviceManagementConfigurationSettingInstanceTemplate,
 )
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_configuration_setting_definition import (
+    from office365.intune.devices.management.configuration_setting_definition import (
         DeviceManagementConfigurationSettingDefinition,
     )
 
@@ -28,7 +28,7 @@ class DeviceManagementConfigurationSettingTemplate(Entity):
     @property
     def setting_definitions(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the settingDefinitions property"""
-        from office365.intune.devices.management_configuration_setting_definition import (
+        from office365.intune.devices.management.configuration_setting_definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 

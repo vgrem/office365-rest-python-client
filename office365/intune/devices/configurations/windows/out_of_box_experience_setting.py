@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.intune.devices.configurations.windows.windowsusertype import (
+from office365.intune.devices.configurations.windows.user_type import (
     WindowsUserType,
 )
 from office365.intune.devices.management.managed.windows.usagetype import (

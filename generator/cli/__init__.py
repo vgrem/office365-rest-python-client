@@ -308,6 +308,34 @@ def fetch_services() -> None:
     log.info(f"Fetched {len(services)} type->service mappings -> {path}")
 
 
+def place_model(
+    service: str,
+    package: Optional[str] = None,
+    *,
+    apply: bool = False,
+    report_path: Optional[str] = None,
+) -> int:
+    """Move the modules a subpackage already claims, and print what the pass did.
+
+    Reading the tree instead of the metadata is the point: placement is a property of the
+    files, so the pass runs in a second and answers for a directory as well as for a
+    product -- the same scope shape ``--audit`` takes.
+    """
+    from generator.tools.placement import place, write_report
+
+    session = Session.open(service)
+    model_root = Path(session.options.output_path).resolve()
+    root = Path(package).resolve() if package else model_root / session.definition.model_package
+    if not root.is_dir():
+        log.error(f"error: {root} is not a directory")
+        return 1
+    plan = place(root, session.options.output_path, REPO_ROOT, apply=apply)
+    if report_path:
+        write_report(plan, report_path)
+    print(plan.render(str(REPO_ROOT)))
+    return 0
+
+
 def _run_standalone_command(args) -> Optional[int]:
     """Run a one-shot report command, or return ``None`` to generate the model."""
     if args.plan_keys or args.apply_keys:
@@ -330,12 +358,15 @@ def _run_standalone_command(args) -> Optional[int]:
             dry_run=args.dry_run,
         )
         return 0
-    if args.fetch_services:
-        fetch_services()
+    if args.fetch_services or args.suggest_routing:
+        # The two commands that read the documentation site instead of the metadata.
+        if args.fetch_services:
+            fetch_services()
+        else:
+            suggest_routing(args.service)
         return 0
-    if args.suggest_routing:
-        suggest_routing(args.service)
-        return 0
+    if args.place is not None:
+        return place_model(args.service, args.place or None, apply=args.apply_place, report_path=args.place_report)
     if args.audit is not None:
         return audit_model(args.service, args.audit or None, args.audit_report, args.audit_fail, args.audit_ratchet)
     return None
@@ -347,6 +378,7 @@ SUBCOMMANDS: dict[str, Optional[str]] = {
     "fetch": "--fetch",
     "routing": "--suggest-routing",
     "services": "--fetch-services",
+    "place": "--place",
     "keys": "--plan-keys",
     "verify": "--verify",
     "audit": "--audit",
@@ -457,6 +489,25 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dest="audit_ratchet",
         metavar="PATH",
         help="with --audit: exit non-zero when a kind outgrows its row in this ledger",
+    )
+    parser.add_argument(
+        "--place",
+        nargs="?",
+        const="",
+        metavar="PACKAGE",
+        help="print the modules a subpackage already claims and would move there, and exit",
+    )
+    parser.add_argument(
+        "--apply-place",
+        dest="apply_place",
+        action="store_true",
+        help="with --place: move them (and rewrite the imports that name them) instead of printing",
+    )
+    parser.add_argument(
+        "--place-report",
+        dest="place_report",
+        metavar="PATH",
+        help="with --place: write the plan to this JSON file",
     )
     parser.add_argument(
         "--diff-metadata",

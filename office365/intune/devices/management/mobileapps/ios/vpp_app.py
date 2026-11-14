@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.intune.devices.management.mobileapps.ios.ios_device_type import IosDeviceType
+from office365.intune.devices.management.mobileapps.ios.type import IosDeviceType
 from office365.intune.devices.management.mobileapps.mobile_app import MobileApp
 from office365.intune.devices.management.mobileapps.vpp_licensing_type import VppLicensingType
 from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType

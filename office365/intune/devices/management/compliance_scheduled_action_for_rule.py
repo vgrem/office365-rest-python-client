@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_compliance_action_item import DeviceManagementComplianceActionItem
+    from office365.intune.devices.management.compliance_action_item import DeviceManagementComplianceActionItem
 
 
 @version("beta")
@@ -23,7 +23,7 @@ class DeviceManagementComplianceScheduledActionForRule(Entity):
     @property
     def scheduled_action_configurations(self) -> EntityCollection[DeviceManagementComplianceActionItem]:
         """Gets the scheduledActionConfigurations property"""
-        from office365.intune.devices.management_compliance_action_item import DeviceManagementComplianceActionItem
+        from office365.intune.devices.management.compliance_action_item import DeviceManagementComplianceActionItem
 
         return self.properties.get(
             "scheduledActionConfigurations",

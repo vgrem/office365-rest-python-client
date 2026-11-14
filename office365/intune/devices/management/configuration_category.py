@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
-from office365.intune.devices.management_configuration_platforms import DeviceManagementConfigurationPlatforms
-from office365.intune.devices.management_configuration_setting_usage import DeviceManagementConfigurationSettingUsage
-from office365.intune.devices.management_configuration_technologies import DeviceManagementConfigurationTechnologies
+from office365.intune.devices.management.configuration_platforms import DeviceManagementConfigurationPlatforms
+from office365.intune.devices.management.configuration_setting_usage import DeviceManagementConfigurationSettingUsage
+from office365.intune.devices.management.configuration_technologies import DeviceManagementConfigurationTechnologies
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
 

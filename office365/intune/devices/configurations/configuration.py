@@ -21,10 +21,10 @@ if TYPE_CHECKING:
     from office365.intune.devices.configurations.assignment import (
         DeviceConfigurationAssignment,
     )
-    from office365.intune.devices.configurations.device_overview import (
+    from office365.intune.devices.configurations.overview import (
         DeviceConfigurationDeviceOverview,
     )
-    from office365.intune.devices.configurations.device_status import (
+    from office365.intune.devices.configurations.status import (
         DeviceConfigurationDeviceStatus,
     )
     from office365.intune.devices.configurations.user_overview import (
@@ -102,7 +102,7 @@ class DeviceConfiguration(Entity):
     @property
     def device_statuses(self) -> EntityCollection[DeviceConfigurationDeviceStatus]:
         """Gets the deviceStatuses property"""
-        from office365.intune.devices.configurations.device_status import (
+        from office365.intune.devices.configurations.status import (
             DeviceConfigurationDeviceStatus,
         )
 
@@ -117,7 +117,7 @@ class DeviceConfiguration(Entity):
     @property
     def device_status_overview(self) -> DeviceConfigurationDeviceOverview:
         """Gets the deviceStatusOverview property"""
-        from office365.intune.devices.configurations.device_overview import (
+        from office365.intune.devices.configurations.overview import (
             DeviceConfigurationDeviceOverview,
         )
 

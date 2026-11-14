@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
-from office365.intune.print.operation_status import PrintOperationStatus
+from office365.intune.print.operations.status import PrintOperationStatus
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 

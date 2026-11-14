@@ -129,7 +129,7 @@ if TYPE_CHECKING:
     )
     from office365.directory.users.note import Note
     from office365.intune.devices.cloud_pc import CloudPC
-    from office365.intune.devices.management_troubleshooting_event import (
+    from office365.intune.devices.management.troubleshooting_event import (
         DeviceManagementTroubleshootingEvent,
     )
     from office365.security.cloud_clipboard_root import CloudClipboardRoot
@@ -1724,7 +1724,7 @@ class User(DirectoryObject):
     @property
     def device_management_troubleshooting_events(self) -> EntityCollection[DeviceManagementTroubleshootingEvent]:
         """Gets the deviceManagementTroubleshootingEvents property"""
-        from office365.intune.devices.management_troubleshooting_event import (
+        from office365.intune.devices.management.troubleshooting_event import (
             DeviceManagementTroubleshootingEvent,
         )
 

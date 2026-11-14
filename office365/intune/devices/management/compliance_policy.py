@@ -3,37 +3,31 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from typing_extensions import Self
-
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management_configuration_platforms import DeviceManagementConfigurationPlatforms
-from office365.intune.devices.management_configuration_policy_template_reference import (
-    DeviceManagementConfigurationPolicyTemplateReference,
-)
-from office365.intune.devices.management_configuration_technologies import DeviceManagementConfigurationTechnologies
-from office365.intune.devices.management_priority_meta_data import DeviceManagementPriorityMetaData
+from office365.intune.devices.management.configuration_platforms import DeviceManagementConfigurationPlatforms
+from office365.intune.devices.management.configuration_technologies import DeviceManagementConfigurationTechnologies
 from office365.permissions import require_permission
-from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
-    from office365.intune.devices.management_configuration_policy_assignment import (
+    from office365.intune.devices.management.compliance_scheduled_action_for_rule import (
+        DeviceManagementComplianceScheduledActionForRule,
+    )
+    from office365.intune.devices.management.configuration_policy_assignment import (
         DeviceManagementConfigurationPolicyAssignment,
     )
-    from office365.intune.devices.management_configuration_setting import DeviceManagementConfigurationSetting
+    from office365.intune.devices.management.configuration_setting import DeviceManagementConfigurationSetting
 
 
 @version("beta")
-class DeviceManagementConfigurationPolicy(Entity):
-    @odata(name="createdDateTime")
+class DeviceManagementCompliancePolicy(Entity):
+    @odata(name="createdDateTime", readonly=True)
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
@@ -51,19 +45,13 @@ class DeviceManagementConfigurationPolicy(Entity):
         """Gets the description property"""
         return self.properties.get("description", None)
 
-    @odata(name="disableEntraGroupPolicyAssignment")
-    @property
-    def disable_entra_group_policy_assignment(self) -> Optional[bool]:
-        """Gets the disableEntraGroupPolicyAssignment property"""
-        return self.properties.get("disableEntraGroupPolicyAssignment", None)
-
     @odata(name="isAssigned", readonly=True)
     @property
     def is_assigned(self) -> Optional[bool]:
         """Gets the isAssigned property"""
         return self.properties.get("isAssigned", None)
 
-    @odata(name="lastModifiedDateTime")
+    @odata(name="lastModifiedDateTime", readonly=True)
     @property
     def last_modified_date_time(self) -> Optional[datetime]:
         """Gets the lastModifiedDateTime property"""
@@ -81,19 +69,13 @@ class DeviceManagementConfigurationPolicy(Entity):
         """Gets the platforms property"""
         return self.properties.get("platforms", None)
 
-    @odata(name="priorityMetaData")
-    @property
-    def priority_meta_data(self) -> Optional[DeviceManagementPriorityMetaData]:
-        """Gets the priorityMetaData property"""
-        return self.properties.get("priorityMetaData", None)
-
     @odata(name="roleScopeTagIds")
     @property
     def role_scope_tag_ids(self) -> StringCollection:
         """Gets the roleScopeTagIds property"""
         return self.properties.get("roleScopeTagIds", StringCollection())
 
-    @odata(name="settingCount")
+    @odata(name="settingCount", readonly=True)
     @property
     def setting_count(self) -> Optional[int]:
         """Gets the settingCount property"""
@@ -105,17 +87,11 @@ class DeviceManagementConfigurationPolicy(Entity):
         """Gets the technologies property"""
         return self.properties.get("technologies", None)
 
-    @odata(name="templateReference")
-    @property
-    def template_reference(self) -> Optional[DeviceManagementConfigurationPolicyTemplateReference]:
-        """Gets the templateReference property"""
-        return self.properties.get("templateReference", None)
-
     @odata(name="assignments", navigation=True)
     @property
     def assignments(self) -> EntityCollection[DeviceManagementConfigurationPolicyAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.management_configuration_policy_assignment import (
+        from office365.intune.devices.management.configuration_policy_assignment import (
             DeviceManagementConfigurationPolicyAssignment,
         )
 
@@ -128,11 +104,28 @@ class DeviceManagementConfigurationPolicy(Entity):
             ),
         )
 
+    @odata(name="scheduledActionsForRule", navigation=True)
+    @property
+    def scheduled_actions_for_rule(self) -> EntityCollection[DeviceManagementComplianceScheduledActionForRule]:
+        """Gets the scheduledActionsForRule property"""
+        from office365.intune.devices.management.compliance_scheduled_action_for_rule import (
+            DeviceManagementComplianceScheduledActionForRule,
+        )
+
+        return self.properties.get(
+            "scheduledActionsForRule",
+            EntityCollection[DeviceManagementComplianceScheduledActionForRule](
+                self.context,
+                DeviceManagementComplianceScheduledActionForRule,
+                ResourcePath("scheduledActionsForRule", self.resource_path),
+            ),
+        )
+
     @odata(name="settings", navigation=True)
     @property
     def settings(self) -> EntityCollection[DeviceManagementConfigurationSetting]:
         """Gets the settings property"""
-        from office365.intune.devices.management_configuration_setting import DeviceManagementConfigurationSetting
+        from office365.intune.devices.management.configuration_setting import DeviceManagementConfigurationSetting
 
         return self.properties.get(
             "settings",
@@ -143,7 +136,7 @@ class DeviceManagementConfigurationPolicy(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.DeviceManagementConfigurationPolicy"
+        return "microsoft.graph.DeviceManagementCompliancePolicy"
 
     @verb(role="action", effect="write")
     def assign(
@@ -155,7 +148,7 @@ class DeviceManagementConfigurationPolicy(Entity):
             assignments (ClientValueCollection[DeviceManagementConfigurationPolicyAssignment]):
                 assignments parameter
         """
-        from office365.intune.devices.management_configuration_policy_assignment import (
+        from office365.intune.devices.management.configuration_policy_assignment import (
             DeviceManagementConfigurationPolicyAssignment,
         )
 
@@ -166,65 +159,25 @@ class DeviceManagementConfigurationPolicy(Entity):
 
     @verb(role="action", effect="write")
     @require_permission(
-        delegated=["DeviceManagementConfiguration.Read.All"],
-        application=["DeviceManagementConfiguration.Read.All"],
-    )
-    def clear_enrollment_time_device_membership_target(self) -> ClientResult[bool]:
-        """clearEnrollmentTimeDeviceMembershipTarget operation."""
-        return_type = ClientResult(self.context, bool())
-        qry = ServiceOperationQuery(self, "clearEnrollmentTimeDeviceMembershipTarget", None, {}, None, return_type)
-        self.context.add_query(qry)
-        return return_type
-
-    @verb(role="action", effect="write")
-    @require_permission(
         delegated=["DeviceManagementConfiguration.ReadWrite.All"],
         application=["DeviceManagementConfiguration.ReadWrite.All"],
     )
-    def create_copy(self, display_name: str, description: str) -> DeviceManagementConfigurationPolicy:
-        """createCopy operation.
+    def set_scheduled_actions(
+        self, scheduled_actions: ClientValueCollection[DeviceManagementComplianceScheduledActionForRule]
+    ) -> EntityCollection[DeviceManagementComplianceScheduledActionForRule]:
+        """setScheduledActions operation.
 
         Args:
-            display_name (str):
-                displayName parameter
-            description (str):
-                description parameter
+            scheduled_actions (ClientValueCollection[DeviceManagementComplianceScheduledActionForRule]):
+                scheduledActions parameter
         """
-        from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
-
-        return_type = DeviceManagementConfigurationPolicy(self.context)
-        qry = ServiceOperationQuery(
-            self, "createCopy", None, {"displayName": display_name, "description": description}, None, return_type
+        from office365.intune.devices.management.compliance_scheduled_action_for_rule import (
+            DeviceManagementComplianceScheduledActionForRule,
         )
-        self.context.add_query(qry)
-        return return_type
 
-    @verb(role="action", effect="write")
-    @require_permission(
-        delegated=["DeviceManagementConfiguration.ReadWrite.All"],
-        application=["DeviceManagementConfiguration.ReadWrite.All"],
-    )
-    def reorder(self, priority: int) -> Self:
-        """reorder operation.
-
-        Args:
-            priority (int):
-                priority parameter
-        """
-        qry = ServiceOperationQuery(self, "reorder", None, {"priority": priority}, None, None)
-        self.context.add_query(qry)
-        return self
-
-    @verb(role="action", effect="read")
-    @require_permission(
-        delegated=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
-        application=["DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All"],
-    )
-    def retrieve_latest_upgrade_default_baseline_policy(self) -> DeviceManagementConfigurationPolicy:
-        """retrieveLatestUpgradeDefaultBaselinePolicy operation."""
-        from office365.intune.devices.management_configuration_policy import DeviceManagementConfigurationPolicy
-
-        return_type = DeviceManagementConfigurationPolicy(self.context)
-        qry = FunctionQuery(self, "retrieveLatestUpgradeDefaultBaselinePolicy", None, return_type)
+        return_type = EntityCollection(self.context, DeviceManagementComplianceScheduledActionForRule)
+        qry = ServiceOperationQuery(
+            self, "setScheduledActions", None, {"scheduledActions": scheduled_actions}, None, return_type
+        )
         self.context.add_query(qry)
         return return_type

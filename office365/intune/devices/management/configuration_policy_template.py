@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management_configuration_platforms import DeviceManagementConfigurationPlatforms
-from office365.intune.devices.management_configuration_technologies import DeviceManagementConfigurationTechnologies
-from office365.intune.devices.management_configuration_template_family import DeviceManagementConfigurationTemplateFamily
-from office365.intune.devices.management_template_lifecycle_state import DeviceManagementTemplateLifecycleState
+from office365.intune.devices.management.configuration_platforms import DeviceManagementConfigurationPlatforms
+from office365.intune.devices.management.configuration_technologies import DeviceManagementConfigurationTechnologies
+from office365.intune.devices.management.configuration_template_family import DeviceManagementConfigurationTemplateFamily
+from office365.intune.devices.management.template_lifecycle_state import DeviceManagementTemplateLifecycleState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management_configuration_setting_template import (
+    from office365.intune.devices.management.configuration_setting_template import (
         DeviceManagementConfigurationSettingTemplate,
     )
 
@@ -95,7 +95,7 @@ class DeviceManagementConfigurationPolicyTemplate(Entity):
     @property
     def setting_templates(self) -> EntityCollection[DeviceManagementConfigurationSettingTemplate]:
         """Gets the settingTemplates property"""
-        from office365.intune.devices.management_configuration_setting_template import (
+        from office365.intune.devices.management.configuration_setting_template import (
             DeviceManagementConfigurationSettingTemplate,
         )
 
