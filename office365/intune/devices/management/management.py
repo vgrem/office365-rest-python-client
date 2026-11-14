@@ -76,6 +76,7 @@ if TYPE_CHECKING:
         DeviceConfiguration,
     )
     from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
+    from office365.intune.devices.health_script import DeviceHealthScript
     from office365.intune.devices.management.apple_push_notification_certificate import (
         ApplePushNotificationCertificate,
     )
@@ -1852,5 +1853,18 @@ class DeviceManagement(Entity):
             "windowsDriverUpdateProfiles",
             EntityCollection[WindowsDriverUpdateProfile](
                 self.context, WindowsDriverUpdateProfile, ResourcePath("windowsDriverUpdateProfiles", self.resource_path)
+            ),
+        )
+
+    @odata(name="deviceHealthScripts", beta=True, navigation=True)
+    @property
+    def device_health_scripts(self) -> EntityCollection[DeviceHealthScript]:
+        """Gets the deviceHealthScripts property"""
+        from office365.intune.devices.health_script import DeviceHealthScript
+
+        return self.properties.get(
+            "deviceHealthScripts",
+            EntityCollection[DeviceHealthScript](
+                self.context, DeviceHealthScript, ResourcePath("deviceHealthScripts", self.resource_path)
             ),
         )
