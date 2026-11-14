@@ -1,59 +1,30 @@
-"""Intune reports — device configuration activity reports.
+"""Intune reports: the ones served by Graph's own report root.
 
-Tests cover:
-  - Getting device configuration user activity report
-  - Getting device configuration device activity report
+``deviceManagement/reports`` exists as a model and answers ``UnknownError`` on this tenant, and
+``reports.managedDeviceEnrollmentFailureDetails`` answers ``500`` - both measured, neither a
+statement about the model. What does work is Graph's shared report root, where the Intune
+activity reports are exported as a ``ReportResult`` that is fetched as bytes.
 """
 
 from __future__ import annotations
 
-from office365.reports.root import ReportRoot
-from tests.decorators import requires_call, requires_delegated
-from tests.graph_case import GraphDelegatedTestCase
+from tests.decorators import requires_delegated
+from tests.intune.intune_case import CONFIGURATION, IntuneCase
 
 
-class TestIntuneReports(GraphDelegatedTestCase):
-    """Intune reporting — device configuration activity."""
+class TestDeviceActivityReports(IntuneCase):
+    """The two per-PC activity exports."""
 
-    @requires_delegated(
-        "DeviceManagementConfiguration.Read.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
+    @requires_delegated(*CONFIGURATION)
     def test_01_device_configuration_user_activity(self):
-        """Getting device configuration user activity report returns data."""
-        result = self.client.reports.device_configuration_user_activity().execute_query()
-        self.assertIsNotNone(result.value)
+        """A user-activity export answers with a report result, not rows."""
+        report = self.client.reports.device_configuration_user_activity().execute_query()
 
-    @requires_delegated(
-        "DeviceManagementConfiguration.Read.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
+        self.assertIsNotNone(report.value)
+
+    @requires_delegated(*CONFIGURATION)
     def test_02_device_configuration_device_activity(self):
-        """Getting device configuration device activity report returns data."""
-        result = self.client.reports.device_configuration_device_activity().execute_query()
-        self.assertIsNotNone(result.value)
+        """The device-activity export reads the same shape for the other dimension."""
+        report = self.client.reports.device_configuration_device_activity().execute_query()
 
-    @requires_delegated(
-        "DeviceManagementManagedDevices.Read.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_03_managed_device_enrollment_failure_details(self):
-        """Getting managed device enrollment failure details report returns data."""
-        try:
-            result = self.client.reports.managed_device_enrollment_failure_details().execute_query()
-            self.assertIsNotNone(result.value)
-        except Exception as e:
-            self.skipTest(f"Cannot get enrollment failure details: {e}")
-
-    @requires_call(
-        ReportRoot.managed_device_enrollment_top_failures,
-        flow="delegated",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_04_managed_device_enrollment_top_failures(self):
-        """Getting managed device enrollment top failures returns data."""
-        try:
-            result = self.client.reports.managed_device_enrollment_top_failures().execute_query()
-            self.assertIsNotNone(result.value)
-        except Exception:
-            self.skipTest("Enrollment top failures not available")
+        self.assertIsNotNone(report.value)

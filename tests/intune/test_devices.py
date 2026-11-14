@@ -17,74 +17,46 @@ tests read a device the tenant already has.
 
 from __future__ import annotations
 
-from typing import ClassVar, Optional
-
 from office365.intune.devices.device import Device
+
 from tests.decorators import requires_delegated
-from tests.graph_case import GraphDelegatedTestCase
+from tests.intune.intune_case import IntuneCase
 
 
-class TestDevices(GraphDelegatedTestCase):
-    """Device reads and ownership."""
+class TestDevices(IntuneCase):
+    """Device reads and ownership.
 
-    device: ClassVar[Optional[Device]] = None
+    These read Entra's device objects, not Intune's: the inventory under
+    ``deviceManagement`` is ``test_managed_devices.py``.
+    """
 
-    @requires_delegated(
-        "Device.Read.All",
-        "Directory.Read.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_01_list_devices(self):
-        """Listing all devices returns a valid collection."""
-        result = self.client.devices.top(10).get().execute_query()
-        self.assertIsNotNone(result.resource_path)
+    @requires_delegated("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")
+    def test_01_devices_are_listed(self):
+        """A registered device is an Entra object, and ``/devices`` states the type it holds."""
+        devices = self.read(self.client.devices, "devices", limit=10)
 
-    @requires_delegated(
-        "DeviceManagementConfiguration.Read.All",
-        "Device.Read.All",
-        "Directory.Read.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_02_get_device_delta(self):
-        """Getting device delta returns a valid collection."""
-        result = self.client.devices.delta.get().execute_query()
-        self.assertIsNotNone(result.resource_path)
+        self.assertIs(devices.item_type(), Device)
 
-    @requires_delegated(
-        "Device.Read.All",
-        "Directory.Read.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_03_device_has_expected_properties(self):
-        """A listed device exposes displayName, operatingSystem, and deviceId."""
-        device = self._first_device()
-        if device is None:
-            self.skipTest("The tenant holds no device object")
+    @requires_delegated("Device.Read.All", "Directory.Read.All")
+    def test_02_the_delta_track_carries_the_same_rows(self):
+        """``devices/delta`` is the incremental view: same rows, plus a skip token."""
+        self.read(self.client.devices.delta, "delta")
+
+    @requires_delegated("Device.Read.All", "Directory.Read.All")
+    def test_03_a_device_names_its_platform(self):
+        """A device object exposes displayName, operatingSystem and deviceId."""
+        devices = self.read(self.client.devices, "devices", limit=1)
+        device = self.row_or_skip(devices, "registered device")
 
         self.assertIsNotNone(device.get_property("displayName"))
         self.assertIsNotNone(device.get_property("operatingSystem"))
         self.assertIsNotNone(device.get_property("deviceId"))
 
-    @requires_delegated(
-        "Device.Read.All",
-        "Directory.Read.All",
-        "Directory.ReadWrite.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_04_list_registered_owners(self):
-        """Listing registered owners of a device returns a valid collection."""
-        device = self._first_device()
-        if device is None:
-            self.skipTest("The tenant holds no device object")
-
+    @requires_delegated("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")
+    def test_04_registered_owners_are_listed(self):
+        """Ownership is a navigation off the device, and one device may have several owners."""
+        devices = self.read(self.client.devices, "devices", limit=1)
+        device = self.row_or_skip(devices, "registered device")
         owners = device.registered_owners.get().execute_query()
-        self.assertIsNotNone(owners.resource_path)
 
-    @classmethod
-    def _first_device(cls) -> Optional[Device]:
-        """The device every read below starts from, listed once."""
-        if cls.device is None:
-            devices = cls.client.devices.top(1).get().execute_query()
-            cls.device = devices[0] if len(devices) else None
-        return cls.device
+        self.assertIn(f"/devices/{device.id}/registeredOwners", str(owners.resource_path))

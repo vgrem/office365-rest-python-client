@@ -1,59 +1,75 @@
-"""The service root a Graph client addresses, and Intune on the preview root.
+"""Two service roots, one model: which root a suite addresses, and what that buys it.
 
-Deliberately not covered here: a preview-only capability. The model does mark preview
-members -- 35 of them in `office365.intune`, 23 of those a `deviceManagement` or
-`deviceAppManagement` navigation the stable metadata does not declare -- but this file
-pins the addressing instead: the version is a property of the client's request (not of
-the model), so the same member has to answer from whichever root the client addresses.
-What a marked member does at the wrong root is checked offline, where it costs nothing
-(`tests/unit/test_beta_gate.py`).
+The version is a property of the *request*, not of the model. A suite therefore names the root
+it means by naming the client - ``self.client`` for ``v1.0``, ``self.client_beta`` for ``beta``
+(see :mod:`tests.graph_case`) - and neither name is a mode the other inherits.
+
+What this file pins is the consequence: the same member answers from either root, while a
+member only the beta metadata declares is refused by the stable one *before* it is sent
+(``NotSupportedInVersion``). That refusal is the interesting half. Graph's answer to
+``GET /v1.0/deviceManagement/intents`` is a 404 that reads like a typo in a URL; the model
+knows the difference between "this path does not exist" and "this root has no such member",
+and the error it raises is the one a caller can act on.
 """
 
 from __future__ import annotations
 
-from office365.graph_client import GraphClient
+from office365.entity_collection import EntityCollection
 from office365.graph_version import GraphVersion
+from office365.intune.devices.management.intent import DeviceManagementIntent
 from office365.intune.devices.management.managed.collection import ManagedDeviceCollection
+from office365.runtime.types.odata_property import NotSupportedInVersion
+
 from tests.decorators import requires_delegated
-from tests.graph_case import GraphDelegatedTestCase
-from tests.settings import settings
+from tests.intune.intune_case import MANAGED_DEVICES, IntuneCase
 
 
-class TestTheServiceRoot(GraphDelegatedTestCase):
+class TestTheServiceRoot(IntuneCase):
     """`GraphVersion` selects the root a client addresses."""
 
-    beta: GraphClient = None  # type: ignore[assignment]
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.beta = GraphClient(tenant=settings.tenant, version=GraphVersion.BETA).with_username_and_password(
-            settings.client_id, settings.username, settings.password
-        )
-
-    def test_01_a_client_addresses_the_root_it_was_given(self):
-        """The default client addresses the stable root; an explicit one addresses beta."""
+    def test_01_the_default_client_addresses_the_stable_root(self):
+        """A suite that says nothing addresses v1.0."""
         self.assertEqual(GraphVersion.default(), GraphVersion.V1)
         self.assertEqual(self.client.pending_request().service_root_url, "https://graph.microsoft.com/v1.0")
-        self.assertEqual(self.beta.pending_request().service_root_url, "https://graph.microsoft.com/beta")
 
-    def test_02_the_version_is_read_from_the_pending_request(self):
+    def test_02_the_beta_client_addresses_the_beta_root(self):
+        """`client_beta` is the same suite's credentials, on the other root."""
+        self.assertEqual(self.client_beta.pending_request().service_root_url, "https://graph.microsoft.com/beta")
+        self.assertIsNot(self.client_beta, self.client)
+
+    def test_03_the_version_is_read_from_the_pending_request(self):
         """`client.version` reports what the request will address, and follows a write."""
-        self.assertTrue(self.client.version.is_stable)
-        self.assertTrue(self.beta.version.is_beta)
+        client = self.sign_in(GraphVersion.V1)  # a private client: the write below must not leak
+        self.assertTrue(client.version.is_stable)
 
-        self.beta.version = GraphVersion.V1
-        self.assertEqual(self.beta.pending_request().service_root_url, "https://graph.microsoft.com/v1.0")
-        self.beta.version = GraphVersion.BETA
+        client.version = GraphVersion.BETA
+        self.assertTrue(client.version.is_beta)
+        self.assertEqual(client.pending_request().service_root_url, "https://graph.microsoft.com/beta")
 
-    @requires_delegated(
-        "DeviceManagementManagedDevices.Read.All",
-        "DeviceManagementManagedDevices.ReadWrite.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
-    )
-    def test_03_the_same_member_answers_from_either_root(self):
+    @requires_delegated(*MANAGED_DEVICES)
+    def test_04_the_same_member_answers_from_either_root(self):
         """A managed-device read succeeds on both roots: the model is shared, the address is not."""
-        for client in (self.client, self.beta):
+        for client in (self.client, self.client_beta):
             result = client.device_management.managed_devices.get().execute_query()
+
             self.assertIsInstance(result, ManagedDeviceCollection)
             self.assertTrue(str(result.resource_path).endswith("/managedDevices"))
+
+    @requires_delegated(*MANAGED_DEVICES)
+    def test_05_a_preview_member_is_refused_by_the_stable_root(self):
+        """`deviceManagement.intents` is beta-only, and the refusal happens before the wire."""
+        with self.assertRaises(NotSupportedInVersion) as refused:
+            _ = self.dm.intents
+
+        self.assertIn("intents", str(refused.exception))
+        self.assertIn("beta", str(refused.exception))
+
+    @requires_delegated(*MANAGED_DEVICES)
+    def test_06_and_served_by_the_preview_root(self):
+        """The same member on beta is a collection, and reads as one."""
+        rows = self.dm_beta.intents.top(5).get().execute_query()
+
+        self.assertIsInstance(rows, EntityCollection)
+        self.assertTrue(str(rows.resource_path).endswith("/deviceManagement/intents"))
+        if len(rows):
+            self.assertIsInstance(rows[0], DeviceManagementIntent)

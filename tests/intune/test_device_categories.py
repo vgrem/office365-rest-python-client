@@ -18,15 +18,14 @@ from __future__ import annotations
 from uuid import uuid4
 
 from tests.decorators import requires_delegated
-from tests.graph_case import GraphDelegatedTestCase
+from tests.intune.intune_case import IntuneCase
 
 
-class TestDeviceCategories(GraphDelegatedTestCase):
+class TestDeviceCategories(IntuneCase):
     """One object through its whole life."""
 
     @requires_delegated(
         "DeviceManagementManagedDevices.ReadWrite.All",
-        bypass_roles=["Intune Administrator", "Global Administrator"],
     )
     def test_01_a_category_can_be_created_renamed_and_removed(self):
         """Create, read back, rename, and delete a device category."""

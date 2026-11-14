@@ -48,7 +48,8 @@ TESTS = Path(__file__).resolve().parent
 ROOT = TESTS.parent
 
 # The flow a test class runs under - the same mapping `tests/conftest.py` skips on.
-# `GraphApplicationTestCase` subclasses `GraphDelegatedTestCase`, so it is checked first.
+# App-only and delegated are separate bases, not one inside the other; `SPTestCase` is the
+# certificate flow and is checked last because a SharePoint suite may also use Graph.
 _FLOW_OF_BASE = (
     (GraphApplicationTestCase, "app-only"),
     (GraphDelegatedTestCase, "delegated-ropc"),
