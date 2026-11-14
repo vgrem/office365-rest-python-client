@@ -24,6 +24,9 @@ from office365.intune.devices.management.settings import DeviceManagementSetting
 from office365.intune.devices.management.subscriptionstate import DeviceManagementSubscriptionState
 from office365.intune.devices.management.terms_and_conditions import TermsAndConditions
 from office365.intune.devices.management.userexperienceanalytics.settings import UserExperienceAnalyticsSettings
+from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly_severity_overview import (  # noqa: E501
+    UserExperienceAnalyticsAnomalySeverityOverview,
+)
 from office365.intune.devices.management.virtualendpoint.virtual_endpoint import (
     VirtualEndpoint,
 )
@@ -136,6 +139,18 @@ if TYPE_CHECKING:
         DeviceManagementTroubleshootingEvent,
     )
     from office365.intune.devices.management.user_pfx_certificate import UserPFXCertificate
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly import (
+        UserExperienceAnalyticsAnomaly,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly_correlation_group_overview import (  # noqa: E501
+        UserExperienceAnalyticsAnomalyCorrelationGroupOverview,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly_device import (
+        UserExperienceAnalyticsAnomalyDevice,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version import (  # noqa: E501
+        UserExperienceAnalyticsAppHealthAppPerformanceByAppVersion,
+    )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version_details import (  # noqa: E501
         UserExperienceAnalyticsAppHealthAppPerformanceByAppVersionDetails,
     )
@@ -163,11 +178,41 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_baseline import (
         UserExperienceAnalyticsBaseline,
     )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_app_impact import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthAppImpact,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_capacity_details import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthCapacityDetails,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_app_impact import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthDeviceAppImpact,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_performance import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthDevicePerformance,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_runtime_history import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthDeviceRuntimeHistory,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_model_performance import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthModelPerformance,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_os_performance import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthOsPerformance,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_runtime_details import (  # noqa: E501
+        UserExperienceAnalyticsBatteryHealthRuntimeDetails,
+    )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_category import (
         UserExperienceAnalyticsCategory,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_performance import (  # noqa: E501
         UserExperienceAnalyticsDevicePerformance,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scope import (
+        UserExperienceAnalyticsDeviceScope,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scope_summary import (  # noqa: E501
+        UserExperienceAnalyticsDeviceScopeSummary,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scores import (
         UserExperienceAnalyticsDeviceScores,
@@ -181,14 +226,32 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_startup_process_performance import (  # noqa: E501
         UserExperienceAnalyticsDeviceStartupProcessPerformance,
     )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_timeline_event import (  # noqa: E501
+        UserExperienceAnalyticsDeviceTimelineEvent,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_without_cloud_identity import (  # noqa: E501
+        UserExperienceAnalyticsDeviceWithoutCloudIdentity,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_impacting_process import (
+        UserExperienceAnalyticsImpactingProcess,
+    )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_metric_history import (
         UserExperienceAnalyticsMetricHistory,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_model_scores import (
         UserExperienceAnalyticsModelScores,
     )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_not_autopilot_ready_device import (  # noqa: E501
+        UserExperienceAnalyticsNotAutopilotReadyDevice,
+    )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_overview import (
         UserExperienceAnalyticsOverview,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_remote_connection import (
+        UserExperienceAnalyticsRemoteConnection,
+    )
+    from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_resource_performance import (  # noqa: E501
+        UserExperienceAnalyticsResourcePerformance,
     )
     from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_score_history import (
         UserExperienceAnalyticsScoreHistory,
@@ -2014,3 +2077,387 @@ class DeviceManagement(Entity):
                 self.context, UserPFXCertificate, ResourcePath("userPfxCertificates", self.resource_path)
             ),
         )
+
+    @odata(name="userExperienceAnalyticsAnomalySeverityOverview", beta=True)
+    @property
+    def user_experience_analytics_anomaly_severity_overview(
+        self,
+    ) -> Optional[UserExperienceAnalyticsAnomalySeverityOverview]:
+        """Gets the userExperienceAnalyticsAnomalySeverityOverview property"""
+        return self.properties.get("userExperienceAnalyticsAnomalySeverityOverview", None)
+
+    @odata(name="userExperienceAnalyticsAnomaly", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_anomaly(self) -> EntityCollection[UserExperienceAnalyticsAnomaly]:
+        """Gets the userExperienceAnalyticsAnomaly property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly import (
+            UserExperienceAnalyticsAnomaly,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsAnomaly",
+            EntityCollection[UserExperienceAnalyticsAnomaly](
+                self.context,
+                UserExperienceAnalyticsAnomaly,
+                ResourcePath("userExperienceAnalyticsAnomaly", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsAnomalyCorrelationGroupOverview", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_anomaly_correlation_group_overview(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsAnomalyCorrelationGroupOverview]:
+        """Gets the userExperienceAnalyticsAnomalyCorrelationGroupOverview property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly_correlation_group_overview import (  # noqa: E501
+            UserExperienceAnalyticsAnomalyCorrelationGroupOverview,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsAnomalyCorrelationGroupOverview",
+            EntityCollection[UserExperienceAnalyticsAnomalyCorrelationGroupOverview](
+                self.context,
+                UserExperienceAnalyticsAnomalyCorrelationGroupOverview,
+                ResourcePath("userExperienceAnalyticsAnomalyCorrelationGroupOverview", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsAnomalyDevice", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_anomaly_device(self) -> EntityCollection[UserExperienceAnalyticsAnomalyDevice]:
+        """Gets the userExperienceAnalyticsAnomalyDevice property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly_device import (  # noqa: E501
+            UserExperienceAnalyticsAnomalyDevice,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsAnomalyDevice",
+            EntityCollection[UserExperienceAnalyticsAnomalyDevice](
+                self.context,
+                UserExperienceAnalyticsAnomalyDevice,
+                ResourcePath("userExperienceAnalyticsAnomalyDevice", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsAppHealthApplicationPerformanceByAppVersion", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_app_health_application_performance_by_app_version(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsAppHealthAppPerformanceByAppVersion]:
+        """Gets the userExperienceAnalyticsAppHealthApplicationPerformanceByAppVersion property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_app_health_app_performance_by_app_version import (  # noqa: E501
+            UserExperienceAnalyticsAppHealthAppPerformanceByAppVersion,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsAppHealthApplicationPerformanceByAppVersion",
+            EntityCollection[UserExperienceAnalyticsAppHealthAppPerformanceByAppVersion](
+                self.context,
+                UserExperienceAnalyticsAppHealthAppPerformanceByAppVersion,
+                ResourcePath("userExperienceAnalyticsAppHealthApplicationPerformanceByAppVersion", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthAppImpact", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_app_impact(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthAppImpact]:
+        """Gets the userExperienceAnalyticsBatteryHealthAppImpact property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_app_impact import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthAppImpact,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthAppImpact",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthAppImpact](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthAppImpact,
+                ResourcePath("userExperienceAnalyticsBatteryHealthAppImpact", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthCapacityDetails", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_capacity_details(
+        self,
+    ) -> UserExperienceAnalyticsBatteryHealthCapacityDetails:
+        """Gets the userExperienceAnalyticsBatteryHealthCapacityDetails property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_capacity_details import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthCapacityDetails,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthCapacityDetails",
+            UserExperienceAnalyticsBatteryHealthCapacityDetails(
+                self.context, ResourcePath("userExperienceAnalyticsBatteryHealthCapacityDetails", self.resource_path)
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthDeviceAppImpact", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_device_app_impact(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthDeviceAppImpact]:
+        """Gets the userExperienceAnalyticsBatteryHealthDeviceAppImpact property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_app_impact import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthDeviceAppImpact,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthDeviceAppImpact",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthDeviceAppImpact](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthDeviceAppImpact,
+                ResourcePath("userExperienceAnalyticsBatteryHealthDeviceAppImpact", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthDevicePerformance", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_device_performance(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthDevicePerformance]:
+        """Gets the userExperienceAnalyticsBatteryHealthDevicePerformance property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_performance import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthDevicePerformance,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthDevicePerformance",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthDevicePerformance](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthDevicePerformance,
+                ResourcePath("userExperienceAnalyticsBatteryHealthDevicePerformance", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthDeviceRuntimeHistory", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_device_runtime_history(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthDeviceRuntimeHistory]:
+        """Gets the userExperienceAnalyticsBatteryHealthDeviceRuntimeHistory property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_device_runtime_history import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthDeviceRuntimeHistory,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthDeviceRuntimeHistory",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthDeviceRuntimeHistory](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthDeviceRuntimeHistory,
+                ResourcePath("userExperienceAnalyticsBatteryHealthDeviceRuntimeHistory", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthModelPerformance", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_model_performance(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthModelPerformance]:
+        """Gets the userExperienceAnalyticsBatteryHealthModelPerformance property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_model_performance import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthModelPerformance,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthModelPerformance",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthModelPerformance](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthModelPerformance,
+                ResourcePath("userExperienceAnalyticsBatteryHealthModelPerformance", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthOsPerformance", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_os_performance(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsBatteryHealthOsPerformance]:
+        """Gets the userExperienceAnalyticsBatteryHealthOsPerformance property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_os_performance import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthOsPerformance,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthOsPerformance",
+            EntityCollection[UserExperienceAnalyticsBatteryHealthOsPerformance](
+                self.context,
+                UserExperienceAnalyticsBatteryHealthOsPerformance,
+                ResourcePath("userExperienceAnalyticsBatteryHealthOsPerformance", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsBatteryHealthRuntimeDetails", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_battery_health_runtime_details(
+        self,
+    ) -> UserExperienceAnalyticsBatteryHealthRuntimeDetails:
+        """Gets the userExperienceAnalyticsBatteryHealthRuntimeDetails property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_battery_health_runtime_details import (  # noqa: E501
+            UserExperienceAnalyticsBatteryHealthRuntimeDetails,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsBatteryHealthRuntimeDetails",
+            UserExperienceAnalyticsBatteryHealthRuntimeDetails(
+                self.context, ResourcePath("userExperienceAnalyticsBatteryHealthRuntimeDetails", self.resource_path)
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsDeviceScope", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_device_scope(self) -> UserExperienceAnalyticsDeviceScope:
+        """Gets the userExperienceAnalyticsDeviceScope property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scope import (
+            UserExperienceAnalyticsDeviceScope,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsDeviceScope",
+            UserExperienceAnalyticsDeviceScope(
+                self.context, ResourcePath("userExperienceAnalyticsDeviceScope", self.resource_path)
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsDeviceScopes", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_device_scopes(self) -> EntityCollection[UserExperienceAnalyticsDeviceScope]:
+        """Gets the userExperienceAnalyticsDeviceScopes property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scope import (
+            UserExperienceAnalyticsDeviceScope,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsDeviceScopes",
+            EntityCollection[UserExperienceAnalyticsDeviceScope](
+                self.context,
+                UserExperienceAnalyticsDeviceScope,
+                ResourcePath("userExperienceAnalyticsDeviceScopes", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsDevicesWithoutCloudIdentity", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_devices_without_cloud_identity(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsDeviceWithoutCloudIdentity]:
+        """Gets the userExperienceAnalyticsDevicesWithoutCloudIdentity property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_without_cloud_identity import (  # noqa: E501
+            UserExperienceAnalyticsDeviceWithoutCloudIdentity,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsDevicesWithoutCloudIdentity",
+            EntityCollection[UserExperienceAnalyticsDeviceWithoutCloudIdentity](
+                self.context,
+                UserExperienceAnalyticsDeviceWithoutCloudIdentity,
+                ResourcePath("userExperienceAnalyticsDevicesWithoutCloudIdentity", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsDeviceTimelineEvent", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_device_timeline_event(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsDeviceTimelineEvent]:
+        """Gets the userExperienceAnalyticsDeviceTimelineEvent property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_timeline_event import (  # noqa: E501
+            UserExperienceAnalyticsDeviceTimelineEvent,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsDeviceTimelineEvent",
+            EntityCollection[UserExperienceAnalyticsDeviceTimelineEvent](
+                self.context,
+                UserExperienceAnalyticsDeviceTimelineEvent,
+                ResourcePath("userExperienceAnalyticsDeviceTimelineEvent", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsImpactingProcess", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_impacting_process(self) -> EntityCollection[UserExperienceAnalyticsImpactingProcess]:
+        """Gets the userExperienceAnalyticsImpactingProcess property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_impacting_process import (  # noqa: E501
+            UserExperienceAnalyticsImpactingProcess,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsImpactingProcess",
+            EntityCollection[UserExperienceAnalyticsImpactingProcess](
+                self.context,
+                UserExperienceAnalyticsImpactingProcess,
+                ResourcePath("userExperienceAnalyticsImpactingProcess", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsNotAutopilotReadyDevice", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_not_autopilot_ready_device(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsNotAutopilotReadyDevice]:
+        """Gets the userExperienceAnalyticsNotAutopilotReadyDevice property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_not_autopilot_ready_device import (  # noqa: E501
+            UserExperienceAnalyticsNotAutopilotReadyDevice,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsNotAutopilotReadyDevice",
+            EntityCollection[UserExperienceAnalyticsNotAutopilotReadyDevice](
+                self.context,
+                UserExperienceAnalyticsNotAutopilotReadyDevice,
+                ResourcePath("userExperienceAnalyticsNotAutopilotReadyDevice", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsRemoteConnection", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_remote_connection(self) -> EntityCollection[UserExperienceAnalyticsRemoteConnection]:
+        """Gets the userExperienceAnalyticsRemoteConnection property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_remote_connection import (  # noqa: E501
+            UserExperienceAnalyticsRemoteConnection,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsRemoteConnection",
+            EntityCollection[UserExperienceAnalyticsRemoteConnection](
+                self.context,
+                UserExperienceAnalyticsRemoteConnection,
+                ResourcePath("userExperienceAnalyticsRemoteConnection", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsResourcePerformance", beta=True, navigation=True)
+    @property
+    def user_experience_analytics_resource_performance(
+        self,
+    ) -> EntityCollection[UserExperienceAnalyticsResourcePerformance]:
+        """Gets the userExperienceAnalyticsResourcePerformance property"""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_resource_performance import (  # noqa: E501
+            UserExperienceAnalyticsResourcePerformance,
+        )
+
+        return self.properties.get(
+            "userExperienceAnalyticsResourcePerformance",
+            EntityCollection[UserExperienceAnalyticsResourcePerformance](
+                self.context,
+                UserExperienceAnalyticsResourcePerformance,
+                ResourcePath("userExperienceAnalyticsResourcePerformance", self.resource_path),
+            ),
+        )
+
+    @odata(name="userExperienceAnalyticsSummarizedDeviceScopes", beta=True, selectable=False)
+    def user_experience_analytics_summarized_device_scopes(
+        self,
+    ) -> ClientResult[UserExperienceAnalyticsDeviceScopeSummary]:
+        """userExperienceAnalyticsSummarizedDeviceScopes operation."""
+        from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_device_scope_summary import (  # noqa: E501
+            UserExperienceAnalyticsDeviceScopeSummary,
+        )
+
+        return_type = ClientResult(self.context, UserExperienceAnalyticsDeviceScopeSummary())
+        qry = FunctionQuery(self, "userExperienceAnalyticsSummarizedDeviceScopes", None, return_type)
+        self.context.add_query(qry)
+        return return_type

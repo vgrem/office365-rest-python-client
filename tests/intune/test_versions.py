@@ -18,6 +18,9 @@ from office365.entity_collection import EntityCollection
 from office365.graph_version import GraphVersion
 from office365.intune.devices.management.intent import DeviceManagementIntent
 from office365.intune.devices.management.managed.collection import ManagedDeviceCollection
+from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly import (
+    UserExperienceAnalyticsAnomaly,
+)
 from office365.runtime.types.odata_property import NotSupportedInVersion
 
 from tests.decorators import requires_delegated
@@ -73,3 +76,17 @@ class TestTheServiceRoot(IntuneCase):
         self.assertTrue(str(rows.resource_path).endswith("/deviceManagement/intents"))
         if len(rows):
             self.assertIsInstance(rows[0], DeviceManagementIntent)
+
+    def test_07_the_analytics_family_arrived_beta_only(self):
+        """The whole `userExperienceAnalytics*` subtree is absent from `Graph.xml`, so it is gated.
+
+        Nothing is sent: the gate is read off the metadata snapshots, which is why this needs no
+        grant and no row. Both halves are asserted - the getter the caller reaches for, and the
+        class it would otherwise build from the stable root's context.
+        """
+        with self.assertRaises(NotSupportedInVersion) as refused:
+            _ = self.dm.user_experience_analytics_anomaly
+        self.assertIn("userExperienceAnalyticsAnomaly", str(refused.exception))
+
+        with self.assertRaises(NotSupportedInVersion):
+            UserExperienceAnalyticsAnomaly(self.client)

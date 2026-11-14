@@ -39,16 +39,17 @@ LIBRARY = index(office365)
 #: are reached through the products that inherit them, so the ledger would be naming the filing
 #: cabinet rather than the service that has to grant the permission.
 #:
-#: These 18 are what a fill that read one table per operation - from the docs as published - could
+#: These 19 are what a fill that read one table per operation - from the docs as published - could
 #: not read, and neither reason is a judgement about which permission is *right*:
 #:
-#: * fourteen name a member the REST reference publishes no operation page for, so there is no table
+#: * fifteen name a member the REST reference publishes no operation page for, so there is no table
 #:   to read - ``AccessReviewScheduleDefinition.stop``, ``AiInteractionHistory.get_all_enterprise_interactions``,
 #:   ``AndroidManagedStoreAccountEnterpriseSettings.create_zero_touch_web_token``,
 #:   ``CalendarSharingMessage.accept``, ``DeviceManagementCompliancePolicy.assign``,
 #:   ``DeviceManagementConfigurationPolicy.assign``,
 #:   ``DeviceManagementIntent.{assign,create_copy,migrate_to_template,update_settings}``,
 #:   ``DeviceManagementReports.retrieve_device_app_installation_status_report``,
+#:   ``DeviceManagement.user_experience_analytics_summarized_device_scopes``,
 #:   ``ExchangeAdminClient.invoke_all``, ``OnenotePage.onenote_patch_content``, ``OnenotePage.preview``;
 #: * four are documented as ``Not supported.`` in every flow, which is the reference answering the
 #:   question rather than leaving it open - ``NamedLocation.restore``, ``ConditionalAccessPolicy.restore``,
@@ -57,7 +58,7 @@ PENDING: dict[str, int] = {
     "copilot": 1,
     "directory": 5,
     "exchange": 1,
-    "intune": 8,
+    "intune": 9,
     "onenote": 2,
     "outlook": 1,
 }

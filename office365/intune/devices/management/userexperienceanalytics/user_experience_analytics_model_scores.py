@@ -65,3 +65,9 @@ class UserExperienceAnalyticsModelScores(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserExperienceAnalyticsModelScores"
+
+    @odata(name="meanResourceSpikeTimeScore", beta=True)
+    @property
+    def mean_resource_spike_time_score(self) -> Optional[float]:
+        """Gets the meanResourceSpikeTimeScore property"""
+        return self.properties.get("meanResourceSpikeTimeScore", None)
