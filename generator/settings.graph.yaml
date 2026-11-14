@@ -118,6 +118,14 @@ type_routing:
   SymantecCodeSigningCertificate: office365.intune.devices.management
   UserPFXCertificate*: office365.intune.devices.management
   ManagedEBook*: office365.intune.devices.management.managed.ebook
+  # Enrolment: one directory, because the platform is the profile's subject and not its
+  # home.  Narrower than the `Android*`/`Windows*` adjectives above, and it wins on order.
+  AppleUserInitiatedEnrollment*: office365.intune.devices.enrollment
+  AndroidDeviceOwnerEnrollment*: office365.intune.devices.enrollment
+  AndroidForWorkEnrollment*: office365.intune.devices.enrollment
+  AndroidForWorkSettings*: office365.intune.devices.enrollment
+  DepOnboardingSetting*: office365.intune.devices.enrollment
+  ImportedDeviceIdentit*: office365.intune.devices.enrollment
   # Entra types the Intune adjectives used to swallow.
   DeviceRegistrationPolicy: office365.directory.policies
   DevicesFilter: office365.directory.policies

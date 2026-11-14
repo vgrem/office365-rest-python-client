@@ -75,11 +75,22 @@ if TYPE_CHECKING:
         DeviceConfigurationDeviceStateSummary,
     )
     from office365.intune.devices.custom_attribute_shell_script import DeviceCustomAttributeShellScript
+    from office365.intune.devices.enrollment.android_device_owner_enrollment_profile import (
+        AndroidDeviceOwnerEnrollmentProfile,
+    )
+    from office365.intune.devices.enrollment.android_for_work_enrollment_profile import AndroidForWorkEnrollmentProfile
+    from office365.intune.devices.enrollment.android_for_work_settings import AndroidForWorkSettings
+    from office365.intune.devices.enrollment.apple_user_initiated_enrollment_profile import (
+        AppleUserInitiatedEnrollmentProfile,
+    )
+    from office365.intune.devices.enrollment.dep_onboarding_setting import DepOnboardingSetting
+    from office365.intune.devices.enrollment.imported_device_identity import ImportedDeviceIdentity
     from office365.intune.devices.health_script import DeviceHealthScript
     from office365.intune.devices.management.apple_push_notification_certificate import (
         ApplePushNotificationCertificate,
     )
     from office365.intune.devices.management.assignment_filter import DeviceAndAppManagementAssignmentFilter
+    from office365.intune.devices.management.autopilot_event import DeviceManagementAutopilotEvent
     from office365.intune.devices.management.cart_to_class_association import CartToClassAssociation
     from office365.intune.devices.management.certificate_connector_details import CertificateConnectorDetails
     from office365.intune.devices.management.chrome_os_onboarding_settings import ChromeOSOnboardingSettings
@@ -277,6 +288,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.windows_autopilot_device_identity import (
         WindowsAutopilotDeviceIdentity,
     )
+    from office365.intune.devices.management.windows_autopilot_settings import WindowsAutopilotSettings
     from office365.intune.devices.management.windows_information_protection_app_learning_summary import (
         WindowsInformationProtectionAppLearningSummary,
     )
@@ -2461,3 +2473,115 @@ class DeviceManagement(Entity):
         qry = FunctionQuery(self, "userExperienceAnalyticsSummarizedDeviceScopes", None, return_type)
         self.context.add_query(qry)
         return return_type
+
+    @odata(name="androidDeviceOwnerEnrollmentProfiles", beta=True, navigation=True)
+    @property
+    def android_device_owner_enrollment_profiles(self) -> EntityCollection[AndroidDeviceOwnerEnrollmentProfile]:
+        """Gets the androidDeviceOwnerEnrollmentProfiles property"""
+        from office365.intune.devices.enrollment.android_device_owner_enrollment_profile import (
+            AndroidDeviceOwnerEnrollmentProfile,
+        )
+
+        return self.properties.get(
+            "androidDeviceOwnerEnrollmentProfiles",
+            EntityCollection[AndroidDeviceOwnerEnrollmentProfile](
+                self.context,
+                AndroidDeviceOwnerEnrollmentProfile,
+                ResourcePath("androidDeviceOwnerEnrollmentProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="androidForWorkEnrollmentProfiles", beta=True, navigation=True)
+    @property
+    def android_for_work_enrollment_profiles(self) -> EntityCollection[AndroidForWorkEnrollmentProfile]:
+        """Gets the androidForWorkEnrollmentProfiles property"""
+        from office365.intune.devices.enrollment.android_for_work_enrollment_profile import (
+            AndroidForWorkEnrollmentProfile,
+        )
+
+        return self.properties.get(
+            "androidForWorkEnrollmentProfiles",
+            EntityCollection[AndroidForWorkEnrollmentProfile](
+                self.context,
+                AndroidForWorkEnrollmentProfile,
+                ResourcePath("androidForWorkEnrollmentProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="androidForWorkSettings", beta=True, navigation=True)
+    @property
+    def android_for_work_settings(self) -> AndroidForWorkSettings:
+        """Gets the androidForWorkSettings property"""
+        from office365.intune.devices.enrollment.android_for_work_settings import AndroidForWorkSettings
+
+        return self.properties.get(
+            "androidForWorkSettings",
+            AndroidForWorkSettings(self.context, ResourcePath("androidForWorkSettings", self.resource_path)),
+        )
+
+    @odata(name="appleUserInitiatedEnrollmentProfiles", beta=True, navigation=True)
+    @property
+    def apple_user_initiated_enrollment_profiles(self) -> EntityCollection[AppleUserInitiatedEnrollmentProfile]:
+        """Gets the appleUserInitiatedEnrollmentProfiles property"""
+        from office365.intune.devices.enrollment.apple_user_initiated_enrollment_profile import (
+            AppleUserInitiatedEnrollmentProfile,
+        )
+
+        return self.properties.get(
+            "appleUserInitiatedEnrollmentProfiles",
+            EntityCollection[AppleUserInitiatedEnrollmentProfile](
+                self.context,
+                AppleUserInitiatedEnrollmentProfile,
+                ResourcePath("appleUserInitiatedEnrollmentProfiles", self.resource_path),
+            ),
+        )
+
+    @odata(name="depOnboardingSettings", beta=True, navigation=True)
+    @property
+    def dep_onboarding_settings(self) -> EntityCollection[DepOnboardingSetting]:
+        """Gets the depOnboardingSettings property"""
+        from office365.intune.devices.enrollment.dep_onboarding_setting import DepOnboardingSetting
+
+        return self.properties.get(
+            "depOnboardingSettings",
+            EntityCollection[DepOnboardingSetting](
+                self.context, DepOnboardingSetting, ResourcePath("depOnboardingSettings", self.resource_path)
+            ),
+        )
+
+    @odata(name="importedDeviceIdentities", beta=True, navigation=True)
+    @property
+    def imported_device_identities(self) -> EntityCollection[ImportedDeviceIdentity]:
+        """Gets the importedDeviceIdentities property"""
+        from office365.intune.devices.enrollment.imported_device_identity import ImportedDeviceIdentity
+
+        return self.properties.get(
+            "importedDeviceIdentities",
+            EntityCollection[ImportedDeviceIdentity](
+                self.context, ImportedDeviceIdentity, ResourcePath("importedDeviceIdentities", self.resource_path)
+            ),
+        )
+
+    @odata(name="windowsAutopilotSettings", beta=True, navigation=True)
+    @property
+    def windows_autopilot_settings(self) -> WindowsAutopilotSettings:
+        """Gets the windowsAutopilotSettings property"""
+        from office365.intune.devices.management.windows_autopilot_settings import WindowsAutopilotSettings
+
+        return self.properties.get(
+            "windowsAutopilotSettings",
+            WindowsAutopilotSettings(self.context, ResourcePath("windowsAutopilotSettings", self.resource_path)),
+        )
+
+    @odata(name="autopilotEvents", beta=True, navigation=True)
+    @property
+    def autopilot_events(self) -> EntityCollection[DeviceManagementAutopilotEvent]:
+        """Gets the autopilotEvents property"""
+        from office365.intune.devices.management.autopilot_event import DeviceManagementAutopilotEvent
+
+        return self.properties.get(
+            "autopilotEvents",
+            EntityCollection[DeviceManagementAutopilotEvent](
+                self.context, DeviceManagementAutopilotEvent, ResourcePath("autopilotEvents", self.resource_path)
+            ),
+        )
