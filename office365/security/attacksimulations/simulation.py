@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.directory.o_auth_consent_app_detail import OAuthConsentAppDetail
+from office365.directory.oauth_consent_app_detail import OAuthConsentAppDetail
 from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath

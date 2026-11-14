@@ -8,8 +8,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.directory.b2b_registration_metrics import B2bRegistrationMetrics
-    from office365.directory.b2b_sign_in_activity_metrics import B2BSignInActivityMetrics
+    from office365.directory.identities.b2b_registration_metrics import B2bRegistrationMetrics
+    from office365.directory.identities.b2b_sign_in_activity_metrics import B2BSignInActivityMetrics
     from office365.directory.multi_tenant_application_metrics import (
         MultiTenantApplicationMetrics,
     )
@@ -33,7 +33,7 @@ class RelatedTenant(Entity):
     @property
     def app_b2_b_sign_in_activity_metrics(self) -> B2BSignInActivityMetrics:
         """Gets the appB2BSignInActivityMetrics property"""
-        from office365.directory.b2b_sign_in_activity_metrics import (
+        from office365.directory.identities.b2b_sign_in_activity_metrics import (
             B2BSignInActivityMetrics,
         )
 
@@ -46,7 +46,7 @@ class RelatedTenant(Entity):
     @property
     def b2_b_registration_metrics(self) -> B2bRegistrationMetrics:
         """Gets the b2BRegistrationMetrics property"""
-        from office365.directory.b2b_registration_metrics import B2bRegistrationMetrics
+        from office365.directory.identities.b2b_registration_metrics import B2bRegistrationMetrics
 
         return self.properties.get(
             "b2BRegistrationMetrics",
@@ -57,7 +57,7 @@ class RelatedTenant(Entity):
     @property
     def b2_b_sign_in_activity_metrics(self) -> B2BSignInActivityMetrics:
         """Gets the b2BSignInActivityMetrics property"""
-        from office365.directory.b2b_sign_in_activity_metrics import (
+        from office365.directory.identities.b2b_sign_in_activity_metrics import (
             B2BSignInActivityMetrics,
         )
 

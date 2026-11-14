@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.communications.teleconference_device_media_quality import TeleconferenceDeviceMediaQuality
+from office365.communications.teleconference.device_media_quality import TeleconferenceDeviceMediaQuality
 
 
 class TeleconferenceDeviceVideoQuality(TeleconferenceDeviceMediaQuality):

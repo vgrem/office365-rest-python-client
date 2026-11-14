@@ -169,7 +169,7 @@ type_routing:
   Call*: office365.communications
   Chat*: office365.communications
   Communications*: office365.communications
-  Teleconference*: office365.communications
+  Teleconference*: office365.communications.teleconference
   Virtual*: office365.communications
   Search*: office365.search
   Attack*: office365.security
@@ -177,6 +177,9 @@ type_routing:
   Cloud*: office365.security
   Access*: office365.directory.identitygovernance
   Copilot*: office365.copilot
+  # The agent identities are service principals by shape and Copilot records by feature;
+  # the tree keeps them beside `AgentIdentityBlueprint`, and so does this rule.
+  AgentIdentity*: office365.copilot
   M365Capability*: office365.intune
   AppsInstallationOptions*: office365.intune
   EdgeSearchEngine*: office365.intune
@@ -281,6 +284,8 @@ type_routing:
   RelationshipPolicy: office365.directory
   ServicePrincipalIdentity: office365.directory
   ExternalDomainFederation: office365.directory
+  # `domain.verificationDnsRecords` is the only reader; unrouted they fell into `common`.
+  DomainDns*: office365.directory.domains
   CrossCloudAzureActiveDirectoryTenant: office365.directory
   MultiTenant*: office365.directory
   RelatedTenantsRefreshStatus: office365.directory
@@ -354,11 +359,14 @@ type_routing:
   AiInteractionHistory: office365.copilot
   AiOnlineMeeting: office365.copilot
   AiUser: office365.copilot
-  B2BRegistrationMetricsInitial: office365.directory
-  B2BRegistrationMetricsRecent: office365.directory
-  B2BSignInActivityMetrics: office365.directory
-  B2BSignInActivityMetricsInitial: office365.directory
-  B2BSignInActivityMetricsRecent: office365.directory
+  B2BRegistrationMetricsBase: office365.directory.identities
+  B2BRegistrationMetricsInitial: office365.directory.identities
+  B2BRegistrationMetricsRecent: office365.directory.identities
+  B2BSignInActivityMetrics: office365.directory.identities
+  B2BSignInActivityMetricsBase: office365.directory.identities
+  B2BSignInActivityMetricsInitial: office365.directory.identities
+  B2BSignInActivityMetricsRecent: office365.directory.identities
+  B2bIdentityProvidersType: office365.directory.identities
   ConfigurationManagement: office365.admin
   EngagementConversationMessage: office365.teams.viva.engagement
   EngagementConversationMessageReaction: office365.teams.viva.engagement
@@ -669,9 +677,9 @@ type_routing:
 # the other 80 are the shared and unreferenced remainder below the fallback.
 
 # Directory: the nearest placed neighbour of each is an Entra type.
-  "AgentIdentity": office365.directory
-  "AgentIdentityBlueprint": office365.directory
-  "AgentIdentityBlueprintPrincipal": office365.directory
+  "AgentIdentity": office365.copilot
+  "AgentIdentityBlueprint": office365.copilot
+  "AgentIdentityBlueprintPrincipal": office365.copilot
   "AttributeSet": office365.directory
   "ConfigurationBaseline": office365.directory
   "CrossTenantIdentitySyncPolicyPartner": office365.directory
@@ -898,7 +906,7 @@ type_routing:
   "TimeOffRequest": office365.teams.schedule
   "TimeOff": office365.teams.schedule
   "WorkingTimeSchedule": office365.teams.teamwork.shiftmanagement
-  "B2bRegistrationMetrics": office365.directory
+  "B2bRegistrationMetrics": office365.directory.identities
   "GovernanceInvitation": office365.directory
   "GovernanceRelationship": office365.directory
   "GovernanceRequest": office365.directory

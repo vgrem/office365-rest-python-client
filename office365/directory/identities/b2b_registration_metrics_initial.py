@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.common.b2b_registration_metrics_base import B2BRegistrationMetricsBase
+from office365.directory.identities.b2b_registration_metrics_base import B2BRegistrationMetricsBase
 from office365.runtime.types.odata_property import odata
 
 
