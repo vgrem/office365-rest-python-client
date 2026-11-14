@@ -612,7 +612,7 @@ class ServicePrincipal(DirectoryObject):
         return super().set_property(name, value, persist_changes)
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.ServicePrincipal"
 
     @odata(name="addIns")

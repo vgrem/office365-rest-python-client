@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from office365.directory.identitygovernance.entitlementmanagement.custom_extension_behavior_on_error import (  # noqa: E501
     CustomExtensionBehaviorOnError,
 )
-from office365.entity import Entity
+from office365.directory.identitygovernance.workflow.custom_callout_extension import CustomCalloutExtension
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from office365.directory.authentication.configuration.validation import AuthenticationConfigurationValidation
 
 
-class CustomAuthenticationExtension(Entity):
+class CustomAuthenticationExtension(CustomCalloutExtension):
     @odata(name="behaviorOnError")
     @property
     def behavior_on_error(self) -> CustomExtensionBehaviorOnError:

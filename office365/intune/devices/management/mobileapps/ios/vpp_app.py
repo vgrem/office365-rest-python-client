@@ -3,14 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.management.mobileapps.ios.ios_device_type import IosDeviceType
+from office365.intune.devices.management.mobileapps.mobile_app import MobileApp
 from office365.intune.devices.management.mobileapps.vpp_licensing_type import VppLicensingType
 from office365.intune.devices.management.vpptokens.accounttype import VppTokenAccountType
 from office365.runtime.types.odata_property import odata
 
 
-class IosVppApp(Entity):
+class IosVppApp(MobileApp):
     @odata(name="applicableDeviceType")
     @property
     def applicable_device_type(self) -> IosDeviceType:

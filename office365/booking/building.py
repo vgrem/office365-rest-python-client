@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from office365.entity import Entity
+from office365.outlook.calendar.place import Place
 from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
 from office365.outlook.resource_link import ResourceLink
 from office365.permissions import require_permission
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.booking.business.import_building_map_setting import ImportBuildingMapSetting
 
 
-class Building(Entity):
+class Building(Place):
     @odata(name="resourceLinks")
     @property
     def resource_links(self) -> ClientValueCollection[ResourceLink]:

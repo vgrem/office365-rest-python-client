@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.on_verified_id_claim_validation_handler import OnVerifiedIdClaimValidationHandler
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class OnVerifiedIdClaimValidationListener(Entity):
+class OnVerifiedIdClaimValidationListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnVerifiedIdClaimValidationHandler:

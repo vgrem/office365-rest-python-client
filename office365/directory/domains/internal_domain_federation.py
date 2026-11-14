@@ -5,12 +5,12 @@ from typing import Optional
 from office365.directory.authentication.signing_certificate_update_status import SigningCertificateUpdateStatus
 from office365.directory.domains.federatedidpmfabehavior import FederatedIdpMfaBehavior
 from office365.directory.domains.promptloginbehavior import PromptLoginBehavior
-from office365.entity import Entity
+from office365.directory.identities.providers.saml_or_wsfed import SamlOrWsFedProvider
 from office365.intune.devices.management.system_browser_enabled_on import SystemBrowserEnabledOn
 from office365.runtime.types.odata_property import odata
 
 
-class InternalDomainFederation(Entity):
+class InternalDomainFederation(SamlOrWsFedProvider):
     @odata(name="activeSignInUri")
     @property
     def active_sign_in_uri(self) -> Optional[str]:

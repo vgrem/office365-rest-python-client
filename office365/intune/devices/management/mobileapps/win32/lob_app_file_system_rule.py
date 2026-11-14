@@ -3,13 +3,13 @@ from __future__ import annotations
 from office365.intune.devices.management.mobileapps.win32.filesystemoperationtype import (
     Win32LobAppFileSystemOperationType,
 )
+from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.win32.ruleoperator import (
     Win32LobAppRuleOperator,
 )
-from office365.runtime.client_value import ClientValue
 
 
-class Win32LobAppFileSystemRule(ClientValue):
+class Win32LobAppFileSystemRule(Win32LobAppRule):
     check32BitOn64System: bool | None = None
     comparisonValue: str | None = None
     fileOrFolderName: str | None = None

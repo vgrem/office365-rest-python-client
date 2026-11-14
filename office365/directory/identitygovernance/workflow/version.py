@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.directory.identitygovernance.workflow.base import WorkflowBase
 from office365.directory.identitygovernance.workflow.setting import WorkflowSetting
-from office365.entity import Entity
 from office365.runtime.types.odata_property import key, odata
 
 
 @key("versionNumber")
-class WorkflowVersion(Entity):
+class WorkflowVersion(WorkflowBase):
     @odata(name="versionNumber")
     @property
     def version_number(self) -> Optional[int]:

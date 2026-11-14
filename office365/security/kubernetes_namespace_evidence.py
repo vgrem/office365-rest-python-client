@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.dictionary import Dictionary
 from office365.security.kubernetes_cluster_evidence import KubernetesClusterEvidence
 
 
-class KubernetesNamespaceEvidence(ClientValue):
+class KubernetesNamespaceEvidence(AlertEvidence):
     cluster: KubernetesClusterEvidence = field(default_factory=KubernetesClusterEvidence)
     labels: Dictionary = field(default_factory=Dictionary)
     name: str | None = None

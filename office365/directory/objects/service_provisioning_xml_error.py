@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.objects.serviceprovisioningerror import ServiceProvisioningError
 
 
-class ServiceProvisioningXmlError(ClientValue):
+class ServiceProvisioningXmlError(ServiceProvisioningError):
     errorDetail: str | None = None
 
     @property

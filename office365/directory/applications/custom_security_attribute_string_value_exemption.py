@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.applications.custom_security_attribute_exemption import CustomSecurityAttributeExemption
 
 
-class CustomSecurityAttributeStringValueExemption(ClientValue):
+class CustomSecurityAttributeStringValueExemption(CustomSecurityAttributeExemption):
     value: str | None = None
 
     @property

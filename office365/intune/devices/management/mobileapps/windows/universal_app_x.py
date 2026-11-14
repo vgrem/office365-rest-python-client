@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.configurations.windows.minimum_operating_system import WindowsMinimumOperatingSystem
+from office365.intune.devices.management.mobileapps.mobile_lob_app import MobileLobApp
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.intune.devices.management.mobileapps.windows.devicetype import WindowsDeviceType
 from office365.runtime.paths.resource_path import ResourcePath
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     )
 
 
-class WindowsUniversalAppX(Entity):
+class WindowsUniversalAppX(MobileLobApp):
     @odata(name="applicableArchitectures")
     @property
     def applicable_architectures(self) -> WindowsArchitecture:

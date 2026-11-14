@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.onedrive.sharepoint.migration.event import SharePointMigrationEvent
 from office365.runtime.types.odata_property import odata
 
 
-class SharePointMigrationJobStartEvent(Entity):
+class SharePointMigrationJobStartEvent(SharePointMigrationEvent):
     @odata(name="isRestarted")
     @property
     def is_restarted(self) -> Optional[bool]:

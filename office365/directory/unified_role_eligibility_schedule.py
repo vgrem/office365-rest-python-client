@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.request_schedule import RequestSchedule
-from office365.entity import Entity
+from office365.directory.unified_role_schedule_base import UnifiedRoleScheduleBase
 from office365.runtime.types.odata_property import odata
 
 
-class UnifiedRoleEligibilitySchedule(Entity):
+class UnifiedRoleEligibilitySchedule(UnifiedRoleScheduleBase):
     @odata(name="memberType")
     @property
     def member_type(self) -> Optional[str]:

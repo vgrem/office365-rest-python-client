@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.management.managed.device_mobile_app_configuration import (
+    ManagedDeviceMobileAppConfiguration,
+)
 from office365.intune.devices.management.mobileapps.app_configuration_setting_item import AppConfigurationSettingItem
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class IosMobileAppConfiguration(Entity):
+class IosMobileAppConfiguration(ManagedDeviceMobileAppConfiguration):
     @odata(name="encodedSettingXml")
     @property
     def encoded_setting_xml(self) -> Optional[bytes]:

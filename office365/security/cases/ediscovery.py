@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
+from office365.security.cases.case import Case
 from office365.security.cases.operation import CaseOperation
 from office365.security.ediscovery.case_member import EdiscoveryCaseMember
 from office365.security.ediscovery.custodian import EdiscoveryCustodian
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     )
 
 
-class EdiscoveryCase(Entity):
+class EdiscoveryCase(Case):
     """In the context of eDiscovery, contains custodians, searches, review sets. For details, see Overview of
     Microsoft Purview eDiscovery (Premium)."""
 

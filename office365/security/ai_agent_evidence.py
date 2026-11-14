@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
 from office365.security.ai_agent_platform import AiAgentPlatform
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class AiAgentEvidence(ClientValue):
+class AiAgentEvidence(AlertEvidence):
     agentId: str | None = None
     agentName: str | None = None
     instructions: str | None = None

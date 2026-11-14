@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from office365.directory.qr_pin import QrPin
 
 
-class QrCodePinAuthenticationMethod(Entity):
+class QrCodePinAuthenticationMethod(AuthenticationMethod):
     @odata(name="pin", navigation=True)
     @property
     def pin(self) -> QrPin:

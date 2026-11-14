@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.connection_info import ConnectionInfo
 
 
-class ExternalTokenBasedSapIagConnectionInfo(ClientValue):
+class ExternalTokenBasedSapIagConnectionInfo(ConnectionInfo):
     accessTokenUrl: str | None = None
     clientId: str | None = None
     keyVaultName: str | None = None

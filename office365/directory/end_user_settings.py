@@ -5,11 +5,11 @@ from typing import Optional
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.suggestion_related_people_insight_level import (  # noqa: E501
     AccessPackageSuggestionRelatedPeopleInsightLevel,
 )
-from office365.entity import Entity
+from office365.directory.identitygovernance.entitlementmanagement.control_configuration import ControlConfiguration
 from office365.runtime.types.odata_property import odata
 
 
-class EndUserSettings(Entity):
+class EndUserSettings(ControlConfiguration):
     @odata(name="relatedPeopleInsightLevel")
     @property
     def related_people_insight_level(self) -> AccessPackageSuggestionRelatedPeopleInsightLevel:

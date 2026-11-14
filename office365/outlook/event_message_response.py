@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from office365.entity import Entity
 from office365.outlook.calendar.meetingtimes.time_slot import TimeSlot
+from office365.outlook.mail.messages.event_message import EventMessage
 from office365.outlook.mail.messages.responsetype import ResponseType
 from office365.runtime.types.odata_property import odata
 
 
-class EventMessageResponse(Entity):
+class EventMessageResponse(EventMessage):
     @odata(name="proposedNewTime")
     @property
     def proposed_new_time(self) -> TimeSlot:

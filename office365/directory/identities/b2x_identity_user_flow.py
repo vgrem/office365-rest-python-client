@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.directory.identities.userflows.user_flow import IdentityUserFlow
 from office365.directory.identities.userflows.user_flow_api_connector_configuration import (  # noqa: E501
     UserFlowApiConnectorConfiguration,
 )
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 
-class B2xIdentityUserFlow(Entity):
+class B2xIdentityUserFlow(IdentityUserFlow):
     @odata(name="apiConnectorConfiguration")
     @property
     def api_connector_configuration(self) -> UserFlowApiConnectorConfiguration:

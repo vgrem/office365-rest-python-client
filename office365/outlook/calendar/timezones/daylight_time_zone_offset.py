@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.outlook.timezones.standard_time_zone_offset import StandardTimeZoneOffset
 
 
-class DaylightTimeZoneOffset(ClientValue):
+class DaylightTimeZoneOffset(StandardTimeZoneOffset):
     daylightBias: int | None = None
 
     @property

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
 from office365.security.attacksimulations.trainingcompletionduration import (
     TrainingCompletionDuration,
 )
+from office365.security.training_setting import TrainingSetting
 
 
-class MicrosoftManagedTrainingSetting(ClientValue):
+class MicrosoftManagedTrainingSetting(TrainingSetting):
     completionDateTime: datetime | None = None
     trainingCompletionDuration: TrainingCompletionDuration = TrainingCompletionDuration.week
 

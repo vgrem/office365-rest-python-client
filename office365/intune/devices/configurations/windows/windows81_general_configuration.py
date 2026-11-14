@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.windows.internetsitesecuritylevel import InternetSiteSecurityLevel
 from office365.intune.devices.configurations.windows.sitesecuritylevel import SiteSecurityLevel
 from office365.intune.devices.configurations.windows.useraccountcontrolsettings import WindowsUserAccountControlSettings
 from office365.runtime.types.odata_property import odata
 
 
-class Windows81GeneralConfiguration(Entity):
+class Windows81GeneralConfiguration(DeviceConfiguration):
     @odata(name="accountsBlockAddingNonMicrosoftAccountEmail")
     @property
     def accounts_block_adding_non_microsoft_account_email(self) -> Optional[bool]:

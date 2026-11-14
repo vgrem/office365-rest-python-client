@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.teams.schedule.entity import ScheduleEntity
 
 
-class TimeOffItem(ClientValue):
+class TimeOffItem(ScheduleEntity):
     timeOffReasonId: str | None = None
 
     @property

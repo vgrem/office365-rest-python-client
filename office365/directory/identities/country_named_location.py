@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.identities.countrylookupmethodtype import CountryLookupMethodType
-from office365.entity import Entity
+from office365.directory.identities.named_location import NamedLocation
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class CountryNamedLocation(Entity):
+class CountryNamedLocation(NamedLocation):
     @odata(name="countriesAndRegions")
     @property
     def countries_and_regions(self) -> StringCollection:

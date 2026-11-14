@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from office365.entity import Entity
+from office365.intune.devices.management.managed.app.status import ManagedAppStatus
 from office365.runtime.types.json import Json
 from office365.runtime.types.odata_property import odata
 
 
-class ManagedAppStatusRaw(Entity):
+class ManagedAppStatusRaw(ManagedAppStatus):
     @odata(name="content")
     @property
     def content(self) -> Json:

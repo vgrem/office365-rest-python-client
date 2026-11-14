@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.communications.teleconference_device_media_quality import TeleconferenceDeviceMediaQuality
 
 
-class TeleconferenceDeviceVideoQuality(ClientValue):
+class TeleconferenceDeviceVideoQuality(TeleconferenceDeviceMediaQuality):
     averageInboundBitRate: float | None = None
     averageInboundFrameRate: float | None = None
     averageOutboundBitRate: float | None = None

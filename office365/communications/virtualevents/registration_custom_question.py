@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from office365.communications.virtualevents.registration_question_base import VirtualEventRegistrationQuestionBase
 from office365.communications.virtualevents.registrationquestionanswerinputtype import (  # noqa: E501
     VirtualEventRegistrationQuestionAnswerInputType,
 )
-from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class VirtualEventRegistrationCustomQuestion(Entity):
+class VirtualEventRegistrationCustomQuestion(VirtualEventRegistrationQuestionBase):
     @odata(name="answerChoices")
     @property
     def answer_choices(self) -> StringCollection:

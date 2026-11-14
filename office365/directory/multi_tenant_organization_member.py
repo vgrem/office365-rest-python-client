@@ -4,16 +4,16 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
+from office365.directory.objects.object import DirectoryObject
 from office365.directory.tenantinformation.multitenantorganizationmemberrole import MultiTenantOrganizationMemberRole
 from office365.directory.tenantinformation.multitenantorganizationmemberstate import MultiTenantOrganizationMemberState
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 from office365.security.audit.multi_tenant_organization_member_transition_details import (  # noqa: E501
     MultiTenantOrganizationMemberTransitionDetails,
 )
 
 
-class MultiTenantOrganizationMember(Entity):
+class MultiTenantOrganizationMember(DirectoryObject):
     @odata(name="addedByTenantId")
     @property
     def added_by_tenant_id(self) -> Optional[UUID]:

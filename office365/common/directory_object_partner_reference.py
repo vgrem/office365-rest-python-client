@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
-from office365.entity import Entity
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.odata_property import odata
 
 
-class DirectoryObjectPartnerReference(Entity):
+class DirectoryObjectPartnerReference(DirectoryObject):
     @odata(name="description")
     @property
     def description(self) -> Optional[str]:

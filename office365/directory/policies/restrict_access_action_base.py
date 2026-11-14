@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.datasecurity.dlp_action_info import DlpActionInfo
 from office365.security.restrictionaction import RestrictionAction
 
 
-class RestrictAccessActionBase(ClientValue):
+class RestrictAccessActionBase(DlpActionInfo):
     restrictionAction: RestrictionAction = RestrictionAction.warn
 
     @property

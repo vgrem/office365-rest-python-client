@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.backuprestore.mailbox_restore_artifact import MailboxRestoreArtifact
 from office365.runtime.types.odata_property import odata
 
 
-class GranularMailboxRestoreArtifact(Entity):
+class GranularMailboxRestoreArtifact(MailboxRestoreArtifact):
     @odata(name="artifactCount")
     @property
     def artifact_count(self) -> Optional[int]:

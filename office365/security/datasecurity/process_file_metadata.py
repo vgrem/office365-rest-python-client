@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.process_content_metadata_base import ProcessContentMetadataBase
 from office365.security.datasecurity.custom_metadata_dictionary import CustomMetadataDictionary
 
 
-class ProcessFileMetadata(ClientValue):
+class ProcessFileMetadata(ProcessContentMetadataBase):
     customProperties: CustomMetadataDictionary = field(default_factory=CustomMetadataDictionary)
     ownerId: str | None = None
 

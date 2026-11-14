@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 from office365.teams.teamwork.applicationidentitytype import TeamworkApplicationIdentityType
 
 
-class TeamworkApplicationIdentity(ClientValue):
+class TeamworkApplicationIdentity(Identity):
     applicationIdentityType: TeamworkApplicationIdentityType = TeamworkApplicationIdentityType.aadApplication
 
     @property

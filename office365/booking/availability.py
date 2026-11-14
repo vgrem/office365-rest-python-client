@@ -15,5 +15,5 @@ class BookingsAvailability(ClientValue):
     )
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.BookingsAvailability"

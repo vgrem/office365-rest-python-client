@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
+from office365.directory.policies.crosstenant.b2_b_setting import CrossTenantAccessPolicyB2BSetting
 from office365.directory.policies.devices_filter import DevicesFilter
-from office365.runtime.client_value import ClientValue
 
 
-class CrossTenantAccessPolicyTenantRestrictions(ClientValue):
+class CrossTenantAccessPolicyTenantRestrictions(CrossTenantAccessPolicyB2BSetting):
     devices: DevicesFilter = field(default_factory=DevicesFilter)
 
     @property

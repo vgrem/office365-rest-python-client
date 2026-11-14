@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.directory.policies.conditionalaccess.whatifanalysisreasons import WhatIfAnalysisReasons
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class WhatIfAnalysisResult(Entity):
+class WhatIfAnalysisResult(ConditionalAccessPolicy):
     @odata(name="analysisReasons")
     @property
     def analysis_reasons(self) -> WhatIfAnalysisReasons:

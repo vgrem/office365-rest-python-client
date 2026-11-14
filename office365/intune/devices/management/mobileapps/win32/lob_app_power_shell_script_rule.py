@@ -3,16 +3,16 @@ from __future__ import annotations
 from office365.intune.devices.management.mobileapps.runasaccounttype import (
     RunAsAccountType,
 )
+from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.win32.powershellscriptruleoperationtype import (
     Win32LobAppPowerShellScriptRuleOperationType,
 )
 from office365.intune.devices.management.mobileapps.win32.ruleoperator import (
     Win32LobAppRuleOperator,
 )
-from office365.runtime.client_value import ClientValue
 
 
-class Win32LobAppPowerShellScriptRule(ClientValue):
+class Win32LobAppPowerShellScriptRule(Win32LobAppRule):
     comparisonValue: str | None = None
     displayName: str | None = None
     enforceSignatureCheck: bool | None = None

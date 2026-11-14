@@ -7,9 +7,9 @@ from typing_extensions import Self
 from office365.directory.policies.unifiedrolemanagement.unifiedroleschedulerequestactions import (  # noqa: E501
     UnifiedRoleScheduleRequestActions,
 )
+from office365.directory.request import Request
 from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
-from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     )
 
 
-class UnifiedRoleEligibilityScheduleRequest(Entity):
+class UnifiedRoleEligibilityScheduleRequest(Request):
     @odata(name="action")
     @property
     def action(self) -> UnifiedRoleScheduleRequestActions:

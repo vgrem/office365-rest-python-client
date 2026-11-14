@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
-from office365.entity import Entity
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.odata_property import odata
 
 
-class RemoteTenantGroup(Entity):
+class RemoteTenantGroup(DirectoryObject):
     @odata(name="remoteGroupDisplayName")
     @property
     def remote_group_display_name(self) -> Optional[str]:

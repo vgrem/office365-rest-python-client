@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.authentication.methods.method import AuthenticationMethod
 from office365.runtime.types.odata_property import odata
 
 
-class SoftwareOathAuthenticationMethod(Entity):
+class SoftwareOathAuthenticationMethod(AuthenticationMethod):
     @odata(name="secretKey")
     @property
     def secret_key(self) -> Optional[str]:

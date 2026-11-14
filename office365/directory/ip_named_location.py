@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.directory.identities.ip_range import IpRange
-from office365.entity import Entity
+from office365.directory.identities.named_location import NamedLocation
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class IpNamedLocation(Entity):
+class IpNamedLocation(NamedLocation):
     @odata(name="ipRanges")
     @property
     def ip_ranges(self) -> ClientValueCollection[IpRange]:

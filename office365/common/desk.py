@@ -5,13 +5,13 @@ from typing import Optional
 from office365.booking.mailbox_details import MailboxDetails
 from office365.booking.place_mode import PlaceMode
 from office365.booking.place_service_plan_info import PlaceServicePlanInfo
-from office365.entity import Entity
+from office365.outlook.calendar.place import Place
 from office365.outlook.place_feature_enablement import PlaceFeatureEnablement
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class Desk(Entity):
+class Desk(Place):
     @odata(name="displayDeviceName")
     @property
     def display_device_name(self) -> Optional[str]:

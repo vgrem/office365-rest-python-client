@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
+from office365.security.data_set import DataSet
 from office365.security.ediscovery.review_set_query import EdiscoveryReviewSetQuery
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from office365.security.search.documentversion import DocumentVersion
 
 
-class EdiscoveryReviewSet(Entity):
+class EdiscoveryReviewSet(DataSet):
     @odata(name="queries", navigation=True)
     @property
     def queries(self) -> EntityCollection[EdiscoveryReviewSetQuery]:

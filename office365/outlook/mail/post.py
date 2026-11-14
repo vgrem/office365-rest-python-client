@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.item import OutlookItem
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.recipient import Recipient
 from office365.permissions import require_permission
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from office365.outlook.mail.post import Post
 
 
-class Post(Entity):
+class Post(OutlookItem):
     """Represents an individual Post item within a conversationThread entity."""
 
     @odata(name="conversationId")

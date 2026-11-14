@@ -4,13 +4,13 @@ from dataclasses import field
 
 from office365.copilot.ai_agent_info import AiAgentInfo
 from office365.copilot.ai_interaction_plugin import AiInteractionPlugin
+from office365.directory.identitygovernance.process_content_metadata_base import ProcessContentMetadataBase
 from office365.directory.identitygovernance.resource_access_detail import ResourceAccessDetail
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 
 
-class ProcessConversationMetadata(ClientValue):
+class ProcessConversationMetadata(ProcessContentMetadataBase):
     accessedResources: StringCollection = field(default_factory=StringCollection)
     accessedResources_v2: ClientValueCollection[ResourceAccessDetail] = field(
         default_factory=lambda: ClientValueCollection(ResourceAccessDetail)

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from office365.directory.authentication.attributecollection.submit_handler import OnAttributeCollectionSubmitHandler
-from office365.entity import Entity
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.runtime.types.odata_property import odata
 
 
-class OnAttributeCollectionSubmitListener(Entity):
+class OnAttributeCollectionSubmitListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnAttributeCollectionSubmitHandler:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.teams.schedule.shifts.item import ShiftItem
 
 
-class OpenShiftItem(ClientValue):
+class OpenShiftItem(ShiftItem):
     openSlotCount: int | None = None
 
     @property

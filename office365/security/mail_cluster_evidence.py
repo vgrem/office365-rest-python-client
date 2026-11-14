@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class MailClusterEvidence(ClientValue):
+class MailClusterEvidence(AlertEvidence):
     clusterBy: str | None = None
     clusterByValue: str | None = None
     emailCount: int | None = None

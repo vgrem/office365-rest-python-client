@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.on_token_issuance_start_handler import OnTokenIssuanceStartHandler
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class OnTokenIssuanceStartListener(Entity):
+class OnTokenIssuanceStartListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnTokenIssuanceStartHandler:

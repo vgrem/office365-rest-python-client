@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
+from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.confirmedby import ConfirmedBy
 from office365.teams.schedule.time_card_break import TimeCardBreak
 from office365.teams.schedule.time_card_entry import TimeCardEntry
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.teams.schedule.time_card import TimeCard
 
 
-class TimeCard(Entity):
+class TimeCard(ChangeTrackedEntity):
     @odata(name="breaks")
     @property
     def breaks(self) -> ClientValueCollection[TimeCardBreak]:

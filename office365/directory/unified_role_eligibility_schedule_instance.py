@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.unified_role_schedule_instance_base import UnifiedRoleScheduleInstanceBase
 from office365.runtime.types.odata_property import odata
 
 
-class UnifiedRoleEligibilityScheduleInstance(Entity):
+class UnifiedRoleEligibilityScheduleInstance(UnifiedRoleScheduleInstanceBase):
     @odata(name="endDateTime")
     @property
     def end_date_time(self) -> Optional[datetime]:

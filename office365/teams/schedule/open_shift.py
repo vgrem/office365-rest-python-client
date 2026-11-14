@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 
 
-class OpenShift(Entity):
+class OpenShift(ChangeTrackedEntity):
     @odata(name="draftOpenShift")
     @property
     def draft_open_shift(self) -> OpenShiftItem:

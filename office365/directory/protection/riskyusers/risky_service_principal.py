@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.protection.riskyusers.risk_detail import RiskDetail
 from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.directory.protection.riskyusers.riskstate import RiskState
-from office365.directory.protection.riskyusers.risky_service_principal_history_item import (
-    RiskyServicePrincipalHistoryItem,
-)
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+
+if TYPE_CHECKING:
+    from office365.directory.protection.riskyusers.risky_service_principal_history_item import (
+        RiskyServicePrincipalHistoryItem,
+    )
 
 
 class RiskyServicePrincipal(Entity):
@@ -74,6 +76,10 @@ class RiskyServicePrincipal(Entity):
     @property
     def history(self) -> EntityCollection[RiskyServicePrincipalHistoryItem]:
         """Gets the history property"""
+        from office365.directory.protection.riskyusers.risky_service_principal_history_item import (
+            RiskyServicePrincipalHistoryItem,
+        )
+
         return self.properties.get(
             "history",
             EntityCollection[RiskyServicePrincipalHistoryItem](

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.management.action_result import DeviceActionResult
 
 
-class RemoteLockActionResult(ClientValue):
+class RemoteLockActionResult(DeviceActionResult):
     unlockPin: str | None = None
 
     @property

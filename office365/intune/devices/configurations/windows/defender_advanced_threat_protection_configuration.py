@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.runtime.types.odata_property import odata
 
 
-class WindowsDefenderAdvancedThreatProtectionConfiguration(Entity):
+class WindowsDefenderAdvancedThreatProtectionConfiguration(DeviceConfiguration):
     @odata(name="allowSampleSharing")
     @property
     def allow_sample_sharing(self) -> Optional[bool]:

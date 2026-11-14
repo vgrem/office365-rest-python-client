@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.geo_location import GeoLocation
 from office365.security.stream import Stream
 
 
-class IpEvidence(ClientValue):
+class IpEvidence(AlertEvidence):
     countryLetterCode: str | None = None
     ipAddress: str | None = None
     stream: Stream = field(default_factory=Stream)

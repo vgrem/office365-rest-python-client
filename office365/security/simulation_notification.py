@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
 from office365.security.attacksimulations.targettedusertype import (
     TargettedUserType,
 )
+from office365.security.base_end_user_notification import BaseEndUserNotification
 
 
-class SimulationNotification(ClientValue):
+class SimulationNotification(BaseEndUserNotification):
     targettedUserType: TargettedUserType = TargettedUserType.unknown
 
     @property

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.configurations.android.minimum_operating_system import AndroidMinimumOperatingSystem
+from office365.intune.devices.management.managed.app.app import ManagedApp
 from office365.runtime.types.odata_property import odata
 
 
-class ManagedAndroidStoreApp(Entity):
+class ManagedAndroidStoreApp(ManagedApp):
     @odata(name="appStoreUrl")
     @property
     def app_store_url(self) -> Optional[str]:

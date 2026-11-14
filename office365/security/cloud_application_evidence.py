@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.stream import Stream
 
 
-class CloudApplicationEvidence(ClientValue):
+class CloudApplicationEvidence(AlertEvidence):
     appId: int | None = None
     displayName: str | None = None
     instanceId: int | None = None

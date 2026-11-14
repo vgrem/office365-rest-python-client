@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
 from office365.security.alerts.azure_resource_evidence import AzureResourceEvidence
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class SasTokenEvidence(ClientValue):
+class SasTokenEvidence(AlertEvidence):
     allowedIpAddresses: str | None = None
     allowedResourceTypes: StringCollection = field(default_factory=StringCollection)
     allowedServices: StringCollection = field(default_factory=StringCollection)

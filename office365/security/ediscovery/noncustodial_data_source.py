@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
+from office365.security.data_source_container import DataSourceContainer
 from office365.security.search.data_source import DataSource
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     )
 
 
-class EdiscoveryNoncustodialDataSource(Entity):
+class EdiscoveryNoncustodialDataSource(DataSourceContainer):
     @odata(name="dataSource", navigation=True)
     @property
     def data_source(self) -> DataSource:

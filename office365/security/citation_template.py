@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.security.file_plan_descriptor_template import FilePlanDescriptorTemplate
 
 
-class CitationTemplate(Entity):
+class CitationTemplate(FilePlanDescriptorTemplate):
     @odata(name="citationJurisdiction")
     @property
     def citation_jurisdiction(self) -> Optional[str]:

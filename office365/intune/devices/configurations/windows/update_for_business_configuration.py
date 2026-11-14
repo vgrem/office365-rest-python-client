@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.enablement import Enablement
 from office365.intune.devices.configurations.windows.automaticupdatemode import AutomaticUpdateMode
 from office365.intune.devices.configurations.windows.autorestartnotificationdismissalmethod import (  # noqa: E501
@@ -22,7 +22,7 @@ from office365.intune.devices.configurations.windows.updatetype import WindowsUp
 from office365.runtime.types.odata_property import odata
 
 
-class WindowsUpdateForBusinessConfiguration(Entity):
+class WindowsUpdateForBusinessConfiguration(DeviceConfiguration):
     @odata(name="allowWindows11Upgrade")
     @property
     def allow_windows11_upgrade(self) -> Optional[bool]:

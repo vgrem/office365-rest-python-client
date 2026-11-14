@@ -5,7 +5,6 @@ from uuid import UUID
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.windows.information_protection_enforcement_level import (  # noqa: E501
     WindowsInformationProtectionEnforcementLevel,
@@ -23,6 +22,7 @@ from office365.intune.devices.management.windows_information_protection_proxied_
 from office365.intune.devices.management.windows_information_protection_resource_collection import (  # noqa: E501
     WindowsInformationProtectionResourceCollection,
 )
+from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     )
 
 
-class WindowsInformationProtection(Entity):
+class WindowsInformationProtection(ManagedAppPolicy):
     @odata(name="azureRightsManagementServicesAllowed")
     @property
     def azure_rights_management_services_allowed(self) -> Optional[bool]:

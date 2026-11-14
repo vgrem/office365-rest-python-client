@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
-from office365.runtime.pollable import PollableOperation
+from office365.onedrive.operations.long_running import LongRunningOperation
 from office365.runtime.types.odata_property import odata
 from office365.teams.viva.engagement.asyncoperationtype import EngagementAsyncOperationType
 
 
-class EngagementAsyncOperation(PollableOperation, Entity):
+class EngagementAsyncOperation(LongRunningOperation):
     @odata(name="operationType")
     @property
     def operation_type(self) -> EngagementAsyncOperationType:

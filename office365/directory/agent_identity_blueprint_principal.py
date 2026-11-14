@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import GuidCollection
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
 
 
-class AgentIdentityBlueprintPrincipal(Entity):
+class AgentIdentityBlueprintPrincipal(ServicePrincipal):
     @odata(name="managerApplications", readonly=True)
     @property
     def manager_applications(self) -> GuidCollection:

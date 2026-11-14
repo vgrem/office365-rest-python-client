@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import time
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.sharedpc.allowedaccounttype import SharedPCAllowedAccountType
 from office365.intune.devices.configurations.windows.shared_pc_account_manager_policy import SharedPCAccountManagerPolicy
 from office365.runtime.types.odata_property import odata
 
 
-class SharedPCConfiguration(Entity):
+class SharedPCConfiguration(DeviceConfiguration):
     @odata(name="accountManagerPolicy")
     @property
     def account_manager_policy(self) -> SharedPCAccountManagerPolicy:

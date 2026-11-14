@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from office365.directory.identities.conditional_access_session_control import ConditionalAccessSessionControl
 from office365.directory.policies.persistentbrowsersessionmode import PersistentBrowserSessionMode
-from office365.runtime.client_value import ClientValue
 
 
-class PersistentBrowserSessionControl(ClientValue):
+class PersistentBrowserSessionControl(ConditionalAccessSessionControl):
     mode: PersistentBrowserSessionMode = PersistentBrowserSessionMode.always
 
     @property

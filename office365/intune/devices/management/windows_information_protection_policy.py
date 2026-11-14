@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.management.managed.app.protections.windows import WindowsInformationProtection
 from office365.intune.devices.management.windows_information_protection_pin_character_requirements import (  # noqa: E501
     WindowsInformationProtectionPinCharacterRequirements,
 )
 from office365.runtime.types.odata_property import odata
 
 
-class WindowsInformationProtectionPolicy(Entity):
+class WindowsInformationProtectionPolicy(WindowsInformationProtection):
     @odata(name="daysWithoutContactBeforeUnenroll")
     @property
     def days_without_contact_before_unenroll(self) -> Optional[int]:

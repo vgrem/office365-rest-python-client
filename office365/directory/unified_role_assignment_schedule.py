@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.request_schedule import RequestSchedule
-from office365.entity import Entity
+from office365.directory.unified_role_schedule_base import UnifiedRoleScheduleBase
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     )
 
 
-class UnifiedRoleAssignmentSchedule(Entity):
+class UnifiedRoleAssignmentSchedule(UnifiedRoleScheduleBase):
     @odata(name="assignmentType")
     @property
     def assignment_type(self) -> Optional[str]:

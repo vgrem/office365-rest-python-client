@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.mailbox_configuration_type import (
     MailboxConfigurationType,
 )
 
 
-class MailboxConfigurationEvidence(ClientValue):
+class MailboxConfigurationEvidence(AlertEvidence):
     configurationId: str | None = None
     displayName: str | None = None
     externalDirectoryObjectId: UUID | None = None

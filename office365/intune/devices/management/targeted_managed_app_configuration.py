@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.managed.app.configuration import ManagedAppConfiguration
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
 
 
-class TargetedManagedAppConfiguration(Entity):
+class TargetedManagedAppConfiguration(ManagedAppConfiguration):
     @odata(name="deployedAppCount")
     @property
     def deployed_app_count(self) -> Optional[int]:

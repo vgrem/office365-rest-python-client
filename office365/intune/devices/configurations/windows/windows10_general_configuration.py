@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import time
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.edge_search_engine_base import EdgeSearchEngineBase
 from office365.intune.devices.configurations.windows.general.defendercloudblockleveltype import (  # noqa: E501
     DefenderCloudBlockLevelType,
@@ -37,7 +37,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class Windows10GeneralConfiguration(Entity):
+class Windows10GeneralConfiguration(DeviceConfiguration):
     @odata(name="accountsBlockAddingNonMicrosoftAccountEmail")
     @property
     def accounts_block_adding_non_microsoft_account_email(self) -> Optional[bool]:

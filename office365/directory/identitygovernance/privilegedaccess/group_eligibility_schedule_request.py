@@ -9,8 +9,8 @@ from office365.directory.identitygovernance.privilegedaccess.group_eligibility_s
     PrivilegedAccessGroupEligibilitySchedule,
 )
 from office365.directory.identitygovernance.privilegedaccess.grouprelationships import PrivilegedAccessGroupRelationships
+from office365.directory.identitygovernance.privilegedaccess.schedule_request import PrivilegedAccessScheduleRequest
 from office365.directory.objects.object import DirectoryObject
-from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -18,7 +18,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
-class PrivilegedAccessGroupEligibilityScheduleRequest(Entity):
+class PrivilegedAccessGroupEligibilityScheduleRequest(PrivilegedAccessScheduleRequest):
     @odata(name="accessId")
     @property
     def access_id(self) -> PrivilegedAccessGroupRelationships:

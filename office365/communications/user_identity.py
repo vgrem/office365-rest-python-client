@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 
 
-class CommunicationsUserIdentity(ClientValue):
+class CommunicationsUserIdentity(Identity):
     tenantId: str | None = None
 
     @property

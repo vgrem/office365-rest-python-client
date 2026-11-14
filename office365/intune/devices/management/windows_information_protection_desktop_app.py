@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.management.windows_information_protection_app import WindowsInformationProtectionApp
 
 
-class WindowsInformationProtectionDesktopApp(ClientValue):
+class WindowsInformationProtectionDesktopApp(WindowsInformationProtectionApp):
     binaryName: str | None = None
     binaryVersionHigh: str | None = None
     binaryVersionLow: str | None = None

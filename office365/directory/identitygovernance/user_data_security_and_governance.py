@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.identitygovernance.data_security_and_governance import DataSecurityAndGovernance
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from office365.security.datasecurity.process_content_response import ProcessContentResponse
 
 
-class UserDataSecurityAndGovernance(Entity):
+class UserDataSecurityAndGovernance(DataSecurityAndGovernance):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.UserDataSecurityAndGovernance"

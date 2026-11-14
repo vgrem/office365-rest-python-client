@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.configurations.oma_setting import OmaSetting
 
 
-class OmaSettingFloatingPoint(ClientValue):
+class OmaSettingFloatingPoint(OmaSetting):
     value: float | None = None
 
     @property

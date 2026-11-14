@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from office365.directory.identitygovernance.entitlementmanagement.identity_source import IdentitySource
 from office365.directory.identitygovernance.entitlementmanagement.socialidentitysourcetype import (
     SocialIdentitySourceType,
 )
-from office365.runtime.client_value import ClientValue
 
 
-class SocialIdentitySource(ClientValue):
+class SocialIdentitySource(IdentitySource):
     displayName: str | None = None
     socialIdentitySourceType: SocialIdentitySourceType = SocialIdentitySourceType.facebook
 

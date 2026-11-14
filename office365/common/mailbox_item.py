@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.item import OutlookItem
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     )
 
 
-class MailboxItem(Entity):
+class MailboxItem(OutlookItem):
     @odata(name="size")
     @property
     def size(self) -> Optional[int]:

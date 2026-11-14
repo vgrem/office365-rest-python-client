@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class GitHubOrganizationEvidence(ClientValue):
+class GitHubOrganizationEvidence(AlertEvidence):
     company: str | None = None
     displayName: str | None = None
     email: str | None = None

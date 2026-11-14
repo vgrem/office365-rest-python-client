@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.configurations.enablement import Enablement
 from office365.intune.devices.configurations.windows.helloforbusinesspinusage import WindowsHelloForBusinessPinUsage
+from office365.intune.devices.enrollment.configuration import DeviceEnrollmentConfiguration
 from office365.runtime.types.odata_property import odata
 
 
-class DeviceEnrollmentWindowsHelloForBusinessConfiguration(Entity):
+class DeviceEnrollmentWindowsHelloForBusinessConfiguration(DeviceEnrollmentConfiguration):
     @odata(name="enhancedBiometricsState")
     @property
     def enhanced_biometrics_state(self) -> Enablement:

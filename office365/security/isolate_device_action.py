@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.device_action import DeviceAction
 from office365.security.isolation_type import IsolationType
 
 
-class IsolateDeviceAction(ClientValue):
+class IsolateDeviceAction(DeviceAction):
     isolationType: IsolationType = IsolationType.full
 
     @property

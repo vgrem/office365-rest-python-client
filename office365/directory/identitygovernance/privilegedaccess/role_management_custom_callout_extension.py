@@ -4,12 +4,12 @@ from typing import Optional
 
 from office365.directory.identitygovernance.custom_callout_extension_type import CustomCalloutExtensionType
 from office365.directory.identitygovernance.custom_extension_resource_type import CustomExtensionResourceType
-from office365.entity import Entity
+from office365.directory.identitygovernance.workflow.custom_callout_extension import CustomCalloutExtension
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class RoleManagementCustomCalloutExtension(Entity):
+class RoleManagementCustomCalloutExtension(CustomCalloutExtension):
     @odata(name="customAttributes")
     @property
     def custom_attributes(self) -> StringCollection:

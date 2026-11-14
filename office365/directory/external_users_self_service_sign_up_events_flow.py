@@ -6,13 +6,13 @@ from office365.directory.authentication.attributecollection.method_load_start_ha
 )
 from office365.directory.authentication.attributecollection.start_handler import OnAttributeCollectionStartHandler
 from office365.directory.authentication.attributecollection.submit_handler import OnAttributeCollectionSubmitHandler
+from office365.directory.identities.authentication_events_flow import AuthenticationEventsFlow
 from office365.directory.identities.on_interactive_auth_flow_start_handler import OnInteractiveAuthFlowStartHandler
 from office365.directory.identities.on_user_create_start_handler import OnUserCreateStartHandler
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class ExternalUsersSelfServiceSignUpEventsFlow(Entity):
+class ExternalUsersSelfServiceSignUpEventsFlow(AuthenticationEventsFlow):
     @odata(name="onAttributeCollection")
     @property
     def on_attribute_collection(self) -> OnAttributeCollectionHandler:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.payload_detail import PayloadDetail
 
 
-class EmailPayloadDetail(ClientValue):
+class EmailPayloadDetail(PayloadDetail):
     fromEmail: str | None = None
     fromName: str | None = None
     isExternalSender: bool | None = None

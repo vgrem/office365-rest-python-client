@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.user_evidence import UserEvidence
 
 
-class CloudLogonSessionEvidence(ClientValue):
+class CloudLogonSessionEvidence(AlertEvidence):
     browser: str | None = None
     deviceName: str | None = None
     operatingSystem: str | None = None

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from office365.directory.custom_authentication_extension import CustomAuthenticationExtension
 from office365.directory.identities.on_token_issuance_start_return_claim import OnTokenIssuanceStartReturnClaim
-from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class OnTokenIssuanceStartCustomExtension(Entity):
+class OnTokenIssuanceStartCustomExtension(CustomAuthenticationExtension):
     @odata(name="claimsForTokenConfiguration")
     @property
     def claims_for_token_configuration(self) -> ClientValueCollection[OnTokenIssuanceStartReturnClaim]:

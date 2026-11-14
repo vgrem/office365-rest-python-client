@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.filehashalgorithm import FileHashAlgorithm
 
 
-class FileHashEvidence(ClientValue):
+class FileHashEvidence(AlertEvidence):
     algorithm: FileHashAlgorithm = FileHashAlgorithm.unknown
     value: str | None = None
 

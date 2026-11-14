@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import date
 
-from office365.runtime.client_value import ClientValue
+from office365.booking.availability import BookingsAvailability
 
 
-class BookingsAvailabilityWindow(ClientValue):
+class BookingsAvailabilityWindow(BookingsAvailability):
     endDate: date = date.min
     startDate: date = date.min
 

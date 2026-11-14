@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from office365.entity import Entity
 from office365.partners.billing.manifest import Manifest
+from office365.partners.billing.operation import Operation
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 
 
-class ExportSuccessOperation(PollableOperation, Entity):
+class ExportSuccessOperation(Operation, PollableOperation, Entity):
     @odata(name="resourceLocation", navigation=True)
     @property
     def resource_location(self) -> Manifest:

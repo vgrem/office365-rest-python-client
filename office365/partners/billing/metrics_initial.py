@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.entity import Entity
+from office365.partners.billing.metrics_base import BillingMetricsBase
 from office365.runtime.types.odata_property import odata
 
 
-class BillingMetricsInitial(Entity):
+class BillingMetricsInitial(BillingMetricsBase):
     @odata(name="createdDateTime")
     @property
     def created_date_time(self) -> Optional[datetime]:

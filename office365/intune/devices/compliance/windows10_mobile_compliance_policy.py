@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.compliance.policy import DeviceCompliancePolicy
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
 from office365.runtime.types.odata_property import odata
 
 
-class Windows10MobileCompliancePolicy(Entity):
+class Windows10MobileCompliancePolicy(DeviceCompliancePolicy):
     @odata(name="bitLockerEnabled")
     @property
     def bit_locker_enabled(self) -> Optional[bool]:

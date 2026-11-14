@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.threatintelligence.host import Host
 from office365.security.whois_contact import WhoisContact
 from office365.security.whois_nameserver import WhoisNameserver
+
+if TYPE_CHECKING:
+    from office365.security.threatintelligence.host import Host
 
 
 class WhoisBaseRecord(Entity):
@@ -65,6 +67,8 @@ class WhoisBaseRecord(Entity):
     @property
     def host(self) -> Host:
         """Gets the host property"""
+        from office365.security.threatintelligence.host import Host
+
         return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
 
     @property

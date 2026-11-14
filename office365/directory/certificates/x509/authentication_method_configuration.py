@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from office365.directory.authentication.methods.configuration import AuthenticationMethodConfiguration
 from office365.directory.certificates.x509.authenticationmodeconfiguration import (  # noqa: E501
     X509CertificateAuthenticationModeConfiguration,
 )
@@ -9,7 +10,6 @@ from office365.directory.certificates.x509.authority_scope import X509Certificat
 from office365.directory.certificates.x509.crlvalidationconfiguration import X509CertificateCRLValidationConfiguration
 from office365.directory.certificates.x509.issuer_hints_configuration import X509CertificateIssuerHintsConfiguration
 from office365.directory.certificates.x509.userbinding import X509CertificateUserBinding
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 
-class X509CertificateAuthenticationMethodConfiguration(Entity):
+class X509CertificateAuthenticationMethodConfiguration(AuthenticationMethodConfiguration):
     @odata(name="authenticationModeConfiguration")
     @property
     def authentication_mode_configuration(self) -> X509CertificateAuthenticationModeConfiguration:

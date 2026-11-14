@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import time
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.windows.miracastchannel import MiracastChannel
 from office365.intune.devices.configurations.windows.welcomescreenmeetinginformation import (  # noqa: E501
     WelcomeScreenMeetingInformation,
@@ -11,7 +11,7 @@ from office365.intune.devices.configurations.windows.welcomescreenmeetinginforma
 from office365.runtime.types.odata_property import odata
 
 
-class Windows10TeamGeneralConfiguration(Entity):
+class Windows10TeamGeneralConfiguration(DeviceConfiguration):
     @odata(name="azureOperationalInsightsBlockTelemetry")
     @property
     def azure_operational_insights_block_telemetry(self) -> Optional[bool]:

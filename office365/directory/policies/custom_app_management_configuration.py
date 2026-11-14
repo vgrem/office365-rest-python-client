@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from dataclasses import field
 
+from office365.directory.policies.app_management_configuration import AppManagementConfiguration
 from office365.directory.policies.custom_app_management_application_configuration import (
     CustomAppManagementApplicationConfiguration,
 )
-from office365.runtime.client_value import ClientValue
 
 
-class CustomAppManagementConfiguration(ClientValue):
+class CustomAppManagementConfiguration(AppManagementConfiguration):
     applicationRestrictions: CustomAppManagementApplicationConfiguration = field(
         default_factory=CustomAppManagementApplicationConfiguration
     )

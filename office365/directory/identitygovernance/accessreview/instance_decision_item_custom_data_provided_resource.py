@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.accessreview.instance_decision_item_resource import (
+    AccessReviewInstanceDecisionItemResource,
+)
 
 
-class AccessReviewInstanceDecisionItemCustomDataProvidedResource(ClientValue):
+class AccessReviewInstanceDecisionItemCustomDataProvidedResource(AccessReviewInstanceDecisionItemResource):
     customData: str | None = None
     scopeDisplayName: str | None = None
     scopeId: str | None = None

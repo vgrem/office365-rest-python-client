@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.managed.app.protections.protection import ManagedAppProtection
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     )
 
 
-class TargetedManagedAppProtection(Entity):
+class TargetedManagedAppProtection(ManagedAppProtection):
     @odata(name="isAssigned")
     @property
     def is_assigned(self) -> Optional[bool]:

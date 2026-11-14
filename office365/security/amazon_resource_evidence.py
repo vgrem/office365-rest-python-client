@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class AmazonResourceEvidence(ClientValue):
+class AmazonResourceEvidence(AlertEvidence):
     amazonAccountId: str | None = None
     amazonResourceId: str | None = None
     resourceName: str | None = None

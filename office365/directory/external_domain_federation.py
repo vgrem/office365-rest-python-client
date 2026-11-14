@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.entitlementmanagement.identity_source import IdentitySource
 
 
-class ExternalDomainFederation(ClientValue):
+class ExternalDomainFederation(IdentitySource):
     displayName: str | None = None
     domainName: str | None = None
     issuerUri: str | None = None

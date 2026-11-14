@@ -1,12 +1,12 @@
 from typing import Optional
 
 from office365.directory.identitygovernance.privilegedaccess.approval import Approval
-from office365.entity import Entity
+from office365.directory.request import Request
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 
-class UserConsentRequest(Entity):
+class UserConsentRequest(Request):
     """
     Represents the details of the consent request a user creates when they request to access an app or to grant
     permissions to an app. The details include justification for requesting access, the status of the request,

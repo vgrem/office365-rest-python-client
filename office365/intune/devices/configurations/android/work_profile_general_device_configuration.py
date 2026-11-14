@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.configurations.android.workprofilecrossprofiledatasharingtype import (  # noqa: E501
     AndroidWorkProfileCrossProfileDataSharingType,
 )
@@ -12,10 +11,11 @@ from office365.intune.devices.configurations.android.workprofiledefaultapppermis
 from office365.intune.devices.configurations.android.workprofilerequiredpasswordtype import (  # noqa: E501
     AndroidWorkProfileRequiredPasswordType,
 )
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.runtime.types.odata_property import odata
 
 
-class AndroidWorkProfileGeneralDeviceConfiguration(Entity):
+class AndroidWorkProfileGeneralDeviceConfiguration(DeviceConfiguration):
     @odata(name="passwordBlockFingerprintUnlock")
     @property
     def password_block_fingerprint_unlock(self) -> Optional[bool]:

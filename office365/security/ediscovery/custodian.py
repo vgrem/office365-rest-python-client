@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
+from office365.security.data_source_container import DataSourceContainer
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.ediscovery_index_operation import (
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from office365.security.user_source import UserSource
 
 
-class EdiscoveryCustodian(Entity):
+class EdiscoveryCustodian(DataSourceContainer):
     @odata(name="acknowledgedDateTime")
     @property
     def acknowledged_date_time(self) -> Optional[datetime]:

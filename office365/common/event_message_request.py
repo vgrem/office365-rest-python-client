@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.communications.meetings.requesttype import MeetingRequestType
-from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.location import Location
+from office365.outlook.mail.messages.event_message import EventMessage
 from office365.runtime.types.odata_property import odata
 
 
-class EventMessageRequest(Entity):
+class EventMessageRequest(EventMessage):
     @odata(name="allowNewTimeProposals")
     @property
     def allow_new_time_proposals(self) -> Optional[bool]:

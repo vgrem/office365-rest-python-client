@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from office365.directory.identities.conditional_access_session_control import ConditionalAccessSessionControl
 from office365.directory.policies.conditionalaccess.signinfrequencyauthenticationtype import (
     SignInFrequencyAuthenticationType,
 )
 from office365.directory.policies.conditionalaccess.signinfrequencyinterval import SignInFrequencyInterval
 from office365.directory.policies.conditionalaccess.signinfrequencytype import SigninFrequencyType
-from office365.runtime.client_value import ClientValue
 
 
-class SignInFrequencySessionControl(ClientValue):
+class SignInFrequencySessionControl(ConditionalAccessSessionControl):
     authenticationType: SignInFrequencyAuthenticationType = (
         SignInFrequencyAuthenticationType.primaryAndSecondaryAuthentication
     )

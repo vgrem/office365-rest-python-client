@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.accessreview.instance_decision_item_resource import (
+    AccessReviewInstanceDecisionItemResource,
+)
 
 
-class AccessReviewInstanceDecisionItemServicePrincipalResource(ClientValue):
+class AccessReviewInstanceDecisionItemServicePrincipalResource(AccessReviewInstanceDecisionItemResource):
     appId: str | None = None
     appRoleDisplayName: str | None = None
     appRoleId: str | None = None

@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
-from office365.runtime.pollable import PollableOperation
+from office365.communications.operations.comms import CommsOperation
 from office365.runtime.types.odata_property import odata
 
 
-class RecordOperation(PollableOperation, Entity):
+class RecordOperation(CommsOperation):
     @odata(name="recordingAccessToken")
     @property
     def recording_access_token(self) -> Optional[str]:

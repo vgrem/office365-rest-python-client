@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.on_user_create_start_handler import OnUserCreateStartHandler
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class OnUserCreateStartListener(Entity):
+class OnUserCreateStartListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnUserCreateStartHandler:

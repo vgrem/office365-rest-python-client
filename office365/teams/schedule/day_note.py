@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import date
 from typing import Optional
 
-from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 
 
-class DayNote(Entity):
+class DayNote(ChangeTrackedEntity):
     @odata(name="dayNoteDate")
     @property
     def day_note_date(self) -> Optional[date]:

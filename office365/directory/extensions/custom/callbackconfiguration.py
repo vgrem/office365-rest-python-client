@@ -9,5 +9,5 @@ class CustomExtensionCallbackConfiguration(ClientValue):
     timeoutDuration: timedelta | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.CustomExtensionCallbackConfiguration"

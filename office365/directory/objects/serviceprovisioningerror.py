@@ -11,5 +11,5 @@ class ServiceProvisioningError(ClientValue):
     serviceInstance: str | None = None
 
     @property
-    def entity_type_name(self):
+    def entity_type_name(self) -> str:
         return "microsoft.graph.ServiceProvisioningError"

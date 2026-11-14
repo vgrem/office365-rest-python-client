@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.management.action_result import DeviceActionResult
 
 
-class WindowsDefenderScanActionResult(ClientValue):
+class WindowsDefenderScanActionResult(DeviceActionResult):
     scanType: str | None = None
 
     @property

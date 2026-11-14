@@ -6,13 +6,13 @@ from office365.directory.extensions.custom.callbackconfiguration import (
     CustomExtensionCallbackConfiguration,
 )
 from office365.directory.identitygovernance.custom_task_extension_reply_mode import CustomTaskExtensionReplyMode
+from office365.directory.identitygovernance.workflow.custom_callout_extension import CustomCalloutExtension
 from office365.directory.users.user import User
-from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 
-class CustomTaskExtension(Entity):
+class CustomTaskExtension(CustomCalloutExtension):
     @odata(name="callbackConfiguration")
     @property
     def callback_configuration(self) -> CustomExtensionCallbackConfiguration:

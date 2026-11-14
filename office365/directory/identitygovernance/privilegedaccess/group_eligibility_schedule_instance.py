@@ -5,13 +5,13 @@ from typing import Optional
 from office365.directory.groups.group import Group
 from office365.directory.identitygovernance.privilegedaccess.groupmembertype import PrivilegedAccessGroupMemberType
 from office365.directory.identitygovernance.privilegedaccess.grouprelationships import PrivilegedAccessGroupRelationships
+from office365.directory.identitygovernance.privilegedaccess.schedule.instance import PrivilegedAccessScheduleInstance
 from office365.directory.objects.object import DirectoryObject
-from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 
-class PrivilegedAccessGroupEligibilityScheduleInstance(Entity):
+class PrivilegedAccessGroupEligibilityScheduleInstance(PrivilegedAccessScheduleInstance):
     @odata(name="accessId")
     @property
     def access_id(self) -> PrivilegedAccessGroupRelationships:

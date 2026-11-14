@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
+from office365.directory.recovery.job_base import RecoveryJobBase
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.queries.function import FunctionQuery
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from office365.directory.recovery.change_object_base import RecoveryChangeObjectBase
 
 
-class RecoveryJob(Entity):
+class RecoveryJob(RecoveryJobBase):
     @odata(name="totalFailedChanges")
     @property
     def total_failed_changes(self) -> Optional[int]:

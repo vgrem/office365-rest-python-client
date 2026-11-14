@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.configurations.oma_setting import OmaSetting
 
 
-class OmaSettingStringXml(ClientValue):
+class OmaSettingStringXml(OmaSetting):
     fileName: str | None = None
     value: bytes | None = None
 

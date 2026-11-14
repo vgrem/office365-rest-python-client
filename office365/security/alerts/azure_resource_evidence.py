@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class AzureResourceEvidence(ClientValue):
+class AzureResourceEvidence(AlertEvidence):
     resourceId: str | None = None
     resourceName: str | None = None
     resourceType: str | None = None

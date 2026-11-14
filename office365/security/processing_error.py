@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
 from office365.security.contentprocessingerrortype import ContentProcessingErrorType
+from office365.security.datasecurity.classification_error import ClassificationError
 
 
-class ProcessingError(ClientValue):
+class ProcessingError(ClassificationError):
     errorType: ContentProcessingErrorType = ContentProcessingErrorType.transient
 
     @property

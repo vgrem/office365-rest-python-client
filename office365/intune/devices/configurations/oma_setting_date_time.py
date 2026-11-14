@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.configurations.oma_setting import OmaSetting
 
 
-class OmaSettingDateTime(ClientValue):
+class OmaSettingDateTime(OmaSetting):
     value: datetime | None = None
 
     @property

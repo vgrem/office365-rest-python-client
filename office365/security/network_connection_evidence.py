@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.ip_evidence import IpEvidence
 from office365.security.protocol_type import ProtocolType
 
 
-class NetworkConnectionEvidence(ClientValue):
+class NetworkConnectionEvidence(AlertEvidence):
     destinationAddress: IpEvidence = field(default_factory=IpEvidence)
     destinationPort: int | None = None
     sourceAddress: IpEvidence = field(default_factory=IpEvidence)

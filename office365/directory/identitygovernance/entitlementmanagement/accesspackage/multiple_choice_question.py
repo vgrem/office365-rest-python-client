@@ -5,12 +5,12 @@ from typing import Optional
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer_choice import (  # noqa: E501
     AccessPackageAnswerChoice,
 )
-from office365.entity import Entity
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.question import AccessPackageQuestion
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class AccessPackageMultipleChoiceQuestion(Entity):
+class AccessPackageMultipleChoiceQuestion(AccessPackageQuestion):
     @odata(name="isMultipleSelectionAllowed")
     @property
     def is_multiple_selection_allowed(self) -> Optional[bool]:

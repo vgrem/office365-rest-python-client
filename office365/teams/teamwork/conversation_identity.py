@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 from office365.teams.teamwork.conversationidentitytype import TeamworkConversationIdentityType
 
 
-class TeamworkConversationIdentity(ClientValue):
+class TeamworkConversationIdentity(Identity):
     conversationIdentityType: TeamworkConversationIdentityType = TeamworkConversationIdentityType.team
 
     @property

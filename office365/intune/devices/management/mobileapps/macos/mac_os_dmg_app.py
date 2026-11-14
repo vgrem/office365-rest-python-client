@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.configurations.macos.mac_os_minimum_operating_system import MacOSMinimumOperatingSystem
 from office365.intune.devices.management.mobileapps.macos.mac_os_included_app import MacOSIncludedApp
+from office365.intune.devices.management.mobileapps.mobile_lob_app import MobileLobApp
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class MacOSDmgApp(Entity):
+class MacOSDmgApp(MobileLobApp):
     @odata(name="ignoreVersionDetection")
     @property
     def ignore_version_detection(self) -> Optional[bool]:

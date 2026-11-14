@@ -11,10 +11,10 @@ from office365.directory.identitygovernance.task_report import TaskReport
 from office365.directory.identitygovernance.user_processing_result import (
     UserProcessingResult,
 )
+from office365.directory.identitygovernance.workflow.base import WorkflowBase
 from office365.directory.identitygovernance.workflow.setting import WorkflowSetting
 from office365.directory.identitygovernance.workflow.version import WorkflowVersion
 from office365.directory.objects.object import DirectoryObject
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from office365.directory.users.user import User
 
 
-class Workflow(Entity):
+class Workflow(WorkflowBase):
     @odata(name="deletedDateTime")
     @property
     def deleted_date_time(self) -> Optional[datetime]:

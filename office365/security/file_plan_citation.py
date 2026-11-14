@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.file_plan_descriptor_base import FilePlanDescriptorBase
 
 
-class FilePlanCitation(ClientValue):
+class FilePlanCitation(FilePlanDescriptorBase):
     citationJurisdiction: str | None = None
     citationUrl: str | None = None
 

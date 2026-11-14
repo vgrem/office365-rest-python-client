@@ -3,13 +3,13 @@ from __future__ import annotations
 from datetime import time
 from typing import Optional
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.outlook.calendar.dayofweek import DayOfWeek
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class IosUpdateConfiguration(Entity):
+class IosUpdateConfiguration(DeviceConfiguration):
     @odata(name="activeHoursEnd")
     @property
     def active_hours_end(self) -> Optional[time]:

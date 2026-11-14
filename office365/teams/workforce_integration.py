@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.eligibilityfilteringenabledentities import EligibilityFilteringEnabledEntities
 from office365.teams.teamwork.workforce_integration_supported_entities import WorkforceIntegrationSupportedEntities
 from office365.teams.workforce_integration_encryption import WorkforceIntegrationEncryption
 
 
-class WorkforceIntegration(Entity):
+class WorkforceIntegration(ChangeTrackedEntity):
     @odata(name="apiVersion")
     @property
     def api_version(self) -> Optional[int]:

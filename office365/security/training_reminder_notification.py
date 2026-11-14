@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
 from office365.security.attacksimulations.notificationdeliveryfrequency import (
     NotificationDeliveryFrequency,
 )
+from office365.security.base_end_user_notification import BaseEndUserNotification
 
 
-class TrainingReminderNotification(ClientValue):
+class TrainingReminderNotification(BaseEndUserNotification):
     deliveryFrequency: NotificationDeliveryFrequency = NotificationDeliveryFrequency.unknown
 
     @property

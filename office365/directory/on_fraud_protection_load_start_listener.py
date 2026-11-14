@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.providers.on_fraud_protection_load_start_handler import (  # noqa: E501
     OnFraudProtectionLoadStartHandler,
 )
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class OnFraudProtectionLoadStartListener(Entity):
+class OnFraudProtectionLoadStartListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnFraudProtectionLoadStartHandler:

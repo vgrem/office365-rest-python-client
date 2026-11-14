@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.outlook.mail.mailbox_item_import_session import MailboxItemImportSession
 
 
-class Mailbox(Entity):
+class Mailbox(DirectoryObject):
     @odata(name="folders", navigation=True)
     @property
     def folders(self) -> EntityCollection[MailboxFolder]:

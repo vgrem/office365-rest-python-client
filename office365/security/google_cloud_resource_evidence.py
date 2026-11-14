@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.alerts.googlecloudlocationtype import GoogleCloudLocationType
 
 
-class GoogleCloudResourceEvidence(ClientValue):
+class GoogleCloudResourceEvidence(AlertEvidence):
     fullResourceName: str | None = None
     location: str | None = None
     locationType: GoogleCloudLocationType = GoogleCloudLocationType.unknown

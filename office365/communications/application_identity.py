@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 
 
-class CommunicationsApplicationIdentity(ClientValue):
+class CommunicationsApplicationIdentity(Identity):
     applicationType: str | None = None
     hidden: bool | None = None
 

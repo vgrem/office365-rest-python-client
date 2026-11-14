@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.end_user_notification_setting import EndUserNotificationSetting
 from office365.security.simulation_notification import SimulationNotification
 
 
-class NoTrainingNotificationSetting(ClientValue):
+class NoTrainingNotificationSetting(EndUserNotificationSetting):
     simulationNotification: SimulationNotification = field(default_factory=SimulationNotification)
 
     @property

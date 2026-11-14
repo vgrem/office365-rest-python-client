@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.domains.dns_record import DomainDnsRecord
 from office365.runtime.types.odata_property import odata
 
 
-class DomainDnsMxRecord(Entity):
+class DomainDnsMxRecord(DomainDnsRecord):
     @odata(name="mailExchange")
     @property
     def mail_exchange(self) -> Optional[str]:

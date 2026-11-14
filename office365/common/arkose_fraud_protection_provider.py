@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.authentication.fraud_protection_provider import FraudProtectionProvider
 from office365.runtime.types.odata_property import odata
 
 
-class ArkoseFraudProtectionProvider(Entity):
+class ArkoseFraudProtectionProvider(FraudProtectionProvider):
     @odata(name="clientSubDomain")
     @property
     def client_sub_domain(self) -> Optional[str]:

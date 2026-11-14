@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.accessreview.resource_scope import AccessReviewResourceScope
 
 
-class AccessReviewAccessPackageAssignmentPolicyScope(ClientValue):
+class AccessReviewAccessPackageAssignmentPolicyScope(AccessReviewResourceScope):
     accessPackageDisplayName: str | None = None
     accessPackageId: str | None = None
     catalogDisplayName: str | None = None

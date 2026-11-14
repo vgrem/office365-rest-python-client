@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class ContainerRegistryEvidence(ClientValue):
+class ContainerRegistryEvidence(AlertEvidence):
     registry: str | None = None
 
     @property

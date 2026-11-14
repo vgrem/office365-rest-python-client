@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.applications.application import Application
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from office365.directory.objects.object import DirectoryObject
 
 
-class AgentIdentityBlueprint(Entity):
+class AgentIdentityBlueprint(Application):
     @odata(name="inheritablePermissions", navigation=True)
     @property
     def inheritable_permissions(self) -> EntityCollection[InheritablePermission]:

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.container_registry_evidence import ContainerRegistryEvidence
 
 
-class ContainerImageEvidence(ClientValue):
+class ContainerImageEvidence(AlertEvidence):
     imageId: str | None = None
     digestImage: ContainerImageEvidence | None = None
     registry: ContainerRegistryEvidence = field(default_factory=ContainerRegistryEvidence)

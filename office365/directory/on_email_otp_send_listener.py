@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from office365.directory.authentication.conditions.event_listener import AuthenticationEventListener
 from office365.directory.identities.on_otp_send_handler import OnOtpSendHandler
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class OnEmailOtpSendListener(Entity):
+class OnEmailOtpSendListener(AuthenticationEventListener):
     @odata(name="handler")
     @property
     def handler(self) -> OnOtpSendHandler:

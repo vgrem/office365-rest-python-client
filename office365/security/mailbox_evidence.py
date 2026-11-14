@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.user_account import UserAccount
 
 
-class MailboxEvidence(ClientValue):
+class MailboxEvidence(AlertEvidence):
     displayName: str | None = None
     primaryAddress: str | None = None
     upn: str | None = None

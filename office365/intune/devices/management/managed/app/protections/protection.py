@@ -3,17 +3,17 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.management.managed.app.clipboardsharinglevel import ManagedAppClipboardSharingLevel
 from office365.intune.devices.management.managed.app.datastoragelocation import ManagedAppDataStorageLocation
 from office365.intune.devices.management.managed.app.datatransferlevel import ManagedAppDataTransferLevel
 from office365.intune.devices.management.managed.app.managedbrowsertype import ManagedBrowserType
 from office365.intune.devices.management.managed.app.pincharacterset import ManagedAppPinCharacterSet
+from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class ManagedAppProtection(Entity):
+class ManagedAppProtection(ManagedAppPolicy):
     @odata(name="allowedDataStorageLocations")
     @property
     def allowed_data_storage_locations(self) -> ClientValueCollection[ManagedAppDataStorageLocation]:

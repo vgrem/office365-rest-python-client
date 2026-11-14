@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.enrollment.failurereason import DeviceEnrollmentFailureReason
 from office365.intune.devices.enrollment.type import DeviceEnrollmentType
+from office365.intune.devices.management_troubleshooting_event import DeviceManagementTroubleshootingEvent
 from office365.runtime.types.odata_property import odata
 
 
-class EnrollmentTroubleshootingEvent(Entity):
+class EnrollmentTroubleshootingEvent(DeviceManagementTroubleshootingEvent):
     @odata(name="deviceId")
     @property
     def device_id(self) -> Optional[str]:

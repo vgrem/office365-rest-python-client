@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
 from office365.intune.devices.configurations.applisttype import AppListType
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.ios.general.ratingappstype import RatingAppsType
 from office365.intune.devices.configurations.ios.network_usage_rule import IosNetworkUsageRule
 from office365.intune.devices.configurations.media_content_rating_australia import MediaContentRatingAustralia
@@ -23,7 +23,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class IosGeneralDeviceConfiguration(Entity):
+class IosGeneralDeviceConfiguration(DeviceConfiguration):
     @odata(name="accountBlockModification")
     @property
     def account_block_modification(self) -> Optional[bool]:

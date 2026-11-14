@@ -4,13 +4,13 @@ from datetime import datetime
 from typing import Optional
 
 from office365.directory.applications.assignmenttype import AssignmentType
-from office365.entity import Entity
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.types.odata_property import odata
+from office365.teams.viva.learning.courses.activity import LearningCourseActivity
 
 
-class LearningAssignment(Entity):
+class LearningAssignment(LearningCourseActivity):
     @odata(name="assignedDateTime")
     @property
     def assigned_date_time(self) -> Optional[datetime]:

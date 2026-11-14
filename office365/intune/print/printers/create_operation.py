@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
+from office365.intune.print.operation import PrintOperation
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
     from office365.intune.print.printers.printer import Printer
 
 
-class PrinterCreateOperation(PollableOperation, Entity):
+class PrinterCreateOperation(PrintOperation):
     @odata(name="certificate")
     @property
     def certificate(self) -> Optional[str]:

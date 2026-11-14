@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.management.action_result import DeviceActionResult
 
 
-class RotateBitLockerKeysDeviceActionResult(ClientValue):
+class RotateBitLockerKeysDeviceActionResult(DeviceActionResult):
     errorCode: int | None = None
 
     @property

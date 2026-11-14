@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.item import OutlookItem
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from office365.outlook.mail.attachments.attachment import Attachment
 
 
-class Note(Entity):
+class Note(OutlookItem):
     @odata(name="body")
     @property
     def body(self) -> ItemBody:

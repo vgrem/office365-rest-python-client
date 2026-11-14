@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.odata_property import odata
 
 
-class Endpoint(Entity):
+class Endpoint(DirectoryObject):
     @odata(name="capability")
     @property
     def capability(self) -> Optional[str]:

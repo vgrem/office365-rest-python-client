@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.win32.ruleoperator import (
     Win32LobAppRuleOperator,
 )
-from office365.runtime.client_value import ClientValue
 
 
-class Win32LobAppProductCodeRule(ClientValue):
+class Win32LobAppProductCodeRule(Win32LobAppRule):
     productCode: str | None = None
     productVersion: str | None = None
     productVersionOperator: Win32LobAppRuleOperator = Win32LobAppRuleOperator.notConfigured

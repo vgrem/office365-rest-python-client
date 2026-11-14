@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from office365.entity import Entity
+from office365.directory.identitygovernance.data_security_and_governance import DataSecurityAndGovernance
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     )
 
 
-class TenantDataSecurityAndGovernance(Entity):
+class TenantDataSecurityAndGovernance(DataSecurityAndGovernance):
     """Tenant-level container for data security and governance settings."""
 
     @odata(name="sensitivityLabels", navigation=True)

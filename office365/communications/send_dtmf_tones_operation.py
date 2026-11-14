@@ -1,12 +1,11 @@
 from __future__ import annotations
 
+from office365.communications.operations.comms import CommsOperation
 from office365.communications.operations.senddtmfcompletionreason import SendDtmfCompletionReason
-from office365.entity import Entity
-from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 
 
-class SendDtmfTonesOperation(PollableOperation, Entity):
+class SendDtmfTonesOperation(CommsOperation):
     @odata(name="completionReason")
     @property
     def completion_reason(self) -> SendDtmfCompletionReason:

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
+from office365.communications.calls.event import CallEvent
 from office365.communications.emergency_caller_info import EmergencyCallerInfo
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class EmergencyCallEvent(Entity):
+class EmergencyCallEvent(CallEvent):
     @odata(name="callerInfo")
     @property
     def caller_info(self) -> EmergencyCallerInfo:

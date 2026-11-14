@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.copilot.ai_interaction_entity import AiInteractionEntity
 
 
-class AiAgentInfo(ClientValue):
+class AiAgentInfo(AiInteractionEntity):
     blueprintId: str | None = None
 
     @property

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.alerts.blob_container_evidence import BlobContainerEvidence
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.file_hash import FileHash
 
 
-class BlobEvidence(ClientValue):
+class BlobEvidence(AlertEvidence):
     blobContainer: BlobContainerEvidence = field(default_factory=BlobContainerEvidence)
     etag: str | None = None
     fileHashes: ClientValueCollection[FileHash] = field(default_factory=lambda: ClientValueCollection(FileHash))

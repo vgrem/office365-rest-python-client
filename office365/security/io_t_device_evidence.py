@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.security.alerts.azure_resource_evidence import AzureResourceEvidence
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.alerts.iotdeviceimportancetype import IoTDeviceImportanceType
 from office365.security.ip_evidence import IpEvidence
 from office365.security.nic_evidence import NicEvidence
 from office365.security.url_evidence import UrlEvidence
 
 
-class IoTDeviceEvidence(ClientValue):
+class IoTDeviceEvidence(AlertEvidence):
     deviceId: str | None = None
     deviceName: str | None = None
     devicePageLink: str | None = None

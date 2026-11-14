@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.item import OutlookItem
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from office365.directory.extensions.extended_property import SingleValueLegacyExtendedProperty
 
 
-class DistributionList(Entity):
+class DistributionList(OutlookItem):
     @odata(name="displayName")
     @property
     def display_name(self) -> Optional[str]:

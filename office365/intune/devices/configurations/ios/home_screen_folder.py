@@ -5,11 +5,11 @@ from dataclasses import field
 from office365.intune.devices.configurations.ios.home_screen_folder_page import (
     IosHomeScreenFolderPage,
 )
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.configurations.ios.home_screen_item import IosHomeScreenItem
 from office365.runtime.client_value_collection import ClientValueCollection
 
 
-class IosHomeScreenFolder(ClientValue):
+class IosHomeScreenFolder(IosHomeScreenItem):
     pages: ClientValueCollection[IosHomeScreenFolderPage] = field(
         default_factory=lambda: ClientValueCollection(IosHomeScreenFolderPage)
     )

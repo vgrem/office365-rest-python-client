@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 
 
-class SubmissionMailEvidence(ClientValue):
+class SubmissionMailEvidence(AlertEvidence):
     networkMessageId: str | None = None
     recipient: str | None = None
     reportType: str | None = None

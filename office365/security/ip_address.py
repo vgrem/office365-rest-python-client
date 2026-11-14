@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 from office365.security.autonomous_system import AutonomousSystem
+from office365.security.threatintelligence.host import Host
 
 
-class IpAddress(Entity):
+class IpAddress(Host):
     @odata(name="countryOrRegion")
     @property
     def country_or_region(self) -> Optional[str]:

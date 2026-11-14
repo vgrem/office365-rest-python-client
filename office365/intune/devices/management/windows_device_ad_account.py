@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.intune.devices.management.windows_device_account import WindowsDeviceAccount
 
 
-class WindowsDeviceADAccount(ClientValue):
+class WindowsDeviceADAccount(WindowsDeviceAccount):
     domainName: str | None = None
     userName: str | None = None
 

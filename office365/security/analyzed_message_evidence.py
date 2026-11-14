@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.email_sender import EmailSender
 
 
-class AnalyzedMessageEvidence(ClientValue):
+class AnalyzedMessageEvidence(AlertEvidence):
     antiSpamDirection: str | None = None
     attachmentsCount: int | None = None
     deliveryAction: str | None = None

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from office365.entity import Entity
+from office365.common.restore_artifacts_bulk_request_base import RestoreArtifactsBulkRequestBase
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class SiteRestoreArtifactsBulkAdditionRequest(Entity):
+class SiteRestoreArtifactsBulkAdditionRequest(RestoreArtifactsBulkRequestBase):
     @odata(name="siteIds")
     @property
     def site_ids(self) -> StringCollection:

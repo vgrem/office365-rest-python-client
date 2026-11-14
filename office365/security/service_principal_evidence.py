@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.service_principal_type import ServicePrincipalType
 
 
-class ServicePrincipalEvidence(ClientValue):
+class ServicePrincipalEvidence(AlertEvidence):
     appId: str | None = None
     appOwnerTenantId: str | None = None
     servicePrincipalName: str | None = None

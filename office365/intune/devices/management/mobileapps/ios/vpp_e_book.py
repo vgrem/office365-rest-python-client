@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import Optional
 from uuid import UUID
 
-from office365.entity import Entity
+from office365.intune.devices.management.managed.ebook.ebook import ManagedEBook
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 
-class IosVppEBook(Entity):
+class IosVppEBook(ManagedEBook):
     @odata(name="appleId")
     @property
     def apple_id(self) -> Optional[str]:

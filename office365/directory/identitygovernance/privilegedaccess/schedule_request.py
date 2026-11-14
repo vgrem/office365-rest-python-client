@@ -5,13 +5,13 @@ from typing import Optional
 from office365.directory.identitygovernance.privilegedaccess.schedule.requestactions import (
     ScheduleRequestActions,
 )
+from office365.directory.request import Request
 from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 
 
-class PrivilegedAccessScheduleRequest(Entity):
+class PrivilegedAccessScheduleRequest(Request):
     @odata(name="action")
     @property
     def action(self) -> ScheduleRequestActions:

@@ -3,11 +3,11 @@ from __future__ import annotations
 from office365.directory.extensions.custom.customextensionendpointconfiguration import (  # noqa: E501
     CustomExtensionEndpointConfiguration,
 )
-from office365.entity import Entity
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource import AccessPackageResource
 from office365.runtime.types.odata_property import odata
 
 
-class CustomDataProvidedResource(Entity):
+class CustomDataProvidedResource(AccessPackageResource):
     @odata(name="notificationEndpointConfiguration")
     @property
     def notification_endpoint_configuration(self) -> CustomExtensionEndpointConfiguration:

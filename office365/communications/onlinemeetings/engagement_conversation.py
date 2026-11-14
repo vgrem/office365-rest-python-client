@@ -4,15 +4,15 @@ from typing import Optional
 
 from office365.communications.engagement_identity_set import EngagementIdentitySet
 from office365.communications.onlinemeetings.online_meeting import OnlineMeeting
-from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.teams.viva.engagement.conversation import EngagementConversation
 from office365.teams.viva.engagement.conversationmoderationstate import (
     EngagementConversationModerationState,
 )
 
 
-class OnlineMeetingEngagementConversation(Entity):
+class OnlineMeetingEngagementConversation(EngagementConversation):
     @odata(name="moderationState")
     @property
     def moderation_state(self) -> EngagementConversationModerationState:

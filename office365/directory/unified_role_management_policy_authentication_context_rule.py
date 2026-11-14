@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.unified_role_management_policy_rule import UnifiedRoleManagementPolicyRule
 from office365.runtime.types.odata_property import odata
 
 
-class UnifiedRoleManagementPolicyAuthenticationContextRule(Entity):
+class UnifiedRoleManagementPolicyAuthenticationContextRule(UnifiedRoleManagementPolicyRule):
     @odata(name="claimValue")
     @property
     def claim_value(self) -> Optional[str]:

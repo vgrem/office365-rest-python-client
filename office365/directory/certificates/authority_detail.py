@@ -4,11 +4,11 @@ from datetime import datetime
 from typing import Optional
 
 from office365.directory.certificates.authoritytype import CertificateAuthorityType
-from office365.entity import Entity
+from office365.directory.objects.object import DirectoryObject
 from office365.runtime.types.odata_property import odata
 
 
-class CertificateAuthorityDetail(Entity):
+class CertificateAuthorityDetail(DirectoryObject):
     @odata(name="certificate")
     @property
     def certificate(self) -> Optional[bytes]:

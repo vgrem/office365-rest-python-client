@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from office365.entity import Entity
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.configurations.oma_setting import OmaSetting
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class Windows10CustomConfiguration(Entity):
+class Windows10CustomConfiguration(DeviceConfiguration):
     @odata(name="omaSettings")
     @property
     def oma_settings(self) -> ClientValueCollection[OmaSetting]:

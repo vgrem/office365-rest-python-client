@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.mobileapps.mobile_app import MobileApp
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.mobileapps.content import MobileAppContent
 
 
-class MobileLobApp(Entity):
+class MobileLobApp(MobileApp):
     @odata(name="committedContentVersion")
     @property
     def committed_content_version(self) -> Optional[str]:

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from office365.entity import Entity
+from office365.directory.authentication.methods.target import AuthenticationMethodTarget
 from office365.runtime.types.collections import GuidCollection
 from office365.runtime.types.odata_property import odata
 
 
-class VerifiableCredentialAuthenticationMethodTarget(Entity):
+class VerifiableCredentialAuthenticationMethodTarget(AuthenticationMethodTarget):
     @odata(name="verifiedIdProfiles")
     @property
     def verified_id_profiles(self) -> GuidCollection:

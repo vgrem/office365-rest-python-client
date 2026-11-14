@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identities.riskPrevention.web_application_firewall_verified_details import (
+    WebApplicationFirewallVerifiedDetails,
+)
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.cloud_flare_rule_model import CloudFlareRuleModel
 from office365.security.cloud_flare_ruleset_model import (
@@ -10,7 +12,7 @@ from office365.security.cloud_flare_ruleset_model import (
 )
 
 
-class CloudFlareVerifiedDetailsModel(ClientValue):
+class CloudFlareVerifiedDetailsModel(WebApplicationFirewallVerifiedDetails):
     enabledCustomRules: ClientValueCollection[CloudFlareRuleModel] = field(
         default_factory=lambda: ClientValueCollection(CloudFlareRuleModel)
     )

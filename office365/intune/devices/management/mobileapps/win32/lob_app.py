@@ -4,7 +4,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.entity import Entity
+from office365.intune.devices.management.mobileapps.mobile_lob_app import MobileLobApp
 from office365.intune.devices.management.mobileapps.win32.lob_app_install_experience import Win32LobAppInstallExperience
 from office365.intune.devices.management.mobileapps.win32.lob_app_msi_information import Win32LobAppMsiInformation
 from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import Win32LobAppReturnCode
@@ -17,7 +17,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
-class Win32LobApp(Entity):
+class Win32LobApp(MobileLobApp):
     @odata(name="allowedArchitectures")
     @property
     def allowed_architectures(self) -> WindowsArchitecture:

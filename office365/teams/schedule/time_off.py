@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
+from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
 from office365.teams.schedule.time_off_item import TimeOffItem
 
 
-class TimeOff(Entity):
+class TimeOff(ChangeTrackedEntity):
     @odata(name="draftTimeOff")
     @property
     def draft_time_off(self) -> TimeOffItem:

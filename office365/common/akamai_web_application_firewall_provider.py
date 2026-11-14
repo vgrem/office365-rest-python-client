@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
+from office365.directory.identities.web_application_firewall_provider import WebApplicationFirewallProvider
 from office365.runtime.types.odata_property import odata
 
 
-class AkamaiWebApplicationFirewallProvider(Entity):
+class AkamaiWebApplicationFirewallProvider(WebApplicationFirewallProvider):
     @odata(name="accessToken")
     @property
     def access_token(self) -> Optional[str]:

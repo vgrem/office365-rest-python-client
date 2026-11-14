@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.accessreview.query_scope import AccessReviewQueryScope
 
 
-class AccessReviewInactiveUsersQueryScope(ClientValue):
+class AccessReviewInactiveUsersQueryScope(AccessReviewQueryScope):
     inactiveDuration: timedelta | None = None
 
     @property

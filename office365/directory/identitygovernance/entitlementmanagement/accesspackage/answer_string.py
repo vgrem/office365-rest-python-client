@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.identitygovernance.entitlementmanagement.accesspackage.answer import AccessPackageAnswer
 
 
-class AccessPackageAnswerString(ClientValue):
+class AccessPackageAnswerString(AccessPackageAnswer):
     value: str | None = None
 
     @property

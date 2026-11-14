@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 
 
-class UserIdentity(ClientValue):
+class UserIdentity(Identity):
     """
     In the context of an Azure AD audit log, this represents the user information that initiated or
     was affected by an audit activity.

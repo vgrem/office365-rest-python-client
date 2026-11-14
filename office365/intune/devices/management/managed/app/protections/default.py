@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.managed.app.dataencryptiontype import (
     ManagedAppDataEncryptionType,
 )
+from office365.intune.devices.management.managed.app.protections.protection import ManagedAppProtection
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.key_value_pair import KeyValuePair
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.managed.mobile_app import ManagedMobileApp
 
 
-class DefaultManagedAppProtection(Entity):
+class DefaultManagedAppProtection(ManagedAppProtection):
     @odata(name="appDataEncryptionType")
     @property
     def app_data_encryption_type(self) -> ManagedAppDataEncryptionType:

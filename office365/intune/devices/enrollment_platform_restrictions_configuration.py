@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from office365.entity import Entity
+from office365.intune.devices.enrollment.configuration import DeviceEnrollmentConfiguration
 from office365.intune.devices.management.enrollment_platform_restriction import DeviceEnrollmentPlatformRestriction
 from office365.runtime.types.odata_property import odata
 
 
-class DeviceEnrollmentPlatformRestrictionsConfiguration(Entity):
+class DeviceEnrollmentPlatformRestrictionsConfiguration(DeviceEnrollmentConfiguration):
     @odata(name="androidRestriction")
     @property
     def android_restriction(self) -> DeviceEnrollmentPlatformRestriction:

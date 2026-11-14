@@ -4,12 +4,12 @@ from dataclasses import field
 from datetime import datetime
 from uuid import UUID
 
-from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.security.alerts.antispamteamsdirection import (
     AntispamTeamsDirection,
 )
+from office365.security.alerts.evidence import AlertEvidence
 from office365.security.file_evidence import FileEvidence
 from office365.security.teams_delivery_location import TeamsDeliveryLocation
 from office365.security.teams_message_delivery_action import (
@@ -18,7 +18,7 @@ from office365.security.teams_message_delivery_action import (
 from office365.security.url_evidence import UrlEvidence
 
 
-class TeamsMessageEvidence(ClientValue):
+class TeamsMessageEvidence(AlertEvidence):
     campaignId: str | None = None
     channelId: str | None = None
     files: ClientValueCollection[FileEvidence] = field(default_factory=lambda: ClientValueCollection(FileEvidence))

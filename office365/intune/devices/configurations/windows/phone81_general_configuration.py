@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.compliance.requiredpasswordtype import RequiredPasswordType
 from office365.intune.devices.configurations.applisttype import AppListType
+from office365.intune.devices.configurations.configuration import DeviceConfiguration
 from office365.intune.devices.management.mobileapps.app_list_item import AppListItem
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 
 
-class WindowsPhone81GeneralConfiguration(Entity):
+class WindowsPhone81GeneralConfiguration(DeviceConfiguration):
     @odata(name="applyOnlyToWindowsPhone81", readonly=True)
     @property
     def apply_only_to_windows_phone81(self) -> Optional[bool]:

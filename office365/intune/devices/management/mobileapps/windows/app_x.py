@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.intune.devices.configurations.windows.minimum_operating_system import WindowsMinimumOperatingSystem
+from office365.intune.devices.management.mobileapps.mobile_lob_app import MobileLobApp
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
 from office365.runtime.types.odata_property import odata
 
 
-class WindowsAppX(Entity):
+class WindowsAppX(MobileLobApp):
     @odata(name="applicableArchitectures")
     @property
     def applicable_architectures(self) -> WindowsArchitecture:

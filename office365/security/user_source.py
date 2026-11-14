@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 from office365.security.healthissues.sourcetype import SourceType
+from office365.security.search.data_source import DataSource
 
 
-class UserSource(Entity):
+class UserSource(DataSource):
     @odata(name="email")
     @property
     def email(self) -> Optional[str]:

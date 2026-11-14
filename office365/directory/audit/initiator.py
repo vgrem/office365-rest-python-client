@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from office365.directory.audit.initiatortype import InitiatorType
-from office365.runtime.client_value import ClientValue
+from office365.directory.permissions.identity import Identity
 
 
-class Initiator(ClientValue):
+class Initiator(Identity):
     initiatorType: InitiatorType | None = None
 
     @property

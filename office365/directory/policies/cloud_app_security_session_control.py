@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from office365.directory.identities.conditional_access_session_control import ConditionalAccessSessionControl
 from office365.directory.policies.cloudappsecuritysessioncontroltype import CloudAppSecuritySessionControlType
-from office365.runtime.client_value import ClientValue
 
 
-class CloudAppSecuritySessionControl(ClientValue):
+class CloudAppSecuritySessionControl(ConditionalAccessSessionControl):
     cloudAppSecurityType: CloudAppSecuritySessionControlType = CloudAppSecuritySessionControlType.mcasConfigured
 
     @property
