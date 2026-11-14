@@ -203,6 +203,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management_exchange_connector import (
         DeviceManagementExchangeConnector,
     )
+    from office365.intune.devices.management_intent import DeviceManagementIntent
     from office365.intune.devices.management_partner import DeviceManagementPartner
     from office365.intune.devices.management_reusable_policy_setting import DeviceManagementReusablePolicySetting
     from office365.intune.devices.management_script import DeviceManagementScript
@@ -1866,5 +1867,18 @@ class DeviceManagement(Entity):
             "deviceHealthScripts",
             EntityCollection[DeviceHealthScript](
                 self.context, DeviceHealthScript, ResourcePath("deviceHealthScripts", self.resource_path)
+            ),
+        )
+
+    @odata(name="intents", beta=True, navigation=True)
+    @property
+    def intents(self) -> EntityCollection[DeviceManagementIntent]:
+        """Gets the intents property"""
+        from office365.intune.devices.management_intent import DeviceManagementIntent
+
+        return self.properties.get(
+            "intents",
+            EntityCollection[DeviceManagementIntent](
+                self.context, DeviceManagementIntent, ResourcePath("intents", self.resource_path)
             ),
         )
