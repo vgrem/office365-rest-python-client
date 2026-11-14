@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import io
 import os
-import tempfile
 import uuid
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, Callable, Optional, Union, cast
@@ -161,8 +160,8 @@ class FileCollection(EntityCollection[File]):
         """Uploads in-memory content, dispatching by size.
 
         Files at or below ``chunk_size`` use the simple :meth:`upload`; larger
-        ones use a resumable :meth:`create_upload_session` (staged to a temp
-        file). The returned :class:`File` is deferred — the caller executes it.
+        ones use a resumable :meth:`create_upload_session` read from memory.
+        The returned :class:`File` is deferred — the caller executes it.
 
         Args:
             content (bytes): File content to upload.
@@ -175,10 +174,9 @@ class FileCollection(EntityCollection[File]):
         ensure_within(Limits.FILE_UPLOAD, len(content), context=f"file '{file_name}'")
         if len(content) <= chunk_size:
             return self._simple_upload(file_name, content, progress)
-        with tempfile.NamedTemporaryFile(suffix=file_name) as tmp:
-            tmp.write(content)
-            tmp.flush()
-            return self.create_upload_session(tmp.name, chunk_size=chunk_size, file_name=file_name, progress=progress)
+        return self.create_upload_session(
+            io.BytesIO(content), chunk_size=chunk_size, file_name=file_name, progress=progress
+        )
 
     def upload_with_checksum(self, file_object: IO, chunk_size: int = 1024) -> File:
         """ """
