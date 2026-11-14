@@ -161,3 +161,21 @@ def test_download_folder_paginates_children(tmp_path):
         assert result.namelist() == ["a.txt", "b.txt"]
         assert result.read("a.txt") == b"first page"
         assert result.read("b.txt") == b"second page"
+
+
+def test_upload_content_over_chunk_size_sends_every_byte_through_a_session():
+    content = b"0123456789abcdefghijKLMNO"
+    entry = {"d": {"Name": "big.bin", "ServerRelativeUrl": "/sites/x/Shared Documents/big.bin"}}
+    transport = RecordingTransport([entry] * 4)
+    ctx = ClientContext(test_site_url)
+    ctx.pending_request().beforeExecute.clear()
+    ctx.pending_request().transport = transport
+    files = ctx.web.get_folder_by_server_relative_path("/sites/x/Shared Documents").files
+
+    file = files.upload_content(content, "big.bin", chunk_size=10)
+    ctx.execute_query()
+
+    operations = [url.rsplit("/", 1)[-1].split("(", 1)[0] for url in transport.urls[1:]]
+    assert operations == ["startUpload", "continueUpload", "finishUpload"]
+    assert b"".join(request.data for request in transport.requests[1:]) == content
+    assert isinstance(file, File)
