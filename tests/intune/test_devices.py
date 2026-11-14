@@ -20,10 +20,10 @@ from __future__ import annotations
 from office365.intune.devices.device import Device
 
 from tests.decorators import requires_delegated
-from tests.intune.intune_case import IntuneCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestDevices(IntuneCase):
+class TestDevices(GraphDelegatedTestCase):
     """Device reads and ownership.
 
     These read Entra's device objects, not Intune's: the inventory under
@@ -33,21 +33,29 @@ class TestDevices(IntuneCase):
     @requires_delegated("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")
     def test_01_devices_are_listed(self):
         """A registered device is an Entra object, and ``/devices`` states the type it holds."""
-        devices = self.read(self.client.devices, "devices", limit=10)
+        devices = self.client.devices
+        self.assertTrue(str(devices.resource_path).endswith("/devices"))
 
-        self.assertIs(devices.item_type(), Device)
+        rows = devices.top(10).get().execute_query()
+
+        self.assertIs(rows.item_type(), Device)
 
     @requires_delegated("Device.Read.All", "Directory.Read.All")
     def test_02_the_delta_track_carries_the_same_rows(self):
         """``devices/delta`` is the incremental view: same rows, plus a skip token."""
-        self.read(self.client.devices.delta, "delta")
+        delta = self.client.devices.delta
+        self.assertTrue(str(delta.resource_path).endswith("/delta"))
+
+        delta.top(5).get().execute_query()
 
     @requires_delegated("Device.Read.All", "Directory.Read.All")
     def test_03_a_device_names_its_platform(self):
         """A device object exposes displayName, operatingSystem and deviceId."""
-        devices = self.read(self.client.devices, "devices", limit=1)
-        device = self.row_or_skip(devices, "registered device")
+        rows = self.client.devices.top(1).get().execute_query()
+        if not len(rows):
+            self.skipTest("this tenant holds no registered device")
 
+        device = rows[0]
         self.assertIsNotNone(device.get_property("displayName"))
         self.assertIsNotNone(device.get_property("operatingSystem"))
         self.assertIsNotNone(device.get_property("deviceId"))
@@ -55,8 +63,11 @@ class TestDevices(IntuneCase):
     @requires_delegated("Device.Read.All", "Directory.Read.All", "Directory.ReadWrite.All")
     def test_04_registered_owners_are_listed(self):
         """Ownership is a navigation off the device, and one device may have several owners."""
-        devices = self.read(self.client.devices, "devices", limit=1)
-        device = self.row_or_skip(devices, "registered device")
-        owners = device.registered_owners.get().execute_query()
+        rows = self.client.devices.top(1).get().execute_query()
+        if not len(rows):
+            self.skipTest("this tenant holds no registered device")
+
+        device = rows[0]
+        owners = device.registered_owners.top(5).get().execute_query()
 
         self.assertIn(f"/devices/{device.id}/registeredOwners", str(owners.resource_path))

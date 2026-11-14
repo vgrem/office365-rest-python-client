@@ -24,10 +24,15 @@ from office365.intune.devices.management.userexperienceanalytics.user_experience
 from office365.runtime.types.odata_property import NotSupportedInVersion
 
 from tests.decorators import requires_delegated
-from tests.intune.intune_case import MANAGED_DEVICES, IntuneCase
+from tests.graph_case import GraphDelegatedTestCase
+
+MANAGED_DEVICES = (
+    "DeviceManagementManagedDevices.Read.All",
+    "DeviceManagementManagedDevices.ReadWrite.All",
+)
 
 
-class TestTheServiceRoot(IntuneCase):
+class TestTheServiceRoot(GraphDelegatedTestCase):
     """`GraphVersion` selects the root a client addresses."""
 
     def test_01_the_default_client_addresses_the_stable_root(self):
@@ -62,7 +67,7 @@ class TestTheServiceRoot(IntuneCase):
     def test_05_a_preview_member_is_refused_by_the_stable_root(self):
         """`deviceManagement.intents` is beta-only, and the refusal happens before the wire."""
         with self.assertRaises(NotSupportedInVersion) as refused:
-            _ = self.dm.intents
+            _ = self.client.device_management.intents
 
         self.assertIn("intents", str(refused.exception))
         self.assertIn("beta", str(refused.exception))
@@ -70,7 +75,7 @@ class TestTheServiceRoot(IntuneCase):
     @requires_delegated(*MANAGED_DEVICES)
     def test_06_and_served_by_the_preview_root(self):
         """The same member on beta is a collection, and reads as one."""
-        rows = self.dm_beta.intents.top(5).get().execute_query()
+        rows = self.client_beta.device_management.intents.top(5).get().execute_query()
 
         self.assertIsInstance(rows, EntityCollection)
         self.assertTrue(str(rows.resource_path).endswith("/deviceManagement/intents"))
@@ -85,7 +90,7 @@ class TestTheServiceRoot(IntuneCase):
         class it would otherwise build from the stable root's context.
         """
         with self.assertRaises(NotSupportedInVersion) as refused:
-            _ = self.dm.user_experience_analytics_anomaly
+            _ = self.client.device_management.user_experience_analytics_anomaly
         self.assertIn("userExperienceAnalyticsAnomaly", str(refused.exception))
 
         with self.assertRaises(NotSupportedInVersion):

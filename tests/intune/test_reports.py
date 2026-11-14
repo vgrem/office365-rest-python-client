@@ -9,20 +9,20 @@ activity reports are exported as a ``ReportResult`` that is fetched as bytes.
 from __future__ import annotations
 
 from tests.decorators import requires_delegated
-from tests.intune.intune_case import CONFIGURATION, IntuneCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestDeviceActivityReports(IntuneCase):
+class TestDeviceActivityReports(GraphDelegatedTestCase):
     """The two per-PC activity exports."""
 
-    @requires_delegated(*CONFIGURATION)
+    @requires_delegated("DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All")
     def test_01_device_configuration_user_activity(self):
         """A user-activity export answers with a report result, not rows."""
         report = self.client.reports.device_configuration_user_activity().execute_query()
 
         self.assertIsNotNone(report.value)
 
-    @requires_delegated(*CONFIGURATION)
+    @requires_delegated("DeviceManagementConfiguration.Read.All", "DeviceManagementConfiguration.ReadWrite.All")
     def test_02_device_configuration_device_activity(self):
         """The device-activity export reads the same shape for the other dimension."""
         report = self.client.reports.device_configuration_device_activity().execute_query()

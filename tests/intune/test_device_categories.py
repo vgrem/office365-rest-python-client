@@ -18,10 +18,10 @@ from __future__ import annotations
 from uuid import uuid4
 
 from tests.decorators import requires_delegated
-from tests.intune.intune_case import IntuneCase
+from tests.graph_case import GraphDelegatedTestCase
 
 
-class TestDeviceCategories(IntuneCase):
+class TestDeviceCategories(GraphDelegatedTestCase):
     """One object through its whole life."""
 
     @requires_delegated(
