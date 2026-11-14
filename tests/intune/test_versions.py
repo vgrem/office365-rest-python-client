@@ -1,11 +1,12 @@
 """The service root a Graph client addresses, and Intune on the preview root.
 
-Deliberately not covered here: a preview-only capability. `office365.intune` has no member
-whose segment `v1.0` does not carry, so nothing in this file can prove that a beta-only
-family exists — the shipped model is the `v1.0` shape, and `beta` is a superset of it.
-These tests pin the addressing instead: the version is a property of the client's request
-(not of the model), so the same member has to answer from whichever root the client
-addresses.
+Deliberately not covered here: a preview-only capability. The model does mark preview
+members -- 35 of them in `office365.intune`, 23 of those a `deviceManagement` or
+`deviceAppManagement` navigation the stable metadata does not declare -- but this file
+pins the addressing instead: the version is a property of the client's request (not of
+the model), so the same member has to answer from whichever root the client addresses.
+What a marked member does at the wrong root is checked offline, where it costs nothing
+(`tests/unit/test_beta_gate.py`).
 """
 
 from __future__ import annotations
