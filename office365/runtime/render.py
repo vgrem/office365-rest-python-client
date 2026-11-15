@@ -194,7 +194,11 @@ def table(
         if url:
             text, _ = row[0]
             shown = text[: widths[0] - 1] + "…" if len(text) > widths[0] else text
-            line = hyperlink(url, shown.ljust(widths[0])) + line[widths[0] :]
+            # The link wraps the name and never its padding: a terminal that marks a hyperlink
+            # (a dotted underline in most) would otherwise draw a rule across the whole column,
+            # which reads as a border between the rows rather than as a clickable title.
+            pad = " " * (widths[0] - len(shown))
+            line = (hyperlink(url, shown) + pad + line[widths[0] :]).rstrip()
         lines.append(line)
     return "\n".join(lines)
 
@@ -215,7 +219,10 @@ def vertical(
     lines = []
     for name in shown:
         text, _ = cell(link if name == "URL" and link else payload.get(name))
-        lines.append(f"{name.ljust(width)}{_GAP}{text}".rstrip())
+        # The address line and any field that spells the same address carry the link; nothing
+        # else does, so a value that merely looks like a URL is printed as text.
+        carried = link if link and (name == "URL" or text == link) else None
+        lines.append(f"{name.ljust(width)}{_GAP}{hyperlink(carried, text) if carried else text}".rstrip())
     if len(shown) < len(names):
         lines.append(f"{'…'.ljust(width)}{_GAP}(+{len(names) - len(shown)} more fields, -o json)")
     return "\n".join(lines)

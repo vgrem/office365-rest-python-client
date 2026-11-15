@@ -192,7 +192,8 @@ notebook ``repr``: bounded, indented, prefixed with the class name — a preview
 ``office365/runtime/render.py`` draws a terminal: a header row, numbers right-aligned, over-long
 cells cut and marked with ``…``, a sentence when there is nothing to show, and a column that opens
 in a browser as an OSC-8 link (only when stdout is a terminal, so a pipe never receives escape
-codes). Neither imports the model, so printing can never become a reason to send a request.
+codes). The link wraps the name and not the padding after it: terminals mark a hyperlink, and a
+marked 48-character cell draws a rule across the gap that reads as a border between the rows. Neither imports the model, so printing can never become a reason to send a request.
 
 **A table asks for its columns.** An unselected read does not necessarily carry them:
 ``GET /_api/Web/lists`` answers 55 fields and ``DefaultViewUrl`` is not among them, so every list

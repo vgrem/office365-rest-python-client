@@ -99,8 +99,10 @@ def test_a_link_is_drawn_only_when_it_was_asked_for() -> None:
 
     url = "https://contoso.sharepoint.com/sites/x/Lists/Documents"
     linked = render(LISTS, columns=["Title"], origin="https://contoso.sharepoint.com", link="always")
-    # The whole cell carries the link, padding included, so a click anywhere on the name works.
-    assert hyperlink(url, "Documents".ljust(48)) in linked
+    # The name carries the link; the padding does not, or a terminal that marks a hyperlink
+    # would draw a dotted rule across the gap and it would read as a border between rows.
+    assert hyperlink(url, "Documents") in linked
+    assert hyperlink(url, "Documents".ljust(48)) not in linked
     assert linked.startswith("TITLE\n")
 
 
