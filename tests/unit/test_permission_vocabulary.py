@@ -25,6 +25,11 @@ LIBRARY = index(office365)
 #: member the REST reference publishes no operation page for (``OnenotePage.preview``,
 #: ``DeviceManagementIntent.assign``, ...); four are documented as ``Not supported.`` in every flow
 #: (``NamedLocation.restore``, ``RecoveryJobBase.cancel``), which is the reference answering.
+#:
+#: ``sharepoint`` is the other way round, and the only entry no harvest produced: not one module
+#: under ``office365/sharepoint`` declares a permission, so the product carries no debt until an
+#: operation arrives -- ``SPARK.get_embedding`` and the four that came with it are the first five,
+#: and ``Sites.*`` would be a guess, not a declaration.
 PENDING: dict[str, int] = {
     "copilot": 1,
     "directory": 5,
@@ -32,6 +37,7 @@ PENDING: dict[str, int] = {
     "intune": 9,
     "onenote": 2,
     "outlook": 1,
+    "sharepoint": 5,
 }
 
 #: Every operation that declares a licence, and the seat its own page names. One entry, because a
