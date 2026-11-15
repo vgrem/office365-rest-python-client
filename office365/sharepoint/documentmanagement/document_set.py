@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Union
 
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
 from office365.sharepoint.client_context import ClientContext

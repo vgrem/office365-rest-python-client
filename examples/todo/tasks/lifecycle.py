@@ -29,7 +29,7 @@ from office365.outlook.mail.recurrence_range import RecurrenceRange
 from office365.outlook.mail.recurrencepatterntype import RecurrencePatternType
 from office365.outlook.mail.recurrencerangetype import RecurrenceRangeType
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.todo.tasks.taskstatus import TaskStatus
+from office365.todo.tasks.status import TaskStatus
 from tests.settings import client_id, password, tenant, username
 
 LIST_NAME = "SDK Tasks Demo"

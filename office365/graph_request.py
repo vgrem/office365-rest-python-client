@@ -7,7 +7,7 @@ from office365.graph_version import GraphVersion
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.prefer import prefer_upsert
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.odata.request import ODataRequest

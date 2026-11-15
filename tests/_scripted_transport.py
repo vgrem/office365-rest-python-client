@@ -205,7 +205,7 @@ def parse_batch_requests(request) -> list:
     from email import message_from_bytes
     from email.message import Message
 
-    from office365.runtime.http.http_method import HttpMethod
+    from office365.runtime.http.method import HttpMethod
     from office365.runtime.http.request_options import RequestOptions
 
     def _parts(message: Message):

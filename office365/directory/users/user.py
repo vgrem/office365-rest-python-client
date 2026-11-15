@@ -98,7 +98,7 @@ from office365.permissions import require_permission
 from office365.planner.user import PlannerUser
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath

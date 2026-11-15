@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.todo.tasks.taskstatus import TaskStatus
+from office365.todo.tasks.status import TaskStatus
 from tests.settings import client_id, password, tenant, username
 
 PERMISSION_CODES = {"accessDenied", "Authorization_RequestDenied", "ErrorAccessDenied", "Forbidden"}

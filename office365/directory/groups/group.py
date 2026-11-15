@@ -42,7 +42,7 @@ from office365.outlook.mail.conversation_thread import ConversationThread
 from office365.permissions import require_permission
 from office365.planner.group import PlannerGroup
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.v4.entity import EntityPath
@@ -372,7 +372,7 @@ class Group(DirectoryObject):
         """
         The list of SharePoint sites in this group. Access the default site with /sites/root.
         """
-        from office365.onedrive.sites.sites_with_root import SitesWithRoot
+        from office365.onedrive.sites.with_root import SitesWithRoot
 
         return self.properties.get("sites", SitesWithRoot(self.context, ResourcePath("sites", self.resource_path)))
 

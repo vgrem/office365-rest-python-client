@@ -5,7 +5,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.teamwork.tags.member import TeamworkTagMember
-from office365.teams.teamwork.tagtype import TeamworkTagType
+from office365.teams.teamwork.tags.type import TeamworkTagType
 
 
 class TeamworkTag(Entity):

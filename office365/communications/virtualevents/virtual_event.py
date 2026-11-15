@@ -5,8 +5,8 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.communications.quotas import VIRTUAL_EVENT_QUOTAS
-from office365.communications.virtualevents.communications_identity_set import CommunicationsIdentitySet
 from office365.communications.virtualevents.external_information import VirtualEventExternalInformation
+from office365.communications.virtualevents.identity_set import CommunicationsIdentitySet
 from office365.communications.virtualevents.presenter import VirtualEventPresenter
 from office365.communications.virtualevents.session import VirtualEventSession
 from office365.communications.virtualevents.settings import VirtualEventSettings

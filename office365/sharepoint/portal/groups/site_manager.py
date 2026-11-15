@@ -10,7 +10,7 @@ from office365.permissions import DirectoryRole
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.lro import OperationTimeoutError
 from office365.runtime.paths.resource_path import ResourcePath

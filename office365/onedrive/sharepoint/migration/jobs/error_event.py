@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.onedrive.share_point_migration_job_error_level import SharePointMigrationJobErrorLevel
-from office365.onedrive.share_point_migration_object_type import SharePointMigrationObjectType
 from office365.onedrive.sharepoint.migration.event import SharePointMigrationEvent
+from office365.onedrive.sharepoint.migration.jobs.error_level import SharePointMigrationJobErrorLevel
+from office365.onedrive.sharepoint.migration.object_type import SharePointMigrationObjectType
 from office365.runtime.types.odata_property import odata
 from office365.runtime.types.public_error import PublicError
 

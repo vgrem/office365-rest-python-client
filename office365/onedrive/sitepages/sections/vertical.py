@@ -1,6 +1,6 @@
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.onedrive.sitepages.sectionemphasistype import SectionEmphasisType
+from office365.onedrive.sitepages.sections.emphasis_type import SectionEmphasisType
 from office365.onedrive.sitepages.webparts.web_part import WebPart
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata

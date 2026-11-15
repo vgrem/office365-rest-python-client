@@ -12,8 +12,8 @@ from requests import Response
 
 import office365.logger
 from office365.azure_env import AzureEnvironment
-from office365.runtime.auth.auth_cookies import AuthCookies
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
+from office365.runtime.auth.cookies import AuthCookies
 from office365.runtime.auth.sts_profile import STSProfile
 from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.auth.user_realm_info import UserRealmInfo

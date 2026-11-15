@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 
 
 @dataclass

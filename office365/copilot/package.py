@@ -3,8 +3,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.copilot.copilot_package_request_status import CopilotPackageRequestStatus
-from office365.copilot.copilot_package_request_type import CopilotPackageRequestType
+from office365.copilot.package_request_status import CopilotPackageRequestStatus
+from office365.copilot.package_request_type import CopilotPackageRequestType
 from office365.copilot.package_type import PackageType
 from office365.entity import Entity
 from office365.intune.devices.management.package_status import PackageStatus

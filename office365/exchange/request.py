@@ -10,7 +10,7 @@ from office365.azure_env import AzureEnvironment
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG, ClientRequest
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
 

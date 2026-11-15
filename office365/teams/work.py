@@ -17,7 +17,7 @@ from office365.teams.deleted import DeletedTeam
 if TYPE_CHECKING:
     from office365.outlook.mail.item_body import ItemBody
     from office365.runtime.types.key_value_pair import KeyValuePair
-    from office365.teams.app_settings import TeamsAppSettings
+    from office365.teams.apps.settings import TeamsAppSettings
     from office365.teams.chats.deleted import DeletedChat
     from office365.teams.teamwork.activity_topic import TeamworkActivityTopic
     from office365.teams.teamwork.notification_recipient import TeamworkNotificationRecipient
@@ -81,7 +81,7 @@ class Teamwork(Entity):
     @property
     def teams_app_settings(self) -> TeamsAppSettings:
         """Gets the teamsAppSettings property"""
-        from office365.teams.app_settings import TeamsAppSettings
+        from office365.teams.apps.settings import TeamsAppSettings
 
         return self.properties.get(
             "teamsAppSettings", TeamsAppSettings(self.context, ResourcePath("teamsAppSettings", self.resource_path))

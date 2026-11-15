@@ -8,7 +8,7 @@ from office365.count_collection import CountCollection
 from office365.directory.objects.object import DirectoryObject
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.verbs import verb

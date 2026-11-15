@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.booking.savailabilitystatus import BookingsAvailabilityStatus
+from office365.booking.availability_status import BookingsAvailabilityStatus
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.runtime.client_value import ClientValue
 

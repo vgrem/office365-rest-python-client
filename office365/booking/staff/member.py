@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import Optional
 
 from office365.booking.staff.member_base import BookingStaffMemberBase
-from office365.booking.staffmembershipstatus import BookingStaffMembershipStatus
-from office365.booking.staffrole import BookingStaffRole
+from office365.booking.staff.membership_status import BookingStaffMembershipStatus
+from office365.booking.staff.role import BookingStaffRole
 from office365.booking.work_hours import BookingWorkHours
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata

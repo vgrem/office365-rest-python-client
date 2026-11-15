@@ -23,7 +23,7 @@ from office365.graph_client import GraphClient
 from office365.outlook.calendar.dateTimeTimeZone import DateTimeTimeZone
 from office365.outlook.mail.importance import Importance
 from office365.runtime.client_request_exception import ClientRequestException
-from office365.todo.tasks.taskstatus import TaskStatus
+from office365.todo.tasks.status import TaskStatus
 from tests.settings import client_id, password, tenant, username
 
 LIST_NAME = "SDK Quickstart"

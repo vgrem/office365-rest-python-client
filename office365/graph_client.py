@@ -59,7 +59,7 @@ from office365.intune.devices.management.management import DeviceManagement
 from office365.intune.print.print import Print
 from office365.onedrive.drives.collection import DriveCollection
 from office365.onedrive.shares.collection import SharesCollection
-from office365.onedrive.sites.sites_with_root import SitesWithRoot
+from office365.onedrive.sites.with_root import SitesWithRoot
 from office365.onedrive.storage.storage import Storage
 from office365.outlook.calendar.place_collection import PlaceCollection
 from office365.outlook.calendar.rooms.list import RoomList

@@ -15,7 +15,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
-from office365.teams.channels.iIdentity import ChannelIdentity
+from office365.teams.channels.identity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
 from office365.teams.chats.messages.body import ChatMessageBody

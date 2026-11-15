@@ -6,7 +6,7 @@ from typing import IO, Callable, Optional
 from requests import Response
 
 from office365.runtime.client_request import ClientRequest
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded

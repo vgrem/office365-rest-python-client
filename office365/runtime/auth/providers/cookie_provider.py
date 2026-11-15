@@ -2,8 +2,8 @@ import threading
 from datetime import datetime, timedelta, timezone
 from typing import Callable, Dict, Optional, Union
 
-from office365.runtime.auth.auth_cookies import AuthCookies
 from office365.runtime.auth.authentication_provider import AuthenticationProvider
+from office365.runtime.auth.cookies import AuthCookies
 
 
 class CookieAuthProvider(AuthenticationProvider):

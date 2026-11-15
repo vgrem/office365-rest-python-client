@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import timedelta
 
-from office365.communications.call_participant_info import CallParticipantInfo
+from office365.communications.calls.call_participant_info import CallParticipantInfo
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.teams.chats.event_message_detail import EventMessageDetail

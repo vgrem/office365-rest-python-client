@@ -584,7 +584,7 @@ gone. Nothing else in this release changes or removes an existing API.
   `ClientResult[bytes]`.
 - The Security API lives at `office365.security` (was
   `office365.discovery.security`).
-- `TaskStatus` lives at `office365.todo.tasks.taskstatus` (was
+- `TaskStatus` lives at `office365.todo.tasks.status` (was
   `office365.todo.taskstatus`).
 
 ### Added

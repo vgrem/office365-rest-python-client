@@ -13,7 +13,7 @@ from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import get_absolute_url
 from office365.runtime.odata.json_format import JsonProfile

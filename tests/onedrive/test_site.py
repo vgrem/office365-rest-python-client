@@ -1,7 +1,7 @@
 from typing import Optional
 
 from office365.onedrive.sites.site import Site
-from office365.onedrive.sites.sites_with_root import SitesWithRoot
+from office365.onedrive.sites.with_root import SitesWithRoot
 from tests import test_team_site_url
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphDelegatedTestCase

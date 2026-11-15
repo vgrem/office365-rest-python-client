@@ -6,8 +6,8 @@ from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.onedrive.base_item import BaseItem
-from office365.onedrive.columns.column_link import ColumnLink
 from office365.onedrive.columns.definition import ColumnDefinition
+from office365.onedrive.columns.link import ColumnLink
 from office365.onedrive.contenttypes.order import ContentTypeOrder
 from office365.onedrive.documentsets.content import DocumentSetContent
 from office365.onedrive.documentsets.document_set import DocumentSet

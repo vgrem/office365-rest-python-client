@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import IO, TYPE_CHECKING
 
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 

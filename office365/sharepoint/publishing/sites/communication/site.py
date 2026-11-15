@@ -4,7 +4,7 @@ from typing_extensions import Self
 
 from office365.permissions.roles import DirectoryRole
 from office365.runtime.client_result import ClientResult
-from office365.runtime.http.http_method import HttpMethod
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery

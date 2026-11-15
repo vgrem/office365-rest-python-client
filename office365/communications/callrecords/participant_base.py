@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from office365.communications.callrecords.administrative_unit_info import AdministrativeUnitInfo
-from office365.communications.virtualevents.communications_identity_set import CommunicationsIdentitySet
+from office365.communications.virtualevents.identity_set import CommunicationsIdentitySet
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata

@@ -24,7 +24,7 @@ from office365.todo.attachments.session import AttachmentSession
 from office365.todo.attachments.task_file import TaskFileAttachment
 from office365.todo.checklist_item import ChecklistItem
 from office365.todo.linked_resource import LinkedResource
-from office365.todo.tasks.taskstatus import TaskStatus
+from office365.todo.tasks.status import TaskStatus
 
 if TYPE_CHECKING:
     from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
