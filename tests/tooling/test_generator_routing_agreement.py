@@ -187,3 +187,46 @@ def test_the_role_family_follows_its_two_getters() -> None:
     )
     assert router.module_for("microsoft.graph.UnifiedApprovalStage") == "office365.directory"
     assert router.module_for("microsoft.graph.UnifiedStorageQuota") == "office365.directory.users"
+
+
+def _namespaces() -> set[str]:
+    """Every namespace the *beta* metadata declares.
+
+    Read from ``GraphBeta.xml`` because a rule that is dead against v1.0 can still be
+    live for the beta render, and both renders read this one table.
+    """
+    model = Session.open("graph", metadata="metadata/GraphBeta.xml").read_model()
+    return {name.rsplit(".", 1)[0] for name in model.types if "." in name}
+
+
+def _reaches(prefix: str, namespaces: set[str]) -> bool:
+    lowered = prefix.lower()
+    return any(ns.lower() == lowered or ns.lower().startswith(lowered + ".") for ns in namespaces)
+
+
+def test_every_namespace_rule_reaches_a_namespace_the_metadata_has() -> None:
+    """``routing`` matches a *namespace prefix*; a key that is not one matches nothing.
+
+    Eighteen rules named a product word (``microsoft.graph.drive``, ``...teams``,
+    ``...project``) that no namespace has ever used -- a type is
+    ``microsoft.graph.driveItem``, not ``microsoft.graph.drive.driveItem`` -- so the table
+    carried 28 rules of which 18 were unreachable. Two of the eighteen named directories
+    that do not exist (``office365.project``, ``office365.directory.termstore``), which is
+    what a table nobody reads looks like.
+    """
+    namespaces = _namespaces()
+    routing = Session.open("graph").options.routing
+
+    dead = sorted(key for key in routing if not _reaches(key, namespaces))
+
+    assert dead == [], "\n".join(dead)
+
+
+def test_every_package_the_table_names_exists() -> None:
+    """A rule may not answer with a directory that is not there."""
+    options = Session.open("graph").options
+    named = set(options.routing.values()) | set(options.type_routing.values())
+
+    missing = sorted(module for module in named if not (_ROOT / module.replace(".", "/")).is_dir())
+
+    assert missing == [], "\n".join(missing)
