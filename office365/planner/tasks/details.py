@@ -4,8 +4,8 @@ from typing_extensions import Self
 
 from office365.planner.entity import PlannerEntity
 from office365.planner.external_references import PlannerExternalReferences
-from office365.planner.tasks.check_list_item import PlannerChecklistItem
-from office365.planner.tasks.check_list_items import PlannerChecklistItems
+from office365.planner.tasks.checklist_item import PlannerChecklistItem
+from office365.planner.tasks.checklist_items import PlannerChecklistItems
 from office365.runtime.types.odata_property import odata
 
 

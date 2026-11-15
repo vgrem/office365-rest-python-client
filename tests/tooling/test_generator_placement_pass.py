@@ -59,6 +59,21 @@ def test_refuses_a_stem_the_derivation_would_lengthen(tmp_path: Path) -> None:
     assert _plan(tmp_path).moves == []
 
 
+def test_leaves_a_module_whose_class_is_not_its_whole_name(tmp_path: Path) -> None:
+    """``migration/tasks.py`` is a table of task species; ``task.py`` would hide them."""
+    _tree(tmp_path)
+    path = tmp_path / "pkg" / "devices" / "management_tasks.py"
+    path.write_text(
+        'class DeviceManagementTask:\n    pass\n\n\nFILE_SHARE = "file"\n',
+        encoding="utf-8",
+    )
+
+    plan = _plan(tmp_path)
+
+    assert plan.moves == []
+    assert plan.skipped == ["pkg/devices/management_tasks.py"]
+
+
 def test_the_intune_tree_is_a_fixed_point() -> None:
     """The pass exists so this holds: no module sits above the package that claims it.
 

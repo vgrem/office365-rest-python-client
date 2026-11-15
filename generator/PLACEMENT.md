@@ -70,6 +70,13 @@ It reads the tree, not the metadata, so it answers in a second and takes the sam
   and a second run proposes nothing. `--place` on an already-placed tree is a no-op, and
   that is the invariant the test asserts for `office365/intune`.
 
+The pass only reads modules the generator writes: one class, and nothing at module level
+but imports and a docstring (a `if TYPE_CHECKING:` block counts as imports).
+`migration/tasks.py` is a table of task species with one class in it, and
+`migration/outlook/calendar_profile.py` publishes a dialect constant beside `IcsDialect`;
+naming either after its single class would hide what the module is. They are reported as
+**left alone**, which is a different count from `blocked` (a target taken by a duplicate).
+
 ## Families
 
 Descent reads the **opening word** of a class name, and some families are not named that

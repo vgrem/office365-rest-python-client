@@ -105,7 +105,7 @@ class PlacementPlan:
     def render(self, base: Optional[str] = None) -> str:
         """The plan as a report: one line per move, then the count that matters."""
         if not self.moves:
-            return f"placement: {self.root} is a fixed point ({len(self.skipped)} module(s) unreadable)"
+            return f"placement: {self.root} is a fixed point ({len(self.skipped)} module(s) left alone)"
         lines = [
             f"  {_relative(move.path, base)}  ->  {_relative(move.new_path, base)}  [{move.class_name}]"
             for move in self.moves
@@ -113,7 +113,7 @@ class PlacementPlan:
         shortened = sum(1 for move in self.moves if move.stem != move.new_stem)
         lines.append(
             f"placement: {len(self.moves)} move(s) in {self.root} "
-            f"({shortened} shortening a stem, {len(self.blocked)} blocked, {len(self.skipped)} module(s) unreadable)"
+            f"({shortened} shortening a stem, {len(self.blocked)} blocked, {len(self.skipped)} module(s) left alone)"
         )
         for move in self.blocked:
             pair = f"{_relative(move.path, base)}  ->  {_relative(move.new_path, base)}"
@@ -144,6 +144,36 @@ def _classes(path: Path) -> List[str]:
     return [node.name for node in tree.body if isinstance(node, ast.ClassDef)]
 
 
+def _is_generated(value: str) -> bool:
+    """Whether a module-level name is private -- i.e. not part of the file's API."""
+    return value.startswith("_")
+
+
+def _hand_written(path: Path) -> bool:
+    """Whether a module says more than one class, so its class cannot name it.
+
+    ``migration/tasks.py`` is a table of task species with one class in it;
+    ``outlook/calendar_profile.py`` publishes a dialect constant beside ``IcsDialect``.
+    Renaming either after its single class would hide what the module is. Imports and a
+    docstring (and a ``if TYPE_CHECKING:`` block) are not extra content; anything else is.
+    """
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return True
+    for node in tree.body:
+        if isinstance(node, (ast.Import, ast.ImportFrom, ast.ClassDef, ast.Pass, ast.If)):
+            continue
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
+            continue
+        if isinstance(node, ast.Assign) and all(
+            isinstance(target, ast.Name) and _is_generated(target.id) for target in node.targets
+        ):
+            continue
+        return True
+    return False
+
+
 def plan_placement(root: Path | str, output_base: str, repo_root: Path | str) -> PlacementPlan:
     """Every module under ``root`` that ``descend_module`` would place deeper.
 
@@ -160,7 +190,7 @@ def plan_placement(root: Path | str, output_base: str, repo_root: Path | str) ->
             continue
         relative = path.relative_to(base).as_posix() if base in path.parents else str(path)
         classes = _classes(path)
-        if len(classes) != 1:
+        if len(classes) != 1 or _hand_written(path):
             skipped.append(relative)
             continue
         class_name = classes[0]

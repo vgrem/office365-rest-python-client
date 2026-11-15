@@ -9,8 +9,8 @@ from office365.directory.permissions.identity_set import IdentitySet
 from office365.planner.applied_categories import PlannerAppliedCategories
 from office365.planner.assignments import PlannerAssignments
 from office365.planner.entity import PlannerEntity
+from office365.planner.tasks.details import PlannerTaskDetails
 from office365.planner.tasks.previewtype import PlannerPreviewType
-from office365.planner.tasks.task_details import PlannerTaskDetails
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from office365.planner.assigned_to_task_board_task_format import (
         PlannerAssignedToTaskBoardTaskFormat,
     )
-    from office365.planner.bucket_task_board_task_format import (
+    from office365.planner.buckets.task_board_task_format import (
         PlannerBucketTaskBoardTaskFormat,
     )
     from office365.planner.progress_task_board_task_format import (
@@ -244,7 +244,7 @@ class PlannerTask(PlannerEntity):
     @property
     def bucket_task_board_format(self) -> PlannerBucketTaskBoardTaskFormat:
         """Gets the bucketTaskBoardFormat property"""
-        from office365.planner.bucket_task_board_task_format import (
+        from office365.planner.buckets.task_board_task_format import (
             PlannerBucketTaskBoardTaskFormat,
         )
 

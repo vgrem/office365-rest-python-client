@@ -5,7 +5,7 @@ from typing import Any
 
 from typing_extensions import Self
 
-from office365.planner.tasks.check_list_item import PlannerChecklistItem
+from office365.planner.tasks.checklist_item import PlannerChecklistItem
 from office365.runtime.client_value import ClientValue
 from office365.runtime.converters.value import deserialize_value
 
