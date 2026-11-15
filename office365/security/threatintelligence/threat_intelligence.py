@@ -8,15 +8,15 @@ from office365.security.intelligence_profile_indicator import IntelligenceProfil
 from office365.security.passive_dns_record import PassiveDnsRecord
 from office365.security.ssl_certificate import SslCertificate
 from office365.security.subdomain import Subdomain
-from office365.security.threatintelligence.article_indicator import ArticleIndicator
 from office365.security.threatintelligence.articles.collection import ArticleCollection
-from office365.security.threatintelligence.host import Host
-from office365.security.threatintelligence.host_component import HostComponent
-from office365.security.threatintelligence.host_cookie import HostCookie
-from office365.security.threatintelligence.host_pair import HostPair
-from office365.security.threatintelligence.host_port import HostPort
-from office365.security.threatintelligence.host_ssl_certificate import HostSslCertificate
-from office365.security.threatintelligence.host_tracker import HostTracker
+from office365.security.threatintelligence.articles.indicator import ArticleIndicator
+from office365.security.threatintelligence.hosts.component import HostComponent
+from office365.security.threatintelligence.hosts.cookie import HostCookie
+from office365.security.threatintelligence.hosts.host import Host
+from office365.security.threatintelligence.hosts.pair import HostPair
+from office365.security.threatintelligence.hosts.port import HostPort
+from office365.security.threatintelligence.hosts.ssl_certificate import HostSslCertificate
+from office365.security.threatintelligence.hosts.tracker import HostTracker
 from office365.security.threatintelligence.profile import IntelligenceProfile
 from office365.security.vulnerability import Vulnerability
 

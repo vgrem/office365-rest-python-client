@@ -9,7 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.formatted_content import FormattedContent
-from office365.security.threatintelligence.article_indicator import (
+from office365.security.threatintelligence.articles.indicator import (
     ArticleIndicator,
 )
 

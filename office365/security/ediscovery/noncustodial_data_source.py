@@ -13,7 +13,7 @@ from office365.security.data_source_container import DataSourceContainer
 from office365.security.search.data_source import DataSource
 
 if TYPE_CHECKING:
-    from office365.security.ediscovery.ediscovery_index_operation import (
+    from office365.security.ediscovery.index_operation import (
         EdiscoveryIndexOperation,
     )
 
@@ -35,7 +35,7 @@ class EdiscoveryNoncustodialDataSource(DataSourceContainer):
     @property
     def last_index_operation(self) -> EdiscoveryIndexOperation:
         """Gets the lastIndexOperation property"""
-        from office365.security.ediscovery.ediscovery_index_operation import (
+        from office365.security.ediscovery.index_operation import (
             EdiscoveryIndexOperation,
         )
 

@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class Subdomain(Entity):

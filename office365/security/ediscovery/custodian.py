@@ -14,7 +14,7 @@ from office365.runtime.verbs import verb
 from office365.security.data_source_container import DataSourceContainer
 
 if TYPE_CHECKING:
-    from office365.security.ediscovery.ediscovery_index_operation import (
+    from office365.security.ediscovery.index_operation import (
         EdiscoveryIndexOperation,
     )
     from office365.security.ediscovery.unified_group_source import UnifiedGroupSource
@@ -43,7 +43,7 @@ class EdiscoveryCustodian(DataSourceContainer):
     @property
     def last_index_operation(self) -> EdiscoveryIndexOperation:
         """Gets the lastIndexOperation property"""
-        from office365.security.ediscovery.ediscovery_index_operation import (
+        from office365.security.ediscovery.index_operation import (
             EdiscoveryIndexOperation,
         )
 

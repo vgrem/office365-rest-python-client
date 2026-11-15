@@ -11,7 +11,7 @@ from office365.security.host_ssl_certificate_port import HostSslCertificatePort
 from office365.security.ssl_certificate import SslCertificate
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class HostSslCertificate(Entity):

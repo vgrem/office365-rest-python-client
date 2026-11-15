@@ -8,21 +8,21 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
-class HostComponent(Entity):
-    @odata(name="category")
-    @property
-    def category(self) -> Optional[str]:
-        """Gets the category property"""
-        return self.properties.get("category", None)
-
+class HostTracker(Entity):
     @odata(name="firstSeenDateTime")
     @property
     def first_seen_date_time(self) -> datetime:
         """Gets the firstSeenDateTime property"""
         return self.properties.get("firstSeenDateTime", datetime.min)
+
+    @odata(name="kind")
+    @property
+    def kind(self) -> Optional[str]:
+        """Gets the kind property"""
+        return self.properties.get("kind", None)
 
     @odata(name="lastSeenDateTime")
     @property
@@ -30,17 +30,11 @@ class HostComponent(Entity):
         """Gets the lastSeenDateTime property"""
         return self.properties.get("lastSeenDateTime", datetime.min)
 
-    @odata(name="name")
+    @odata(name="value")
     @property
-    def name(self) -> Optional[str]:
-        """Gets the name property"""
-        return self.properties.get("name", None)
-
-    @odata(name="version")
-    @property
-    def version(self) -> Optional[str]:
-        """Gets the version property"""
-        return self.properties.get("version", None)
+    def value(self) -> Optional[str]:
+        """Gets the value property"""
+        return self.properties.get("value", None)
 
     @odata(name="host", navigation=True)
     @property
@@ -50,4 +44,4 @@ class HostComponent(Entity):
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.security.HostComponent"
+        return "microsoft.graph.security.HostTracker"

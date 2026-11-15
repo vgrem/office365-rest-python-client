@@ -8,7 +8,7 @@ from office365.directory.audit.logs.usertype import AuditLogUserType
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.audit.audit_data import AuditData
+from office365.security.audit.data import AuditData
 
 
 class AuditLogRecord(Entity):

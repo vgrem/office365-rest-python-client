@@ -16,7 +16,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.health_issue import HealthIssue
+from office365.security.healthissues.health_issue import HealthIssue
 from office365.security.identity_accounts import IdentityAccounts
 from office365.security.sensor import Sensor
 from office365.security.sensor_candidate import SensorCandidate

@@ -5,8 +5,8 @@ from typing import Optional
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.threatintelligence.host_reputation_classification import HostReputationClassification
-from office365.security.threatintelligence.host_reputation_rule import HostReputationRule
+from office365.security.threatintelligence.hosts.reputation_classification import HostReputationClassification
+from office365.security.threatintelligence.hosts.reputation_rule import HostReputationRule
 
 
 class HostReputation(Entity):

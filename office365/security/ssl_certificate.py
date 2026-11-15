@@ -10,7 +10,7 @@ from office365.runtime.types.odata_property import odata
 from office365.security.ssl_certificate_entity import SslCertificateEntity
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class SslCertificate(Entity):

@@ -13,7 +13,7 @@ from office365.security.search.search import Search
 if TYPE_CHECKING:
     from office365.security.cases.exportfilestructure import ExportFileStructure
     from office365.security.cases.exportoptions import ExportOptions
-    from office365.security.ediscovery.ediscovery_review_tag import EdiscoveryReviewTag
+    from office365.security.ediscovery.review_tag import EdiscoveryReviewTag
 
 
 class EdiscoveryReviewSetQuery(Search):

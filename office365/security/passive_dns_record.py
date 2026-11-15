@@ -9,7 +9,7 @@ from office365.runtime.types.odata_property import odata
 from office365.security.artifact import Artifact
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class PassiveDnsRecord(Entity):

@@ -29,11 +29,11 @@ from office365.security.message_security_state import MessageSecurityState
 from office365.security.network_connection import NetworkConnection
 from office365.security.process import Process
 from office365.security.registry_key_state import RegistryKeyState
-from office365.security.security_resource import SecurityResource
-from office365.security.security_vendor_information import SecurityVendorInformation
+from office365.security.resource import SecurityResource
 from office365.security.service_source import ServiceSource
 from office365.security.uri_click_security_state import UriClickSecurityState
 from office365.security.user_security_state import UserSecurityState
+from office365.security.vendor_information import SecurityVendorInformation
 from office365.security.vulnerability_state import VulnerabilityState
 
 

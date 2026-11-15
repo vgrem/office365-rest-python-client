@@ -23,10 +23,10 @@ from office365.security.ediscovery.review_set import EdiscoveryReviewSet
 from office365.security.ediscovery.search import EdiscoverySearch
 
 if TYPE_CHECKING:
-    from office365.security.ediscovery.ediscovery_case_settings import (
+    from office365.security.ediscovery.case_settings import (
         EdiscoveryCaseSettings,
     )
-    from office365.security.ediscovery.ediscovery_review_tag import (
+    from office365.security.ediscovery.review_tag import (
         EdiscoveryReviewTag,
     )
 
@@ -126,7 +126,7 @@ class EdiscoveryCase(Case):
     @property
     def settings(self) -> EdiscoveryCaseSettings:
         """Gets the settings property"""
-        from office365.security.ediscovery.ediscovery_case_settings import (
+        from office365.security.ediscovery.case_settings import (
             EdiscoveryCaseSettings,
         )
 
@@ -138,7 +138,7 @@ class EdiscoveryCase(Case):
     @property
     def tags(self) -> EntityCollection[EdiscoveryReviewTag]:
         """Gets the tags property"""
-        from office365.security.ediscovery.ediscovery_review_tag import (
+        from office365.security.ediscovery.review_tag import (
             EdiscoveryReviewTag,
         )
 

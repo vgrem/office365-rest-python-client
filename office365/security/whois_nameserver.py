@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_value import ClientValue
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class WhoisNameserver(ClientValue):

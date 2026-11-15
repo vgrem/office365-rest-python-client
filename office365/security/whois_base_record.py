@@ -11,7 +11,7 @@ from office365.security.whois_contact import WhoisContact
 from office365.security.whois_nameserver import WhoisNameserver
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
 class WhoisBaseRecord(Entity):
@@ -67,7 +67,7 @@ class WhoisBaseRecord(Entity):
     @property
     def host(self) -> Host:
         """Gets the host property"""
-        from office365.security.threatintelligence.host import Host
+        from office365.security.threatintelligence.hosts.host import Host
 
         return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
 

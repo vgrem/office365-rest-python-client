@@ -8,16 +8,10 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.security.threatintelligence.host import Host
+    from office365.security.threatintelligence.hosts.host import Host
 
 
-class HostCookie(Entity):
-    @odata(name="domain")
-    @property
-    def domain(self) -> Optional[str]:
-        """Gets the domain property"""
-        return self.properties.get("domain", None)
-
+class HostPair(Entity):
     @odata(name="firstSeenDateTime")
     @property
     def first_seen_date_time(self) -> datetime:
@@ -30,18 +24,24 @@ class HostCookie(Entity):
         """Gets the lastSeenDateTime property"""
         return self.properties.get("lastSeenDateTime", datetime.min)
 
-    @odata(name="name")
+    @odata(name="linkKind")
     @property
-    def name(self) -> Optional[str]:
-        """Gets the name property"""
-        return self.properties.get("name", None)
+    def link_kind(self) -> Optional[str]:
+        """Gets the linkKind property"""
+        return self.properties.get("linkKind", None)
 
-    @odata(name="host", navigation=True)
+    @odata(name="childHost", navigation=True)
     @property
-    def host(self) -> Host:
-        """Gets the host property"""
-        return self.properties.get("host", Host(self.context, ResourcePath("host", self.resource_path)))
+    def child_host(self) -> Host:
+        """Gets the childHost property"""
+        return self.properties.get("childHost", Host(self.context, ResourcePath("childHost", self.resource_path)))
+
+    @odata(name="parentHost", navigation=True)
+    @property
+    def parent_host(self) -> Host:
+        """Gets the parentHost property"""
+        return self.properties.get("parentHost", Host(self.context, ResourcePath("parentHost", self.resource_path)))
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.security.HostCookie"
+        return "microsoft.graph.security.HostPair"

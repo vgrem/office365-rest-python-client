@@ -11,7 +11,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.audit.audit_log_query_status import AuditLogQueryStatus
+from office365.security.audit.log_query_status import AuditLogQueryStatus
 from office365.security.quotas import AUDIT_LOG_QUERY_RECORDS
 
 if TYPE_CHECKING:

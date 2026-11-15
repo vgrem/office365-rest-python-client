@@ -9,13 +9,13 @@ from office365.runtime.types.odata_property import odata
 from office365.security.audit.whois_record import WhoisRecord
 from office365.security.passive_dns_record import PassiveDnsRecord
 from office365.security.subdomain import Subdomain
-from office365.security.threatintelligence.host_component import HostComponent
-from office365.security.threatintelligence.host_cookie import HostCookie
-from office365.security.threatintelligence.host_pair import HostPair
-from office365.security.threatintelligence.host_port import HostPort
-from office365.security.threatintelligence.host_reputation import HostReputation
-from office365.security.threatintelligence.host_ssl_certificate import HostSslCertificate
-from office365.security.threatintelligence.host_tracker import HostTracker
+from office365.security.threatintelligence.hosts.component import HostComponent
+from office365.security.threatintelligence.hosts.cookie import HostCookie
+from office365.security.threatintelligence.hosts.pair import HostPair
+from office365.security.threatintelligence.hosts.port import HostPort
+from office365.security.threatintelligence.hosts.reputation import HostReputation
+from office365.security.threatintelligence.hosts.ssl_certificate import HostSslCertificate
+from office365.security.threatintelligence.hosts.tracker import HostTracker
 
 
 class Host(Entity):

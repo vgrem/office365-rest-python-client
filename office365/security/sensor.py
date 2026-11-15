@@ -8,8 +8,8 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.health_issue import HealthIssue
 from office365.security.healthissues.deploymentstatus import DeploymentStatus
+from office365.security.healthissues.health_issue import HealthIssue
 from office365.security.healthissues.sensorhealthstatus import (
     SensorHealthStatus,
 )

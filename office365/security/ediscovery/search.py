@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from office365.security.cases.exportlocation import ExportLocation
     from office365.security.cases.statisticsoptions import StatisticsOptions
     from office365.security.cloudattachmentversion import CloudAttachmentVersion
-    from office365.security.ediscovery.ediscovery_estimate_operation import (
+    from office365.security.ediscovery.estimate_operation import (
         EdiscoveryEstimateOperation,
     )
     from office365.security.purgeareas import PurgeAreas
@@ -90,7 +90,7 @@ class EdiscoverySearch(Search):
     @property
     def last_estimate_statistics_operation(self) -> EdiscoveryEstimateOperation:
         """Gets the lastEstimateStatisticsOperation property"""
-        from office365.security.ediscovery.ediscovery_estimate_operation import (
+        from office365.security.ediscovery.estimate_operation import (
             EdiscoveryEstimateOperation,
         )
 

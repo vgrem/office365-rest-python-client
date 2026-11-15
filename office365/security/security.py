@@ -35,7 +35,7 @@ from office365.security.triggertypes.root import TriggerTypesRoot
 if TYPE_CHECKING:
     from office365.directory.identities.container import IdentityContainer
     from office365.security.audit.core_root import AuditCoreRoot
-    from office365.security.collaboration.collaboration_root import (
+    from office365.security.collaboration.root import (
         CollaborationRoot,
     )
     from office365.security.rules_root import RulesRoot
@@ -208,7 +208,7 @@ class Security(Entity):
     @property
     def collaboration(self) -> CollaborationRoot:
         """Gets the collaboration property"""
-        from office365.security.collaboration.collaboration_root import (
+        from office365.security.collaboration.root import (
             CollaborationRoot,
         )
 
