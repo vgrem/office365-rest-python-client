@@ -7,5 +7,5 @@ from office365.runtime.client_value_collection import ClientValueCollection
 
 
 class SparkEmbeddingItem(ClientValue):
-    Embedding: ClientValueCollection[float] = field(default_factory=ClientValueCollection)
+    Embedding: ClientValueCollection[float] = field(default_factory=lambda: ClientValueCollection(float))
     Index: int | None = None

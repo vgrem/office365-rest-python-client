@@ -96,37 +96,16 @@ class PropertyBuilder:
     def build_default_value(self) -> Constant | Call:
         """Build default value"""
         if self.is_collection_type:
-            base_name = self.client_type_name.split("[")[0]
-            if self.type_ref.is_primitive:
-                return ast.Call(
-                    func=ast.Name(id=self.field_alias, ctx=ast.Load()),
-                    args=[],
-                    keywords=[
-                        ast.keyword(
-                            arg="default_factory",
-                            value=ast.Name(id=base_name, ctx=ast.Load()),
-                        )
-                    ],
-                )
-            else:
-                item_name = self.client_item_type_name
-                return ast.Call(
-                    func=ast.Name(id=self.field_alias, ctx=ast.Load()),
-                    args=[],
-                    keywords=[
-                        ast.keyword(
-                            arg="default_factory",
-                            value=ast.Lambda(
-                                args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
-                                body=ast.Call(
-                                    func=ast.Name(id=base_name, ctx=ast.Load()),
-                                    args=[ast.Name(id=item_name, ctx=ast.Load())],
-                                    keywords=[],
-                                ),
-                            ),
-                        )
-                    ],
-                )
+            return ast.Call(
+                func=ast.Name(id=self.field_alias, ctx=ast.Load()),
+                args=[],
+                keywords=[
+                    ast.keyword(
+                        arg="default_factory",
+                        value=self._collection_factory(self.client_type_name.split("[")[0]),
+                    )
+                ],
+            )
         elif self.type_ref.is_primitive:
             if self.client_type_name == "datetime":
                 return ast.Call(
@@ -158,6 +137,25 @@ class PropertyBuilder:
                     )
                 ],
             )
+
+    def _collection_factory(self, base_name: str) -> ast.expr:
+        """The ``default_factory`` for a collection of primitives.
+
+        A named alias (``StringCollection``) is the factory itself. A parametrised one
+        (``ClientValueCollection[float]``) is not: the bare class leaves the item type
+        unbound, so a type checker reads the field as ``ClientValueCollection[ValueT]``
+        and rejects it against the declared ``ClientValueCollection[float]``.
+        """
+        if "[" not in self.client_type_name:
+            return ast.Name(id=base_name, ctx=ast.Load())
+        return ast.Lambda(
+            args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
+            body=ast.Call(
+                func=ast.Name(id=base_name, ctx=ast.Load()),
+                args=[ast.Name(id=self.client_item_type_name, ctx=ast.Load())],
+                keywords=[],
+            ),
+        )
 
     def build_assign(self) -> Assign:
         """Build assignment statement"""

@@ -10,9 +10,9 @@ from office365.sharepoint.entity import Entity
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext
-    from office365.sharepoint.spark.spark_category import SparkCategory
-    from office365.sharepoint.spark.spark_category_similarity_result import SparkCategorySimilarityResult
-    from office365.sharepoint.spark.spark_embedding_result import SparkEmbeddingResult
+    from office365.sharepoint.spark.category import SparkCategory
+    from office365.sharepoint.spark.category_similarity_result import SparkCategorySimilarityResult
+    from office365.sharepoint.spark.embedding_result import SparkEmbeddingResult
 
 
 class SPARK(Entity):
@@ -30,7 +30,7 @@ class SPARK(Entity):
             categories (ClientValueCollection[SparkCategory]):
                 categories parameter
         """
-        from office365.sharepoint.spark.spark_category_similarity_result import SparkCategorySimilarityResult
+        from office365.sharepoint.spark.category_similarity_result import SparkCategorySimilarityResult
 
         return_type = ClientResult(context, SparkCategorySimilarityResult())
         qry = ServiceOperationQuery(
@@ -55,7 +55,7 @@ class SPARK(Entity):
             scenario_id (str):
                 scenarioId parameter
         """
-        from office365.sharepoint.spark.spark_embedding_result import SparkEmbeddingResult
+        from office365.sharepoint.spark.embedding_result import SparkEmbeddingResult
 
         return_type = ClientResult(context, SparkEmbeddingResult())
         qry = ServiceOperationQuery(
