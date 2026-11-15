@@ -679,7 +679,8 @@ def _send(
         client.execute_query()
     except ClientRequestException as err:
         return _refuse(str(err), 1)
-    records = _rows(result)
+    rows = _rows(result)
+    records = [_payload(row) for row in rows]
     print(
         render(
             records,
@@ -687,7 +688,7 @@ def _send(
             columns=_columns(records, args.columns, entity),
             links=None,
             origin=render_origin(client),
-            resources=_addresses(result),
+            resources=_addresses(rows),
             fields=TypeSchema.of(entity).links,
             link=args.link,
             headers=not args.no_headers,
@@ -705,10 +706,15 @@ def render_origin(client: Any) -> str:
     return origin_of(getattr(client, "service_root_url", None))
 
 
-def _addresses(result: Any) -> "list[str | None]":
-    """Each record's own REST address, when the record is an object rather than a payload."""
-    items = result if isinstance(result, list) else [result]
-    return [None if isinstance(item, Mapping) else getattr(item, "resource_url", None) for item in items]
+def _addresses(rows: "list[Any]") -> "list[str | None]":
+    """Each row's own REST address -- one per row, so it lines up with the record it belongs to."""
+    return [None if isinstance(row, Mapping) else getattr(row, "resource_url", None) for row in rows]
+
+
+def _payload(row: Any) -> "Mapping[str, Any]":
+    """One row as what a table reads: the object's own JSON, or a value under ``value``."""
+    payload = row.to_json() if hasattr(row, "to_json") else row
+    return payload if isinstance(payload, Mapping) else {"value": payload}
 
 
 def _columns(records: "list[Any]", chosen: "str | None", entity: type) -> "list[str] | None":
@@ -722,10 +728,24 @@ def _columns(records: "list[Any]", chosen: "str | None", entity: type) -> "list[
     return [spelled[name.lower()] for name in wanted if name.lower() in spelled] or None
 
 
-def _rows(result: Any) -> Any:
-    """What a command prints: the payload the object serializes to, always as a list."""
-    payload = result.to_json() if hasattr(result, "to_json") else result
-    return payload if isinstance(payload, list) else [payload]
+def _rows(result: Any) -> "list[Any]":
+    """What a command prints, one entry per row: a collection's items, or the one object.
+
+    The items and not their JSON, because a row needs both halves: the payload the table
+    reads and the REST address the row links to. ``to_json()`` on a collection has only the
+    first, which is how a table of 146 lists came out with no addresses.
+    """
+    if isinstance(result, (list, tuple)):
+        return list(result)
+    if isinstance(result, Mapping):
+        return [result]
+    if hasattr(result, "__iter__") and hasattr(result, "to_json"):
+        return [item for item in result] or [result]
+    if hasattr(result, "to_json"):
+        # A result whose own JSON is the table (`Report` over a CSV answer) is already rows.
+        payload = result.to_json()
+        return list(payload) if isinstance(payload, list) else [result]
+    return [result]
 
 
 def _audience(entity: type) -> str:

@@ -19,6 +19,8 @@ they do not send a request, and neither does the page.
 
 from __future__ import annotations
 
+import argparse
+
 import pytest
 from office365.cli import _page, _sentence, main
 from office365.routing import route
@@ -27,6 +29,8 @@ from office365.routing import route
 PAGE_LINK_LINES = 6
 #: What ``main`` returns for a word it refuses.
 REFUSED = 2
+#: A header row and the two rows of a two-item feed.
+HEADER_AND_TWO_ROWS = 3
 
 
 @pytest.fixture(scope="module")
@@ -133,3 +137,96 @@ def test_a_type_with_actions_shows_them_with_the_metadata_summary(capsys: pytest
     assert "  list  " in printed
     assert "Assign a license" not in printed  # the sentence belongs to `assign-license`, not the page's top
     assert "read this one back" in printed
+
+
+class _Row:
+    """One item of a feed: a payload, and the REST address the item was read from."""
+
+    def __init__(self, title: str, address: "str | None" = None) -> None:
+        self.title = title
+        self.resource_url = address
+
+    def to_json(self) -> dict:
+        return {"displayName": self.title, "webUrl": f"https://contoso.example/{self.title}"}
+
+
+class _Feed:
+    """A collection as the runtime hands it over: iterable over items, JSON of many rows."""
+
+    def __init__(self, rows: "list[_Row]") -> None:
+        self.rows = rows
+
+    def __iter__(self):
+        return iter(self.rows)
+
+    def to_json(self) -> "list[dict]":
+        return [row.to_json() for row in self.rows]
+
+
+class _Client:
+    """Just enough client: the command calls the one query the method queued."""
+
+    service_root_url = "https://contoso.sharepoint.com/sites/x/_api/"
+
+    def __init__(self) -> None:
+        self.queried = 0
+
+    def execute_query(self) -> None:
+        self.queried += 1
+
+
+def _arguments(link: str = "auto") -> "argparse.Namespace":
+    return argparse.Namespace(output="table", columns=None, link=link, no_headers=False)
+
+
+def test_a_feed_is_one_row_per_item_and_each_row_keeps_its_own_address(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    rows = [_Row("alpha", "https://contoso.example/alpha"), _Row("beta", "https://contoso.example/beta")]
+    sent = _send(_Client(), lambda **given: _Feed(rows), {}, _arguments("always"), Team)
+
+    lines = capsys.readouterr().out.splitlines()
+    assert sent == 0
+    assert lines[0].split() == ["DISPLAYNAME", "WEBURL"]
+    assert len(lines) == HEADER_AND_TWO_ROWS
+    # The address of each row is in that row's line, not in the first line twice.
+    assert "https://contoso.example/alpha" in lines[1]
+    assert "https://contoso.example/beta" in lines[2]
+
+
+def test_a_row_with_no_address_does_not_shift_the_next_rows_link(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    rows = [_Row("alpha"), _Row("beta", "https://contoso.example/beta")]
+    _send(_Client(), lambda **given: _Feed(rows), {}, _arguments("always"), Team)
+
+    lines = capsys.readouterr().out.splitlines()
+    assert "contoso.example/beta" in lines[2]
+    assert "contoso.example/beta" not in lines[1]
+
+
+def test_a_feed_with_fewer_addresses_than_rows_still_prints(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.runtime.render import render
+
+    printed = render([{"a": 1}, {"a": 2}], resources=["https://contoso.example/one"])
+
+    assert printed.splitlines() == ["A", "1", "2"]
+    assert capsys.readouterr().out == ""
+
+
+def test_a_result_whose_json_is_a_table_is_already_rows(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    class _Report:
+        """``Report`` answers a CSV as JSON: the payload *is* the table, so it is not one row."""
+
+        def to_json(self) -> "list[dict]":
+            return [{"displayName": "alpha"}, {"displayName": "beta"}]
+
+    _send(_Client(), lambda **given: _Report(), {}, _arguments(), Team)
+
+    # The ranked `displayName` column is the one these rows carry; `webUrl` is absent, so is not a column.
+    assert [line.strip() for line in capsys.readouterr().out.splitlines()] == ["DISPLAYNAME", "alpha", "beta"]

@@ -270,7 +270,7 @@ def render(
         list(links)
         if links is not None
         else [
-            resolve(payload, origin, resources[index] if resources else None, fields)
+            resolve(payload, origin, resources[index] if resources and index < len(resources) else None, fields)
             for index, payload in enumerate(payloads)
         ]
     )
