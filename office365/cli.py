@@ -7,6 +7,8 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
     o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]
+    o365 completion bash|zsh|fish        -- print the shell script that completes the words
+    o365 completion --warm [product ...] -- fill the cache, so no TAB pays an import
 
 There is no flag table here. ``--tenant`` reaches ``GraphClient.__init__`` because the
 constructor declares ``tenant``; the same flag reaches ``ClientContext.with_device_flow``
@@ -36,6 +38,12 @@ answer a command line was asked for. ``-o json`` prints everything the object lo
 ``--columns`` says which names the table shows. ``Web`` is 118 fields loaded and two printed;
 the other 116 are not hidden, they are unasked for. A type that ranks nothing prints its
 payload, because a settings object with sixteen config switches has no name a reader came for.
+
+The words a shell may offer are the model's own, so they are read from it rather than listed
+here: ``o365 __complete`` is the hidden half of the protocol (absent from ``--help`` for the
+reason ``kubectl __complete`` is: it is not a command a person types) and it imports no package
+until a noun is already on the line. ``o365 completion bash|zsh|fish`` prints the script that
+calls it, and ``--warm`` fills the cache once, at login, so that no TAB pays an import.
 """
 
 from __future__ import annotations
@@ -82,6 +90,12 @@ INDEX = Path(__file__).with_name("index.json")
 def main(argv: "list[str] | None" = None) -> int:
     """Run one command, returning the process exit code."""
     words = list(sys.argv[1:] if argv is None else argv)
+    # The completion protocol is answered before the grammar is read: a shell asks with the
+    # words already typed, which are not a command, and asks a hundred times an hour.
+    if words[:1] == ["__complete"]:
+        return _complete(words[1:])
+    if words[:1] == ["completion"]:
+        return _completion(words[1:])
     audience, words = _audience_words(words)
     if not words or words[0] in ("-h", "--help"):
         print(_usage() if words else _served(audience) if audience else _usage())
@@ -231,6 +245,152 @@ def _published() -> "list[str]":
         from office365.routing import products
 
         return list(products())
+
+
+def _complete(argv: "list[str]") -> int:
+    """Answer a shell: the words that may follow, one per line, a description after a tab.
+
+    The shell passes the words already on the line and the word under the cursor, because only
+    it knows where the cursor is. The two protocol flags are read by hand rather than by
+    ``argparse``, because a word of this command line may itself begin with ``-`` (``list -o``)
+    and an option parser would take it for an option of the completer. A flag this command line
+    does not know is passed on as a word rather than refused: it is something the user has
+    already typed, and a TAB that failed would delete it.
+    """
+    prefix, describe, words = "", False, []
+    rest = list(argv)
+    while rest:
+        word = rest.pop(0)
+        if word == "--describe":
+            describe = True
+        elif word == "--prefix":
+            prefix = rest.pop(0) if rest else ""
+        elif word.startswith("--prefix="):
+            prefix = word.split("=", 1)[1]
+        else:
+            words.append(word)
+    for word, detail in _following(words, prefix):
+        print(f"{word}\t{detail}" if describe else word)
+    return 0
+
+
+def _following(words: "list[str]", prefix: str) -> "list[tuple[str, str]]":
+    """The words that may follow these, filtered by the one being typed.
+
+    Three shapes, because a command line has three: nothing, a product, and whatever the route
+    reached. The command line's own words - the products, the session verbs, the flags of a
+    command - are answered here, before any package is imported, and the model's words are
+    asked of :mod:`office365.completion`, which caches them. A path the router refuses answers
+    nothing rather than offering a word the walk cannot reach.
+    """
+    if not words:
+        return _prefixed(_top(), prefix)
+    head, rest = words[0], words[1:]
+    if not (_is_product(head) or head in AUDIENCES):
+        return []
+    offered = _after(head, rest)
+    if not rest and head in AUDIENCES:
+        offered += _sessions()
+    return _prefixed(offered, prefix)
+
+
+def _after(product: str, path: "list[str]") -> "list[tuple[str, str]]":
+    """What may follow ``<product> <path>``: nouns, a route's words, or a command's flags."""
+    from office365.completion import following
+
+    cut = next((position for position, item in enumerate(path) if item.startswith("-")), len(path))
+    walk, typed = path[:cut], path[cut:]
+    if typed:
+        return _values(product, walk, typed)
+    try:
+        node = following(product, walk)
+    except LookupError:
+        return []
+    if node is not None:
+        return [(candidate.word, candidate.detail) for candidate in node]
+    from office365.routing import route
+
+    return _flag_words(route(product, *walk))
+
+
+def _top() -> "list[tuple[str, str]]":
+    """Nothing typed yet: what owns a token, what owns types, and the two words with no noun."""
+    return [(name, "audience") for name in AUDIENCES] + _products() + _sessions() + [("completion", "shell script")]
+
+
+def _products() -> "list[tuple[str, str]]":
+    """The products a token answers, minus the ones that are audiences and so already offered."""
+    return [(name, "product") for name in _published() if name not in AUDIENCES]
+
+
+def _sessions() -> "list[tuple[str, str]]":
+    """The verbs that speak to the session rather than to the service."""
+    return [(name, "session") for name in SESSION]
+
+
+def _flag_words(found: Any) -> "list[tuple[str, str]]":
+    """The flags a command takes: its own parameters, then what every command prints with."""
+    method = getattr(found.here or found.entity, found.method)
+    answer = []
+    for name, parameter in _signature(method).parameters.items():
+        if name in SUPPLIED or parameter.kind in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD):
+            continue
+        answer.append(("--" + name.replace("_", "-"), getattr(_unoptional(parameter.annotation), "__name__", "")))
+    return answer + [
+        ("-o", "table or json"),
+        ("--output", "table or json"),
+        ("--columns", "the names the table shows"),
+    ]
+
+
+def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[str, str]]":
+    """The values a flag takes, when the line stopped on that flag's name."""
+    if typed[-1] in ("-o", "--output"):
+        return [("table", "one line per object"), ("json", "the payload as it came")]
+    if typed[-1] == "--columns" and walk:
+        from office365.routing import route
+        from office365.runtime.schema import TypeSchema
+
+        try:
+            found = route(product, *walk)
+        except LookupError:
+            return []
+        return [(name, "") for name in TypeSchema.of(found.entity).columns]
+    return []
+
+
+def _prefixed(pairs: "list[tuple[str, str]]", prefix: str) -> "list[tuple[str, str]]":
+    """Keep the words that start with what is being typed, once, in the order they were offered."""
+    seen: "set[str]" = set()
+    answer = []
+    for word, detail in pairs:
+        if word.startswith(prefix) and word not in seen:
+            seen.add(word)
+            answer.append((word, detail))
+    return answer
+
+
+def _completion(argv: "list[str]") -> int:
+    """Print a shell's completion script, or fill the cache so that no TAB pays an import."""
+    from office365 import completion
+
+    words = list(argv)
+    if "--warm" in words:
+        words.remove("--warm")
+        try:
+            answered = completion.warm(words or _published())
+        except LookupError as err:
+            return _refuse(str(err))
+        print(f"{answered} nouns answered -> {completion.cache_path()}")
+        return 0
+    if not words:
+        print("usage: o365 completion bash|zsh|fish [--warm [product ...]]")
+        return 0
+    try:
+        print(completion.script(words[0]), end="")
+    except LookupError as err:
+        return _refuse(str(err))
+    return 0
 
 
 def command(product: str, words: "list[str]", argv: "list[str]") -> int:
@@ -467,12 +627,13 @@ def _summary(audience: str, entry: "dict[str, Any]") -> str:
 
 
 def _usage() -> str:
-    """What this command line knows: a session, and a route of words."""
+    """What this command line knows: a session, a route of words, and the shell script."""
     return (
         "usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]\n"
         "       o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]\n"
         "       o365 graph <product> <noun> [navigation ...] [action]\n"
-        "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]"
+        "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]\n"
+        "       o365 completion bash|zsh|fish [--warm [product ...]]"
     )
 
 

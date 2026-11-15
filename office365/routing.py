@@ -82,6 +82,19 @@ class Route:
                         answers.setdefault(meta.name, (half, method, meta))
         return MappingProxyType(answers)
 
+    @cached_property
+    def words(self) -> tuple[str, ...]:
+        """Every word that may follow this route: what it answers, then what it holds.
+
+        One list, because a command line offers both at the same level - ``sharepoint site``
+        may be followed by ``root_web`` and by ``get`` - and the order says which is which:
+        the actions of the type reached, then the links it holds. A caller that needs to know
+        the difference asks :attr:`commands` or :func:`navigations`, and a caller that only
+        completes words asks once.
+        """
+        links = tuple(sorted(navigations(self.here or self.entity)))
+        return tuple(sorted(self.commands)) + tuple(word for word in links if word not in self.commands)
+
 
 def route(product: str, *words: str) -> Route:
     """The type ``<product> <noun> [navigation ...] [action]`` names, or a failure saying what was close.
