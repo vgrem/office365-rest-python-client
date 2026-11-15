@@ -162,12 +162,29 @@ class _Feed:
     def __iter__(self):
         return iter(self.rows)
 
+    def item_type(self):
+        return _Row
+
     def select(self, names):
         self.selected = list(names)
         return self
 
     def to_json(self) -> "list[dict]":
         return [row.to_json() for row in self.rows]
+
+
+class _Object:
+    """One entity as the runtime hands it over: iterable over its own fields, JSON of one row."""
+
+    def __init__(self, payload: "dict") -> None:
+        self.payload = payload
+        self.query_options = QueryOptions()
+
+    def __iter__(self):
+        return iter([(name, value, False) for name, value in self.payload.items()])
+
+    def to_json(self) -> "dict":
+        return dict(self.payload)
 
 
 class _Client:
@@ -274,3 +291,19 @@ def test_named_columns_are_the_ones_asked_for(capsys: pytest.CaptureFixture[str]
     # What was named, then the address: a link that costs nothing to ask for.
     assert feed.selected == ["displayName", "webUrl"]
     capsys.readouterr()
+
+
+def test_one_object_is_a_block_of_fields_not_a_row_per_field(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.sharepoint.webs.web import Web
+
+    payload = {"Title": "SiteU74H3Z9O", "Url": "https://mediadev8.sharepoint.com"}
+    _send(_Client(), lambda **given: _Object(payload), {}, _arguments(), Web)
+
+    # An entity iterates its fields as `(name, value, stated)` triples -- that is what a request
+    # carries -- so iterating one printed `["Title", "SiteU74H3Z9O", false]` under a `VALUE`
+    # heading. One object is one block, and each field is on its own line, name first.
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0].split() == ["Title", "SiteU74H3Z9O"]
+    assert lines[1].split() == ["Url", "https://mediadev8.sharepoint.com"]
+    assert "VALUE" not in "\n".join(lines)

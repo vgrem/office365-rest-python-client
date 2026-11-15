@@ -187,6 +187,19 @@ ranks ``Name``/``ItemCount``/``TimeLastModified``, ``File`` ranks ``Name``/``Len
 ``TimeLastModified``, and ``Site`` ranks ``Url`` — the three types a person lists most, and
 without a rank each printed the first eight of its fields in alphabetical order.
 
+One object is a block of its own fields, one field per line; a feed is a table even when it
+holds a single item. The two are told apart by ``item_type``, which only a collection declares --
+an entity is iterable too, but over its own fields as ``(name, value, stated)`` triples, so an
+earlier version printed ``o365 sharepoint web get`` as one row per field, under a ``VALUE``
+heading, each row a JSON array:
+
+```
+$ o365 sharepoint web get            # wrong, and what it looked like
+VALUE
+["ServerRelativeUrl", "/", false]
+["Title", "SiteU74H3Z9O", false]
+```
+
 Two renderers, because there are two readers. ``office365/runtime/display.py`` still draws the
 notebook ``repr``: bounded, indented, prefixed with the class name — a preview of a Python value.
 ``office365/runtime/render.py`` draws a terminal: a header row, numbers right-aligned, over-long

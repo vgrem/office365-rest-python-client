@@ -684,11 +684,15 @@ def _send(
         return _refuse(str(err), 1)
     rows = _rows(result)
     records = [_payload(row) for row in rows]
+    # One object is a block of its own fields, not a table of one row: a single `Title` under a
+    # `TITLE` heading says less than every field on its own line. A feed of one item is still a
+    # feed -- `item_type` is what tells the two apart -- and naming columns is a table on purpose.
+    block = len(records) == 1 and not hasattr(result, "item_type")
     print(
         render(
             records,
             args.output,
-            columns=_columns(records, args.columns, entity),
+            columns=None if block and not args.columns else _columns(records, args.columns, entity),
             links=None,
             origin=render_origin(client),
             resources=_addresses(rows),
@@ -783,7 +787,10 @@ def _rows(result: Any) -> "list[Any]":
         return list(result)
     if isinstance(result, Mapping):
         return [result]
-    if hasattr(result, "__iter__") and hasattr(result, "to_json"):
+    if hasattr(result, "item_type") and hasattr(result, "to_json"):
+        # Only a collection is a feed. An entity iterates its own fields as ``(name, value,
+        # stated)`` triples -- that is what a request carries -- so iterating a ``Web`` would
+        # print one row per field: `["Title", "SiteU74H3Z9O", false]` under a `VALUE` heading.
         return [item for item in result] or [result]
     if hasattr(result, "to_json"):
         # A result whose own JSON is the table (`Report` over a CSV answer) is already rows.
