@@ -851,7 +851,7 @@ class Folder(Entity):
             "ParentFolder", Folder(self.context, ResourcePath("ParentFolder", self.resource_path))
         )
 
-    @odata(name="Name", readonly=True)
+    @odata(name="Name", readonly=True, default=1)
     @property
     def name(self) -> Optional[str]:
         """Specifies the list folder name."""
@@ -899,7 +899,7 @@ class Folder(Entity):
         """Specifies the content type order for the list folder."""
         return self.properties.get("ContentTypeOrder") or ClientValueCollection[ContentTypeId](ContentTypeId)
 
-    @odata(name="TimeLastModified", readonly=True)
+    @odata(name="TimeLastModified", readonly=True, default=3)
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Gets the last time this folder or a direct child was modified in UTC."""
@@ -946,7 +946,7 @@ class Folder(Entity):
         """Gets the ExistsWithException property"""
         return self.properties.get("ExistsWithException", None)
 
-    @odata(name="ItemCount", readonly=True)
+    @odata(name="ItemCount", readonly=True, default=2)
     @property
     def item_count(self) -> Optional[int]:
         """Gets the ItemCount property"""

@@ -24,6 +24,7 @@ import argparse
 import pytest
 from office365.cli import _page, _sentence, main
 from office365.routing import route
+from office365.runtime.odata.query_options import QueryOptions
 
 #: A page wraps its links and stops; six lines is the twelve words plus the "and N more" line.
 PAGE_LINK_LINES = 6
@@ -154,10 +155,16 @@ class _Feed:
     """A collection as the runtime hands it over: iterable over items, JSON of many rows."""
 
     def __init__(self, rows: "list[_Row]") -> None:
+        self.query_options = QueryOptions()
         self.rows = rows
+        self.selected: "list[str]" = []
 
     def __iter__(self):
         return iter(self.rows)
+
+    def select(self, names):
+        self.selected = list(names)
+        return self
 
     def to_json(self) -> "list[dict]":
         return [row.to_json() for row in self.rows]
@@ -175,8 +182,8 @@ class _Client:
         self.queried += 1
 
 
-def _arguments(link: str = "auto") -> "argparse.Namespace":
-    return argparse.Namespace(output="table", columns=None, link=link, no_headers=False)
+def _arguments(link: str = "auto", output: str = "table", columns: "str | None" = None) -> "argparse.Namespace":
+    return argparse.Namespace(output=output, columns=columns, link=link, no_headers=False)
 
 
 def test_a_feed_is_one_row_per_item_and_each_row_keeps_its_own_address(capsys: pytest.CaptureFixture[str]) -> None:
@@ -230,3 +237,40 @@ def test_a_result_whose_json_is_a_table_is_already_rows(capsys: pytest.CaptureFi
 
     # The ranked `displayName` column is the one these rows carry; `webUrl` is absent, so is not a column.
     assert [line.strip() for line in capsys.readouterr().out.splitlines()] == ["DISPLAYNAME", "alpha", "beta"]
+
+
+def test_a_table_asks_the_service_for_the_columns_it_prints(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    feed = _Feed([_Row("alpha", "https://contoso.example/alpha")])
+    _send(_Client(), lambda **given: feed, {}, _arguments(), Team)
+
+    # `/Web/lists` answers without its address unless it is selected, so the request names both:
+    # the ranked columns a table prints, then the field the row links to.
+    assert feed.selected == ["displayName", "webUrl"]
+    capsys.readouterr()
+
+
+def test_json_takes_whatever_the_service_sends(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    feed = _Feed([_Row("alpha", "https://contoso.example/alpha")])
+    _send(_Client(), lambda **given: feed, {}, _arguments(output="json"), Team)
+
+    # A caller piping to jq is reading the service, not our idea of a table.
+    assert feed.selected == []
+    capsys.readouterr()
+
+
+def test_named_columns_are_the_ones_asked_for(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    feed = _Feed([_Row("alpha", "https://contoso.example/alpha")])
+    _send(_Client(), lambda **given: feed, {}, _arguments(columns="displayName"), Team)
+
+    # What was named, then the address: a link that costs nothing to ask for.
+    assert feed.selected == ["displayName", "webUrl"]
+    capsys.readouterr()

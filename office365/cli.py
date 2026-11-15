@@ -515,7 +515,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         getattr(functools.reduce(getattr, walk, client), found.method),
         given,
         args,
-        found.entity,
+        found.shows,
         empty=f"No {noun} found.",
     )
 
@@ -562,8 +562,8 @@ def _page(product: str, spoken: str, found: Any) -> str:
     from office365.runtime.schema import TypeSchema
 
     here = found.here or found.entity
-    schema = TypeSchema.of(here)
-    lines = [f"{product} {spoken} \u2014 {here.__name__}"]
+    schema = TypeSchema.of(found.shows)
+    lines = [f"{product} {spoken} \u2014 {found.shows.__name__}"]
     if schema.defaults:
         lines.append(f"  a read shows {', '.join(schema.defaults)}")
     width = min(max((len(word) for word in found.commands), default=0), _WORD_WIDTH)
@@ -624,7 +624,7 @@ def _examples(product: str, spoken: str, found: Any, links: "list[str]") -> "lis
     for word in ("get", "list"):
         if word not in found.commands:
             continue
-        columns = TypeSchema.of(found.here or found.entity).defaults
+        columns = TypeSchema.of(found.shows).defaults
         flags = f" --columns {','.join(columns)}" if word == "list" and columns else ""
         examples.append(f"o365 {product} {spoken} {word}{flags}")
     if not examples and found.commands:
@@ -675,6 +675,9 @@ def _send(
     from office365.runtime.schema import TypeSchema
 
     result = method(**given)
+    asked = _asked_for(args, entity)
+    if asked and _can_select(result):
+        result.select(asked)
     try:
         client.execute_query()
     except ClientRequestException as err:
@@ -697,6 +700,47 @@ def _send(
         )
     )
     return 0
+
+
+def _asked_for(args: argparse.Namespace, entity: type) -> "list[str]":
+    """The fields the request must ask for, empty when it should take what the service sends.
+
+    A table needs the columns it prints and the address it links to, and SharePoint leaves some
+    of them out of an unselected payload: ``/Web/lists`` answers without ``DefaultViewUrl``, so
+    every list name would be plain text. ``-o json`` and ``-o wide`` ask for nothing -- a caller
+    reading everything is reading what the service chose to send, not our idea of a table.
+    """
+    from office365.runtime.schema import TypeSchema
+
+    schema = TypeSchema.of(entity)
+    chosen = getattr(args, "columns", None)
+    if not chosen:
+        if getattr(args, "output", "table") in ("json", "wide"):
+            return []
+        chosen = ",".join(schema.reading)
+    # `--columns title,itemcount` prints, because `_columns` reads the payload without regard to
+    # case; `$select` does not, so the spelling a `$select` needs is restored here.
+    spelled = {name.lower(): name for name in schema.columns}
+    named = [spelled.get(one.strip().lower(), one.strip()) for one in chosen.split(",") if one.strip()]
+    return list(dict.fromkeys([*named, *schema.links]))
+
+
+def _can_select(result: Any) -> bool:
+    """Whether this answer is a feed that has not been narrowed yet.
+
+    A feed that declares it refuses ``$select`` is left alone: the table then prints what the
+    service sends, which is exactly what it did before anyone asked, and the declaration stays
+    the one place that says so.
+    """
+    from office365.runtime.query_capabilities import query_capabilities_of
+
+    options = getattr(result, "query_options", None)
+    if options is None or not callable(getattr(result, "select", None)):
+        return False
+    if options.select:
+        return False
+    capability = query_capabilities_of(type(result))
+    return capability is None or capability.supports("$select")
 
 
 def render_origin(client: Any) -> str:

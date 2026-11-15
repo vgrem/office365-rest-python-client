@@ -1286,7 +1286,7 @@ class File(AbstractFile):
         """Gets the server-relative Path of the list folder."""
         return self.properties.get("ServerRelativePath", SPResPath())
 
-    @odata(name="Length", readonly=True)
+    @odata(name="Length", readonly=True, default=2)
     @property
     def length(self) -> Optional[int]:
         """Gets the file size."""
@@ -1318,7 +1318,7 @@ class File(AbstractFile):
         """Specifies the URL that is suitable for durable linking to the file."""
         return self.properties.get("LinkingUri", None)
 
-    @odata(name="Name", readonly=True)
+    @odata(name="Name", readonly=True, default=1)
     @property
     def name(self) -> Optional[str]:
         """Specifies the file name including the extension.
@@ -1350,7 +1350,7 @@ class File(AbstractFile):
         """Gets a value that specifies when the file was created."""
         return self.properties.get("TimeCreated", datetime.min)
 
-    @odata(name="TimeLastModified", readonly=True)
+    @odata(name="TimeLastModified", readonly=True, default=3)
     @property
     def time_last_modified(self) -> Optional[datetime]:
         """Specifies when the file was last modified."""

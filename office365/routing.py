@@ -83,6 +83,23 @@ class Route:
         return MappingProxyType(answers)
 
     @cached_property
+    def shows(self) -> type:
+        """The type whose columns a read prints: the feed's item for a listing, the object else.
+
+        ``sharepoint web lists list`` answers 146 lists, and the columns a reader wants are the
+        ones ``List`` ranks and the address ``List`` declares -- not ``Web``'s, which is what the
+        noun of the line says, and not the feed's, which ranks nothing. :attr:`here` is the half
+        the words reached (the feed, for a listing), so the item type is asked for its fields.
+        """
+        reached = self.here or self.entity
+        if issubclass(reached, ClientObjectCollection):
+            # A class that names its item in a string (`DeltaCollection["Message"]`) answers
+            # ``None`` without a mapping of the product's types; the noun's own item is then
+            # the answer, because that is what the line was about.
+            return reached.item_type() or self.entity
+        return reached
+
+    @cached_property
     def words(self) -> tuple[str, ...]:
         """Every word that may follow this route: what it answers, then what it holds.
 

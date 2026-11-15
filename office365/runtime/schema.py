@@ -388,6 +388,19 @@ class TypeSchema:
         )
 
     @cached_property
+    def reading(self) -> Tuple[str, ...]:
+        """What a read of this type asks the service for: the columns, then the addresses.
+
+        A table prints the ranked defaults and links the row's name, so those are the fields
+        the request must name. It matters: ``/Web/lists`` leaves ``DefaultViewUrl`` out unless
+        it is selected, and a link nobody asked for is a table nobody can click.
+
+        ``-o json`` and ``-o wide`` ask for nothing, so a caller that wants everything the
+        service chose to send passes :attr:`reading` over rather than through.
+        """
+        return tuple(dict.fromkeys((*self.defaults, *self.links)))
+
+    @cached_property
     def identities(self) -> Tuple[str, ...]:
         """The OData names that say what the object is, strongest first.
 

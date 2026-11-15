@@ -928,7 +928,7 @@ class Site(Entity):
         """
         return self.properties.get("RequiredDesignerVersion", None)
 
-    @odata(name="Url", facet=LINK)
+    @odata(name="Url", facet=LINK, default=1)
     @property
     def url(self) -> Optional[str]:
         """Specifies the full URL of the site (2), including host name, port number and path"""

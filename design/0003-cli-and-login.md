@@ -168,11 +168,11 @@ repeats them:
 
 | fact | declared as | read as | declarations |
 | --- | --- | --- | --- |
-| which columns a reader came for, and in what order | ``@odata(default=<rank>)`` | ``TypeSchema.defaults`` | 23 |
+| which columns a reader came for, and in what order | ``@odata(default=<rank>)`` | ``TypeSchema.defaults`` | 30 |
 | which column is an address a person can open | ``@odata(facet=link)`` | ``TypeSchema.links`` | 11 of 17 |
 
 ```
-$ grep -rn '@odata' office365 --include=*.py | grep -c 'default=[0-9]'   # 23
+$ grep -rn '@odata' office365 --include=*.py | grep -c 'default=[0-9]'   # 30
 $ grep -rn '@odata' office365 --include=*.py | grep -c 'facet=LINK'      # 11
 ```
 
@@ -182,7 +182,10 @@ property declared a facet at all and ``identity=True`` appeared five times in 12
 declarations. That is no longer the shape of the tree: ``List`` ranks ``Title`` and ``ItemCount``
 and declares ``DefaultViewUrl`` as its address, ``Web`` ranks ``Title`` and ``Url`` and declares
 ``Url`` then ``ServerRelativeUrl``, ``BaseItem``/``Team``/``Message`` declare ``webUrl``/``webLink``.
-The heuristic is gone, and the ranking is a fact a reviewer can see in the source.
+The heuristic is gone, and the ranking is a fact a reviewer can see in the source: ``Folder``
+ranks ``Name``/``ItemCount``/``TimeLastModified``, ``File`` ranks ``Name``/``Length``/
+``TimeLastModified``, and ``Site`` ranks ``Url`` — the three types a person lists most, and
+without a rank each printed the first eight of its fields in alphabetical order.
 
 Two renderers, because there are two readers. ``office365/runtime/display.py`` still draws the
 notebook ``repr``: bounded, indented, prefixed with the class name — a preview of a Python value.
@@ -190,6 +193,19 @@ notebook ``repr``: bounded, indented, prefixed with the class name — a preview
 cells cut and marked with ``…``, a sentence when there is nothing to show, and a column that opens
 in a browser as an OSC-8 link (only when stdout is a terminal, so a pipe never receives escape
 codes). Neither imports the model, so printing can never become a reason to send a request.
+
+**A table asks for its columns.** An unselected read does not necessarily carry them:
+``GET /_api/Web/lists`` answers 55 fields and ``DefaultViewUrl`` is not among them, so every list
+name printed as plain text with nothing to click. A read that prints a table therefore selects
+``TypeSchema.reading`` — the ranked columns, then the addresses — and one that prints ``json`` or
+``wide`` sends no ``$select`` at all, because a caller piping to ``jq`` is reading the service, not
+our idea of a table. A feed that declares it refuses ``$select`` is left unselected rather than
+refused: the declaration stays the one place that says so.
+
+```
+$ python -c "from office365.runtime.schema import TypeSchema; from office365.sharepoint.lists.list import List; print(TypeSchema.of(List).reading)"
+('Title', 'ItemCount', 'DefaultViewUrl')
+```
 
 The formats are the ones a mature command line offers: ``-o table`` (default), ``wide`` (every
 field the payload carried), ``json``, ``csv``, ``tsv``, ``url``, ``name``; ``--columns a,b``,
@@ -204,15 +220,19 @@ URL       https://mediadev8.sharepoint.com
 Title     SiteU74H3Z9O
 Url       https://mediadev8.sharepoint.com
 
-$ o365 sharepoint web lists list --columns Title,ItemCount
-TITLE                  ITEMCOUNT
-_catalogs/hubsite              4
-appdata                        3
+$ o365 sharepoint web lists list
+TITLE                                 ITEMCOUNT
+_catalogs/hubsite                            2
+appdata                                      0
+appfiles                                     0
+Archive DocumentsRX1X0OLY                    1
 ```
 
 ### 2.4 What a group answers — the node page
 
-``o365 sharepoint web`` used to answer one comma-joined line of words. ``kubectl``, ``gh`` and
+A node names the type a read prints, which for a feed is what it holds: ``o365 sharepoint web
+lists`` says ``— List`` and ``a read shows Title, ItemCount``, not ``— ListCollection`` and
+nothing. ``o365 sharepoint web`` used to answer one comma-joined line of words. ``kubectl``, ``gh`` and
 ``docker`` answer a bare group with what it holds, grouped by what the words do, and answer
 ``<group> <cmd> -h`` with that command's arguments. Both are read off the model:
 
