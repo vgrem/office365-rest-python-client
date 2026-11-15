@@ -126,8 +126,8 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.intent import DeviceManagementIntent
     from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
     from office365.intune.devices.management.managed.all_device_certificate_state import ManagedAllDeviceCertificateState
+    from office365.intune.devices.management.managed.device import ManagedDevice
     from office365.intune.devices.management.managed.encryption_state import ManagedDeviceEncryptionState
-    from office365.intune.devices.management.managed.managed import ManagedDevice
     from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
     from office365.intune.devices.management.mobile_threat_defense_connector import (
         MobileThreatDefenseConnector,
@@ -1532,7 +1532,7 @@ class DeviceManagement(Entity):
     @property
     def comanaged_devices(self) -> EntityCollection[ManagedDevice]:
         """Gets the comanagedDevices property"""
-        from office365.intune.devices.management.managed.managed import ManagedDevice
+        from office365.intune.devices.management.managed.device import ManagedDevice
 
         return self.properties.get(
             "comanagedDevices",

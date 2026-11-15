@@ -1,5 +1,5 @@
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management.managed.managed import ManagedDevice
+from office365.intune.devices.management.managed.device import ManagedDevice
 from office365.runtime.odata.literals import escape_odata_string
 
 

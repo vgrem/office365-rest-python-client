@@ -147,3 +147,23 @@ class TimeCard(ChangeTrackedEntity):
         )
         self.context.add_query(qry)
         return return_type
+
+    @odata(name="confirmForUser", beta=True, selectable=False)
+    @verb(role="action", effect="write")
+    @require_permission(
+        application=["Schedule.ReadWrite.All"],
+        notes="Confirm a time card for a user. Not supported for delegated permission.",
+    )
+    def confirm_for_user(self, user_id: str) -> TimeCard:
+        """confirmForUser operation.
+
+        Args:
+            user_id (str):
+                userId parameter
+        """
+        from office365.teams.schedule.time_card import TimeCard
+
+        return_type = TimeCard(self.context)
+        qry = ServiceOperationQuery(self, "confirmForUser", None, {"userId": user_id}, None, return_type)
+        self.context.add_query(qry)
+        return return_type

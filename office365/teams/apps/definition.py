@@ -1,15 +1,21 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
+from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.teams.apps.authorization import TeamsAppAuthorization
+from office365.teams.apps.installation_scopes import TeamsAppInstallationScopes
 from office365.teams.apps.publishingstate import TeamsAppPublishingState
 from office365.teams.bots.teamwork_bot import TeamworkBot
+
+if TYPE_CHECKING:
+    from office365.teams.apps.dashboard_card_definition import TeamsAppDashboardCardDefinition
+    from office365.teams.apps.icon import TeamsAppIcon
 
 
 class TeamsAppDefinition(Entity):
@@ -63,7 +69,7 @@ class TeamsAppDefinition(Entity):
         """Gets the publishingState property"""
         return self.properties.get("publishingState", TeamsAppPublishingState.submitted)
 
-    @odata(name="shortDescription")
+    @odata(name="shortDescription", beta="shortdescription")
     @property
     def short_description(self) -> Optional[str]:
         """Gets the shortDescription property"""
@@ -78,3 +84,48 @@ class TeamsAppDefinition(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.TeamsAppDefinition"
+
+    @odata(name="allowedInstallationScopes", beta=True)
+    @property
+    def allowed_installation_scopes(self) -> Optional[TeamsAppInstallationScopes]:
+        """Gets the allowedInstallationScopes property"""
+        return self.properties.get("allowedInstallationScopes", None)
+
+    @odata(name="azureADAppId", beta=True)
+    @property
+    def azure_ad_app_id(self) -> Optional[str]:
+        """Gets the azureADAppId property"""
+        return self.properties.get("azureADAppId", None)
+
+    @odata(name="colorIcon", beta=True, navigation=True)
+    @property
+    def color_icon(self) -> TeamsAppIcon:
+        """Gets the colorIcon property"""
+        from office365.teams.apps.icon import TeamsAppIcon
+
+        return self.properties.get(
+            "colorIcon", TeamsAppIcon(self.context, ResourcePath("colorIcon", self.resource_path))
+        )
+
+    @odata(name="dashboardCards", beta=True, navigation=True)
+    @property
+    def dashboard_cards(self) -> EntityCollection[TeamsAppDashboardCardDefinition]:
+        """Gets the dashboardCards property"""
+        from office365.teams.apps.dashboard_card_definition import TeamsAppDashboardCardDefinition
+
+        return self.properties.get(
+            "dashboardCards",
+            EntityCollection[TeamsAppDashboardCardDefinition](
+                self.context, TeamsAppDashboardCardDefinition, ResourcePath("dashboardCards", self.resource_path)
+            ),
+        )
+
+    @odata(name="outlineIcon", beta=True, navigation=True)
+    @property
+    def outline_icon(self) -> TeamsAppIcon:
+        """Gets the outlineIcon property"""
+        from office365.teams.apps.icon import TeamsAppIcon
+
+        return self.properties.get(
+            "outlineIcon", TeamsAppIcon(self.context, ResourcePath("outlineIcon", self.resource_path))
+        )

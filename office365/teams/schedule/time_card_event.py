@@ -8,6 +8,7 @@ from office365.runtime.client_value import ClientValue
 
 
 class TimeCardEvent(ClientValue):
+    atApprovedLocation: bool | None = None
     dateTime: datetime | None = field(default_factory=lambda: datetime.min)
     isAtApprovedLocation: bool | None = None
     notes: ItemBody = field(default_factory=ItemBody)

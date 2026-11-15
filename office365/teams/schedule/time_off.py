@@ -4,6 +4,8 @@ from typing import Optional
 
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
+from office365.teams.schedule.shifts.team_info import ShiftsTeamInfo
+from office365.teams.schedule.shifts.user_info import ShiftsUserInfo
 from office365.teams.schedule.time_off_item import TimeOffItem
 
 
@@ -35,3 +37,15 @@ class TimeOff(ChangeTrackedEntity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.TimeOff"
+
+    @odata(name="teamInfo", beta=True, readonly=True)
+    @property
+    def team_info(self) -> Optional[ShiftsTeamInfo]:
+        """Gets the teamInfo property"""
+        return self.properties.get("teamInfo", None)
+
+    @odata(name="userInfo", beta=True, readonly=True)
+    @property
+    def user_info(self) -> Optional[ShiftsUserInfo]:
+        """Gets the userInfo property"""
+        return self.properties.get("userInfo", None)

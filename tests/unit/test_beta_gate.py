@@ -18,6 +18,10 @@ Three shapes are pinned, because they reach the gate by different roads: a *type
 (``Mention``, the preview-only class), a *member* (a declared property, whose wire name
 feeds the payload and the path segment), and an *operation* (a method, where the name is
 the URL itself).
+
+A fourth block pins the declarations a beta render actually wrote into the Teams tree, so
+the gate is measured against real members -- a navigation, a readonly value, a renamed
+service column -- and not only against the shapes invented here.
 """
 
 import pytest
@@ -37,6 +41,15 @@ from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import PREVIEW, NotSupportedInVersion, odata
+from office365.teams.apps.dashboard_card_definition import TeamsAppDashboardCardDefinition
+from office365.teams.apps.definition import TeamsAppDefinition
+from office365.teams.apps.icon import TeamsAppIcon
+from office365.teams.chats.messages.message import ChatMessage
+from office365.teams.schedule.schedule import Schedule
+from office365.teams.schedule.shifts.role_definition import ShiftsRoleDefinition
+from office365.teams.schedule.shifts.shift import Shift
+from office365.teams.tabs.tab import TeamsTab
+from office365.teams.workforce_integration import WorkforceIntegration
 from typing_extensions import Self
 
 TENANT = "contoso.onmicrosoft.com"
@@ -336,3 +349,48 @@ def test_an_operation_is_not_a_column():
     """``selectable=False``: the type has the member, its resource has no such property."""
     assert "previewAction" not in _PreviewOperations._schema.columns
     assert "previewFunction" not in _PreviewOperations._schema.columns
+
+
+#: The members the beta render added to the Teams tree, as the tree declares them: a
+#: value collection, a column, a readonly value, a navigation, and an enum.
+_ADDED = (
+    (ChatMessage, "citations"),
+    (ChatMessage, "hasReplies"),
+    (ChatMessage, "onBehalfOf"),
+    (Shift, "teamInfo"),
+    (Schedule, "shiftsRoleDefinitions"),
+    (TeamsTab, "messageId"),
+    (TeamsAppDefinition, "dashboardCards"),
+    (WorkforceIntegration, "supports"),
+)
+
+
+def test_the_members_a_beta_render_added_are_refused_by_a_stable_client():
+    """Columns the beta snapshot declares and the stable one does not, on real classes."""
+    for cls, member in _ADDED:
+        with pytest.raises(NotSupportedInVersion) as raised:
+            cls(_stable()).wire_name(member)
+        assert raised.value.member == member
+        assert raised.value.declared_by == PREVIEW
+
+
+def test_a_beta_client_spells_the_same_members_as_the_tree_does():
+    for cls, member in _ADDED:
+        assert cls(_beta()).wire_name(member) == member
+
+
+def test_a_preview_only_column_is_refused_before_the_payload_is_built():
+    message = ChatMessage(_beta()).set_property("hasReplies", True)
+    assert _payload(message) == {"hasReplies": True}
+
+    stable = ChatMessage(_stable()).set_property("hasReplies", True)
+    with pytest.raises(NotSupportedInVersion):
+        _payload(stable)
+
+
+def test_the_types_a_beta_render_created_are_refused_by_a_stable_client():
+    """A type only the preview root addresses is refused when it is built, not when used."""
+    for cls in (ShiftsRoleDefinition, TeamsAppDashboardCardDefinition, TeamsAppIcon):
+        with pytest.raises(NotSupportedInVersion):
+            cls(_stable())
+        assert cls(_beta()).properties is not None

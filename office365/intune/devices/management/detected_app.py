@@ -9,7 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.managed import ManagedDevice
+    from office365.intune.devices.management.managed.device import ManagedDevice
 
 
 class DetectedApp(Entity):
@@ -53,7 +53,7 @@ class DetectedApp(Entity):
     @property
     def managed_devices(self) -> EntityCollection[ManagedDevice]:
         """Gets the managedDevices property"""
-        from office365.intune.devices.management.managed.managed import ManagedDevice
+        from office365.intune.devices.management.managed.device import ManagedDevice
 
         return self.properties.get(
             "managedDevices",

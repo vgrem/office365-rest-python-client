@@ -5,6 +5,8 @@ from typing import Optional
 from office365.outlook.calendar.schedule.open_shift_item import OpenShiftItem
 from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.change_tracked_entity import ChangeTrackedEntity
+from office365.teams.schedule.shifts.scheduling_group_info import SchedulingGroupInfo
+from office365.teams.schedule.shifts.team_info import ShiftsTeamInfo
 
 
 class OpenShift(ChangeTrackedEntity):
@@ -35,3 +37,15 @@ class OpenShift(ChangeTrackedEntity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.OpenShift"
+
+    @odata(name="schedulingGroupInfo", beta=True, readonly=True)
+    @property
+    def scheduling_group_info(self) -> Optional[SchedulingGroupInfo]:
+        """Gets the schedulingGroupInfo property"""
+        return self.properties.get("schedulingGroupInfo", None)
+
+    @odata(name="teamInfo", beta=True, readonly=True)
+    @property
+    def team_info(self) -> Optional[ShiftsTeamInfo]:
+        """Gets the teamInfo property"""
+        return self.properties.get("teamInfo", None)

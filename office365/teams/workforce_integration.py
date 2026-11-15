@@ -55,3 +55,9 @@ class WorkforceIntegration(ChangeTrackedEntity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.WorkforceIntegration"
+
+    @odata(name="supports", beta=True)
+    @property
+    def supports(self) -> WorkforceIntegrationSupportedEntities:
+        """Gets the supports property"""
+        return self.properties.get("supports", WorkforceIntegrationSupportedEntities.none)

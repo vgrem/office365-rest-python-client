@@ -46,3 +46,21 @@ class TeamsTab(Entity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.TeamsTab"
+
+    @odata(name="messageId", beta=True)
+    @property
+    def message_id(self) -> Optional[str]:
+        """Gets the messageId property"""
+        return self.properties.get("messageId", None)
+
+    @odata(name="sortOrderIndex", beta=True)
+    @property
+    def sort_order_index(self) -> Optional[str]:
+        """Gets the sortOrderIndex property"""
+        return self.properties.get("sortOrderIndex", None)
+
+    @odata(name="teamsAppId", beta=True)
+    @property
+    def teams_app_id(self) -> Optional[str]:
+        """Gets the teamsAppId property"""
+        return self.properties.get("teamsAppId", None)

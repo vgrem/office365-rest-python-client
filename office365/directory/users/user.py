@@ -62,7 +62,7 @@ from office365.intune.devices.management.managed.app.diagnostic_status import (
 from office365.intune.devices.management.managed.app.registration import (
     ManagedAppRegistration,
 )
-from office365.intune.devices.management.managed.managed import ManagedDevice
+from office365.intune.devices.management.managed.device import ManagedDevice
 from office365.intune.policies.managed_app import ManagedAppPolicy
 from office365.intune.print.user_print import UserPrint
 from office365.onedrive.drives.drive import Drive

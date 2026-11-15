@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Optional
+
 from typing_extensions import Self
 
 from office365.entity import Entity
@@ -10,6 +12,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 from office365.teams.apps.app import TeamsApp
 from office365.teams.apps.definition import TeamsAppDefinition
+from office365.teams.apps.installation_scope_info import TeamsAppInstallationScopeInfo
 from office365.teams.apps.permission_set import TeamsAppPermissionSet
 
 
@@ -80,3 +83,9 @@ class TeamsAppInstallation(Entity):
         )
         self.context.add_query(qry)
         return self
+
+    @odata(name="scopeInfo", beta=True)
+    @property
+    def scope_info(self) -> Optional[TeamsAppInstallationScopeInfo]:
+        """Gets the scopeInfo property"""
+        return self.properties.get("scopeInfo", None)

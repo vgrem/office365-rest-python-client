@@ -19,6 +19,8 @@ from office365.teams.channels.iIdentity import ChannelIdentity
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.chats.messages.attachment import ChatMessageAttachment
 from office365.teams.chats.messages.body import ChatMessageBody
+from office365.teams.chats.messages.citation import ChatMessageCitation
+from office365.teams.chats.messages.from_identity_set import ChatMessageFromIdentitySet
 from office365.teams.chats.messages.history_item import ChatMessageHistoryItem
 from office365.teams.chats.messages.hosted_content import ChatMessageHostedContent
 from office365.teams.chats.messages.mention import ChatMessageMention
@@ -267,3 +269,21 @@ class ChatMessage(Entity):
         qry = ServiceOperationQuery(self, "unsetReaction", None, {"reactionType": reaction_type}, None, None)
         self.context.add_query(qry)
         return self
+
+    @odata(name="citations", beta=True)
+    @property
+    def citations(self) -> ClientValueCollection[ChatMessageCitation]:
+        """Gets the citations property"""
+        return self.properties.get("citations", ClientValueCollection[ChatMessageCitation](ChatMessageCitation))
+
+    @odata(name="hasReplies", beta=True)
+    @property
+    def has_replies(self) -> Optional[bool]:
+        """Gets the hasReplies property"""
+        return self.properties.get("hasReplies", None)
+
+    @odata(name="onBehalfOf", beta=True)
+    @property
+    def on_behalf_of(self) -> ChatMessageFromIdentitySet:
+        """Gets the onBehalfOf property"""
+        return self.properties.get("onBehalfOf", ChatMessageFromIdentitySet())

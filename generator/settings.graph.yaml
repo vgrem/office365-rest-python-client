@@ -906,6 +906,26 @@ type_routing:
   "TimeOffRequest": office365.teams.schedule
   "TimeOff": office365.teams.schedule
   "WorkingTimeSchedule": office365.teams.teamwork.shiftmanagement
+  # The Teams beta value types: each sits beside the type whose navigation reaches it, so
+  # `Shift.teamInfo` reads `shifts/shift` -> `shifts/team_info`, not a flat module.
+  "ChatMessageCitation": office365.teams.chats.messages
+  "ChatMessageCitationSensitivityLabel": office365.teams.chats.messages
+  "CustomAppSettings": office365.teams
+  "AppDevelopmentPlatforms": office365.teams
+  "SchedulingGroupInfo": office365.teams.schedule.shifts
+  "ShiftsTeamInfo": office365.teams.schedule.shifts
+  "ShiftsUserInfo": office365.teams.schedule.shifts
+  "ShiftsRoleDefinition": office365.teams.schedule.shifts
+  "ShiftsRolePermission": office365.teams.schedule.shifts
+  "TeamsAppIcon": office365.teams.apps
+  "TeamsAppDashboardCardDefinition": office365.teams.apps
+  "TeamsAppDashboardCardBotConfiguration": office365.teams.apps
+  "TeamsAppDashboardCardContentSource": office365.teams.apps
+  "TeamsAppDashboardCardIcon": office365.teams.apps
+  "TeamsAppDashboardCardSize": office365.teams.apps
+  "TeamsAppDashboardCardSourceType": office365.teams.apps
+  "TeamsAppInstallationScopeInfo": office365.teams.apps
+  "TeamsAppInstallationScopes": office365.teams.apps
   "B2bRegistrationMetrics": office365.directory.identities
   "GovernanceInvitation": office365.directory
   "GovernanceRelationship": office365.directory

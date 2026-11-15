@@ -143,24 +143,35 @@ def _singular(word: str) -> str:
     return word
 
 
-def _path_words(module_path: str) -> set[str]:
-    """Singularized package segments of a module path (drops the ``office365`` root)."""
-    return {_singular(seg.lower()) for seg in module_path.split(".") if seg and seg != "office365"}
+def _path_segments(module_path: str) -> list[str]:
+    """Package segments of a module path in order (drops the ``office365`` root)."""
+    return [seg.lower() for seg in module_path.split(".") if seg and seg != "office365"]
 
 
 def _strip_path_prefix(words: list[str], module_path: str) -> list[str]:
-    """Strip leading ``words`` that merely repeat a segment of ``module_path``.
+    """Strip leading ``words`` that merely repeat ``module_path``, in path order.
 
     ``WorkbookChartAxisFormat`` routed to ``...workbooks.charts`` -> ``[axis, format]``;
     ``X509Certificate...`` routed to ``...certificates.x509`` -> ``[authentication, ...]``.
-    Order-insensitive (``x509`` matches the later ``x509`` segment) and singular-aware.
+    Singular-aware on both sides, and the scan over the segments never goes backwards, so
+    a word that only matches an *earlier* segment is kept: ``ShiftsTeamInfo`` routed to
+    ``...schedule.shifts`` -> ``[team, info]``, since ``team`` matches ``teams`` above
+    ``shifts`` and the name would otherwise lose the word that identifies it.
     Returns the original words when everything would be stripped.
     """
-    segments = _path_words(module_path)
-    index = 0
-    while index < len(words) and _singular(words[index].lower()) in segments:
-        index += 1
-    return words[index:] or words
+    segments = _path_segments(module_path)
+    consumed = 0
+    cursor = 0
+    while consumed < len(words):
+        word = _singular(words[consumed].lower())
+        for position in range(cursor, len(segments)):
+            if _singular(segments[position]) == word:
+                cursor = position + 1
+                consumed += 1
+                break
+        else:
+            break
+    return words[consumed:] or words
 
 
 def _consume_prefix(entry: str, words: list[str]) -> int:

@@ -383,8 +383,14 @@ def _ignored(model: DeclaredModel, name: str, detail: str) -> Finding:
 
 
 def _extras(model: DeclaredModel, facts: Mapping[str, _Fact]) -> Iterator[Finding]:
-    for name in model.members:
-        if name not in facts:
+    """Names the model declares that this snapshot does not -- minus the preview ones.
+
+    A member the declaration itself marks ``beta=True`` is absent from a stable snapshot
+    by definition, so counting it as an extra would make every preview batch look like a
+    regression. The converse is :data:`BETA`'s job, and it reads the same declaration.
+    """
+    for name, declared in model.members.items():
+        if name not in facts and declared.beta is not True:
             yield Finding(EXTRA, model.name, model.type_name, name, path=str(model.path))
 
 

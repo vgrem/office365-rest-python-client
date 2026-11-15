@@ -11,6 +11,7 @@ class ChatMessageReaction(ClientValue):
     createdDateTime: datetime | None = field(default_factory=lambda: datetime.min)
     displayName: str | None = None
     reactionContentUrl: str | None = None
+    reactionId: str | None = None
     reactionType: str | None = None
     user: ChatMessageReactionIdentitySet = field(default_factory=ChatMessageReactionIdentitySet)
 

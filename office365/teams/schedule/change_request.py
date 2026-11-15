@@ -100,3 +100,41 @@ class ScheduleChangeRequest(ChangeTrackedEntity):
     @property
     def entity_type_name(self) -> str:
         return "microsoft.graph.ScheduleChangeRequest"
+
+    @odata(name="approveForUser", beta=True, selectable=False)
+    @verb(role="action", effect="write")
+    @require_permission(
+        application=["Schedule.ReadWrite.All"],
+        notes="Approve a schedule change request for a user. Not supported for delegated permission.",
+    )
+    def approve_for_user(self, message: str, user_id: str) -> Self:
+        """approveForUser operation.
+
+        Args:
+            message (str):
+                message parameter
+            user_id (str):
+                userId parameter
+        """
+        qry = ServiceOperationQuery(self, "approveForUser", None, {"message": message, "userId": user_id}, None, None)
+        self.context.add_query(qry)
+        return self
+
+    @odata(name="declineForUser", beta=True, selectable=False)
+    @verb(role="action", effect="write")
+    @require_permission(
+        application=["Schedule.ReadWrite.All"],
+        notes="Decline a schedule change request for a user. Not supported for delegated permission.",
+    )
+    def decline_for_user(self, message: str, user_id: str) -> Self:
+        """declineForUser operation.
+
+        Args:
+            message (str):
+                message parameter
+            user_id (str):
+                userId parameter
+        """
+        qry = ServiceOperationQuery(self, "declineForUser", None, {"message": message, "userId": user_id}, None, None)
+        self.context.add_query(qry)
+        return self

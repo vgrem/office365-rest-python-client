@@ -9,7 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.managed.managed import ManagedDevice
+    from office365.intune.devices.management.managed.device import ManagedDevice
 
 
 @version("beta")
@@ -54,7 +54,7 @@ class DeviceComplianceScriptDeviceState(Entity):
     @property
     def managed_device(self) -> ManagedDevice:
         """Gets the managedDevice property"""
-        from office365.intune.devices.management.managed.managed import ManagedDevice
+        from office365.intune.devices.management.managed.device import ManagedDevice
 
         return self.properties.get(
             "managedDevice", ManagedDevice(self.context, ResourcePath("managedDevice", self.resource_path))

@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from office365.teams.schedule.day_note import DayNote
     from office365.teams.schedule.open_shift import OpenShift
     from office365.teams.schedule.shifts.offer.request import OfferShiftRequest
+    from office365.teams.schedule.shifts.role_definition import ShiftsRoleDefinition
     from office365.teams.schedule.swap_shifts_change_request import (
         SwapShiftsChangeRequest,
     )
@@ -280,3 +281,34 @@ class Schedule(Entity):
         )
         self.context.add_query(qry)
         return self
+
+    @odata(name="activitiesIncludedWhenCopyingShiftsEnabled", beta=True)
+    @property
+    def activities_included_when_copying_shifts_enabled(self) -> Optional[bool]:
+        """Gets the activitiesIncludedWhenCopyingShiftsEnabled property"""
+        return self.properties.get("activitiesIncludedWhenCopyingShiftsEnabled", None)
+
+    @odata(name="isCrossLocationShiftRequestApprovalRequired", beta=True)
+    @property
+    def is_cross_location_shift_request_approval_required(self) -> Optional[bool]:
+        """Gets the isCrossLocationShiftRequestApprovalRequired property"""
+        return self.properties.get("isCrossLocationShiftRequestApprovalRequired", None)
+
+    @odata(name="isCrossLocationShiftsEnabled", beta=True)
+    @property
+    def is_cross_location_shifts_enabled(self) -> Optional[bool]:
+        """Gets the isCrossLocationShiftsEnabled property"""
+        return self.properties.get("isCrossLocationShiftsEnabled", None)
+
+    @odata(name="shiftsRoleDefinitions", beta=True, navigation=True)
+    @property
+    def shifts_role_definitions(self) -> EntityCollection[ShiftsRoleDefinition]:
+        """Gets the shiftsRoleDefinitions property"""
+        from office365.teams.schedule.shifts.role_definition import ShiftsRoleDefinition
+
+        return self.properties.get(
+            "shiftsRoleDefinitions",
+            EntityCollection[ShiftsRoleDefinition](
+                self.context, ShiftsRoleDefinition, ResourcePath("shiftsRoleDefinitions", self.resource_path)
+            ),
+        )

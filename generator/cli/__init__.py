@@ -245,16 +245,19 @@ def audit_model(
     report_path: Optional[str] = None,
     fail: bool = False,
     ratchet: Optional[str] = None,
+    metadata: Optional[str] = None,
 ) -> int:
     """Measure the rendered model against the metadata it was generated from.
 
     ``package`` is the tree to read (default: the service's own sub-package), so the
     same report answers for one directory while it is being filled and for the whole
-    model once it is.
+    model once it is. ``metadata`` names another snapshot, which is how the preview
+    members a ``@version``/``beta=`` declaration gates are measured at all: against the
+    stable one, a member the preview root adds reads as an extra the model invented.
     """
     from generator.tools.fidelity import DEFAULT_PREFIX, audit, gaps, read_models, render, write_report
 
-    session = Session.open(service)
+    session = Session.open(service, metadata=metadata)
     model_root = Path(session.options.output_path).resolve()
     root = Path(package).resolve() if package else model_root / session.definition.model_package
     # The whole tree, then the package: a member can be inherited from a class in
@@ -368,7 +371,14 @@ def _run_standalone_command(args) -> Optional[int]:
     if args.place is not None:
         return place_model(args.service, args.place or None, apply=args.apply_place, report_path=args.place_report)
     if args.audit is not None:
-        return audit_model(args.service, args.audit or None, args.audit_report, args.audit_fail, args.audit_ratchet)
+        return audit_model(
+            args.service,
+            args.audit or None,
+            args.audit_report,
+            args.audit_fail,
+            args.audit_ratchet,
+            args.metadata,
+        )
     return None
 
 

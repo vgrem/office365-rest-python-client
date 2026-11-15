@@ -9,7 +9,7 @@ rather than dropped.
 from __future__ import annotations
 
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management.managed.managed import ManagedDevice
+from office365.intune.devices.management.managed.device import ManagedDevice
 
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase
