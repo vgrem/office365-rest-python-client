@@ -4,12 +4,12 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.security.attacksimulations.microsoft_training_assignment_mapping import (
+    MicrosoftTrainingAssignmentMapping,
+)
 from office365.security.attacksimulations.training_setting import TrainingSetting
 from office365.security.attacksimulations.trainingcompletionduration import (
     TrainingCompletionDuration,
-)
-from office365.security.microsoft_training_assignment_mapping import (
-    MicrosoftTrainingAssignmentMapping,
 )
 
 
