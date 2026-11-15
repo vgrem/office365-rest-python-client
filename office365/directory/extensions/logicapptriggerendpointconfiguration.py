@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.directory.extensions.custom.customextensionendpointconfiguration import (
+from office365.directory.extensions.custom.extension_endpoint_configuration import (
     CustomExtensionEndpointConfiguration,
 )
 

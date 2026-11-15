@@ -7,7 +7,7 @@ from office365.copilot.ai_interaction_attachment import AiInteractionAttachment
 from office365.copilot.ai_interaction_context import AiInteractionContext
 from office365.copilot.ai_interaction_link import AiInteractionLink
 from office365.copilot.ai_interaction_mention import AiInteractionMention
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.outlook.mail.item_body import ItemBody
 from office365.runtime.client_value_collection import ClientValueCollection

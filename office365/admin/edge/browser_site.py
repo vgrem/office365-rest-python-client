@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.intune.browser.site_history import BrowserSiteHistory
 from office365.intune.browser.sitecompatibilitymode import BrowserSiteCompatibilityMode

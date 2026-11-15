@@ -6,7 +6,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.backuprestore.serviceapps.status import ServiceAppStatus
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.directory.permissions.identity import Identity
 from office365.entity import Entity
 from office365.permissions import require_permission

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.backuprestore.restoresessions.browser_shared_cookie_history import BrowserSharedCookieHistory
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.intune.browser.sharedcookiesourceenvironment import BrowserSharedCookieSourceEnvironment
 from office365.intune.browser.sharedcookiestatus import BrowserSharedCookieStatus

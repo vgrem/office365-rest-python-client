@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.directory.permissions.identity import Identity
 from office365.directory.privacy.datasubjecttype import DataSubjectType
 from office365.directory.privacy.subjectrightsrequeststatus import SubjectRightsRequestStatus

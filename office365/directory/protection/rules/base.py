@@ -5,8 +5,8 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.directory.identity_set import IdentitySet
-from office365.directory.protection.rulestatus import ProtectionRuleStatus
+from office365.directory.identities.set import IdentitySet
+from office365.directory.protection.rules.status import ProtectionRuleStatus
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery

@@ -1,8 +1,8 @@
 from datetime import date, datetime
 from typing import Optional
 
-from office365.directory.applications.application_risk_factors import ApplicationRiskFactors
-from office365.directory.applications.application_risk_score import ApplicationRiskScore
+from office365.directory.applications.risk_score import ApplicationRiskScore
+from office365.directory.applications.riskfactors.risk_factors import ApplicationRiskFactors
 from office365.directory.applications.service_principal import ApplicationServicePrincipal
 from office365.entity import Entity
 from office365.permissions import require_permission

@@ -11,7 +11,7 @@ Tests cover:
 
 from __future__ import annotations
 
-from office365.directory.identities.provider_collection import IdentityProviderCollection
+from office365.directory.identities.providers.collection import IdentityProviderCollection
 
 from tests.decorators import requires_application, requires_call
 from tests.graph_case import GraphApplicationTestCase

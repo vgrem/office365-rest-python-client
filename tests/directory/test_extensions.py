@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.directory.applications.application import Application
-from office365.directory.extensions.extension_property import ExtensionProperty
+from office365.directory.extensions.property import ExtensionProperty
 from office365.directory.objects.collection import DirectoryObjectCollection
 
 from tests import create_unique_name

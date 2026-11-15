@@ -1,7 +1,7 @@
 from typing import Optional
 
 from office365.directory.extensions.custom.clientconfiguration import CustomExtensionClientConfiguration
-from office365.directory.extensions.custom.customextensionendpointconfiguration import (
+from office365.directory.extensions.custom.extension_endpoint_configuration import (
     CustomExtensionEndpointConfiguration,
 )
 from office365.directory.identitygovernance.customextensionauthenticationconfiguration import (

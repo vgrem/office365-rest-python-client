@@ -104,7 +104,7 @@ class DirectoryObjectCollection(CountCollection[DirectoryObject]):
         The following entities support extension properties: user, group, organization, device, application,
         and servicePrincipal.
         """
-        from office365.directory.extensions.extension_property import ExtensionProperty
+        from office365.directory.extensions.property import ExtensionProperty
 
         return_type = EntityCollection(
             self.context,

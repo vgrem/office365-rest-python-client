@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.directory.extensions.custom.customextensionendpointconfiguration import (  # noqa: E501
+from office365.directory.extensions.custom.extension_endpoint_configuration import (  # noqa: E501
     CustomExtensionEndpointConfiguration,
 )
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.resource import AccessPackageResource

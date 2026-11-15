@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import LifecycleWorkflowProcessingStatus
+from office365.directory.identitygovernance.lifecycleworkflows.processing_status import LifecycleWorkflowProcessingStatus
 from office365.directory.identitygovernance.task import Task
 from office365.directory.identitygovernance.task_definition import TaskDefinition
 from office365.directory.identitygovernance.task_processing_result import TaskProcessingResult

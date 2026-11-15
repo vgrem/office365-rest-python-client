@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.directory.policies.conditionalaccess.policy_deletable_item import PolicyDeletableItem
+from office365.directory.policies.conditionalaccess.deletable_item import PolicyDeletableItem
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb

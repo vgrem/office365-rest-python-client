@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 
 
 class ChatMessageReactionIdentitySet(IdentitySet):

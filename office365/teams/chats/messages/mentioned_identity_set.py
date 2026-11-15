@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.teams.teamwork.conversation_identity import TeamworkConversationIdentity
 from office365.teams.teamwork.tags.identity import TeamworkTagIdentity
 

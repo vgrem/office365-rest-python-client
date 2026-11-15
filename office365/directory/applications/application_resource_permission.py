@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.directory.application_permission_type import ApplicationPermissionType
+from office365.directory.applications.permission_type import ApplicationPermissionType
 from office365.runtime.client_value import ClientValue
 
 

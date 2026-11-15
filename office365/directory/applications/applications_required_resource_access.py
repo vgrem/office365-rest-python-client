@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.directory.application_resource_permission import (
+from office365.directory.applications.application_resource_permission import (
     ApplicationResourcePermission,
 )
 from office365.runtime.client_value import ClientValue

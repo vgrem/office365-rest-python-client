@@ -8,7 +8,7 @@ from typing_extensions import Self
 from office365.backuprestore.restorejobtype import RestoreJobType
 from office365.backuprestore.restoresessions.artifact_count import RestoreSessionArtifactCount
 from office365.backuprestore.restoresessions.status import RestoreSessionStatus
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.policies.conditionalaccess.condition_set import ConditionalAccessConditionSet
-from office365.directory.policies.conditionalaccess.policy_deletable_item import PolicyDeletableItem
+from office365.directory.policies.conditionalaccess.deletable_item import PolicyDeletableItem
 from office365.directory.policies.conditionalaccess.policystate import ConditionalAccessPolicyState
 from office365.directory.policies.conditionalaccess.session_controls import ConditionalAccessSessionControls
 from office365.directory.quotas import IDENTITY_PROTECTION_QUOTAS

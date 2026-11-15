@@ -13,7 +13,7 @@ from office365.copilot.root import CopilotRoot
 from office365.delta_collection import DeltaCollection
 from office365.directory.applications.collection import ApplicationCollection
 from office365.directory.applications.template import ApplicationTemplate
-from office365.directory.audit.log_root import AuditLogRoot
+from office365.directory.audit.logs.root import AuditLogRoot
 from office365.directory.authentication.methods.configuration import (
     AuthenticationMethodConfiguration,
 )
@@ -43,8 +43,8 @@ from office365.directory.permissions.grants.resource_specific import (
 from office365.directory.policies.root import PolicyRoot
 from office365.directory.protection.information import InformationProtection
 from office365.directory.protection.root import IdentityProtectionRoot
-from office365.directory.rolemanagement.management import RoleManagement
 from office365.directory.rolemanagement.roles.collection import DirectoryRoleCollection
+from office365.directory.rolemanagement.roles.management import RoleManagement
 from office365.directory.serviceprincipals.collection import ServicePrincipalCollection
 from office365.directory.tenantinformation.relationship import TenantRelationship
 from office365.directory.users.collection import UserCollection

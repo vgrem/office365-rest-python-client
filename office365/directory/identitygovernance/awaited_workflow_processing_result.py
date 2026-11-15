@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
+from office365.directory.identitygovernance.lifecycleworkflows.processing_status import (
     LifecycleWorkflowProcessingStatus,
 )
 from office365.directory.identitygovernance.workflow.subject import WorkflowSubject

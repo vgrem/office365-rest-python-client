@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.admin.snapshot_job_status import SnapshotJobStatus
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata

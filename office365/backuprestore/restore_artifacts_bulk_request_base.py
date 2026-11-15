@@ -8,7 +8,7 @@ from office365.backuprestore.restoreartifactsbulkrequeststatus import RestoreArt
 from office365.backuprestore.restorepoints.preference import RestorePointPreference
 from office365.backuprestore.restorepoints.tags import RestorePointTags
 from office365.backuprestore.time_period import TimePeriod
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata

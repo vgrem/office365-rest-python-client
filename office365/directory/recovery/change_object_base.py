@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.directory.recovery.recovery_action import RecoveryAction
+from office365.directory.recovery.action import RecoveryAction
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
 

@@ -8,7 +8,7 @@ from typing_extensions import Self
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.directory.policies.protection_policy_artifact_count import ProtectionPolicyArtifactCount
 from office365.directory.policies.retention_setting import RetentionSetting
-from office365.directory.protection.policystatus import ProtectionPolicyStatus
+from office365.directory.protection.policy.status import ProtectionPolicyStatus
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -73,7 +73,7 @@ class ProtectionPolicyBase(Entity):
     @property
     def last_modified_by(self) -> IdentitySet:
         """Gets the lastModifiedBy property"""
-        from office365.directory.identity_set import IdentitySet
+        from office365.directory.identities.set import IdentitySet
 
         return self.properties.get("lastModifiedBy", IdentitySet())
 

@@ -169,7 +169,7 @@ class PlannerTask(PlannerEntity):
     @property
     def completed_by(self) -> IdentitySet:
         """Gets the completedBy property"""
-        from office365.directory.identity_set import IdentitySet
+        from office365.directory.identities.set import IdentitySet
 
         return self.properties.get("completedBy", IdentitySet())
 

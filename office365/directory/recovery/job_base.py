@@ -6,7 +6,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.directory.recovery.job_filtering_criteria_base import RecoveryJobFilteringCriteriaBase
-from office365.directory.recovery.recovery_status import RecoveryStatus
+from office365.directory.recovery.status import RecoveryStatus
 from office365.entity import Entity
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata

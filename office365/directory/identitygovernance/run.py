@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.directory.identitygovernance.activationscope import ActivationScope
-from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
+from office365.directory.identitygovernance.lifecycleworkflows.processing_status import (
     LifecycleWorkflowProcessingStatus,
 )
 from office365.directory.identitygovernance.task_processing_result import (

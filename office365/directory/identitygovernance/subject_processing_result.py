@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import LifecycleWorkflowProcessingStatus
+from office365.directory.identitygovernance.lifecycleworkflows.processing_status import LifecycleWorkflowProcessingStatus
 from office365.directory.identitygovernance.subject_type import SubjectType
 from office365.directory.identitygovernance.workflow.executiontype import WorkflowExecutionType
 from office365.directory.identitygovernance.workflow.subject import WorkflowSubject

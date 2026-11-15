@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.directory.synchronization.directorydefinitiondiscoverabilities import DirectoryDefinitionDiscoverabilities
+from office365.directory.synchronization.definition_discoverabilities import DirectoryDefinitionDiscoverabilities
 from office365.entity import Entity
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
@@ -13,7 +13,7 @@ from office365.runtime.verbs import verb
 from office365.security.object_definition import ObjectDefinition
 
 if TYPE_CHECKING:
-    from office365.directory.synchronization.directory_definition import DirectoryDefinition
+    from office365.directory.synchronization.definition import DirectoryDefinition
 
 
 class DirectoryDefinition(Entity):
@@ -73,7 +73,7 @@ class DirectoryDefinition(Entity):
     )
     def discover(self) -> DirectoryDefinition:
         """discover operation."""
-        from office365.directory.synchronization.directory_definition import DirectoryDefinition
+        from office365.directory.synchronization.definition import DirectoryDefinition
 
         return_type = DirectoryDefinition(self.context)
         qry = ServiceOperationQuery(self, "discover", None, {}, None, return_type)

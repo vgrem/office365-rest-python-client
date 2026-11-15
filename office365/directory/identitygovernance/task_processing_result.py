@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.directory.identitygovernance.lifecycleworkflowprocessingstatus import (
+from office365.directory.identitygovernance.lifecycleworkflows.processing_status import (
     LifecycleWorkflowProcessingStatus,
 )
 from office365.directory.identitygovernance.task import Task

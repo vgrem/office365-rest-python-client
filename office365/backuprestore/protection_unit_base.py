@@ -5,7 +5,7 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.directory.protection.source import ProtectionSource
 from office365.directory.protection.unitstatus import ProtectionUnitStatus
 from office365.entity import Entity

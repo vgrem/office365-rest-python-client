@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.directory.synchronization.attribute_mapping_function_schema import (
     AttributeMappingFunctionSchema,
 )
-from office365.directory.synchronization.directory_definition import DirectoryDefinition
+from office365.directory.synchronization.definition import DirectoryDefinition
 from office365.directory.synchronization.rule import SynchronizationRule
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection

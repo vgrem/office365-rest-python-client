@@ -29,7 +29,7 @@ from office365.directory.applications.verifiedpublisher import VerifiedPublisher
 from office365.directory.applications.web import WebApplication
 from office365.directory.authentication.behaviors import AuthenticationBehaviors
 from office365.directory.certificates.certification import Certification
-from office365.directory.extensions.extension_property import ExtensionProperty
+from office365.directory.extensions.property import ExtensionProperty
 from office365.directory.key_credential import KeyCredential
 from office365.directory.objects.addin import AddIn
 from office365.directory.objects.collection import DirectoryObjectCollection

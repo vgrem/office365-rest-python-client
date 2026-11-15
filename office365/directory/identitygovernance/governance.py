@@ -9,7 +9,7 @@ from office365.directory.identitygovernance.appconsent.approval_route import (
 from office365.directory.identitygovernance.entitlementmanagement.entitlement_management import (
     EntitlementManagement,
 )
-from office365.directory.identitygovernance.lifecycle_workflows_container import (
+from office365.directory.identitygovernance.lifecycleworkflows.container import (
     LifecycleWorkflowsContainer,
 )
 from office365.directory.identitygovernance.privilegedaccess.root import (

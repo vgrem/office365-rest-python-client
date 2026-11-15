@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.runtime.types.collections import StringCollection
 from office365.teams.chats.event_message_detail import EventMessageDetail
 from office365.teams.teamwork.user_identity import TeamworkUserIdentity

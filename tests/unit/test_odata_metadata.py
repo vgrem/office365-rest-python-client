@@ -13,7 +13,7 @@ from datetime import datetime
 from unittest import mock
 
 import pytest
-from office365.directory.identity_set import IdentitySet
+from office365.directory.identities.set import IdentitySet
 from office365.directory.permissions.identity import Identity
 from office365.migration.offline import offline_context
 from office365.outlook.calendar.events.event import Event
