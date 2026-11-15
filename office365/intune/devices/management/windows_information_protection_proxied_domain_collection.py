@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.common.proxied_domain import ProxiedDomain
+from office365.intune.devices.management.proxied_domain import ProxiedDomain
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 

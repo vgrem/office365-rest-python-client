@@ -11,7 +11,7 @@ from office365.intune.devices.category import DeviceCategory
 from office365.intune.devices.compliance.policy_state import DeviceCompliancePolicyState
 from office365.intune.devices.enrollment.type import DeviceEnrollmentType
 from office365.intune.devices.management.action_result import DeviceActionResult
-from office365.intune.devices.management.configuration_manager_client_enabled_features import (  # noqa: E501
+from office365.intune.devices.management.configuration.manager_client_enabled_features import (  # noqa: E501
     ConfigurationManagerClientEnabledFeatures,
 )
 from office365.intune.devices.management.exchangeaccessstate import (

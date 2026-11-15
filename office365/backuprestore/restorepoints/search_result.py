@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from office365.runtime.client_value import ClientValue
 
 if TYPE_CHECKING:
-    from office365.common.restore_point import RestorePoint
+    from office365.backuprestore.restorepoints.restore_point import RestorePoint
 
 
 class RestorePointSearchResult(ClientValue):

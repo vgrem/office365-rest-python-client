@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.common.driver_update_profile_approval_type import DriverUpdateProfileApprovalType
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.driver_update_profile_approval_type import DriverUpdateProfileApprovalType
 from office365.intune.windows_driver_update_profile_inventory_sync_status import (
     WindowsDriverUpdateProfileInventorySyncStatus,
 )

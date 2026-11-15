@@ -18,7 +18,7 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
-from office365.common.restore_session_base import RestoreSessionBase
+from office365.backuprestore.restoresessions.base import RestoreSessionBase
 from office365.graph_client import GraphClient
 from office365.runtime.client_request_exception import ClientRequestException
 from tests.settings import client_id, client_secret, tenant

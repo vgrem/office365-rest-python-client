@@ -27,7 +27,7 @@ from office365.todo.linked_resource import LinkedResource
 from office365.todo.tasks.taskstatus import TaskStatus
 
 if TYPE_CHECKING:
-    from office365.common.single_value_extended_property import SingleValueExtendedProperty
+    from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
 
 
 def _stream_size(stream: IO) -> int:
@@ -282,7 +282,7 @@ class TodoTask(Entity):
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueExtendedProperty]:
         """Gets the singleValueExtendedProperties property"""
-        from office365.common.single_value_extended_property import SingleValueExtendedProperty
+        from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
 
         return self.properties.get(
             "singleValueExtendedProperties",

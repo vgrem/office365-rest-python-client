@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.common.string_dictionary import StringDictionary
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.outlook.calendar.string_dictionary import StringDictionary
 from office365.outlook.geo_coordinates import OutlookGeoCoordinates
 from office365.outlook.mail.physical_address import PhysicalAddress
 from office365.permissions import require_permission

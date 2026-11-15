@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Sequence
 
-from office365.common.restore_point import RestorePoint
+from office365.backuprestore.restorepoints.restore_point import RestorePoint
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult

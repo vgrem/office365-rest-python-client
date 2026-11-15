@@ -14,7 +14,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.mailbox_folder import MailboxFolder
+    from office365.admin.mailbox_folder import MailboxFolder
     from office365.outlook.mail.export_item_response import ExportItemResponse
     from office365.outlook.mail.mailbox_item_import_session import MailboxItemImportSession
 
@@ -24,7 +24,7 @@ class Mailbox(DirectoryObject):
     @property
     def folders(self) -> EntityCollection[MailboxFolder]:
         """Gets the folders property"""
-        from office365.common.mailbox_folder import MailboxFolder
+        from office365.admin.mailbox_folder import MailboxFolder
 
         return self.properties.get(
             "folders",

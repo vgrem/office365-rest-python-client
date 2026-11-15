@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.common.setting_source import SettingSource
 from office365.intune.devices.compliance.status import ComplianceStatus
+from office365.intune.devices.setting_source import SettingSource
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 

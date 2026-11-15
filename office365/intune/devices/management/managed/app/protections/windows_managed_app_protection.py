@@ -4,9 +4,13 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.common.managed_app_device_threat_level import ManagedAppDeviceThreatLevel
-from office365.common.managed_app_remediation_action import ManagedAppRemediationAction
 from office365.entity_collection import EntityCollection
+from office365.intune.devices.management.managed.app.protections.device_threat_level import (
+    ManagedAppDeviceThreatLevel,
+)
+from office365.intune.devices.management.managed.app.protections.remediation_action import (
+    ManagedAppRemediationAction,
+)
 from office365.intune.devices.management.managed.app.protections.windows_managed_app_clipboard_sharing_level import (
     WindowsManagedAppClipboardSharingLevel,
 )

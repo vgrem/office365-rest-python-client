@@ -7,7 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata, version
 
 if TYPE_CHECKING:
-    from office365.common.teamwork_hosted_content import TeamworkHostedContent
+    from office365.teams.apps.teamwork_hosted_content import TeamworkHostedContent
 
 
 @version("beta")
@@ -22,7 +22,7 @@ class TeamsAppIcon(Entity):
     @property
     def hosted_content(self) -> TeamworkHostedContent:
         """Gets the hostedContent property"""
-        from office365.common.teamwork_hosted_content import TeamworkHostedContent
+        from office365.teams.apps.teamwork_hosted_content import TeamworkHostedContent
 
         return self.properties.get(
             "hostedContent", TeamworkHostedContent(self.context, ResourcePath("hostedContent", self.resource_path))

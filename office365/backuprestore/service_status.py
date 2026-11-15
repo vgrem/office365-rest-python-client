@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.backuprestore.backupserviceconsumer import BackupServiceConsumer
 from office365.backuprestore.backupservicestatus import BackupServiceStatus
 from office365.backuprestore.disablereason import DisableReason
+from office365.backuprestore.service_consumer import BackupServiceConsumer
 from office365.directory.permissions.identity_set import IdentitySet
 from office365.runtime.client_value import ClientValue
 

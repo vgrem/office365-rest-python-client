@@ -9,8 +9,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.drive_protection_unit import DriveProtectionUnit
-    from office365.common.drive_protection_units_bulk_addition_job import (
+    from office365.backuprestore.drive_protection_unit import DriveProtectionUnit
+    from office365.backuprestore.drive_protection_units_bulk_addition_job import (
         DriveProtectionUnitsBulkAdditionJob,
     )
 
@@ -40,7 +40,7 @@ class OneDriveForBusinessProtectionPolicy(ProtectionPolicyBase):
     @property
     def drive_protection_units(self) -> EntityCollection[DriveProtectionUnit]:
         """Gets the driveProtectionUnits property"""
-        from office365.common.drive_protection_unit import DriveProtectionUnit
+        from office365.backuprestore.drive_protection_unit import DriveProtectionUnit
 
         return self.properties.get(
             "driveProtectionUnits",
@@ -53,7 +53,7 @@ class OneDriveForBusinessProtectionPolicy(ProtectionPolicyBase):
     @property
     def drive_protection_units_bulk_addition_jobs(self) -> EntityCollection[DriveProtectionUnitsBulkAdditionJob]:
         """Gets the driveProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.drive_protection_units_bulk_addition_job import (
+        from office365.backuprestore.drive_protection_units_bulk_addition_job import (
             DriveProtectionUnitsBulkAdditionJob,
         )
 

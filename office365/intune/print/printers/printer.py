@@ -16,7 +16,7 @@ from office365.runtime.verbs import verb
 if TYPE_CHECKING:
     from office365.intune.print.connectors.connector import PrintConnector
     from office365.intune.print.shares.share import PrinterShare
-    from office365.intune.print.task_trigger import PrintTaskTrigger
+    from office365.intune.print.tasks.trigger import PrintTaskTrigger
 
 
 class Printer(PrinterBase):
@@ -76,7 +76,7 @@ class Printer(PrinterBase):
     @property
     def task_triggers(self) -> EntityCollection[PrintTaskTrigger]:
         """Gets the taskTriggers property"""
-        from office365.intune.print.task_trigger import PrintTaskTrigger
+        from office365.intune.print.tasks.trigger import PrintTaskTrigger
 
         return self.properties.get(
             "taskTriggers",

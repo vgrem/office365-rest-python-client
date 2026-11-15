@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.common.mime_content import MimeContent
+from office365.intune.mime_content import MimeContent
 from office365.runtime.client_value import ClientValue
 
 

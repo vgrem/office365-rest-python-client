@@ -25,12 +25,12 @@ service column -- and not only against the shapes invented here.
 """
 
 import pytest
-from office365.common.mail_folder_operation import MailFolderOperation
-from office365.common.mention import Mention
 from office365.directory.identitygovernance.entitlementmanagement.accesspackage.package import AccessPackage
 from office365.entity import Entity
 from office365.graph_client import GraphClient
 from office365.graph_version import GraphVersion
+from office365.outlook.mail.folders.operation import MailFolderOperation
+from office365.outlook.mail.mention import Mention
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_result import ClientResult

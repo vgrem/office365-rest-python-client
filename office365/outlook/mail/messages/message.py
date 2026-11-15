@@ -7,7 +7,6 @@ from typing import IO, TYPE_CHECKING, AnyStr, Callable, List, Optional, Tuple, U
 
 from typing_extensions import Self
 
-from office365.common.mentions_preview import MentionsPreview
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
     SingleValueLegacyExtendedProperty,
@@ -21,6 +20,7 @@ from office365.outlook.mail.folders.folder import MailFolder
 from office365.outlook.mail.item_body import ItemBody
 from office365.outlook.mail.messages.followup_flag import FollowupFlag
 from office365.outlook.mail.messages.internet_header import InternetMessageHeader
+from office365.outlook.mail.messages.mentions_preview import MentionsPreview
 from office365.outlook.mail.recipient import Recipient
 from office365.outlook.quotas import OUTLOOK_UPLOAD
 from office365.permissions import require_permission
@@ -36,7 +36,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.mention import Mention
+    from office365.outlook.mail.mention import Mention
 
 
 class Message(OutlookItem):
@@ -602,7 +602,7 @@ class Message(OutlookItem):
     @property
     def mentions(self) -> EntityCollection[Mention]:
         """Gets the mentions property"""
-        from office365.common.mention import Mention
+        from office365.outlook.mail.mention import Mention
 
         return self.properties.get(
             "mentions", EntityCollection[Mention](self.context, Mention, ResourcePath("mentions", self.resource_path))

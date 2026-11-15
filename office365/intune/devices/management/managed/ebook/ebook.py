@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.common.mime_content import MimeContent
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.intune.mime_content import MimeContent
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath

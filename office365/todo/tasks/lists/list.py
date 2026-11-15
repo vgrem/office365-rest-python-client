@@ -14,7 +14,7 @@ from office365.todo.tasks.collection import TodoTaskCollection
 from office365.todo.tasks.wellknownlistname import WellknownListName
 
 if TYPE_CHECKING:
-    from office365.common.single_value_extended_property import SingleValueExtendedProperty
+    from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
 
 
 class TodoTaskList(Entity):
@@ -90,7 +90,7 @@ class TodoTaskList(Entity):
     @property
     def single_value_extended_properties(self) -> EntityCollection[SingleValueExtendedProperty]:
         """Gets the singleValueExtendedProperties property"""
-        from office365.common.single_value_extended_property import SingleValueExtendedProperty
+        from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
 
         return self.properties.get(
             "singleValueExtendedProperties",

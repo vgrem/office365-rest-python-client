@@ -12,7 +12,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.print.job import PrintJob
+    from office365.intune.print.jobs.job import PrintJob
 
 
 class PrinterBase(Entity):
@@ -70,7 +70,7 @@ class PrinterBase(Entity):
     @property
     def jobs(self) -> EntityCollection[PrintJob]:
         """Gets the jobs property"""
-        from office365.intune.print.job import PrintJob
+        from office365.intune.print.jobs.job import PrintJob
 
         return self.properties.get(
             "jobs", EntityCollection[PrintJob](self.context, PrintJob, ResourcePath("jobs", self.resource_path))

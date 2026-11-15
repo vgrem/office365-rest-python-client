@@ -5,7 +5,7 @@ from typing import Optional
 from office365.entity import Entity
 from office365.intune.devices.compliance.policyplatformtype import PolicyPlatformType
 from office365.intune.devices.compliance.status import ComplianceStatus
-from office365.intune.devices.management.configuration_setting_state import DeviceConfigurationSettingState
+from office365.intune.devices.management.configuration.settings.state import DeviceConfigurationSettingState
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
 

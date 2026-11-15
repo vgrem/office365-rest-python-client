@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from office365.intune.print.operation import PrintOperation
     from office365.intune.print.printers.printer import Printer
     from office365.intune.print.services.service import PrintService
-    from office365.intune.print.task_definition import PrintTaskDefinition
+    from office365.intune.print.tasks.definition import PrintTaskDefinition
 
 
 class Print(Entity):
@@ -88,7 +88,7 @@ class Print(Entity):
     @property
     def task_definitions(self) -> EntityCollection[PrintTaskDefinition]:
         """Gets the taskDefinitions property"""
-        from office365.intune.print.task_definition import PrintTaskDefinition
+        from office365.intune.print.tasks.definition import PrintTaskDefinition
 
         return self.properties.get(
             "taskDefinitions",

@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.common.driver_approval_status import DriverApprovalStatus
-from office365.common.driver_category import DriverCategory
 from office365.entity import Entity
+from office365.intune.driver_approval_status import DriverApprovalStatus
+from office365.intune.driver_category import DriverCategory
 from office365.runtime.types.odata_property import odata, version
 
 

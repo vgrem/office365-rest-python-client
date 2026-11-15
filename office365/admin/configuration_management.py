@@ -8,13 +8,13 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.configuration_baseline import ConfigurationBaseline
-    from office365.common.configuration_drift import ConfigurationDrift
-    from office365.common.configuration_monitor import ConfigurationMonitor
-    from office365.common.configuration_monitoring_result import (
+    from office365.admin.configuration_baseline import ConfigurationBaseline
+    from office365.admin.configuration_drift import ConfigurationDrift
+    from office365.admin.configuration_monitor import ConfigurationMonitor
+    from office365.admin.configuration_monitoring_result import (
         ConfigurationMonitoringResult,
     )
-    from office365.common.configuration_snapshot_job import ConfigurationSnapshotJob
+    from office365.admin.configuration_snapshot_job import ConfigurationSnapshotJob
 
 
 class ConfigurationManagement(Entity):
@@ -22,7 +22,7 @@ class ConfigurationManagement(Entity):
     @property
     def configuration_drifts(self) -> EntityCollection[ConfigurationDrift]:
         """Gets the configurationDrifts property"""
-        from office365.common.configuration_drift import ConfigurationDrift
+        from office365.admin.configuration_drift import ConfigurationDrift
 
         return self.properties.get(
             "configurationDrifts",
@@ -35,7 +35,7 @@ class ConfigurationManagement(Entity):
     @property
     def configuration_monitoring_results(self) -> EntityCollection[ConfigurationMonitoringResult]:
         """Gets the configurationMonitoringResults property"""
-        from office365.common.configuration_monitoring_result import (
+        from office365.admin.configuration_monitoring_result import (
             ConfigurationMonitoringResult,
         )
 
@@ -52,7 +52,7 @@ class ConfigurationManagement(Entity):
     @property
     def configuration_monitors(self) -> EntityCollection[ConfigurationMonitor]:
         """Gets the configurationMonitors property"""
-        from office365.common.configuration_monitor import ConfigurationMonitor
+        from office365.admin.configuration_monitor import ConfigurationMonitor
 
         return self.properties.get(
             "configurationMonitors",
@@ -65,7 +65,7 @@ class ConfigurationManagement(Entity):
     @property
     def configuration_snapshot_jobs(self) -> EntityCollection[ConfigurationSnapshotJob]:
         """Gets the configurationSnapshotJobs property"""
-        from office365.common.configuration_snapshot_job import ConfigurationSnapshotJob
+        from office365.admin.configuration_snapshot_job import ConfigurationSnapshotJob
 
         return self.properties.get(
             "configurationSnapshotJobs",
@@ -78,7 +78,7 @@ class ConfigurationManagement(Entity):
     @property
     def configuration_snapshots(self) -> EntityCollection[ConfigurationBaseline]:
         """Gets the configurationSnapshots property"""
-        from office365.common.configuration_baseline import ConfigurationBaseline
+        from office365.admin.configuration_baseline import ConfigurationBaseline
 
         return self.properties.get(
             "configurationSnapshots",

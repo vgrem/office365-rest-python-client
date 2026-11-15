@@ -3,10 +3,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.common.assignment_filter_evaluation_mode import AssignmentFilterEvaluationMode
-from office365.common.assignment_filter_management_type import AssignmentFilterManagementType
-from office365.common.payload_by_filter import PayloadByFilter
 from office365.entity import Entity
+from office365.intune.devices.management.assignment_filter_evaluation_mode import AssignmentFilterEvaluationMode
+from office365.intune.devices.management.assignment_filter_management_type import AssignmentFilterManagementType
+from office365.intune.devices.management.payload_by_filter import PayloadByFilter
 from office365.intune.devices.platformtype import DevicePlatformType
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection

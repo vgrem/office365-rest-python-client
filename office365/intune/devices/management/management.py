@@ -6,11 +6,11 @@ from uuid import UUID
 
 from typing_extensions import Self
 
-from office365.common.intune_brand import IntuneBrand
 from office365.directory.rolemanagement.roles.permission import RolePermission
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.audit.event_collection import AuditEventCollection
+from office365.intune.brand import IntuneBrand
 from office365.intune.devices.category_collection import DeviceCategoryCollection
 from office365.intune.devices.enrollment.configuration import (
     DeviceEnrollmentConfiguration,
@@ -42,16 +42,6 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.group_policy_category import GroupPolicyCategory
-    from office365.common.group_policy_configuration import GroupPolicyConfiguration
-    from office365.common.group_policy_definition import GroupPolicyDefinition
-    from office365.common.group_policy_definition_file import GroupPolicyDefinitionFile
-    from office365.common.group_policy_migration_report import GroupPolicyMigrationReport
-    from office365.common.group_policy_object_file import GroupPolicyObjectFile
-    from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
-    from office365.common.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
-    from office365.common.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
-    from office365.common.microsoft_tunnel_site import MicrosoftTunnelSite
     from office365.common.role_definition import RoleDefinition
     from office365.intune.android_managed_store_account_enterprise_settings import (
         AndroidManagedStoreAccountEnterpriseSettings,
@@ -101,15 +91,15 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.comanagement_eligible_device import ComanagementEligibleDevice
     from office365.intune.devices.management.compliance_policy import DeviceManagementCompliancePolicy
     from office365.intune.devices.management.config_manager_collection import ConfigManagerCollection
-    from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
-    from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
-    from office365.intune.devices.management.configuration_policy_template import (
+    from office365.intune.devices.management.configuration.category import DeviceManagementConfigurationCategory
+    from office365.intune.devices.management.configuration.policy import DeviceManagementConfigurationPolicy
+    from office365.intune.devices.management.configuration.policy_template import (
         DeviceManagementConfigurationPolicyTemplate,
     )
-    from office365.intune.devices.management.configuration_setting_definition import (
+    from office365.intune.devices.management.configuration.settings.definition import (
         DeviceManagementConfigurationSettingDefinition,
     )
-    from office365.intune.devices.management.configuration_setting_template import (
+    from office365.intune.devices.management.configuration.settings.template import (
         DeviceManagementConfigurationSettingTemplate,
     )
     from office365.intune.devices.management.data_sharing_consent import DataSharingConsent
@@ -117,6 +107,15 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.domain_join_connector import DeviceManagementDomainJoinConnector
     from office365.intune.devices.management.exchangeconnectors.exchange_connector import (
         DeviceManagementExchangeConnector,
+    )
+    from office365.intune.devices.management.grouppolicies.category import GroupPolicyCategory
+    from office365.intune.devices.management.grouppolicies.configuration import GroupPolicyConfiguration
+    from office365.intune.devices.management.grouppolicies.definition import GroupPolicyDefinition
+    from office365.intune.devices.management.grouppolicies.definition_file import GroupPolicyDefinitionFile
+    from office365.intune.devices.management.grouppolicies.migration_report import GroupPolicyMigrationReport
+    from office365.intune.devices.management.grouppolicies.object_file import GroupPolicyObjectFile
+    from office365.intune.devices.management.grouppolicies.uploaded_definition_file import (
+        GroupPolicyUploadedDefinitionFile,
     )
     from office365.intune.devices.management.hardware_password_detail import HardwarePasswordDetail
     from office365.intune.devices.management.hardware_password_info import HardwarePasswordInfo
@@ -129,6 +128,9 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.managed.device import ManagedDevice
     from office365.intune.devices.management.managed.encryption_state import ManagedDeviceEncryptionState
     from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
+    from office365.intune.devices.management.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
+    from office365.intune.devices.management.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
+    from office365.intune.devices.management.microsoft_tunnel_site import MicrosoftTunnelSite
     from office365.intune.devices.management.mobile_threat_defense_connector import (
         MobileThreatDefenseConnector,
     )
@@ -1374,7 +1376,7 @@ class DeviceManagement(Entity):
     @property
     def compliance_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
         """Gets the complianceCategories property"""
-        from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
+        from office365.intune.devices.management.configuration.category import DeviceManagementConfigurationCategory
 
         return self.properties.get(
             "complianceCategories",
@@ -1402,7 +1404,7 @@ class DeviceManagement(Entity):
     @property
     def compliance_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the complianceSettings property"""
-        from office365.intune.devices.management.configuration_setting_definition import (
+        from office365.intune.devices.management.configuration.settings.definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1419,7 +1421,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_categories(self) -> EntityCollection[DeviceManagementConfigurationCategory]:
         """Gets the configurationCategories property"""
-        from office365.intune.devices.management.configuration_category import DeviceManagementConfigurationCategory
+        from office365.intune.devices.management.configuration.category import DeviceManagementConfigurationCategory
 
         return self.properties.get(
             "configurationCategories",
@@ -1434,7 +1436,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_policies(self) -> EntityCollection[DeviceManagementConfigurationPolicy]:
         """Gets the configurationPolicies property"""
-        from office365.intune.devices.management.configuration_policy import DeviceManagementConfigurationPolicy
+        from office365.intune.devices.management.configuration.policy import DeviceManagementConfigurationPolicy
 
         return self.properties.get(
             "configurationPolicies",
@@ -1449,7 +1451,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_policy_templates(self) -> EntityCollection[DeviceManagementConfigurationPolicyTemplate]:
         """Gets the configurationPolicyTemplates property"""
-        from office365.intune.devices.management.configuration_policy_template import (
+        from office365.intune.devices.management.configuration.policy_template import (
             DeviceManagementConfigurationPolicyTemplate,
         )
 
@@ -1466,7 +1468,7 @@ class DeviceManagement(Entity):
     @property
     def configuration_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the configurationSettings property"""
-        from office365.intune.devices.management.configuration_setting_definition import (
+        from office365.intune.devices.management.configuration.settings.definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1498,7 +1500,7 @@ class DeviceManagement(Entity):
     @property
     def reusable_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingDefinition]:
         """Gets the reusableSettings property"""
-        from office365.intune.devices.management.configuration_setting_definition import (
+        from office365.intune.devices.management.configuration.settings.definition import (
             DeviceManagementConfigurationSettingDefinition,
         )
 
@@ -1515,7 +1517,7 @@ class DeviceManagement(Entity):
     @property
     def template_settings(self) -> EntityCollection[DeviceManagementConfigurationSettingTemplate]:
         """Gets the templateSettings property"""
-        from office365.intune.devices.management.configuration_setting_template import (
+        from office365.intune.devices.management.configuration.settings.template import (
             DeviceManagementConfigurationSettingTemplate,
         )
 
@@ -1579,7 +1581,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_migration_reports(self) -> EntityCollection[GroupPolicyMigrationReport]:
         """Gets the groupPolicyMigrationReports property"""
-        from office365.common.group_policy_migration_report import GroupPolicyMigrationReport
+        from office365.intune.devices.management.grouppolicies.migration_report import GroupPolicyMigrationReport
 
         return self.properties.get(
             "groupPolicyMigrationReports",
@@ -1592,7 +1594,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_object_files(self) -> EntityCollection[GroupPolicyObjectFile]:
         """Gets the groupPolicyObjectFiles property"""
-        from office365.common.group_policy_object_file import GroupPolicyObjectFile
+        from office365.intune.devices.management.grouppolicies.object_file import GroupPolicyObjectFile
 
         return self.properties.get(
             "groupPolicyObjectFiles",
@@ -1605,7 +1607,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_categories(self) -> EntityCollection[GroupPolicyCategory]:
         """Gets the groupPolicyCategories property"""
-        from office365.common.group_policy_category import GroupPolicyCategory
+        from office365.intune.devices.management.grouppolicies.category import GroupPolicyCategory
 
         return self.properties.get(
             "groupPolicyCategories",
@@ -1618,7 +1620,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_configurations(self) -> EntityCollection[GroupPolicyConfiguration]:
         """Gets the groupPolicyConfigurations property"""
-        from office365.common.group_policy_configuration import GroupPolicyConfiguration
+        from office365.intune.devices.management.grouppolicies.configuration import GroupPolicyConfiguration
 
         return self.properties.get(
             "groupPolicyConfigurations",
@@ -1631,7 +1633,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_definition_files(self) -> EntityCollection[GroupPolicyDefinitionFile]:
         """Gets the groupPolicyDefinitionFiles property"""
-        from office365.common.group_policy_definition_file import GroupPolicyDefinitionFile
+        from office365.intune.devices.management.grouppolicies.definition_file import GroupPolicyDefinitionFile
 
         return self.properties.get(
             "groupPolicyDefinitionFiles",
@@ -1644,7 +1646,7 @@ class DeviceManagement(Entity):
     @property
     def group_policy_definitions(self) -> EntityCollection[GroupPolicyDefinition]:
         """Gets the groupPolicyDefinitions property"""
-        from office365.common.group_policy_definition import GroupPolicyDefinition
+        from office365.intune.devices.management.grouppolicies.definition import GroupPolicyDefinition
 
         return self.properties.get(
             "groupPolicyDefinitions",
@@ -1657,7 +1659,9 @@ class DeviceManagement(Entity):
     @property
     def group_policy_uploaded_definition_files(self) -> EntityCollection[GroupPolicyUploadedDefinitionFile]:
         """Gets the groupPolicyUploadedDefinitionFiles property"""
-        from office365.common.group_policy_uploaded_definition_file import GroupPolicyUploadedDefinitionFile
+        from office365.intune.devices.management.grouppolicies.uploaded_definition_file import (
+            GroupPolicyUploadedDefinitionFile,
+        )
 
         return self.properties.get(
             "groupPolicyUploadedDefinitionFiles",
@@ -1801,7 +1805,7 @@ class DeviceManagement(Entity):
     @property
     def microsoft_tunnel_configurations(self) -> EntityCollection[MicrosoftTunnelConfiguration]:
         """Gets the microsoftTunnelConfigurations property"""
-        from office365.common.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
+        from office365.intune.devices.management.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
 
         return self.properties.get(
             "microsoftTunnelConfigurations",
@@ -1816,7 +1820,7 @@ class DeviceManagement(Entity):
     @property
     def microsoft_tunnel_health_thresholds(self) -> EntityCollection[MicrosoftTunnelHealthThreshold]:
         """Gets the microsoftTunnelHealthThresholds property"""
-        from office365.common.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
+        from office365.intune.devices.management.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
 
         return self.properties.get(
             "microsoftTunnelHealthThresholds",
@@ -1876,7 +1880,7 @@ class DeviceManagement(Entity):
     @property
     def microsoft_tunnel_sites(self) -> EntityCollection[MicrosoftTunnelSite]:
         """Gets the microsoftTunnelSites property"""
-        from office365.common.microsoft_tunnel_site import MicrosoftTunnelSite
+        from office365.intune.devices.management.microsoft_tunnel_site import MicrosoftTunnelSite
 
         return self.properties.get(
             "microsoftTunnelSites",

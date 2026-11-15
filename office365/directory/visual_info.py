@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.common.image_info import ImageInfo
+from office365.directory.image_info import ImageInfo
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.json import Json
 

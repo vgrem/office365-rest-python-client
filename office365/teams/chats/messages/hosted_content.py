@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import AnyStr
 
-from office365.common.teamwork_hosted_content import TeamworkHostedContent
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
+from office365.teams.apps.teamwork_hosted_content import TeamworkHostedContent
 
 
 class ChatMessageHostedContent(TeamworkHostedContent):

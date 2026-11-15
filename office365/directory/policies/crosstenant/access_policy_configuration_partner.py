@@ -24,10 +24,10 @@ if TYPE_CHECKING:
     from office365.directory.cross_tenant_identity_sync_policy_partner import (
         CrossTenantIdentitySyncPolicyPartner,
     )
+    from office365.directory.m365_capability_base import M365CapabilityBase
     from office365.directory.service_provider_constraints import (
         ServiceProviderConstraints,
     )
-    from office365.intune.devices.management.m365_capability_base import M365CapabilityBase
 
 
 @key("tenantId")
@@ -144,7 +144,7 @@ class CrossTenantAccessPolicyConfigurationPartner(Entity):
     @property
     def m365_capabilities(self) -> EntityCollection[M365CapabilityBase]:
         """Gets the m365Capabilities property"""
-        from office365.intune.devices.management.m365_capability_base import M365CapabilityBase
+        from office365.directory.m365_capability_base import M365CapabilityBase
 
         return self.properties.get(
             "m365Capabilities",

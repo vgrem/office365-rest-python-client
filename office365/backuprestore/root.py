@@ -16,8 +16,11 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.backuprestore.backup_report import BackupReport
     from office365.backuprestore.browse_session_base import BrowseSessionBase
+    from office365.backuprestore.drive_protection_unit import DriveProtectionUnit
+    from office365.backuprestore.drive_protection_units_bulk_addition_job import (
+        DriveProtectionUnitsBulkAdditionJob,
+    )
     from office365.backuprestore.email_notifications_setting import (
         EmailNotificationsSetting,
     )
@@ -35,7 +38,9 @@ if TYPE_CHECKING:
         OneDriveForBusinessRestoreSession,
     )
     from office365.backuprestore.protection_unit_base import ProtectionUnitBase
+    from office365.backuprestore.reports.report import BackupReport
     from office365.backuprestore.restorepoints.collection import RestorePointCollection
+    from office365.backuprestore.restoresessions.base import RestoreSessionBase
     from office365.backuprestore.serviceapps.service_app import ServiceApp
     from office365.backuprestore.sharepoint_browse_session import (
         SharePointBrowseSession,
@@ -51,11 +56,6 @@ if TYPE_CHECKING:
     from office365.backuprestore.site_protection_units_bulk_addition_job import (
         SiteProtectionUnitsBulkAdditionJob,
     )
-    from office365.common.drive_protection_unit import DriveProtectionUnit
-    from office365.common.drive_protection_units_bulk_addition_job import (
-        DriveProtectionUnitsBulkAdditionJob,
-    )
-    from office365.common.restore_session_base import RestoreSessionBase
     from office365.directory.protection.policy.base import ProtectionPolicyBase
     from office365.directory.protection.rules.drive import DriveProtectionRule
 
@@ -127,7 +127,7 @@ class BackupRestoreRoot(Entity):
     @property
     def drive_protection_units(self) -> EntityCollection[DriveProtectionUnit]:
         """Gets the driveProtectionUnits property"""
-        from office365.common.drive_protection_unit import DriveProtectionUnit
+        from office365.backuprestore.drive_protection_unit import DriveProtectionUnit
 
         return self.properties.get(
             "driveProtectionUnits",
@@ -140,7 +140,7 @@ class BackupRestoreRoot(Entity):
     @property
     def drive_protection_units_bulk_addition_jobs(self) -> EntityCollection[DriveProtectionUnitsBulkAdditionJob]:
         """Gets the driveProtectionUnitsBulkAdditionJobs property"""
-        from office365.common.drive_protection_units_bulk_addition_job import (
+        from office365.backuprestore.drive_protection_units_bulk_addition_job import (
             DriveProtectionUnitsBulkAdditionJob,
         )
 
@@ -302,7 +302,7 @@ class BackupRestoreRoot(Entity):
         from office365.backuprestore.restorepoints.collection import (
             RestorePointCollection,
         )
-        from office365.common.restore_point import RestorePoint
+        from office365.backuprestore.restorepoints.restore_point import RestorePoint
 
         return self.properties.get(
             "restorePoints",
@@ -313,7 +313,7 @@ class BackupRestoreRoot(Entity):
     @property
     def restore_sessions(self) -> EntityCollection[RestoreSessionBase]:
         """Gets the restoreSessions property"""
-        from office365.common.restore_session_base import RestoreSessionBase
+        from office365.backuprestore.restoresessions.base import RestoreSessionBase
 
         return self.properties.get(
             "restoreSessions",
@@ -431,6 +431,6 @@ class BackupRestoreRoot(Entity):
     @property
     def reports(self) -> BackupReport:
         """Gets the reports property"""
-        from office365.backuprestore.backup_report import BackupReport
+        from office365.backuprestore.reports.report import BackupReport
 
         return self.properties.get("reports", BackupReport(self.context, ResourcePath("reports", self.resource_path)))

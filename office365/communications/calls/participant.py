@@ -23,7 +23,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.mute_participant_operation import MuteParticipantOperation
+    from office365.communications.operations.mute_participant_operation import MuteParticipantOperation
 
 
 class Participant(Entity):
@@ -145,7 +145,7 @@ class Participant(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.mute_participant_operation import MuteParticipantOperation
+        from office365.communications.operations.mute_participant_operation import MuteParticipantOperation
 
         return_type = MuteParticipantOperation(self.context)
         qry = ServiceOperationQuery(self, "mute", None, {"clientContext": client_context}, None, return_type)

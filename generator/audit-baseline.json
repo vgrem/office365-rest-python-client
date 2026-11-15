@@ -9,11 +9,11 @@
   },
   "office365/intune": {
     "missing": 12,
-    "undeclared": 723,
-    "extra": 9
+    "undeclared": 741,
+    "extra": 8
   },
   "office365/teams": {
-    "missing": 0,
+    "missing": 18,
     "undeclared": 210,
     "extra": 12
   }

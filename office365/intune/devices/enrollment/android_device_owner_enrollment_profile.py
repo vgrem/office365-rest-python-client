@@ -5,8 +5,8 @@ from typing import Optional
 
 from typing_extensions import Self
 
-from office365.common.mime_content import MimeContent
 from office365.entity import Entity
+from office365.intune.mime_content import MimeContent
 from office365.permissions import require_permission
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection

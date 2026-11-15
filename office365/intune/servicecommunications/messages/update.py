@@ -16,7 +16,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.service_announcement_attachment import (
+    from office365.intune.servicecommunications.messages.service_announcement_attachment import (
         ServiceAnnouncementAttachment,
     )
 
@@ -93,7 +93,7 @@ class ServiceUpdateMessage(ServiceAnnouncementBase):
     @property
     def attachments(self) -> EntityCollection[ServiceAnnouncementAttachment]:
         """Gets the attachments property"""
-        from office365.common.service_announcement_attachment import (
+        from office365.intune.servicecommunications.messages.service_announcement_attachment import (
             ServiceAnnouncementAttachment,
         )
 

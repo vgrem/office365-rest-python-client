@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.common.protection_units_bulk_job_base import ProtectionUnitsBulkJobBase
+from office365.backuprestore.protection_units_bulk_job_base import ProtectionUnitsBulkJobBase
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 

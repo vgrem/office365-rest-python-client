@@ -180,7 +180,7 @@ type_routing:
   # The agent identities are service principals by shape and Copilot records by feature;
   # the tree keeps them beside `AgentIdentityBlueprint`, and so does this rule.
   AgentIdentity*: office365.copilot
-  M365Capability*: office365.intune
+  M365Capability*: office365.directory
   AppsInstallationOptions*: office365.intune
   EdgeSearchEngine*: office365.intune
   MediaContentRating*: office365.intune
@@ -302,17 +302,17 @@ type_routing:
   ComplexExtensionValue: office365.common
   DataSourceConfiguration: office365.common
   Dictionaries: office365.common
-  ErrorDetail: office365.common
-  IPv4Range: office365.common
-  IPv6Range: office365.common
-  ImageInfo: office365.common
+  ErrorDetail: office365.admin
+  IPv4Range: office365.directory.identities
+  IPv6Range: office365.directory.identities
+  ImageInfo: office365.directory
   KeyValue: office365.common
-  MimeContent: office365.common
-  OsVersionCount: office365.common
+  MimeContent: office365.intune
+  OsVersionCount: office365.intune.devices.management.windowsmalware
   Prompt: office365.common
   ProvisionResponse: office365.common
-  ProxiedDomain: office365.common
-  SettingSource: office365.common
+  ProxiedDomain: office365.intune.devices.management
+  SettingSource: office365.intune.devices
   SharePointEmbeddedConfiguration: office365.common
   ActivityMetadata: office365.security
   CoachmarkLocation: office365.security
@@ -575,11 +575,11 @@ type_routing:
   EdgeSearchEngine: office365.intune.devices.configurations
   EdgeSearchEngineBase: office365.intune.devices.configurations
   EdgeSearchEngineCustom: office365.intune.devices.configurations
-  M365CapabilityBase: office365.intune.devices.management
-  M365CapabilityInboundAccess: office365.intune.devices.management
-  M365CapabilityResourceScope: office365.intune.devices.management
-  M365CapabilityResourceScopes: office365.intune.devices.management
-  M365ResourceType: office365.intune.devices.management
+  M365CapabilityBase: office365.directory
+  M365CapabilityInboundAccess: office365.directory
+  M365CapabilityResourceScope: office365.directory
+  M365CapabilityResourceScopes: office365.directory
+  M365ResourceType: office365.directory
   InsightValueDouble: office365.intune.devices.management
   InsightValueInt: office365.intune.devices.management
   GroupPeerOutlierRecommendationInsightSettings: office365.intune.devices.management
@@ -681,14 +681,14 @@ type_routing:
   "AgentIdentityBlueprint": office365.copilot
   "AgentIdentityBlueprintPrincipal": office365.copilot
   "AttributeSet": office365.directory
-  "ConfigurationBaseline": office365.directory
+  ConfigurationBaseline: office365.admin
   "CrossTenantIdentitySyncPolicyPartner": office365.directory
   "CustomAuthenticationExtension": office365.directory
   "CustomDataProvidedResource": office365.directory
   "EmailAuthenticationMethodConfiguration": office365.directory
   "EndUserSettings": office365.directory
   "EngagementRoleMember": office365.directory
-  "EnterpriseCodeSigningCertificate": office365.directory
+  EnterpriseCodeSigningCertificate: office365.intune.devices.management
   "ExternalAuthenticationMethod": office365.directory
   "ExternalAuthenticationMethodConfiguration": office365.directory
   "ExternalUsersSelfServiceSignUpEventsFlow": office365.directory
@@ -698,16 +698,16 @@ type_routing:
   "MicrosoftAuthenticatorAuthenticationMethodTarget": office365.directory
   "OidcIdentityProvider": office365.directory
   "OnAttributeCollectionListener": office365.directory
-  "OnAttributeCollectionStartCustomExtension": office365.directory
+  OnAttributeCollectionStartCustomExtension: office365.directory.authentication.attributecollection
   "OnAttributeCollectionStartListener": office365.directory
-  "OnAttributeCollectionSubmitCustomExtension": office365.directory
+  OnAttributeCollectionSubmitCustomExtension: office365.directory.authentication.attributecollection
   "OnAttributeCollectionSubmitListener": office365.directory
   "OnAuthenticationMethodLoadStartListener": office365.directory
   "OnEmailOtpSendListener": office365.directory
   "OnFraudProtectionLoadStartListener": office365.directory
   "OnInteractiveAuthFlowStartListener": office365.directory
-  "OnOtpSendCustomExtension": office365.directory
-  "OnPasswordSubmitCustomExtension": office365.directory
+  OnOtpSendCustomExtension: office365.directory.identities
+  OnPasswordSubmitCustomExtension: office365.directory.identities
   "OnPasswordSubmitListener": office365.directory
   "OnTokenIssuanceStartListener": office365.directory
   "OnUserCreateStartListener": office365.directory
@@ -763,13 +763,13 @@ type_routing:
   "Building": office365.outlook
   "BuildingMap": office365.outlook
   "EventMessageResponse": office365.outlook
-  "FixtureMap": office365.outlook
-  "FootprintMap": office365.outlook
-  "LevelMap": office365.outlook
-  "SectionMap": office365.outlook
-  "SingleValueExtendedProperty": office365.outlook
-  "StringDictionary": office365.outlook
-  "UnitMap": office365.outlook
+  FixtureMap: office365.booking
+  FootprintMap: office365.booking
+  LevelMap: office365.booking
+  SectionMap: office365.booking
+  SingleValueExtendedProperty: office365.todo.tasks
+  StringDictionary: office365.outlook.calendar
+  UnitMap: office365.booking
 
 # Exchange administration: mailbox and message-trace types.
   "ExchangeSettings": office365.admin
@@ -982,3 +982,180 @@ services:
   to-do-tasks: office365.todo
   users: office365.directory.users
   workbooks-and-charts: office365.onedrive
+
+# Residue of the `office365/common` catch-all, routed by evidence instead of by default.
+# Each type below was measured against GraphBeta.xml: it is reached by exactly one
+# product's navigation (named in the comment) or, with no reader of its own, it
+# inherits the package of its base class.  Types left in `office365/common` are the
+# ones nothing in the snapshot reads (`Endpoint`, `Operation`, `Member`, `KeyValue`, ...).
+
+# office365.directory
+  AnonymousCalendarSharingFreeBusyDetail: office365.directory   # base M365CapabilityBase
+  AnonymousCalendarSharingFreeBusyReviewer: office365.directory   # base M365CapabilityBase
+  AnonymousCalendarSharingFreeBusySimple: office365.directory   # base M365CapabilityBase
+  CrossTenantCalendarAvailabilityBasic: office365.directory   # base M365CapabilityBase
+  CrossTenantCalendarAvailabilityLimitedDetails: office365.directory   # base M365CapabilityBase
+  CrossTenantCalendarSharingFreeBusyDetail: office365.directory   # base M365CapabilityBase
+  CrossTenantCalendarSharingFreeBusyReviewer: office365.directory   # base M365CapabilityBase
+  CrossTenantCalendarSharingFreeBusySimple: office365.directory   # base M365CapabilityBase
+  CrossTenantMailTipsAll: office365.directory   # base M365CapabilityBase
+  CrossTenantMailTipsLimited: office365.directory   # base M365CapabilityBase
+  CrossTenantMigration: office365.directory   # base M365CapabilityBase
+  CrossTenantOpenProfileCard: office365.directory   # base M365CapabilityBase
+  CrossTenantPlacesDeskBooking: office365.directory   # base M365CapabilityBase
+  CrossTenantPlacesRoomBooking: office365.directory   # base M365CapabilityBase
+  TelecomProviderSettings: office365.directory   # SmsAuthenticationMethodConfiguration.telecomProviderSettings @ directory.authentication.methods
+
+# office365.intune.devices.management
+  AssociatedAssignmentPayloadType: office365.intune.devices.management   # PayloadByFilter.payloadType @ intune.devices.management
+  ErrorCode: office365.intune.devices.management   # PolicySet.errorCode @ intune.devices.management
+  HealthState: office365.intune.devices.management   # WindowsManagementAppHealthState.healthState @ intune.devices.management
+  ManagedInstallerStatus: office365.intune.devices.management   # WindowsManagementApp.managedInstaller @ intune.devices.management
+  MicrosoftTunnelConfiguration: office365.intune.devices.management   # DeviceManagement.microsoftTunnelConfigurations @ intune.devices.management
+  MicrosoftTunnelDeploymentMode: office365.intune.devices.management   # MicrosoftTunnelServer.deploymentMode @ intune.devices.management
+  MicrosoftTunnelHealthThreshold: office365.intune.devices.management   # DeviceManagement.microsoftTunnelHealthThresholds @ intune.devices.management
+  MicrosoftTunnelServer: office365.intune.devices.management   # MicrosoftTunnelSite.microsoftTunnelServers @ intune.devices.management
+  MicrosoftTunnelServerHealthStatus: office365.intune.devices.management   # MicrosoftTunnelServer.tunnelServerHealthStatus @ intune.devices.management
+  MicrosoftTunnelSite: office365.intune.devices.management   # DeviceManagement.microsoftTunnelSites @ intune.devices.management
+  PayloadByFilter: office365.intune.devices.management   # DeviceAndAppManagementAssignmentFilter.payloads @ intune.devices.management
+  PolicySet: office365.intune.devices.management   # DeviceAppManagement.policySets @ intune.devices.management
+  PolicySetAssignment: office365.intune.devices.management   # PolicySet.assignments @ intune.devices.management
+  PolicySetItem: office365.intune.devices.management   # PolicySet.items @ intune.devices.management
+  PolicySetStatus: office365.intune.devices.management   # PolicySet.status @ intune.devices.management
+
+# office365.admin
+  ConfigurationDrift: office365.admin   # ConfigurationManagement.configurationDrifts @ admin
+  ConfigurationMonitor: office365.admin   # ConfigurationManagement.configurationMonitors @ admin
+  ConfigurationMonitoringResult: office365.admin   # ConfigurationManagement.configurationMonitoringResults @ admin
+  ConfigurationSnapshotJob: office365.admin   # ConfigurationManagement.configurationSnapshotJobs @ admin
+  ExchangeSettings: office365.admin   # UserSettings.exchange @ directory.users
+  MailboxFolder: office365.admin   # Mailbox.folders @ admin
+  MailboxItem: office365.admin   # MailboxFolder.items @ admin
+
+# office365.backuprestore
+  DriveProtectionUnit: office365.backuprestore   # BackupRestoreRoot.driveProtectionUnits @ backuprestore
+  DriveProtectionUnitsBulkAdditionJob: office365.backuprestore   # BackupRestoreRoot.driveProtectionUnitsBulkAdditionJobs @ backuprestore
+  ProtectionUnitsBulkJobBase: office365.backuprestore   # base Entity
+  RestoreArtifactBase: office365.backuprestore   # base Entity
+  RestoreArtifactsBulkRequestBase: office365.backuprestore   # base Entity
+  RestorePoint: office365.backuprestore   # RestorePointSearchResult.restorePoint @ backuprestore.restorepoints
+  RestoreSessionBase: office365.backuprestore   # BackupRestoreRoot.restoreSessions @ backuprestore
+
+# office365.outlook.mail.folders
+  MailFolderOperation: office365.outlook.mail.folders   # MailFolder.operations @ outlook.mail.folders
+  MailFolderOperationStatus: office365.outlook.mail.folders   # MailFolderOperation.status @ outlook.mail.folders
+  StructuredDataEntry: office365.outlook.mail.folders   # UserConfiguration.structuredData @ outlook.mail.folders
+  StructuredDataEntryTypedValue: office365.outlook.mail.folders   # StructuredDataEntry.keyEntry @ outlook.mail.folders
+  StructuredDataEntryValueType: office365.outlook.mail.folders   # StructuredDataEntryTypedValue.type @ outlook.mail.folders
+  UserConfiguration: office365.outlook.mail.folders   # MailFolder.userConfigurations @ outlook.mail.folders
+
+# office365.teams.members
+  AnonymousGuestConversationMember: office365.teams.members   # base ConversationMember
+  AzureCommunicationServicesUserConversationMember: office365.teams.members   # base ConversationMember
+  MicrosoftAccountUserConversationMember: office365.teams.members   # base ConversationMember
+  PhoneUserConversationMember: office365.teams.members   # base ConversationMember
+  SkypeForBusinessUserConversationMember: office365.teams.members   # base ConversationMember
+  SkypeUserConversationMember: office365.teams.members   # base ConversationMember
+
+# office365.communications.operations
+  AddLargeGalleryViewOperation: office365.communications.operations   # base CommsOperation
+  MuteParticipantOperation: office365.communications.operations   # base CommsOperation
+  PlayPromptOperation: office365.communications.operations   # base CommsOperation
+  RecordOperation: office365.communications.operations   # base CommsOperation
+  SubscribeToToneOperation: office365.communications.operations   # base CommsOperation
+
+# office365.intune
+  DriverApprovalStatus: office365.intune   # WindowsDriverUpdateInventory.approvalStatus @ intune
+  DriverCategory: office365.intune   # WindowsDriverUpdateInventory.category @ intune
+  DriverUpdateProfileApprovalType: office365.intune   # WindowsDriverUpdateProfile.approvalType @ intune
+  ExpeditedWindowsQualityUpdateSettings: office365.intune   # WindowsQualityUpdateProfile.expeditedUpdateSettings @ intune
+  ManagedGooglePlayEnterpriseType: office365.intune   # AndroidManagedStoreAccountEnterpriseSettings.managedGooglePlayEnterpriseType @ intune
+
+# office365.directory.users
+  AgentUser: office365.directory.users   # RiskyAgentUser.agentUser->common
+  DistributionList: office365.directory.users   # User.distributionLists @ directory.users
+  DistributionListMember: office365.directory.users   # DistributionList.members @ directory.users
+
+# office365.intune.devices.management.grouppolicies
+  IngestionSource: office365.intune.devices.management.grouppolicies   # GroupPolicyCategory.ingestionSource @ intune.devices.management.grouppolicies
+  MdmSupportedState: office365.intune.devices.management.grouppolicies   # GroupPolicySettingMapping.mdmSupportedState @ intune.devices.management.grouppolicies
+  UnsupportedGroupPolicyExtension: office365.intune.devices.management.grouppolicies   # GroupPolicyMigrationReport.unsupportedGroupPolicyExtensions @ intune.devices.management.grouppolicies
+
+# office365.outlook.calendar
+  Desk: office365.outlook.calendar   # base Place
+  Floor: office365.outlook.calendar   # base Place
+  Section: office365.outlook.calendar   # base Place
+
+# office365.teams.viva.engagement
+  EngagementConversationDiscussionMessage: office365.teams.viva.engagement   # base EngagementConversationMessage
+  EngagementConversationQuestionMessage: office365.teams.viva.engagement   # base EngagementConversationMessage
+  EngagementConversationSystemMessage: office365.teams.viva.engagement   # base EngagementConversationMessage
+
+# office365.communications.onlinemeetings
+  MeetingEngagement: office365.communications.onlinemeetings   # AttendanceRecord.engagements @ communications.onlinemeetings
+  MeetingEngagementType: office365.communications.onlinemeetings   # MeetingEngagement.engagementType @ communications.onlinemeetings
+
+# office365.directory.authentication
+  ArkoseFraudProtectionProvider: office365.directory.authentication   # base FraudProtectionProvider
+  HumanSecurityFraudProtectionProvider: office365.directory.authentication   # base FraudProtectionProvider
+
+# office365.directory.authentication.methods
+  VerifiableCredentialAuthenticationMethodTarget: office365.directory.authentication.methods   # VerifiableCredentialsAuthenticationMethodConfiguration.includeTargets @ directory.authentication.methods
+  VerifiableCredentialsAuthenticationMethodConfiguration: office365.directory.authentication.methods   # base AuthenticationMethodConfiguration
+
+# office365.directory.identities.providers
+  ExternalDomainName: office365.directory.identities.providers   # SamlOrWsFedExternalDomainFederation.domains @ directory.identities.providers
+  SamlOrWsFedExternalDomainFederation: office365.directory.identities.providers   # base SamlOrWsFedProvider
+
+# office365.directory.identities.userflows
+  IdentityBuiltInUserFlowAttribute: office365.directory.identities.userflows   # base IdentityUserFlowAttribute
+  IdentityCustomUserFlowAttribute: office365.directory.identities.userflows   # base IdentityUserFlowAttribute
+
+# office365.directory.objects
+  Contract: office365.directory.objects   # base DirectoryObject
+  DirectoryObjectPartnerReference: office365.directory.objects   # base DirectoryObject
+
+# office365.intune.devices
+  RemediationState: office365.intune.devices   # DeviceHealthScriptPolicyState.remediationState->common
+  RunState: office365.intune.devices   # MobileAppTroubleshootingAppPolicyCreationHistory.runState->common
+
+# office365.intune.devices.management.managed.app.protections
+  ManagedAppDeviceThreatLevel: office365.intune.devices.management.managed.app.protections   # ManagedAppProtection.maximumAllowedDeviceThreatLevel @ intune.devices.management.managed.app.protections
+  ManagedAppRemediationAction: office365.intune.devices.management.managed.app.protections   # ManagedAppProtection.appActionIfDeviceComplianceRequired @ intune.devices.management.managed.app.protections
+
+# office365.outlook.mail.messages
+  EventMessageRequest: office365.outlook.mail.messages   # base EventMessage
+  MentionsPreview: office365.outlook.mail.messages   # Message.mentionsPreview @ outlook.mail.messages
+
+# office365.booking
+  BaseMapFeature: office365.booking   # base Entity
+
+# office365.directory.delegatedadmin
+  ResellerDelegatedAdminRelationship: office365.directory.delegatedadmin   # base DelegatedAdminRelationship
+
+# office365.directory.identities
+  AkamaiWebApplicationFirewallProvider: office365.directory.identities   # base WebApplicationFirewallProvider
+
+# office365.directory.identitygovernance.entitlementmanagement.accesspackage
+  CustomDataProvidedResourceAccessReviewUploadSession: office365.directory.identitygovernance.entitlementmanagement.accesspackage   # base CustomDataProvidedResourceUploadSession
+
+# office365.directory.policies
+  Fido2CombinationConfiguration: office365.directory.policies   # base AuthenticationCombinationConfiguration
+
+# office365.intune.devices.configurations
+  AppleDeviceFeaturesConfigurationBase: office365.intune.devices.configurations   # base DeviceConfiguration
+
+# office365.intune.devices.management.mobileapps
+  WebApp: office365.intune.devices.management.mobileapps   # base MobileApp
+
+# office365.intune.servicecommunications.messages
+  ServiceAnnouncementAttachment: office365.intune.servicecommunications.messages   # ServiceUpdateMessage.attachments @ intune.servicecommunications.messages
+
+# office365.outlook.mail
+  Mention: office365.outlook.mail   # Message.mentions @ outlook.mail.messages
+
+# office365.teams.apps
+  TeamworkHostedContent: office365.teams.apps   # TeamsAppIcon.hostedContent @ teams.apps
+
+# office365.teams.viva.learning.courses
+  LearningAssignment: office365.teams.viva.learning.courses   # base LearningCourseActivity

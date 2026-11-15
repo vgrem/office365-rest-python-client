@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.common.meeting_engagement import MeetingEngagement
 from office365.communications.attendance_interval import AttendanceInterval
+from office365.communications.onlinemeetings.meeting_engagement import MeetingEngagement
 from office365.communications.virtualevents.external_registration_information import (  # noqa: E501
     VirtualEventExternalRegistrationInformation,
 )

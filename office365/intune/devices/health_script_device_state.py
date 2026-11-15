@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.common.remediation_state import RemediationState
-from office365.common.run_state import RunState
 from office365.entity import Entity
+from office365.intune.devices.remediation_state import RemediationState
+from office365.intune.devices.run_state import RunState
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata, version

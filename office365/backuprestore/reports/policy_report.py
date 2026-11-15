@@ -1,0 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import field
+
+from office365.backuprestore.reports.count_statistics import BackupCountStatistics
+from office365.runtime.client_value import ClientValue
+
+
+class BackupPolicyReport(ClientValue):
+    backupPolicyId: str | None = None
+    countStatistics: BackupCountStatistics = field(default_factory=BackupCountStatistics)
+    displayName: str | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.BackupPolicyReport"

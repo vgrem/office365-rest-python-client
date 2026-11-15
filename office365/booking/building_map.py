@@ -8,8 +8,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.common.footprint_map import FootprintMap
-    from office365.common.level_map import LevelMap
+    from office365.booking.footprint_map import FootprintMap
+    from office365.booking.level_map import LevelMap
 
 
 class BuildingMap(Entity):
@@ -23,7 +23,7 @@ class BuildingMap(Entity):
     @property
     def footprints(self) -> EntityCollection[FootprintMap]:
         """Gets the footprints property"""
-        from office365.common.footprint_map import FootprintMap
+        from office365.booking.footprint_map import FootprintMap
 
         return self.properties.get(
             "footprints",
@@ -34,7 +34,7 @@ class BuildingMap(Entity):
     @property
     def levels(self) -> EntityCollection[LevelMap]:
         """Gets the levels property"""
-        from office365.common.level_map import LevelMap
+        from office365.booking.level_map import LevelMap
 
         return self.properties.get(
             "levels", EntityCollection[LevelMap](self.context, LevelMap, ResourcePath("levels", self.resource_path))

@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 if TYPE_CHECKING:
-    from office365.common.mail_folder_operation import MailFolderOperation
-    from office365.common.user_configuration import UserConfiguration
     from office365.outlook.mail.folders.collection import MailFolderCollection
     from office365.outlook.mail.folders.folder import MailFolder
+    from office365.outlook.mail.folders.operation import MailFolderOperation
+    from office365.outlook.mail.folders.user_configuration import UserConfiguration
 
 from office365.directory.extensions.extended_property import (
     MultiValueLegacyExtendedProperty,
@@ -195,7 +195,7 @@ class MailFolder(Entity):
     @property
     def operations(self) -> EntityCollection[MailFolderOperation]:
         """Gets the operations property"""
-        from office365.common.mail_folder_operation import MailFolderOperation
+        from office365.outlook.mail.folders.operation import MailFolderOperation
 
         return self.properties.get(
             "operations",
@@ -208,7 +208,7 @@ class MailFolder(Entity):
     @property
     def user_configurations(self) -> EntityCollection[UserConfiguration]:
         """Gets the userConfigurations property"""
-        from office365.common.user_configuration import UserConfiguration
+        from office365.outlook.mail.folders.user_configuration import UserConfiguration
 
         return self.properties.get(
             "userConfigurations",

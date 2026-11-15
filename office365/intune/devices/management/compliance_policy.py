@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.intune.devices.management.configuration_platforms import DeviceManagementConfigurationPlatforms
-from office365.intune.devices.management.configuration_technologies import DeviceManagementConfigurationTechnologies
+from office365.intune.devices.management.configuration.platforms import DeviceManagementConfigurationPlatforms
+from office365.intune.devices.management.configuration.technologies import DeviceManagementConfigurationTechnologies
 from office365.permissions import require_permission
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -19,10 +19,10 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.compliance_scheduled_action_for_rule import (
         DeviceManagementComplianceScheduledActionForRule,
     )
-    from office365.intune.devices.management.configuration_policy_assignment import (
+    from office365.intune.devices.management.configuration.policy_assignment import (
         DeviceManagementConfigurationPolicyAssignment,
     )
-    from office365.intune.devices.management.configuration_setting import DeviceManagementConfigurationSetting
+    from office365.intune.devices.management.configuration.settings.setting import DeviceManagementConfigurationSetting
 
 
 @version("beta")
@@ -91,7 +91,7 @@ class DeviceManagementCompliancePolicy(Entity):
     @property
     def assignments(self) -> EntityCollection[DeviceManagementConfigurationPolicyAssignment]:
         """Gets the assignments property"""
-        from office365.intune.devices.management.configuration_policy_assignment import (
+        from office365.intune.devices.management.configuration.policy_assignment import (
             DeviceManagementConfigurationPolicyAssignment,
         )
 
@@ -125,7 +125,9 @@ class DeviceManagementCompliancePolicy(Entity):
     @property
     def settings(self) -> EntityCollection[DeviceManagementConfigurationSetting]:
         """Gets the settings property"""
-        from office365.intune.devices.management.configuration_setting import DeviceManagementConfigurationSetting
+        from office365.intune.devices.management.configuration.settings.setting import (
+            DeviceManagementConfigurationSetting,
+        )
 
         return self.properties.get(
             "settings",
@@ -148,7 +150,7 @@ class DeviceManagementCompliancePolicy(Entity):
             assignments (ClientValueCollection[DeviceManagementConfigurationPolicyAssignment]):
                 assignments parameter
         """
-        from office365.intune.devices.management.configuration_policy_assignment import (
+        from office365.intune.devices.management.configuration.policy_assignment import (
             DeviceManagementConfigurationPolicyAssignment,
         )
 

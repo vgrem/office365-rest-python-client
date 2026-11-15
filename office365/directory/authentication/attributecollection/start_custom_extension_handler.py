@@ -9,7 +9,7 @@ from office365.directory.identitygovernance.entitlementmanagement.custom_extensi
 from office365.runtime.client_value import ClientValue
 
 if TYPE_CHECKING:
-    from office365.common.on_attribute_collection_start_custom_extension import (
+    from office365.directory.authentication.attributecollection.on_attribute_collection_start_custom_extension import (
         OnAttributeCollectionStartCustomExtension,
     )
 

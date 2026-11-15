@@ -1,0 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import field
+
+from office365.outlook.mail.folders.structured_data_entry_value_type import StructuredDataEntryValueType
+from office365.runtime.client_value import ClientValue
+from office365.runtime.types.collections import StringCollection
+
+
+class StructuredDataEntryTypedValue(ClientValue):
+    type: StructuredDataEntryValueType = StructuredDataEntryValueType.dateTime
+    values: StringCollection = field(default_factory=StringCollection)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.StructuredDataEntryTypedValue"

@@ -4,7 +4,7 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.directory.users.identity import UserIdentity
-from office365.intune.print.jobprocessingstate import PrintJobProcessingState
+from office365.intune.print.jobs.processing_state import PrintJobProcessingState
 from office365.runtime.client_value import ClientValue
 
 

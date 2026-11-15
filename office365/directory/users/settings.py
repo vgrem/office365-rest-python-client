@@ -10,7 +10,7 @@ from office365.runtime.types.odata_property import odata
 from office365.teams.schedule.shifts.preferences import ShiftPreferences
 
 if TYPE_CHECKING:
-    from office365.common.exchange_settings import ExchangeSettings
+    from office365.admin.exchange.settings import ExchangeSettings
     from office365.directory.users.storage import UserStorage
     from office365.directory.users.windows_setting import WindowsSetting
     from office365.directory.users.work_hours_and_locations_setting import (
@@ -66,7 +66,7 @@ class UserSettings(Entity):
     @property
     def exchange(self) -> ExchangeSettings:
         """Gets the exchange property"""
-        from office365.common.exchange_settings import ExchangeSettings
+        from office365.admin.exchange.settings import ExchangeSettings
 
         return self.properties.get(
             "exchange", ExchangeSettings(self.context, ResourcePath("exchange", self.resource_path))

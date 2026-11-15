@@ -45,12 +45,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.add_large_gallery_view_operation import AddLargeGalleryViewOperation
-    from office365.common.mute_participant_operation import MuteParticipantOperation
-    from office365.common.play_prompt_operation import PlayPromptOperation
     from office365.common.prompt import Prompt
-    from office365.common.record_operation import RecordOperation
-    from office365.common.subscribe_to_tone_operation import SubscribeToToneOperation
     from office365.communications.calls.audio_routing_group import AudioRoutingGroup
     from office365.communications.calls.content_sharing_session import (
         ContentSharingSession,
@@ -58,6 +53,11 @@ if TYPE_CHECKING:
     from office365.communications.calls.screensharingrole import ScreenSharingRole
     from office365.communications.calls.tone import Tone
     from office365.communications.incoming_call_options import IncomingCallOptions
+    from office365.communications.operations.add_large_gallery_view_operation import AddLargeGalleryViewOperation
+    from office365.communications.operations.mute_participant_operation import MuteParticipantOperation
+    from office365.communications.operations.play_prompt_operation import PlayPromptOperation
+    from office365.communications.operations.record_operation import RecordOperation
+    from office365.communications.operations.subscribe_to_tone_operation import SubscribeToToneOperation
     from office365.communications.send_dtmf_tones_operation import SendDtmfTonesOperation
 
 
@@ -356,7 +356,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.add_large_gallery_view_operation import AddLargeGalleryViewOperation
+        from office365.communications.operations.add_large_gallery_view_operation import AddLargeGalleryViewOperation
 
         return_type = AddLargeGalleryViewOperation(self.context)
         qry = ServiceOperationQuery(
@@ -436,7 +436,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.mute_participant_operation import MuteParticipantOperation
+        from office365.communications.operations.mute_participant_operation import MuteParticipantOperation
 
         return_type = MuteParticipantOperation(self.context)
         qry = ServiceOperationQuery(self, "mute", None, {"clientContext": client_context}, None, return_type)
@@ -454,7 +454,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.play_prompt_operation import PlayPromptOperation
+        from office365.communications.operations.play_prompt_operation import PlayPromptOperation
 
         return_type = PlayPromptOperation(self.context)
         qry = ServiceOperationQuery(
@@ -496,7 +496,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.record_operation import RecordOperation
+        from office365.communications.operations.record_operation import RecordOperation
 
         return_type = RecordOperation(self.context)
         qry = ServiceOperationQuery(
@@ -557,7 +557,7 @@ class Call(Entity):
             client_context (str):
                 clientContext parameter
         """
-        from office365.common.subscribe_to_tone_operation import SubscribeToToneOperation
+        from office365.communications.operations.subscribe_to_tone_operation import SubscribeToToneOperation
 
         return_type = SubscribeToToneOperation(self.context)
         qry = ServiceOperationQuery(self, "subscribeToTone", None, {"clientContext": client_context}, None, return_type)

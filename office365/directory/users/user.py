@@ -119,11 +119,11 @@ from office365.teams.viva.employee_experience_user import EmployeeExperienceUser
 from office365.todo.todo import Todo
 
 if TYPE_CHECKING:
-    from office365.common.distribution_list import DistributionList
     from office365.communications.adhoc_call import AdhocCall
     from office365.directory.identitygovernance.user_data_security_and_governance import (
         UserDataSecurityAndGovernance,
     )
+    from office365.directory.users.distribution_list import DistributionList
     from office365.directory.users.inference_classification import (
         InferenceClassification,
     )
@@ -1762,7 +1762,7 @@ class User(DirectoryObject):
     @property
     def distribution_lists(self) -> EntityCollection[DistributionList]:
         """Gets the distributionLists property"""
-        from office365.common.distribution_list import DistributionList
+        from office365.directory.users.distribution_list import DistributionList
 
         return self.properties.get(
             "distributionLists",

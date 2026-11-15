@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional
 
-from office365.common.telecom_provider_settings import TelecomProviderSettings
 from office365.directory.authentication.methods.configuration import (
     AuthenticationMethodConfiguration,
 )
 from office365.directory.authentication.methods.sms_target import (
     SmsAuthenticationMethodTarget,
 )
+from office365.directory.telecom_provider_settings import TelecomProviderSettings
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata

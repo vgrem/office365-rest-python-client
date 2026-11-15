@@ -25,9 +25,8 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
-    from office365.common.policy_set import PolicySet
     from office365.intune.devices.management.app_management_task import DeviceAppManagementTask
+    from office365.intune.devices.management.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
     from office365.intune.devices.management.managed.app.mobile.configuration import ManagedDeviceMobileAppConfiguration
     from office365.intune.devices.management.managed.app.protections.android import (
         AndroidManagedAppProtection,
@@ -50,6 +49,7 @@ if TYPE_CHECKING:
         IosLobAppProvisioningConfiguration,
     )
     from office365.intune.devices.management.mobileapps.mobile_app_catalog_package import MobileAppCatalogPackage
+    from office365.intune.devices.management.policy_set import PolicySet
     from office365.intune.devices.management.symantec_code_signing_certificate import SymantecCodeSigningCertificate
     from office365.intune.devices.management.targeted_managed_app_configuration import (
         TargetedManagedAppConfiguration,
@@ -320,7 +320,9 @@ class DeviceAppManagement(Entity):
     @property
     def enterprise_code_signing_certificates(self) -> EntityCollection[EnterpriseCodeSigningCertificate]:
         """Gets the enterpriseCodeSigningCertificates property"""
-        from office365.common.enterprise_code_signing_certificate import EnterpriseCodeSigningCertificate
+        from office365.intune.devices.management.enterprise_code_signing_certificate import (
+            EnterpriseCodeSigningCertificate,
+        )
 
         return self.properties.get(
             "enterpriseCodeSigningCertificates",
@@ -335,7 +337,7 @@ class DeviceAppManagement(Entity):
     @property
     def policy_sets(self) -> EntityCollection[PolicySet]:
         """Gets the policySets property"""
-        from office365.common.policy_set import PolicySet
+        from office365.intune.devices.management.policy_set import PolicySet
 
         return self.properties.get(
             "policySets",
