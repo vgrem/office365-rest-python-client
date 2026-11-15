@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
-from office365.intune.devices.management.enrollment_state import EnrollmentState
+from office365.intune.devices.enrollment.state import EnrollmentState
 from office365.runtime.types.odata_property import odata, version
 
 

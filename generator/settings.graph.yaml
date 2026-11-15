@@ -611,13 +611,13 @@ type_routing:
   DefenderDetectedMalwareActions: office365.intune.devices.management
   DeviceCompliancePolicySettingState: office365.intune.devices.management
   DeviceConfigurationSettingState: office365.intune.devices.management
-  DeviceEnrollmentPlatformRestriction: office365.intune.devices.management
+  DeviceEnrollmentPlatformRestriction: office365.intune.devices.enrollment
   DeviceExchangeAccessStateSummary: office365.intune.devices.management
   DeviceGeoLocation: office365.intune.devices.management
   DeviceHealthAttestationState: office365.intune.devices.management
   DeviceManagementPartnerAssignment: office365.intune.devices.management
   DeviceOperatingSystemSummary: office365.intune.devices.management
-  EnrollmentState: office365.intune.devices.management
+  EnrollmentState: office365.intune.devices.enrollment
   ImportedWindowsAutopilotDeviceIdentityState: office365.intune.devices.management
   InstanceResourceAccess: office365.directory.applications
   IntegerRange: office365.intune.devices.management

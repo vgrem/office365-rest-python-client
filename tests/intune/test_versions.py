@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from office365.entity_collection import EntityCollection
 from office365.graph_version import GraphVersion
-from office365.intune.devices.management.intent import DeviceManagementIntent
+from office365.intune.devices.management.intents.intent import DeviceManagementIntent
 from office365.intune.devices.management.managed.collection import ManagedDeviceCollection
 from office365.intune.devices.management.mobileapps.mobile_app_catalog_package import MobileAppCatalogPackage
 from office365.intune.devices.management.userexperienceanalytics.user_experience_analytics_anomaly import (

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from office365.admin.configuration_management import ConfigurationManagement
     from office365.admin.edge.edge import Edge
     from office365.admin.exchange.admin import ExchangeAdmin
-    from office365.teams.admin_root import TeamsAdminRoot
+    from office365.teams.administration.admin_root import TeamsAdminRoot
 
 
 class Admin(Entity):
@@ -86,7 +86,7 @@ class Admin(Entity):
     @property
     def teams(self) -> TeamsAdminRoot:
         """Gets the teams property"""
-        from office365.teams.admin_root import TeamsAdminRoot
+        from office365.teams.administration.admin_root import TeamsAdminRoot
 
         return self.properties.get("teams", TeamsAdminRoot(self.context, ResourcePath("teams", self.resource_path)))
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from office365.entity import Entity
-from office365.intune.android_managed_store_app_configuration_schema_item import (
+from office365.intune.devices.management.managed.android.store_app_configuration_schema_item import (
     AndroidManagedStoreAppConfigurationSchemaItem,
 )
 from office365.runtime.client_value_collection import ClientValueCollection

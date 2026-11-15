@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from office365.intune.devices.enrollment.configuration import DeviceEnrollmentConfiguration
-from office365.intune.devices.management.enrollment_platform_restriction import DeviceEnrollmentPlatformRestriction
+from office365.intune.devices.enrollment.platform_restriction import DeviceEnrollmentPlatformRestriction
 from office365.runtime.types.odata_property import odata
 
 

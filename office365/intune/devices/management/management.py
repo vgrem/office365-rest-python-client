@@ -43,10 +43,6 @@ from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.common.role_definition import RoleDefinition
-    from office365.intune.android_managed_store_account_enterprise_settings import (
-        AndroidManagedStoreAccountEnterpriseSettings,
-    )
-    from office365.intune.android_managed_store_app_configuration_schema import AndroidManagedStoreAppConfigurationSchema
     from office365.intune.audit.remote_action_audit import RemoteActionAudit
     from office365.intune.devices.compliance.management_partner import (
         ComplianceManagementPartner,
@@ -122,12 +118,25 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.imported_windows_autopilot_device_identity import (
         ImportedWindowsAutopilotDeviceIdentity,
     )
-    from office365.intune.devices.management.intent import DeviceManagementIntent
-    from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
+    from office365.intune.devices.management.intents.intent import DeviceManagementIntent
     from office365.intune.devices.management.managed.all_device_certificate_state import ManagedAllDeviceCertificateState
+    from office365.intune.devices.management.managed.android.store_account_enterprise_settings import (
+        AndroidManagedStoreAccountEnterpriseSettings,
+    )
+    from office365.intune.devices.management.managed.android.store_app_configuration_schema import (
+        AndroidManagedStoreAppConfigurationSchema,
+    )
     from office365.intune.devices.management.managed.device import ManagedDevice
     from office365.intune.devices.management.managed.encryption_state import ManagedDeviceEncryptionState
+    from office365.intune.devices.management.managed.ios.update_device_status import IosUpdateDeviceStatus
     from office365.intune.devices.management.managed.overview import ManagedDeviceOverview
+    from office365.intune.devices.management.managed.windows.autopilot_deployment_profile import (
+        WindowsAutopilotDeploymentProfile,
+    )
+    from office365.intune.devices.management.managed.windows.autopilot_device_identity import (
+        WindowsAutopilotDeviceIdentity,
+    )
+    from office365.intune.devices.management.managed.windows.autopilot_settings import WindowsAutopilotSettings
     from office365.intune.devices.management.microsoft_tunnel_configuration import MicrosoftTunnelConfiguration
     from office365.intune.devices.management.microsoft_tunnel_health_threshold import MicrosoftTunnelHealthThreshold
     from office365.intune.devices.management.microsoft_tunnel_site import MicrosoftTunnelSite
@@ -293,13 +302,6 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc_connectivity_issue import (
         CloudPCConnectivityIssue,
     )
-    from office365.intune.devices.management.windows_autopilot_deployment_profile import (
-        WindowsAutopilotDeploymentProfile,
-    )
-    from office365.intune.devices.management.windows_autopilot_device_identity import (
-        WindowsAutopilotDeviceIdentity,
-    )
-    from office365.intune.devices.management.windows_autopilot_settings import WindowsAutopilotSettings
     from office365.intune.devices.management.windows_information_protection_app_learning_summary import (
         WindowsInformationProtectionAppLearningSummary,
     )
@@ -532,7 +534,7 @@ class DeviceManagement(Entity):
     @property
     def ios_update_statuses(self) -> EntityCollection[IosUpdateDeviceStatus]:
         """Gets the iosUpdateStatuses property"""
-        from office365.intune.devices.management.ios_update_device_status import IosUpdateDeviceStatus
+        from office365.intune.devices.management.managed.ios.update_device_status import IosUpdateDeviceStatus
 
         return self.properties.get(
             "iosUpdateStatuses",
@@ -1139,7 +1141,7 @@ class DeviceManagement(Entity):
     @property
     def windows_autopilot_device_identities(self) -> EntityCollection[WindowsAutopilotDeviceIdentity]:
         """Gets the windowsAutopilotDeviceIdentities property"""
-        from office365.intune.devices.management.windows_autopilot_device_identity import (
+        from office365.intune.devices.management.managed.windows.autopilot_device_identity import (
             WindowsAutopilotDeviceIdentity,
         )
 
@@ -1564,7 +1566,7 @@ class DeviceManagement(Entity):
     @property
     def windows_autopilot_deployment_profiles(self) -> EntityCollection[WindowsAutopilotDeploymentProfile]:
         """Gets the windowsAutopilotDeploymentProfiles property"""
-        from office365.intune.devices.management.windows_autopilot_deployment_profile import (
+        from office365.intune.devices.management.managed.windows.autopilot_deployment_profile import (
             WindowsAutopilotDeploymentProfile,
         )
 
@@ -1788,7 +1790,7 @@ class DeviceManagement(Entity):
         self,
     ) -> EntityCollection[AndroidManagedStoreAppConfigurationSchema]:
         """Gets the androidManagedStoreAppConfigurationSchemas property"""
-        from office365.intune.android_managed_store_app_configuration_schema import (
+        from office365.intune.devices.management.managed.android.store_app_configuration_schema import (
             AndroidManagedStoreAppConfigurationSchema,
         )
 
@@ -1865,7 +1867,7 @@ class DeviceManagement(Entity):
     @property
     def android_managed_store_account_enterprise_settings(self) -> AndroidManagedStoreAccountEnterpriseSettings:
         """Gets the androidManagedStoreAccountEnterpriseSettings property"""
-        from office365.intune.android_managed_store_account_enterprise_settings import (
+        from office365.intune.devices.management.managed.android.store_account_enterprise_settings import (
             AndroidManagedStoreAccountEnterpriseSettings,
         )
 
@@ -1973,7 +1975,7 @@ class DeviceManagement(Entity):
     @property
     def intents(self) -> EntityCollection[DeviceManagementIntent]:
         """Gets the intents property"""
-        from office365.intune.devices.management.intent import DeviceManagementIntent
+        from office365.intune.devices.management.intents.intent import DeviceManagementIntent
 
         return self.properties.get(
             "intents",
@@ -2579,7 +2581,7 @@ class DeviceManagement(Entity):
     @property
     def windows_autopilot_settings(self) -> WindowsAutopilotSettings:
         """Gets the windowsAutopilotSettings property"""
-        from office365.intune.devices.management.windows_autopilot_settings import WindowsAutopilotSettings
+        from office365.intune.devices.management.managed.windows.autopilot_settings import WindowsAutopilotSettings
 
         return self.properties.get(
             "windowsAutopilotSettings",

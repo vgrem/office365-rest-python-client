@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 
 from office365.permissions import require_permission
-from office365.reports.report_result import ReportResult
+from office365.reports.result import ReportResult
 from office365.runtime.queries.function import FunctionQuery
 
 if TYPE_CHECKING:

@@ -12,7 +12,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.intune.devices.management.windows_autopilot_device_identity import (
+    from office365.intune.devices.management.managed.windows.autopilot_device_identity import (
         WindowsAutopilotDeviceIdentity,
     )
 
@@ -94,7 +94,7 @@ class WindowsAutopilotDeploymentProfile(Entity):
     @property
     def assigned_devices(self) -> EntityCollection[WindowsAutopilotDeviceIdentity]:
         """Gets the assignedDevices property"""
-        from office365.intune.devices.management.windows_autopilot_device_identity import (
+        from office365.intune.devices.management.managed.windows.autopilot_device_identity import (
             WindowsAutopilotDeviceIdentity,
         )
 

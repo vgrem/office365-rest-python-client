@@ -6,10 +6,16 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.entity import Entity
-from office365.intune.android_enrollment_company_code import AndroidEnrollmentCompanyCode
-from office365.intune.android_managed_store_account_app_sync_status import AndroidManagedStoreAccountAppSyncStatus
-from office365.intune.android_managed_store_account_bind_status import AndroidManagedStoreAccountBindStatus
-from office365.intune.android_managed_store_account_enrollment_target import AndroidManagedStoreAccountEnrollmentTarget
+from office365.intune.devices.management.managed.android.enrollment_company_code import AndroidEnrollmentCompanyCode
+from office365.intune.devices.management.managed.android.store_account_app_sync_status import (
+    AndroidManagedStoreAccountAppSyncStatus,
+)
+from office365.intune.devices.management.managed.android.store_account_bind_status import (
+    AndroidManagedStoreAccountBindStatus,
+)
+from office365.intune.devices.management.managed.android.store_account_enrollment_target import (
+    AndroidManagedStoreAccountEnrollmentTarget,
+)
 from office365.intune.managed_google_play_enterprise_type import ManagedGooglePlayEnterpriseType
 from office365.permissions import require_permission
 from office365.runtime.client_result import ClientResult

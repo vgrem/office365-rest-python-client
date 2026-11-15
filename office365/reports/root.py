@@ -8,17 +8,17 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.partners.partners import Partners
 from office365.permissions import require_permission
-from office365.reports.internal.queries.create_report_query import create_report_query
-from office365.reports.print_usage_by_printer import PrintUsageByPrinter
-from office365.reports.print_usage_by_user import PrintUsageByUser
-from office365.reports.quotas import REPORT_QUOTAS
-from office365.reports.report_export import (
+from office365.reports.export import (
     ReportExportResult,
     ReportTarget,
     download_report,
     download_report_async,
 )
-from office365.reports.report_result import ReportResult
+from office365.reports.internal.queries.create_report_query import create_report_query
+from office365.reports.print_usage_by_printer import PrintUsageByPrinter
+from office365.reports.print_usage_by_user import PrintUsageByUser
+from office365.reports.quotas import REPORT_QUOTAS
+from office365.reports.result import ReportResult
 from office365.reports.security.root import SecurityReportsRoot
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection

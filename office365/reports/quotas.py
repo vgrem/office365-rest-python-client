@@ -5,7 +5,7 @@ a Teams activity request and an Outlook activity request in the same ten minutes
 one request each out of 14, not two out of the same 14. So a report collector that
 walks every report shares one budget per report, not one budget overall.
 
-The CSV rows are what :meth:`office365.reports.report_result.ReportResult.csv_rows`
+The CSV rows are what :meth:`office365.reports.result.ReportResult.csv_rows`
 parses — the default rendition; the JSON row is the beta
 ``$format=application/json`` preview, which has no tenant-wide counterpart.
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.intune.android_managed_store_app_configuration_schema_item_data_type import (
+from office365.intune.devices.management.managed.android.store_app_configuration_schema_item_data_type import (
     AndroidManagedStoreAppConfigurationSchemaItemDataType,
 )
 from office365.runtime.client_value import ClientValue
