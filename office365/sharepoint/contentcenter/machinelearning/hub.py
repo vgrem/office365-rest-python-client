@@ -386,3 +386,30 @@ class SPMachineLearningHub(Entity):
         qry = FunctionQuery(self, "GetRetentionLabel", [retention_label_id], return_type)
         self.context.add_query(qry)
         return return_type
+
+    def get_autofill_model_tier(self, doc_lib_id: UUID) -> ClientResult[str]:
+        """GetAutofillModelTier operation.
+
+        Args:
+            doc_lib_id (UUID):
+                docLibId parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = FunctionQuery(self, "GetAutofillModelTier", [doc_lib_id], return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def set_autofill_model_tier(self, doc_lib_id: UUID, model_tier: int) -> Self:
+        """SetAutofillModelTier operation.
+
+        Args:
+            doc_lib_id (UUID):
+                docLibId parameter
+            model_tier (int):
+                modelTier parameter
+        """
+        qry = ServiceOperationQuery(
+            self, "SetAutofillModelTier", None, {"docLibId": doc_lib_id, "modelTier": model_tier}, None, None
+        )
+        self.context.add_query(qry)
+        return self

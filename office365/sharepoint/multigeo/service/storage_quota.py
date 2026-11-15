@@ -66,3 +66,51 @@ class StorageQuota(Entity):
     def tenant_storage_mb(self) -> Optional[int]:
         """Gets the TenantStorageMB property"""
         return self.properties.get("TenantStorageMB", None)
+
+    @odata(name="GeoUsedArchivedOneDrivePreservationHoldTotalSizeStorageMB")
+    @property
+    def geo_used_archived_onedrive_preservation_hold_total_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedArchivedOneDrivePreservationHoldTotalSizeStorageMB property"""
+        return self.properties.get("GeoUsedArchivedOneDrivePreservationHoldTotalSizeStorageMB", None)
+
+    @odata(name="GeoUsedArchivedOneDrivePreservationHoldVersionSizeStorageMB")
+    @property
+    def geo_used_archived_onedrive_preservation_hold_version_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedArchivedOneDrivePreservationHoldVersionSizeStorageMB property"""
+        return self.properties.get("GeoUsedArchivedOneDrivePreservationHoldVersionSizeStorageMB", None)
+
+    @odata(name="GeoUsedArchivedPreservationHoldTotalSizeStorageMB")
+    @property
+    def geo_used_archived_preservation_hold_total_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedArchivedPreservationHoldTotalSizeStorageMB property"""
+        return self.properties.get("GeoUsedArchivedPreservationHoldTotalSizeStorageMB", None)
+
+    @odata(name="GeoUsedArchivedPreservationHoldVersionSizeStorageMB")
+    @property
+    def geo_used_archived_preservation_hold_version_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedArchivedPreservationHoldVersionSizeStorageMB property"""
+        return self.properties.get("GeoUsedArchivedPreservationHoldVersionSizeStorageMB", None)
+
+    @odata(name="GeoUsedOneDrivePreservationHoldTotalSizeStorageMB")
+    @property
+    def geo_used_onedrive_preservation_hold_total_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedOneDrivePreservationHoldTotalSizeStorageMB property"""
+        return self.properties.get("GeoUsedOneDrivePreservationHoldTotalSizeStorageMB", None)
+
+    @odata(name="GeoUsedOneDrivePreservationHoldVersionSizeStorageMB")
+    @property
+    def geo_used_onedrive_preservation_hold_version_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedOneDrivePreservationHoldVersionSizeStorageMB property"""
+        return self.properties.get("GeoUsedOneDrivePreservationHoldVersionSizeStorageMB", None)
+
+    @odata(name="GeoUsedPreservationHoldTotalSizeStorageMB")
+    @property
+    def geo_used_preservation_hold_total_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedPreservationHoldTotalSizeStorageMB property"""
+        return self.properties.get("GeoUsedPreservationHoldTotalSizeStorageMB", None)
+
+    @odata(name="GeoUsedPreservationHoldVersionSizeStorageMB")
+    @property
+    def geo_used_preservation_hold_version_size_storage_mb(self) -> Optional[int]:
+        """Gets the GeoUsedPreservationHoldVersionSizeStorageMB property"""
+        return self.properties.get("GeoUsedPreservationHoldVersionSizeStorageMB", None)

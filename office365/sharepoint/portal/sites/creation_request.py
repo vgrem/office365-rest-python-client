@@ -5,12 +5,14 @@ from typing import Optional
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import GuidCollection
+from office365.sharepoint.teams.channel_notes_copy_request import SPChannelNotesCopyRequest
 from office365.sharepoint.teams.sp_team_channel_capabilities import SPTeamChannelCapabilities
 
 
 class SPSiteCreationRequest(ClientValue):
     Title: str
     Url: str
+    ChannelNotes: SPChannelNotesCopyRequest = field(default_factory=SPChannelNotesCopyRequest)
     Owner: Optional[str] = None
     Lcid: int = 1033
     WebTemplate: str = "SITEPAGEPUBLISHING#0"

@@ -229,7 +229,7 @@ class SourceEditor:
 
         A dataclass field belongs in the field block, in wire-name order: appended
         after the last method it splits the block in two, and the next run appends
-        to the new tail.
+        to the new tail. The block is two runs, though -- see :meth:`_field_slot`.
 
         An enum member belongs in the value block, with no blank line between
         members: appended at the class end it would land below
@@ -251,13 +251,13 @@ class SourceEditor:
         body = "\n\n".join(render_member(node) for node in members)
         lines[class_end:class_end] = ["", *body.splitlines()]
 
-    def _declared_fields(self, tree: ast.Module) -> list[tuple[str, int, int]]:
-        """``(name, start line, end line)`` of every field the target class declares, in order."""
+    def _declared_fields(self, tree: ast.Module) -> list[tuple[str, int, int, bool]]:
+        """``(name, start line, end line, has default)`` of every field the class declares, in order."""
         for node in tree.body:
             if not isinstance(node, ast.ClassDef) or node.name != self.class_name:
                 continue
             return [
-                (field.target.id, field.lineno, field.end_lineno or field.lineno)
+                (field.target.id, field.lineno, field.end_lineno or field.lineno, field.value is not None)
                 for field in node.body
                 if isinstance(field, ast.AnnAssign) and isinstance(field.target, ast.Name)
             ]
@@ -287,14 +287,26 @@ class SourceEditor:
         )
 
     @staticmethod
-    def _field_slot(fields: list[tuple[str, int, int]], member: ast.stmt) -> int:
-        """The 0-based line index ``member`` goes before, keeping the block name-ordered."""
+    def _field_slot(fields: list[tuple[str, int, int, bool]], member: ast.stmt) -> int:
+        """The 0-based line index ``member`` goes before, keeping the block name-ordered.
+
+        Name order holds only *within* a run: ``dataclass`` rejects a field with a
+        default that precedes one without (``TypeError: non-default argument 'Title'
+        follows default argument 'ChannelNotes'``), so the block is "required, then
+        defaulted" and a field whose name sorts before every required one still goes
+        after them. Each run is spliced by name, which is what keeps a re-run a no-op.
+        """
+        is_member_default = isinstance(member, ast.AnnAssign) and member.value is not None
         name = member.target.id if isinstance(member, ast.AnnAssign) and isinstance(member.target, ast.Name) else ""
-        for existing, start, _ in fields:
+        run = [field for field in fields if field[3] == is_member_default]
+        if not run:
+            # No field of this kind yet: required fields open the block, defaulted close it.
+            return fields[0][1] - 1 if not is_member_default else fields[-1][2]
+        for existing, start, _, _ in run:
             if existing > name:
                 # Before the field's first line: it may span several lines.
                 return start - 1
-        return fields[-1][2]
+        return run[-1][2]
 
     def _class_line(self, tree: ast.Module) -> Optional[int]:
         """0-based line index of the ``class <name>`` statement."""

@@ -10,13 +10,22 @@ from office365.runtime.types.collections import StringCollection
 class StorageUsageMetricsSnapshot(ClientValue):
     ActiveSitesCount: int | None = None
     ActiveUsedStorageMB: int | None = None
+    AgenticOneDriveUsedStorageMB: int | None = None
     AllocationType: int | None = None
     ArchivedFilesUsedStorageMB: int | None = None
+    ArchivedOneDrivePreservationHoldLibraryTotalSizeMB: int | None = None
+    ArchivedOneDrivePreservationHoldLibraryVersionSizeMB: int | None = None
     ArchivedSitesCount: int | None = None
+    ArchivedSitesPreservationHoldLibraryTotalSizeMB: int | None = None
+    ArchivedSitesPreservationHoldLibraryVersionSizeMB: int | None = None
     ArchivedSitesUsedStorageMB: int | None = None
     AvailableFreeStorageMB: int | None = None
     GeoLocations: StringCollection = field(default_factory=StringCollection)
     MetricsAggregationScope: int | None = None
+    OneDrivePreservationHoldLibraryActiveUsedStorageMB: int | None = None
+    OneDrivePreservationHoldLibraryVersionSizeMB: int | None = None
+    PreservationHoldLibraryActiveUsedStorageMB: int | None = None
+    PreservationHoldLibraryVersionSizeMB: int | None = None
     SharePointEmbeddedActiveUsedStorageMB: int | None = None
     SharePointEmbeddedArchivedUsedStorageMB: int | None = None
     SnapshotDate: datetime | None = field(default_factory=lambda: datetime.min)

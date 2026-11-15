@@ -1029,6 +1029,10 @@
             <Property Name="IsNextGenerationChannel" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="SiteMembershipIndicator" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
+         <ComplexType Name="SPChannelNotesCopyRequest">
+            <Property Name="SourceFileId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="SourceSiteId" Type="Edm.Guid" Nullable="false"/>
+         </ComplexType>
          <ComplexType Name="ClassificationResult">
             <Property Name="ConfidenceScore" Type="Edm.Double" Nullable="false"/>
             <Property Name="ContentTypeId" Type="Edm.String"/>
@@ -1984,6 +1988,27 @@
             <Property Name="IsExternal" Type="Edm.Boolean" Nullable="false"/>
             <Property Name="Title" Type="Edm.String"/>
             <Property Name="Url" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SparkCategorySimilarityResult">
+            <Property Name="RequestId" Type="Edm.String"/>
+            <Property Name="Scores" Type="Collection(SP.SparkCategoryScore)"/>
+         </ComplexType>
+         <ComplexType Name="SparkCategoryScore">
+            <Property Name="Id" Type="Edm.String"/>
+            <Property Name="Score" Type="Edm.Double" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="SparkCategory">
+            <Property Name="id" Type="Edm.String"/>
+            <Property Name="text" Type="Edm.String"/>
+         </ComplexType>
+         <ComplexType Name="SparkEmbeddingResult">
+            <Property Name="Embeddings" Type="Collection(SP.SparkEmbeddingItem)"/>
+            <Property Name="PromptTokens" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="TotalTokens" Type="Edm.Int32" Nullable="false"/>
+         </ComplexType>
+         <ComplexType Name="SparkEmbeddingItem">
+            <Property Name="Embedding" Type="Collection(Edm.Double)" Nullable="false"/>
+            <Property Name="Index" Type="Edm.Int32" Nullable="false"/>
          </ComplexType>
          <ComplexType Name="WebFetchResult">
             <Property Name="Content" Type="Edm.String"/>
@@ -3311,6 +3336,12 @@
             <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
             <Property Name="UntranslatedLanguages" Type="Collection(Edm.String)"/>
             <Property Name="Items" Type="Collection(SP.TranslationStatus)"/>
+         </EntityType>
+         <EntityType Name="SPARK" Abstract="true">
+            <Key>
+               <PropertyRef Name="Id4a81de82eeb94d6080ea5bf63e27023a"/>
+            </Key>
+            <Property Name="Id4a81de82eeb94d6080ea5bf63e27023a" Type="Edm.String" Nullable="false"/>
          </EntityType>
          <EntityType Name="SPHSite">
             <Key>
@@ -5808,6 +5839,7 @@
             <EntitySet Name="SocialRestFeedManagers" EntityType="SP.Social.SocialRestFeedManager"/>
             <EntitySet Name="SocialRestFollowingManagers" EntityType="SP.Social.SocialRestFollowingManager"/>
             <EntitySet Name="SocialRestThreads" EntityType="SP.Social.SocialRestThread"/>
+            <EntitySet Name="SPARKs" EntityType="SP.SPARK"/>
             <EntitySet Name="SPDataLeakagePreventionStatusInfos" EntityType="SP.SPDataLeakagePreventionStatusInfo"/>
             <EntitySet Name="SPMigrationJobStatuss" EntityType="SP.SPMigrationJobStatus"/>
             <EntitySet Name="SPPlaylists" EntityType="SP.SPPlaylist"/>
@@ -6144,6 +6176,10 @@
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
                <Parameter Name="docLibId" Type="Edm.Guid" Nullable="false"/>
             </FunctionImport>
+            <FunctionImport Name="GetAutofillModelTier" ReturnType="Edm.String" IsSideEffecting="false" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
+               <Parameter Name="docLibId" Type="Edm.Guid" Nullable="false"/>
+            </FunctionImport>
             <FunctionImport Name="GetByContentTypeId" ReturnType="Microsoft.Office.Server.ContentCenter.SyntexModelsLandingInfo" IsComposable="true" IsBindable="true" EntitySet="SyntexModelsLandingInfos">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
                <Parameter Name="contentTypeId" Type="Edm.String"/>
@@ -6192,6 +6228,11 @@
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
                <Parameter Name="docLibId" Type="Edm.Guid" Nullable="false"/>
                <Parameter Name="autofillColumnSettings" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SetAutofillModelTier" IsBindable="true">
+               <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
+               <Parameter Name="docLibId" Type="Edm.Guid" Nullable="false"/>
+               <Parameter Name="modelTier" Type="Edm.Int32" Nullable="false"/>
             </FunctionImport>
             <FunctionImport Name="SetColumnLLMInfo" IsBindable="true">
                <Parameter Name="this" Type="Microsoft.Office.Server.ContentCenter.SPMachineLearningHub"/>
@@ -12059,6 +12100,18 @@
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_SPStart_SPStartUtilitiesProxy_GetSerializedSPStartContext" ReturnType="Edm.String">
                <Parameter Name="mySiteUrl" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_SPARK_GetCategorySimilarity" ReturnType="SP.SparkCategorySimilarityResult">
+               <Parameter Name="text" Type="Edm.String"/>
+               <Parameter Name="scenarioId" Type="Edm.String"/>
+               <Parameter Name="categories" Type="Collection(SP.SparkCategory)"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_SPARK_GetEmbedding" ReturnType="SP.SparkEmbeddingResult">
+               <Parameter Name="texts" Type="Collection(Edm.String)"/>
+               <Parameter Name="scenarioId" Type="Edm.String"/>
+            </FunctionImport>
+            <FunctionImport Name="SP_SPARK_GetSummarization" ReturnType="Edm.String">
+               <Parameter Name="texts" Type="Collection(Edm.String)"/>
             </FunctionImport>
             <FunctionImport Name="Microsoft_SharePoint_SmartWikiLibrary_SmartWikiLibraryUtility" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility" IsComposable="true" EntitySet="Smartwikilibrarys"/>
             <FunctionImport Name="BatchConvertClassicWikiPagesV2" ReturnType="Microsoft.SharePoint.SmartWikiLibrary.BatchConvertResult" IsBindable="true">
@@ -26862,6 +26915,15 @@
          <Annotations Target="SP.ChangeQuery/IgnoreStartTokenNotFoundError">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.SPChannelNotesCopyRequest">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SPChannelNotesCopyRequest/SourceFileId">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SPChannelNotesCopyRequest/SourceSiteId">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ClassificationResult">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -29914,6 +29976,9 @@
          <Annotations Target="Microsoft.SharePoint.SPStart.SPStartUtilitiesProxy">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.SPARK">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.SmartWikiLibraryUtility">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -30880,6 +30945,9 @@
          <Annotations Target="SP.ApiData/GetAutofillColumnSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="SP.ApiData/GetAutofillModelTier(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="SP.ApiData/GetByContentTypeId(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.String)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -30911,6 +30979,9 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetAutofillColumnSettings(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SetAutofillModelTier(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Int32)">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/SetColumnLLMInfo(Microsoft.Office.Server.ContentCenter.SPMachineLearningHub, Edm.Guid, Edm.Guid, Edm.String, Edm.Boolean, Edm.String, Edm.Int32, Edm.Int64)">
@@ -32416,6 +32487,9 @@
          <Annotations Target="Microsoft.SharePoint.Portal.SPSiteCreationRequest/ChannelGroupId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
+         <Annotations Target="Microsoft.SharePoint.Portal.SPSiteCreationRequest/ChannelNotes">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
          <Annotations Target="Microsoft.SharePoint.Portal.SPSiteCreationRequest/HubSiteId">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
@@ -32660,6 +32734,63 @@
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="SP.ApiData/Microsoft_SharePoint_SPStart_SPStartUtilitiesProxy_GetSerializedSPStartContext(Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategorySimilarityResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategorySimilarityResult/RequestId">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategoryScore">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategoryScore/Id">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategoryScore/Score">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategorySimilarityResult/Scores">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategory">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategory/id">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkCategory/text">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_SPARK_GetCategorySimilarity(Edm.String, Edm.String, Collection(SP.SparkCategory))">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingResult">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingItem">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingItem/Embedding">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingItem/Index">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingResult/Embeddings">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingResult/PromptTokens">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.SparkEmbeddingResult/TotalTokens">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_SPARK_GetEmbedding(Collection(Edm.String), Edm.String)">
+            <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
+         </Annotations>
+         <Annotations Target="SP.ApiData/SP_SPARK_GetSummarization(Collection(Edm.String))">
             <ValueAnnotation Term="Com.Microsoft.VisualStudio.CodeGen.IsBeta" Bool="true"/>
          </Annotations>
          <Annotations Target="Microsoft.SharePoint.SmartWikiLibrary.BatchConvertResult">
@@ -35853,7 +35984,15 @@
             <Property Name="GeoAvailableStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="GeoLocation" Type="Edm.String"/>
             <Property Name="GeoUsedArchivedFileStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedArchivedOneDrivePreservationHoldTotalSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedArchivedOneDrivePreservationHoldVersionSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedArchivedPreservationHoldTotalSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedArchivedPreservationHoldVersionSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="GeoUsedArchiveStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedOneDrivePreservationHoldTotalSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedOneDrivePreservationHoldVersionSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedPreservationHoldTotalSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="GeoUsedPreservationHoldVersionSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="GeoUsedStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="GeoUsedVersionSizeStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="QuotaType" Type="Edm.Int32" Nullable="false"/>
@@ -40979,6 +41118,7 @@
             <Property Name="AdditionalWebFeatureIds" Type="Collection(Edm.Guid)" Nullable="false"/>
             <Property Name="ChannelCapabilities" Type="SP.SPTeamChannelCapabilities"/>
             <Property Name="ChannelGroupId" Type="Edm.Guid" Nullable="false"/>
+            <Property Name="ChannelNotes" Type="SP.SPChannelNotesCopyRequest"/>
             <Property Name="Classification" Type="Edm.String"/>
             <Property Name="Description" Type="Edm.String"/>
             <Property Name="HubSiteId" Type="Edm.Guid" Nullable="false"/>
@@ -43545,16 +43685,25 @@
          <ComplexType Name="StorageUsageMetricsSnapshot">
             <Property Name="ActiveSitesCount" Type="Edm.Int64"/>
             <Property Name="ActiveUsedStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="AgenticOneDriveUsedStorageMB" Type="Edm.Int64"/>
             <Property Name="AllocationType" Type="Edm.Int32" Nullable="false"/>
             <Property Name="ArchivedFilesUsedStorageMB" Type="Edm.Int64" Nullable="false"/>
+            <Property Name="ArchivedOneDrivePreservationHoldLibraryTotalSizeMB" Type="Edm.Int64"/>
+            <Property Name="ArchivedOneDrivePreservationHoldLibraryVersionSizeMB" Type="Edm.Int64"/>
             <Property Name="ArchivedSitesCount" Type="Edm.Int64"/>
+            <Property Name="ArchivedSitesPreservationHoldLibraryTotalSizeMB" Type="Edm.Int64"/>
+            <Property Name="ArchivedSitesPreservationHoldLibraryVersionSizeMB" Type="Edm.Int64"/>
             <Property Name="ArchivedSitesUsedStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="AvailableFreeStorageMB" Type="Edm.Int64" Nullable="false"/>
             <Property Name="GeoLocations" Type="Collection(Edm.String)"/>
             <Property Name="IsArchiveStorageReclassifiedAsActive" Type="Edm.Boolean"/>
             <Property Name="MetricsAggregationScope" Type="Edm.Int32" Nullable="false"/>
+            <Property Name="OneDrivePreservationHoldLibraryActiveUsedStorageMB" Type="Edm.Int64"/>
+            <Property Name="OneDrivePreservationHoldLibraryVersionSizeMB" Type="Edm.Int64"/>
             <Property Name="PaygoActiveStorageMB" Type="Edm.Int64"/>
             <Property Name="PaygoArchiveStorageMB" Type="Edm.Int64"/>
+            <Property Name="PreservationHoldLibraryActiveUsedStorageMB" Type="Edm.Int64"/>
+            <Property Name="PreservationHoldLibraryVersionSizeMB" Type="Edm.Int64"/>
             <Property Name="SharePointEmbeddedActiveUsedStorageMB" Type="Edm.Int64"/>
             <Property Name="SharePointEmbeddedArchivedUsedStorageMB" Type="Edm.Int64"/>
             <Property Name="SnapshotDate" Type="Edm.DateTime" Nullable="false"/>
@@ -50484,6 +50633,11 @@
             <Property Name="TaxCatchAllId" Type="Collection(Edm.Int32)" Nullable="false"/>
             <Property Name="Cat0V8K4G88" Type="SP.Taxonomy.TaxonomyFieldValue"/>
             <Property Name="CatAA7ULK8E" Type="SP.Taxonomy.TaxonomyFieldValue"/>
+            <Property Name="MediaServiceDateTaken" Type="Edm.String"/>
+            <Property Name="MediaServiceImageTags" Type="Collection(SP.Taxonomy.TaxonomyFieldValue)"/>
+            <Property Name="lcf76f155ced4ddcb4097134ff3c332f" Type="Edm.String"/>
+            <Property Name="MediaServiceGenerationTime" Type="Edm.String"/>
+            <Property Name="MediaServiceEventHashCode" Type="Edm.String"/>
             <Property Name="ID" Type="Edm.Int32"/>
             <Property Name="Created" Type="Edm.DateTime"/>
             <Property Name="AuthorId" Type="Edm.Int32"/>
