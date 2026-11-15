@@ -461,6 +461,21 @@ class ClientObject:
         projection.extend(name for name in names if name not in projection)
         return self
 
+    def select_default(self) -> Self:
+        """Specifies the properties the type itself says a read of it asks for.
+
+        The members that state ``@odata(default=<rank>)`` are where a type says which
+        columns answer a reader and in what order, so a caller with no opinion does not need
+        one: a ``User`` asks for its name and its two addresses, and a type that ranks
+        nothing adds no projection at all.
+
+        Returns:
+            The current instance for method chaining
+        """
+        from office365.runtime.schema import TypeSchema
+
+        return self.select(TypeSchema.of(self).defaults)
+
     def get_property(self, name: str, default_value: Any = None) -> Any:
         """
         Gets the value of a property.

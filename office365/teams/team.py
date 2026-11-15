@@ -86,7 +86,7 @@ class Team(Entity):
         """Settings to configure messaging and mentions in the team."""
         return self.properties.get("messagingSettings", TeamMessagingSettings())
 
-    @odata(name="displayName")
+    @odata(name="displayName", default=1)
     @property
     def display_name(self) -> str | None:
         """The name of the team."""
@@ -118,7 +118,7 @@ class Team(Entity):
         """The visibility of the group and team. Defaults to Public."""
         return self.properties.get("visibility", TeamVisibilityType.unknown)
 
-    @odata(name="webUrl")
+    @odata(name="webUrl", default=2)
     @property
     def web_url(self) -> str | None:
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when

@@ -206,7 +206,7 @@ class ManagedDevice(Entity):
         """Manufacturer of the device."""
         return self.properties.get("manufacturer", None)
 
-    @odata(name="operatingSystem", readonly=True)
+    @odata(name="operatingSystem", readonly=True, default=2)
     @property
     def operating_system(self) -> Optional[str]:
         """Manufacturer of the device."""
@@ -257,7 +257,7 @@ class ManagedDevice(Entity):
         """Gets the complianceGracePeriodExpirationDateTime property"""
         return self.properties.get("complianceGracePeriodExpirationDateTime", datetime.min)
 
-    @odata(name="complianceState", readonly=True)
+    @odata(name="complianceState", readonly=True, default=3)
     @property
     def compliance_state(self) -> ComplianceState:
         """Gets the complianceState property"""
@@ -275,7 +275,7 @@ class ManagedDevice(Entity):
         """Gets the deviceEnrollmentType property"""
         return self.properties.get("deviceEnrollmentType", DeviceEnrollmentType.unknown)
 
-    @odata(name="deviceName", readonly=True)
+    @odata(name="deviceName", readonly=True, default=1)
     @property
     def device_name(self) -> Optional[str]:
         """Gets the deviceName property"""

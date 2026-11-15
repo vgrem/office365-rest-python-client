@@ -2110,7 +2110,7 @@ class List(SecurableObject):
     def show_hidden_fields_in_modern_form(self) -> Optional[bool]:
         return self.properties.get("ShowHiddenFieldsInModernForm", None)
 
-    @odata(name="Title")
+    @odata(name="Title", default=1)
     @property
     def title(self) -> Optional[str]:
         """Gets the displayed title for the list."""

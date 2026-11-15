@@ -178,7 +178,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("classification", None)
 
-    @odata(name="displayName")
+    @odata(name="displayName", default=1)
     @property
     def display_name(self) -> Optional[str]:
         """
@@ -241,7 +241,7 @@ class Group(DirectoryObject):
         """
         return self.properties.get("licenseProcessingState", LicenseProcessingState())
 
-    @odata(name="mail")
+    @odata(name="mail", default=2)
     @property
     def mail(self) -> Optional[str]:
         """

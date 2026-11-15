@@ -30,10 +30,12 @@ and ``ExchangeAdminClient`` do, and ``ClientContext`` authenticates through a di
 provider that does not, so a sharepoint session is kept until its token expires and is then
 renewed by logging in again.
 
-A read prints a table, not the payload: the words a type calls itself with and the dates it
-carries, which is the answer a command line was asked for. ``-o json`` prints everything the
-object loaded, and ``--columns`` says which names the table shows. ``Web`` is 118 fields loaded
-and three printed; the other 115 are not hidden, they are unasked for.
+A read prints a table, not the payload: the columns the *type* says a read of it asks for --
+the members stamped ``@odata(default=<rank>)``, read as ``TypeSchema.defaults`` -- which is the
+answer a command line was asked for. ``-o json`` prints everything the object loaded, and
+``--columns`` says which names the table shows. ``Web`` is 118 fields loaded and two printed;
+the other 116 are not hidden, they are unasked for. A type that ranks nothing prints its
+payload, because a settings object with sixteen config switches has no name a reader came for.
 """
 
 from __future__ import annotations
@@ -70,13 +72,6 @@ SUPPLIED = ("self", "token_cache", "token_callback")
 
 #: The words an audience prefixes: ``o365 sharepoint login`` is a session, not a noun.
 SESSION = ("login", "whoami", "logout")
-
-#: Why a read prints a table and not the payload. Two facts decide the columns: what the type
-#: calls itself, and when it changed. ``Web`` answers ``Title Url``, ``Message`` answers
-#: ``subject receivedDateTime``; the rest of the 118 loaded fields are one ``-o json`` away,
-#: because a command line's default is the answer, not the object.
-NAMES = "title name displayname subject userprincipalname mail url receiveddatetime lastmodifieddatetime".split()
-NAMES += ("createddatetime", "id")
 
 
 def main(argv: "list[str] | None" = None) -> int:
@@ -263,10 +258,10 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
             f"{product} {spoken} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
         )
-    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given, args)
+    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given, args, found.entity)
 
 
-def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.Namespace) -> int:
+def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.Namespace, entity: type) -> int:
     """Call the method, run the one query it queued, and print what came back."""
     from office365.runtime.client_request_exception import ClientRequestException
     from office365.runtime.display import describe_collection
@@ -284,7 +279,7 @@ def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.N
             describe_collection(
                 records,
                 name=type(result).__name__,
-                columns=_columns(records, args.columns),
+                columns=_columns(records, args.columns, entity),
                 max_items=None,
                 max_column_width=None,
             )
@@ -292,12 +287,15 @@ def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.N
     return 0
 
 
-def _columns(records: "list[Any]", chosen: str) -> "list[str] | None":
-    """The columns a table shows: the ones asked for, or the ones a reader came for."""
+def _columns(records: "list[Any]", chosen: str, entity: type) -> "list[str] | None":
+    """The columns a table shows: the ones asked for, or the ones the type says a reader wants."""
     if chosen:
         return [name.strip() for name in chosen.split(",")]
-    fields = {name for record in records if isinstance(record, Mapping) for name in record}
-    return [name for word in NAMES for name in sorted(fields) if name.lower() == word][:3] or None
+    from office365.runtime.schema import TypeSchema
+
+    spelled = {name.lower(): name for name in sorted({name for r in records if isinstance(r, Mapping) for name in r})}
+    wanted = TypeSchema.of(entity).defaults
+    return [spelled[name.lower()] for name in wanted if name.lower() in spelled] or None
 
 
 def _rows(result: Any) -> Any:

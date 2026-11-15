@@ -206,6 +206,12 @@ class ODataPropertyMeta:
     #: address comes before the one scoped to its site collection, and a login name before
     #: the user principal name the directory knows it by.
     identity: bool = False
+    #: Where this column comes in what a read of the type asks for when the caller names
+    #: none: ``0`` leaves it out, and ``1`` is the first column a table shows. Not a schema
+    #: fact -- no CSDL says which column a human came for -- but a judgement about *one
+    #: member*, stated where the member is, so a type with sixteen config switches and no
+    #: name anyone reads says nothing and a table has nothing to promise.
+    default: int = 0
 
     def __post_init__(self) -> None:
         if self.facet is not None and self.facet not in FACETS:
@@ -272,6 +278,26 @@ class odata(dict):
     it by, then the user principal name the directory knows it by -- so one reader answers
     for a site user and a directory user alike.
 
+    ``default=`` states what a read of the type asks for when the caller names no columns,
+    and where each column comes in that answer. It is a judgement, not a metadata fact, so
+    it is stated per member -- a column at a time, on the class that declares it -- rather
+    than as a list somewhere else that would have to be kept in step with the classes::
+
+        @odata(name="subject", default=1)
+        def subject(self): ...
+
+
+        # Named first, stamped second: which column leads is this type's decision.
+        @odata(name="receivedDateTime", default=2)
+        def received_date_time(self): ...
+
+    The number is the column's rank rather than a flag because the first column of a table
+    is the one a reader scans: a name leads, a timestamp follows, and which is which is a
+    decision about this type. ``TypeSchema.of(model).defaults`` is the answer and
+    ``select_default()`` is the only place it becomes a request. A member a base class
+    declares is inherited with its rank, which is why a drive item's name is stated once; a
+    member a subclass restates says for itself.
+
     The keywords left describe one member's place in a *version* of the service, and what
     the service does with the value it sends. ``beta=`` records what the preview root does
     with the member -- declares it the same, declares it under another name, declares it
@@ -289,7 +315,7 @@ class odata(dict):
 
     meta: ODataPropertyMeta
 
-    def __init__(self, name: str, **attrs: bool | str | None | Compare) -> None:
+    def __init__(self, name: str, **attrs: bool | int | str | None | Compare) -> None:
         self.meta = ODataPropertyMeta(name=name, **attrs)  # type: ignore[arg-type]
         super().__init__({_ODATA_MARKER: self.meta})
 

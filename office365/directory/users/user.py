@@ -755,7 +755,7 @@ class User(DirectoryObject):
         """The user's chats."""
         return self.properties.get("chats", ChatCollection(self.context, ResourcePath("chats", self.resource_path)))
 
-    @odata(name="displayName")
+    @odata(name="displayName", default=1)
     @property
     def display_name(self) -> Optional[str]:
         """The DisplayName property specifies the users's display name."""
@@ -779,7 +779,7 @@ class User(DirectoryObject):
         """The office location in the user's place of business."""
         return self.properties.get("officeLocation", None)
 
-    @odata(name="userPrincipalName", identity=True)
+    @odata(name="userPrincipalName", identity=True, default=2)
     @property
     def user_principal_name(self) -> Optional[str]:
         """
@@ -836,7 +836,7 @@ class User(DirectoryObject):
         """
         return self.properties.get("licenseAssignmentStates", ClientValueCollection(LicenseAssignmentState))
 
-    @odata(name="mail")
+    @odata(name="mail", default=3)
     @property
     def mail(self) -> Optional[str]:
         """The SMTP address for the user, for example, "jeff@contoso.onmicrosoft.com".

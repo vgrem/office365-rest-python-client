@@ -452,6 +452,15 @@ class ClientObjectCollection(ClientObject, Generic[ClientObjectT]):
             super().select(names)
         return self
 
+    def select_default(self) -> Self:
+        """Select what the collection's item type says a read of it asks for.
+
+        The declaration is ``@odata(default=<rank>)`` on the item type's members, so the
+        collection keeps no selection of its own -- ``client.users.select_default()`` asks
+        for what a ``User`` says a reader of one wants.
+        """
+        return self.select(self._item_type._schema.defaults)
+
     def expand(self, names: Sequence[str]) -> Self:
         """Include related resources in the query (``$expand``)."""
         if self._ensure_query_option("expand"):

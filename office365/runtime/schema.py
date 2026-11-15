@@ -268,6 +268,27 @@ class TypeSchema:
         )
 
     @cached_property
+    def defaults(self) -> Tuple[str, ...]:
+        """The columns a read of the type asks for when the caller names none.
+
+        A member states it with ``@odata(default=<rank>)``: ``0``, which is what a member
+        that says nothing declares, leaves the column out, and ``1`` is the first name a
+        table shows. The order is by rank, and two members stating the same rank keep the
+        order the class declares them in -- a base's before a subclass's, as everywhere
+        else. It is narrowed the way :attr:`columns` is: a link is not a column, and a name
+        the resource refuses to project is never asked for.
+
+        Empty is a real answer: a type whose columns are sixteen config switches nobody
+        reads by name says nothing, and a caller that named no columns prints what it got.
+        """
+        ranked = [
+            name
+            for name, declared in self.properties.items()
+            if declared.default and not declared.navigation and declared.selectable
+        ]
+        return tuple(sorted(ranked, key=lambda name: self.properties[name].default))
+
+    @cached_property
     def navigations(self) -> Tuple[str, ...]:
         """The OData names that are links: what a path may walk through."""
         return tuple(name for name, declared in self.properties.items() if declared.navigation)

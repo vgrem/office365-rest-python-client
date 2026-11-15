@@ -2522,7 +2522,7 @@ class Web(SecurableObject):
             ThemeInfo(self.context, ResourcePath("ThemeInfo", self.resource_path)),
         )
 
-    @odata(name="Url", readonly=True, identity=True)
+    @odata(name="Url", readonly=True, identity=True, default=2)
     @property
     def url(self) -> Optional[str]:
         """Gets the absolute URL for the website."""
@@ -2727,7 +2727,7 @@ class Web(SecurableObject):
             List(self.context, ResourcePath("SiteUserInfoList", self.resource_path)),
         )
 
-    @odata(name="Title")
+    @odata(name="Title", default=1)
     @property
     def title(self) -> Optional[str]:
         """Gets the title of the web."""

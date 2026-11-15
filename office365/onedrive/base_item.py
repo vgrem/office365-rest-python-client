@@ -77,7 +77,7 @@ class BaseItem(Entity):
         """Gets date and time the item was last modified."""
         return self.properties.get("lastModifiedDateTime", datetime.min)
 
-    @odata(name="name")
+    @odata(name="name", default=1)
     @property
     def name(self) -> Optional[str]:
         """Gets the name of the item."""
@@ -98,7 +98,7 @@ class BaseItem(Entity):
     def description(self, value: str) -> None:
         self.set_property("description", value)
 
-    @odata(name="webUrl")
+    @odata(name="webUrl", default=3)
     @property
     def web_url(self) -> str:
         """URL that displays the resource in the browser"""
@@ -122,7 +122,7 @@ class BaseItem(Entity):
         """Gets the eTag property"""
         return self.properties.get("eTag", None)
 
-    @odata(name="lastModifiedDateTime")
+    @odata(name="lastModifiedDateTime", default=2)
     @property
     def last_modified_date_time(self) -> datetime:
         """Gets the lastModifiedDateTime property"""

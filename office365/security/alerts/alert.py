@@ -116,7 +116,7 @@ class Alert(Entity):
         """Gets the comments property"""
         return self.properties.get("comments", ClientValueCollection[AlertComment](AlertComment))
 
-    @odata(name="createdDateTime")
+    @odata(name="createdDateTime", default=2)
     @property
     def created_date_time(self) -> Optional[datetime]:
         """Gets the createdDateTime property"""
@@ -242,7 +242,7 @@ class Alert(Entity):
         """Gets the threatFamilyName property"""
         return self.properties.get("threatFamilyName", None)
 
-    @odata(name="title")
+    @odata(name="title", default=1)
     @property
     def title(self) -> Optional[str]:
         """Gets the title property"""

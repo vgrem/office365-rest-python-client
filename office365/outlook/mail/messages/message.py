@@ -451,7 +451,7 @@ class Message(OutlookItem):
         """The date and time the message was sent."""
         return self.properties.get("sentDateTime", datetime.min)
 
-    @odata(name="subject")
+    @odata(name="subject", default=1)
     @property
     def subject(self) -> Optional[str]:
         """The subject of the message."""
@@ -550,7 +550,7 @@ class Message(OutlookItem):
         """Gets the from property"""
         return self.properties.get("from", Recipient())
 
-    @odata(name="receivedDateTime")
+    @odata(name="receivedDateTime", default=2)
     @property
     def received_date_time(self) -> datetime:
         """Gets the receivedDateTime property"""
