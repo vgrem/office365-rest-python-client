@@ -338,8 +338,26 @@ def place_model(
     return 0
 
 
+def index_model(path: Optional[str] = None) -> int:
+    """Render the discovery index a command line reads instead of importing the tree.
+
+    The document is :mod:`generator.tools.index`'s, built from the router's own answers, and
+    the tree it describes is every package rather than one service's: a noun is discovered by
+    walking ``office365``, which serves Graph and SharePoint both.
+    """
+    from generator.tools.index import DEFAULT_PATH, build_index, render_index, write_index
+
+    target = Path(path or DEFAULT_PATH)
+    document = build_index()
+    written = write_index(target if target.is_absolute() else REPO_ROOT / target, document)
+    log.info(render_index(document, written))
+    return 0
+
+
 def _run_standalone_command(args) -> Optional[int]:
     """Run a one-shot report command, or return ``None`` to generate the model."""
+    if args.index is not None:
+        return index_model(args.index or None)
     if args.plan_keys or args.apply_keys:
         key_pass(
             args.service,
@@ -389,6 +407,7 @@ SUBCOMMANDS: dict[str, Optional[str]] = {
     "services": "--fetch-services",
     "place": "--place",
     "keys": "--plan-keys",
+    "index": "--index",
     "verify": "--verify",
     "audit": "--audit",
 }
@@ -498,6 +517,14 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         dest="audit_ratchet",
         metavar="PATH",
         help="with --audit: exit non-zero when a kind outgrows its row in this ledger",
+    )
+    parser.add_argument(
+        "--index",
+        nargs="?",
+        const="",
+        metavar="PATH",
+        help="write the discovery index the command line reads instead of importing the tree, and exit"
+        " (default: office365/index.json)",
     )
     parser.add_argument(
         "--place",

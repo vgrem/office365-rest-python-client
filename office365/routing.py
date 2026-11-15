@@ -21,8 +21,10 @@ command line is the wrong place to decide what the library has not.
 A route is walked, not built: :func:`chain` reads the return annotations from the root
 down, so a command reaches the object the model already connects instead of composing a URL.
 
-Discovery stays inside the product a command names: the whole tree costs ~3 s to import,
-one product 0.2 s (``outlook``) to 1.2 s (``sharepoint``), and the index is kept once built.
+Discovery stays inside the product a command names: the whole tree costs ~7 s to import, one
+product 0.2 s (``outlook``) to 1.2 s (``sharepoint``). What a command line asks before it sends
+anything is written down instead - ``office365/index.json``, rendered by ``generator graph
+--index``: the answers below, in the order they are asked, as data.
 """
 
 from __future__ import annotations
@@ -158,6 +160,16 @@ def chain(root: object, target: type) -> tuple[str, ...] | None:
                 seen.add(held)
                 queue.append((held, path + (attribute,)))
     return None
+
+
+def navigations(cls: type) -> Mapping[str, type]:
+    """The attributes a walk may descend through, by name - what ``cls`` holds.
+
+    :func:`route` accepts exactly these words after a noun, so the reader is public: a command
+    line that offers a word the walk cannot take advertises a URL it cannot build, and the
+    index the generator ships needs the edges, not only their names.
+    """
+    return _links(cls)
 
 
 @cache

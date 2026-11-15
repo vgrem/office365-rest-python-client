@@ -152,6 +152,7 @@ lint.ignore = [
 ]
 lint.pylint.max-args = 50
 lint.pylint.max-branches = 16
+lint.pylint.max-returns = 8  # the CLI answers its one-shot commands from one dispatch
 lint.pylint.max-statements = 60
 
 [tool.pyright]

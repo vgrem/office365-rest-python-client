@@ -73,6 +73,11 @@ SUPPLIED = ("self", "token_cache", "token_callback")
 #: The words an audience prefixes: ``o365 sharepoint login`` is a session, not a noun.
 SESSION = ("login", "whoami", "logout")
 
+#: The derived index the generator writes: the model's discovery answers as data (built by
+#: ``generator graph --index``, never edited). Reading it costs 4 ms; computing the same answers
+#: by importing the tree costs 5.2 s, which is what the levels below cannot afford.
+INDEX = Path(__file__).with_name("index.json")
+
 
 def main(argv: "list[str] | None" = None) -> int:
     """Run one command, returning the process exit code."""
@@ -209,10 +214,23 @@ def _is_product(word: str) -> bool:
 
 def _served(audience: str) -> str:
     """What one token answers, when no product or verb follows it."""
-    from office365.routing import products
-
-    served = [name for name in products() if name not in AUDIENCES]
+    served = [name for name in _published() if name not in AUDIENCES]
     return f"{audience} serves {len(served)} products: " + ", ".join(served)
+
+
+def _published() -> "list[str]":
+    """The products the tree publishes, read from the index; the packages answer if it is gone.
+
+    The import is the fallback, not the first attempt: it is one ``find_spec`` per package
+    (0.18 s measured here) for a list the index already holds, and the index is what keeps
+    ``o365 graph`` at 0.05 s.
+    """
+    try:
+        return sorted(json.loads(INDEX.read_text("utf-8"))["products"])
+    except (OSError, ValueError, KeyError):
+        from office365.routing import products
+
+        return list(products())
 
 
 def command(product: str, words: "list[str]", argv: "list[str]") -> int:
