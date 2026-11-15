@@ -41,7 +41,7 @@ from __future__ import annotations
 import argparse
 import base64
 import functools
-import importlib
+import importlib.util
 import inspect
 import json
 import os
@@ -82,12 +82,10 @@ NAMES += ("createddatetime", "id")
 def main(argv: "list[str] | None" = None) -> int:
     """Run one command, returning the process exit code."""
     words = list(sys.argv[1:] if argv is None else argv)
-    # An audience word names a session, so it is only taken when a session verb follows it:
-    # `o365 sharepoint login` is the sharepoint session, `o365 sharepoint web get` the product.
-    audience = words.pop(0) if len(words) > 1 and words[1] in SESSION and words[0] in AUDIENCES else ""
+    audience, words = _audience_words(words)
     if not words or words[0] in ("-h", "--help"):
-        print(_usage())
-        return 0 if words else 2
+        print(_usage() if words else _served(audience) if audience else _usage())
+        return 0 if words or audience else 2
     word, rest = words[0], words[1:]
     if word == "login":
         return login(audience or "graph", rest)
@@ -189,6 +187,37 @@ def _refuse(message: str, code: int = 2) -> int:
     """Say why nothing ran, and answer the shell with a non-zero code."""
     print(f"o365: {message}", file=sys.stderr)
     return code
+
+
+def _audience_words(words: "list[str]") -> tuple[str, "list[str]"]:
+    """Take a leading audience word off the line, and say which session the line is about.
+
+    An audience word is taken in two cases: a session verb follows it, so ``o365 sharepoint
+    login`` is the sharepoint session and not the sharepoint product; or the tree has no package
+    of that name, which is ``graph`` alone, so ``o365 graph directory user get`` is the directory
+    user and ``o365 graph`` asks what that one token serves. ``o365 sharepoint web get`` keeps its
+    word, because there is a package behind it.
+    """
+    if not words or words[0] not in AUDIENCES:
+        return "", words
+    if len(words) > 1 and words[1] in SESSION:
+        return words[0], words[1:]
+    if _is_product(words[0]):
+        return "", words
+    return words[0], words[1:]
+
+
+def _is_product(word: str) -> bool:
+    """Whether the tree has a package of that name, read without importing it."""
+    return importlib.util.find_spec(f"office365.{word}") is not None
+
+
+def _served(audience: str) -> str:
+    """What one token answers, when no product or verb follows it."""
+    from office365.routing import products
+
+    served = [name for name in products() if name not in AUDIENCES]
+    return f"{audience} serves {len(served)} products: " + ", ".join(served)
 
 
 def command(product: str, words: "list[str]", argv: "list[str]") -> int:
@@ -426,6 +455,7 @@ def _usage() -> str:
     return (
         "usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]\n"
         "       o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]\n"
+        "       o365 graph <product> <noun> [navigation ...] [action]\n"
         "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]"
     )
 

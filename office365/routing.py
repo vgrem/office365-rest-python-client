@@ -39,6 +39,7 @@ from types import MappingProxyType, ModuleType
 
 from office365.runtime.client_object import ClientObject
 from office365.runtime.client_object_collection import ClientObjectCollection
+from office365.runtime.schema import _return_hint, _unwrap_type
 from office365.runtime.verbs import VerbMeta, command_word, verbs_of
 
 
@@ -174,10 +175,7 @@ def _links(cls: type) -> Mapping[str, type]:
             code = member.fget.__code__
             if code.co_argcount != 1 or code.co_kwonlyargcount:
                 continue
-            try:
-                hint = typing.get_type_hints(member.fget).get("return")
-            except NameError:  # a name the getter's module cannot import is not a route
-                continue
+            hint = _unwrap_type(_return_hint(member.fget))
             held = typing.get_origin(hint) or hint
             if isinstance(held, type) and issubclass(held, ClientObject):
                 links.setdefault(name, held)
@@ -211,6 +209,25 @@ def nouns(product: str) -> Mapping[str, Route]:
         noun = _noun_of(entity, product)
         grouped.setdefault(_fold(noun), []).append(Route(product, noun, entity, collection))
     return MappingProxyType({key: _ranked(options) for key, options in grouped.items()})
+
+
+def products() -> tuple[str, ...]:
+    """The packages that publish a product, alphabetically.
+
+    A product is the package a type lives in, and only five packages say they are not one:
+    ``runtime``, ``common``, ``formats``, ``migration`` and ``permissions`` declare
+    ``__product__ = ""`` once, in their own ``__init__``. Every generated package leaves it
+    unset, because its own name is the product, so nothing is listed twice here by hand.
+    """
+    package = importlib.import_module("office365")
+    found = []
+    for info in pkgutil.iter_modules(package.__path__):
+        if not info.ispkg:
+            continue
+        module = importlib.import_module(f"office365.{info.name}")
+        if getattr(module, "__product__", None) is None:
+            found.append(info.name)
+    return tuple(sorted(found))
 
 
 def _package(product: str) -> ModuleType:
