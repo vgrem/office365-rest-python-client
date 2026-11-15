@@ -17,7 +17,6 @@ remove.
 from __future__ import annotations
 
 import ast
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
@@ -255,16 +254,6 @@ def read_declared_versions(sources: Mapping[str, Union[str, Path]]) -> Dict[str,
             # which one states the gate on the class itself.
             declared[name or type_name] = versions
     return declared
-
-
-def write_report(plan: MarkerPlan, edits: Optional[MarkerEdits], path: str) -> None:
-    """Write the plan -- and, when a model was read, its edit list -- as JSON."""
-    payload = plan.to_dict()
-    if edits is not None:
-        payload["edits"] = edits.to_dict()
-    with open(path, "w", encoding="utf-8") as stream:
-        json.dump(payload, stream, indent=2, sort_keys=False)
-        stream.write("\n")
 
 
 def _flatten(bucket: Dict[str, List[str]], kind: str, value: MarkerValue, reason: str) -> Iterable[MemberMarker]:

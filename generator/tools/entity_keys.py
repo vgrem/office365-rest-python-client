@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import ast
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Iterable, List, Optional, Tuple
 
 from generator.tools.marker_apply import TypeFiles
@@ -184,10 +183,3 @@ def _declares_name(keywords: List[ast.keyword], key: str) -> bool:
 
 def _literal(node: ast.expr) -> Optional[str]:
     return node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else None
-
-
-def write_report(plan: KeyPlan, path: str) -> None:
-    """Write the plan itself, so a reviewer can diff what the pass would change."""
-    import json
-
-    Path(path).write_text(json.dumps(plan.to_dict(), indent=2) + "\n", encoding="utf-8")

@@ -25,7 +25,6 @@ AST round-trip would reformat the file it edited.
 from __future__ import annotations
 
 import ast
-import json
 import os
 import re
 import shutil
@@ -238,10 +237,6 @@ def apply_placement(plan: PlacementPlan, repo_root: Path | str, *, rewrite: bool
     return moved
 
 
-def write_report(plan: PlacementPlan, path: str) -> None:
-    Path(path).write_text(json.dumps(plan.to_dict(), indent=2) + "\n", encoding="utf-8")
-
-
 def place(
     root: Path | str,
     output_base: str,
@@ -279,5 +274,4 @@ __all__ = [
     "place",
     "plan_placement",
     "rewrite_imports",
-    "write_report",
 ]

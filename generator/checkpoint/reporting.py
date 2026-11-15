@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Sequence, Tuple
 
 from generator.checkpoint.manifest import MetadataChanges
 from generator.core.log import log
+from generator.core.report import write_json
 
 if TYPE_CHECKING:
     from generator.build.type import TypeBuilder
@@ -64,5 +63,5 @@ class Reporter:
             "removed_types": changes.removed_types,
             "removed_members": changes.removed_members,
         }
-        Path(self.report_path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        write_json(payload, self.report_path)
         log.info(f"\nReport written to {self.report_path}")

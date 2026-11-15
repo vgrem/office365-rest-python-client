@@ -20,7 +20,6 @@ accounts for, which is the only kind this report is about.
 from __future__ import annotations
 
 import ast
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, FrozenSet, Iterable, Iterator, List, Mapping, Optional, Sequence, Tuple
@@ -372,11 +371,6 @@ def render(findings: Sequence[Finding], base: Path) -> str:
         if hidden:
             lines.append(f"  ... and {hidden} more")
     return "\n".join(lines)
-
-
-def write_report(findings: Sequence[Finding], path: str) -> None:
-    """The findings as JSON, for a caller that wants to work through them."""
-    Path(path).write_text(json.dumps([finding.to_dict() for finding in findings], indent=2), encoding="utf-8")
 
 
 def _disagreements(model: DeclaredModel, name: str, fact: _Fact, served: FrozenSet[str]) -> Iterator[Finding]:

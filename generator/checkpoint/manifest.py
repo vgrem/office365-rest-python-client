@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
@@ -97,12 +97,19 @@ def schema_members(model: ODataModel) -> dict[str, list[str]]:
     }
 
 
-@dataclass
+@dataclass(frozen=True)
 class MetadataChanges:
-    """What the metadata lost since the last recorded run."""
+    """What the metadata lost since the last recorded run.
 
-    removed_types: list[str]
-    removed_members: dict[str, list[str]]
+    The payload is names, not the reader's objects, because that is what deletion means:
+    the snapshot no longer declares a type or a member that the previous run recorded, so
+    there is no :class:`~generator.odata.type_information.TypeInformation` for it to point
+    at -- the current parse tree cannot answer for something it does not hold. Names also
+    keep the manifest a *state* file: re-parsing it never depends on today's reader.
+    """
+
+    removed_types: list[str] = field(default_factory=list)
+    removed_members: dict[str, list[str]] = field(default_factory=dict)
 
     @property
     def is_empty(self) -> bool:

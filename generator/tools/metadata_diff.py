@@ -19,7 +19,6 @@ added/lost buckets, with the ambiguity listed so a human can settle it.
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Mapping, Sequence, Tuple
@@ -417,10 +416,3 @@ def _spread(bucket: Dict[str, List[str]], preview: int = 4) -> str:
     sample = next(iter(bucket.items()))
     shown = ", ".join(sample[1][:preview])
     return f"{len(bucket)} types / {total} names (e.g. {_short(sample[0])}: {shown})"
-
-
-def write_report(delta: MetadataDelta, path: str) -> None:
-    """Write the full delta as JSON."""
-    with open(path, "w", encoding="utf-8") as stream:
-        json.dump(delta.to_dict(), stream, indent=2, sort_keys=False)
-        stream.write("\n")

@@ -113,7 +113,7 @@ class GeneratorPipeline:
                 planned.append((name, builder))
 
         current_members = schema_members(self._model)
-        changes = diff_members(self._previous.members, current_members) if self._previous else MetadataChanges([], {})
+        changes = diff_members(self._previous.members, current_members) if self._previous else MetadataChanges()
 
         self._commit(planned)
         self._reporter.summary(planned, skipped_new, unrouted)

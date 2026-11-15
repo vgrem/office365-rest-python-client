@@ -14,6 +14,7 @@ from generator.cli.session import GENERATOR_DIR, Session, resolve_path
 from generator.core.config import ConfigError, GeneratorOptions
 from generator.core.log import configure as configure_logging
 from generator.core.log import log
+from generator.core.report import write_json
 from generator.core.services import service_names
 from generator.edit.validation import ValidationError
 from generator.metadata.documentation.subservices import fetch_service_map, load_service_map, write_service_map
@@ -23,10 +24,8 @@ from generator.pipeline import GeneratorPipeline
 from generator.planning.filters import TypeFilter
 from generator.planning.routing import Router, render_suggestions
 from generator.tools.beta_markers import compare_markers, plan_markers, read_declared_markers, read_declared_versions
-from generator.tools.beta_markers import write_report as write_marker_report
 from generator.tools.entity_keys import KeyPlan, plan_keys
-from generator.tools.entity_keys import write_report as write_key_report
-from generator.tools.metadata_diff import diff_metadata, write_report
+from generator.tools.metadata_diff import diff_metadata
 
 #: The repository root: what a report's file paths are shown relative to.
 REPO_ROOT = GENERATOR_DIR.parent
@@ -133,8 +132,8 @@ def compare_metadata(
     print(delta.render())
     print(f"\n{plan.render()}")
     if report_path:
-        write_report(delta, report_path)
-        write_marker_report(plan, None, _marker_report_path(report_path))
+        write_json(delta.to_dict(), report_path)
+        write_json(plan.to_dict(), _marker_report_path(report_path))
         log.info(f"\nFull report written to {report_path}")
     if apply:
         _apply_marker_pass(options, plan.restricted(only_types) if only_types else plan, dry_run=dry_run)
@@ -201,7 +200,7 @@ def key_pass(
     )
     print(plan.render())
     if report_path:
-        write_key_report(plan, report_path)
+        write_json(plan.to_dict(), report_path)
         log.info(f"\nFull plan written to {report_path}")
     if not apply:
         _print_key_plan(plan)
@@ -255,7 +254,7 @@ def audit_model(
     members a ``@version``/``beta=`` declaration gates are measured at all: against the
     stable one, a member the preview root adds reads as an extra the model invented.
     """
-    from generator.tools.fidelity import DEFAULT_PREFIX, audit, gaps, read_models, render, write_report
+    from generator.tools.fidelity import DEFAULT_PREFIX, audit, gaps, read_models, render
 
     session = Session.open(service, metadata=metadata)
     model_root = Path(session.options.output_path).resolve()
@@ -272,7 +271,7 @@ def audit_model(
         ignored_properties=session.options.ignored_properties,
     )
     if report_path:
-        write_report(findings, report_path)
+        write_json([finding.to_dict() for finding in findings], report_path)
     print(render(findings, REPO_ROOT))
     if ratchet:
         return _ratchet(ratchet, root, Counter(finding.kind for finding in findings))
@@ -324,7 +323,7 @@ def place_model(
     files, so the pass runs in a second and answers for a directory as well as for a
     product -- the same scope shape ``--audit`` takes.
     """
-    from generator.tools.placement import place, write_report
+    from generator.tools.placement import place
 
     session = Session.open(service)
     model_root = Path(session.options.output_path).resolve()
@@ -334,7 +333,7 @@ def place_model(
         return 1
     plan = place(root, session.options.output_path, REPO_ROOT, apply=apply)
     if report_path:
-        write_report(plan, report_path)
+        write_json(plan.to_dict(), report_path)
     print(plan.render(str(REPO_ROOT)))
     return 0
 
