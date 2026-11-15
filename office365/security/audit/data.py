@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
-from office365.security.audit.record_type_dictionary import AuditRecordTypeDictionary
+from office365.security.audit.records.type_dictionary import AuditRecordTypeDictionary
 
 
 class AuditData(ClientValue):
