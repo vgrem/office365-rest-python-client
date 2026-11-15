@@ -179,6 +179,22 @@ def verbs_of(target: Any) -> Mapping[str, VerbMeta]:
     return MappingProxyType(found)
 
 
+def paged_of(target: Any) -> Mapping[str, VerbMeta]:
+    """The commands that walk the service's next links, keyed like a class's attributes.
+
+    A collection declares two list commands that differ only in paging: ``get`` answers
+    one page and ``get_all`` follows ``@odata.nextLink``, which is why the second one
+    states ``paged=True`` and hides its command word. ``paged=None``, which is what
+    almost every other command states, is the model saying "one request, one answer" -
+    so an empty mapping here means this noun has one page, not that paging is unknown.
+
+    This is the reader for that declaration. A caller that offers ``--all`` asks here
+    rather than looking for a method by name, which is how ``get_all`` stays a flag on
+    ``list`` instead of becoming a second command word.
+    """
+    return MappingProxyType({name: meta for name, meta in verbs_of(target).items() if meta.paged})
+
+
 def _stamp_on(member: Any) -> VerbMeta | None:
     """The declaration stamped on a member, reading through a property's getter."""
     if isinstance(member, property):
@@ -205,4 +221,4 @@ def command_word(target: Any) -> str:
     return word.replace("_", "-").lower()
 
 
-__all__ = ["EFFECTS", "ROLES", "STAMP", "VerbMeta", "command_word", "declared_verb", "verb", "verbs_of"]
+__all__ = ["EFFECTS", "ROLES", "STAMP", "VerbMeta", "command_word", "declared_verb", "paged_of", "verb", "verbs_of"]

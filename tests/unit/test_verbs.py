@@ -12,7 +12,7 @@ from office365.capabilities import capabilities_of
 from office365.directory.users.user import User
 from office365.outlook.mail.messages.collection import MessageCollection
 from office365.outlook.mail.messages.message import Message
-from office365.runtime.verbs import EFFECTS, ROLES, VerbMeta, declared_verb, verb
+from office365.runtime.verbs import EFFECTS, ROLES, VerbMeta, declared_verb, paged_of, verb
 from office365.sharepoint.lists.list import List
 
 
@@ -29,6 +29,21 @@ def test_paging_is_a_second_entry_point_for_the_same_command_not_a_second_comman
     assert verbs["get_all"].paged is True
     # Declared on purpose and hidden on purpose: the command word is still `list`.
     assert verbs["get_all"].expose is False
+
+
+def test_the_paged_reader_answers_from_the_declaration_and_nothing_else() -> None:
+    paged = paged_of(MessageCollection)
+    assert list(paged) == ["get_all"]
+    assert paged["get_all"].paged is True
+    assert paged["get_all"].expose is False
+    # One page, one answer: an entity has no walk-everything form, and neither does a
+    # command that simply declares nothing (`paged=None` is not "unknown", it is "no").
+    assert paged_of(Message) == {}
+    assert paged_of(List) == {}
+    # The gathered view answers the same way, so a caller that already holds a type's
+    # declared facts does not walk its methods a second time.
+    assert capabilities_of(MessageCollection).paged == "get_all"
+    assert capabilities_of(Message).paged is None
 
 
 @pytest.mark.parametrize("entity_type", [Message, List])

@@ -41,7 +41,7 @@ from office365.permissions.declaration import STAMP, PermissionRequirement
 from office365.runtime.limits import LimitDecl, limits_of
 from office365.runtime.query_capabilities import QueryCapability, query_capabilities_of
 from office365.runtime.schema import TypeSchema
-from office365.runtime.verbs import VerbMeta, verbs_of
+from office365.runtime.verbs import VerbMeta, paged_of, verbs_of
 
 
 @dataclass(frozen=True)
@@ -70,6 +70,10 @@ class Capabilities:
     #: builder rather than a command. A ``role`` on one member and not on another is how
     #: a type says which of its entry points a caller may drive.
     verbs: Mapping[str, VerbMeta]
+    #: Attribute name of the command that walks every page, or ``None`` for one page.
+    #: ``get_all`` declares ``paged=True, expose=False``: the same noun as ``list``,
+    #: longer -- so this is the name a ``--all`` flag reaches, never a command word.
+    paged: Optional[str]
 
     @property
     def licenses(self) -> Tuple[str, ...]:
@@ -99,6 +103,7 @@ def capabilities_of(target: Any) -> Capabilities:
             limits=limits_of(target),
             queries=query_capabilities_of(target),
             verbs=verbs_of(target),
+            paged=_paged_name(target),
         )
     if callable(target):
         declaration = _declaration_of(target)
@@ -110,8 +115,14 @@ def capabilities_of(target: Any) -> Capabilities:
             limits=limits_of(target),
             queries=None,
             verbs=verbs_of(target),
+            paged=_paged_name(target),
         )
     raise TypeError(f"capabilities_of asks about a type or a callable, not {type(target).__name__}")
+
+
+def _paged_name(target: Any) -> Optional[str]:
+    """The one command that walks every page, if the target declares one."""
+    return next(iter(paged_of(target)), None)
 
 
 def _declarations_of(cls: type) -> Mapping[str, PermissionRequirement]:
