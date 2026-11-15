@@ -25,4 +25,4 @@ class ChatMessageHostedContent(TeamworkHostedContent):
 
     @property
     def entity_type_name(self) -> str:
-        return "microsoft.graph.ChatMessageHostedContent"
+        return "microsoft.graph.chatMessageHostedContent"

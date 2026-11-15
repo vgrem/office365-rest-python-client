@@ -248,14 +248,16 @@ def audit(
     exact_ignored, prefix_ignored = split_ignored(list(ignored_types))
     ignored_props = frozenset(ignored_properties)
     declared_facts = declared_members(csdl)
-    holders = _by_type(models)
+    spellings = _spellings(declared_facts)
+    holders = _by_type(models, spellings)
     served = _served_by_type(holders)
     findings: List[Finding] = []
     for model in models:
-        facts = declared_facts.get(model.type_name)
+        type_name = spellings.get(model.type_name.lower(), model.type_name)
+        facts = declared_facts.get(type_name)
         if facts is None:
             continue
-        base = _uninherited_base(model, csdl, holders)
+        base = _uninherited_base(model, type_name, csdl, holders, spellings)
         if base is not None:
             findings.append(base)
         for name, fact in facts.items():
@@ -264,17 +266,29 @@ def audit(
             elif _is_ignored_type(fact.type_name, exact_ignored, prefix_ignored):
                 findings.append(_ignored(model, name, fact.type_name))
             else:
-                findings.extend(_disagreements(model, name, fact, served[model.type_name]))
+                findings.extend(_disagreements(model, name, fact, served[type_name]))
         findings.extend(_extras(model, facts))
     return findings
 
 
-def _by_type(models: Iterable[DeclaredModel]) -> Dict[str, List[DeclaredModel]]:
+def _spellings(names: Iterable[str]) -> Dict[str, str]:
+    """Every type a snapshot declares, reachable by the lowercased form of its name.
+
+    One type has two spellings. The model index Pascal-cases the last segment of a CSDL
+    name (``listItem`` reads as ``ListItem``) because that is the class it generates,
+    while ``entity_type_name`` answers with the name the wire uses. Resolving a model
+    through the snapshot's own names is what lets a camelCase type be measured at all:
+    matched on the exact string, it reports nothing rather than a disagreement.
+    """
+    return {name.lower(): name for name in names}
+
+
+def _by_type(models: Iterable[DeclaredModel], spellings: Mapping[str, str]) -> Dict[str, List[DeclaredModel]]:
     """The models that declare each OData type, so a metadata base can be named."""
     holders: Dict[str, List[DeclaredModel]] = {}
     for model in models:
         if model.type_name:
-            holders.setdefault(model.type_name, []).append(model)
+            holders.setdefault(spellings.get(model.type_name.lower(), model.type_name), []).append(model)
     return holders
 
 
@@ -292,7 +306,11 @@ def _served_by_type(holders: Mapping[str, Sequence[DeclaredModel]]) -> Dict[str,
 
 
 def _uninherited_base(
-    model: DeclaredModel, csdl: ODataModel, holders: Mapping[str, List[DeclaredModel]]
+    model: DeclaredModel,
+    type_name: str,
+    csdl: ODataModel,
+    holders: Mapping[str, List[DeclaredModel]],
+    spellings: Mapping[str, str],
 ) -> Optional[Finding]:
     """The class the metadata's base names and this class does not derive from.
 
@@ -300,11 +318,11 @@ def _uninherited_base(
     so a base that was unrouted when the file was first written stays ``Entity``, and
     every column the base declares is a column the subclass answers nothing to.
     """
-    schema = csdl.types.get(model.type_name)
+    schema = csdl.types.get(type_name)
     base_name = schema.BaseTypeName if schema is not None else None
     if not base_name:
         return None
-    candidates = holders.get(base_name) or ()
+    candidates = holders.get(spellings.get(base_name.lower(), base_name)) or ()
     # Two models claiming one type is a disagreement of its own, and neither is the base.
     if len(candidates) != 1:
         return None
