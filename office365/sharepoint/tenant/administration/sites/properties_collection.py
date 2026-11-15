@@ -4,12 +4,12 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.tenant.administration.site_user_group_info import (
-    SiteUserGroupInfo,
-)
 from office365.sharepoint.tenant.administration.sites.properties import SiteProperties
 from office365.sharepoint.tenant.administration.sites.state_properties import (
     SiteStateProperties,
+)
+from office365.sharepoint.tenant.administration.sites.user_group_info import (
+    SiteUserGroupInfo,
 )
 
 

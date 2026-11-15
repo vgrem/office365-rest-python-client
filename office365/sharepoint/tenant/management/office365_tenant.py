@@ -26,7 +26,7 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.users.user import User
-from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
     SiteInfoForSitePicker,
 )
 from office365.sharepoint.tenant.administration.syntex.billing_context import (

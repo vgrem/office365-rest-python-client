@@ -6,7 +6,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.publishing.amplify.result import ClientAmplifyResult
 from office365.sharepoint.publishing.emailpublishingstatus import EmailPublishingStatus as _EmailPublishingStatus
-from office365.sharepoint.publishing.spstatusresponse import SharePointPublishingStatusResponse
+from office365.sharepoint.publishing.status_response import SharePointPublishingStatusResponse
 from office365.sharepoint.teams.statusresponse import TeamsPublishingStatusResponse
 from office365.sharepoint.viva.engagepublishingstatus import VivaEngagePublishingStatus as _VivaEngagePublishingStatus
 

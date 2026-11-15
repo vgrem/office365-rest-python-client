@@ -33,7 +33,7 @@ from office365.sharepoint.publishing.pages.sendtestemailresponse import SendTest
 from office365.sharepoint.publishing.pages.sendtestteamsmessageresponse import SendTestTeamsMessageResponse
 from office365.sharepoint.publishing.pages.sharepagepreviewbyemailfieldsdata import SharePagePreviewByEmailFieldsData
 from office365.sharepoint.publishing.pages.versioninfocollection import SitePageVersionInfoCollection
-from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAuthoringMetadata
+from office365.sharepoint.publishing.sites.page_authoring_metadata import SitePageAuthoringMetadata
 from office365.sharepoint.translation.status_collection import TranslationStatusCollection
 
 

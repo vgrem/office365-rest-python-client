@@ -172,6 +172,8 @@ def _strip_path_prefix(words: list[str], module_path: str) -> list[str]:
                 break
         else:
             break
+    if consumed and _singular(words[-1].lower()) == _singular(segments[-1]):
+        return words
     return words[consumed:] or words
 
 
@@ -199,6 +201,10 @@ def _defines_class(path: str, class_name: str) -> bool:
     except (OSError, SyntaxError):
         return False
     return any(isinstance(node, ast.ClassDef) and node.name == class_name for node in tree.body)
+
+
+_JOINERS = frozenset({"and", "or", "of", "for", "with", "to", "in", "on", "by", "from"})
+"""Words a stem may not *begin* with once a folder has taken the rest of the name."""
 
 
 def _collides(directory: str, stem: str, class_name: str) -> bool:
@@ -235,18 +241,22 @@ def descend_module(module_path: str, class_name: str, output_base: str) -> tuple
     if family is not None:
         return family
     words = _strip_path_prefix(file_stem.split("_"), module_path)
-    descent = _subpackage_of(base, words, file_stem, class_name)
+    descent = _subpackage_of(base, words)
     if descent is not None:
-        dirname, remaining = descent
-        return f"{module_path}.{dirname}", remaining
+        dirname, consumed = descent
+        module_path = f"{module_path}.{dirname}"
+        words = words[consumed:]
+        base = os.path.join(base, dirname)
     remaining = "_".join(words)
-    if remaining and remaining != file_stem and not _collides(base, remaining, class_name):
+    if not remaining or remaining.split("_")[0] in _JOINERS:
+        return module_path, file_stem
+    if remaining != file_stem and not _collides(base, remaining, class_name):
         return module_path, remaining
     return module_path, file_stem
 
 
-def _subpackage_of(base: str, words: list[str], file_stem: str, class_name: str) -> tuple[str, str] | None:
-    """The subpackage of ``base`` that consumes the most leading ``words``, and the rest."""
+def _subpackage_of(base: str, words: list[str]) -> tuple[str, int] | None:
+    """The subpackage of ``base`` that consumes the most leading ``words``, and how many."""
     best: tuple[int, int, str] | None = None
     for entry in sorted(os.listdir(base)):
         subdir = os.path.join(base, entry)
@@ -255,15 +265,9 @@ def _subpackage_of(base: str, words: list[str], file_stem: str, class_name: str)
         if not os.path.isfile(os.path.join(subdir, "__init__.py")):
             continue
         consumed = _consume_prefix(entry, words)
-        if consumed and (best is None or len(entry) > best[0]):
+        if consumed and (best is None or (consumed, len(entry)) > (best[1], best[0])):
             best = (len(entry), consumed, entry)
-    if best is None:
-        return None
-    _, consumed, dirname = best
-    remaining = "_".join(words[consumed:]) or file_stem
-    if not _collides(os.path.join(base, dirname), remaining, class_name):
-        return dirname, remaining
-    return dirname, file_stem
+    return (best[2], best[1]) if best else None
 
 
 def planned_module(type_name: str, schema, registry, router: Router, output_base: str = "") -> Optional[str]:

@@ -18,7 +18,7 @@ The library classifies this error as
 appends concrete guidance. Classification keys off the **language-independent
 error code**, so localized messages still match.
 
-> The numbers on this page come from `office365.sharepoint.thresholds.Limits` —
+> The numbers on this page come from `office365.sharepoint.limits.Limits` —
 > see [Service limits](limits.md) for the full catalog.
 
 ## Fix 1 — page through the data

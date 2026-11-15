@@ -7,7 +7,7 @@ from typing import ClassVar, Optional
 from office365.runtime.client_request_exception import ClientRequestException
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.userprofiles.my_site_links import MySiteLinks
+from office365.sharepoint.userprofiles.mysite.links import MySiteLinks
 from office365.sharepoint.userprofiles.people_manager import PeopleManager
 from office365.sharepoint.userprofiles.profile_loader import ProfileLoader
 from office365.sharepoint.userprofiles.user_profile import UserProfile

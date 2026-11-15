@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.sharing.link_info import LinkInfo
+from office365.sharepoint.sharing.links.link_info import LinkInfo
 from office365.sharepoint.sharing.mainaccessinformation import MainAccessInformation
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
 

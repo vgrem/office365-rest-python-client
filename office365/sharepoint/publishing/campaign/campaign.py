@@ -12,8 +12,8 @@ from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
+from office365.sharepoint.publishing.ids import SharePointIds
 from office365.sharepoint.publishing.publicationmetadata import PublicationMetadata
-from office365.sharepoint.publishing.sharepointids import SharePointIds
 
 
 class Campaign(Entity):
@@ -104,6 +104,6 @@ class Campaign(Entity):
     @property
     def sharepoint_ids(self) -> SharePointIds:
         """Gets the sharePointIds property"""
-        from office365.sharepoint.publishing.sharepointids import SharePointIds
+        from office365.sharepoint.publishing.ids import SharePointIds
 
         return self.properties.get("sharePointIds", SharePointIds())

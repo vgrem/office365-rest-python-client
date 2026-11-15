@@ -25,8 +25,8 @@ from typing import TYPE_CHECKING, Callable, List, Optional, Tuple, Union
 from typing_extensions import Self
 
 from office365.runtime.operations import OperationStats, ProgressCallback, query_progress_hook
+from office365.sharepoint.limits import SAFE_PAGE_SIZE
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import SAFE_PAGE_SIZE
 
 if TYPE_CHECKING:
     from office365.runtime.client_runtime_context import ClientRuntimeContext

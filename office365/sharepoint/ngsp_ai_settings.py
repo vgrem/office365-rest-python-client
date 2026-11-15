@@ -10,8 +10,8 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
-    from office365.sharepoint.sites.site_ai_settings import SiteAISettings
-    from office365.sharepoint.sites.site_ai_settings_request import (
+    from office365.sharepoint.sites.ai_settings import SiteAISettings
+    from office365.sharepoint.sites.ai_settings_request import (
         SiteAISettingsRequest,
     )
 
@@ -27,7 +27,7 @@ class NgspAISettings(Entity):
             requests (ClientValueCollection[SiteAISettingsRequest]):
                 requests parameter
         """
-        from office365.sharepoint.sites.site_ai_settings import SiteAISettings
+        from office365.sharepoint.sites.ai_settings import SiteAISettings
 
         return_type = ClientResult(self.context, ClientValueCollection[SiteAISettings]())
         qry = FunctionQuery(self, "GetSitesAISettings", [requests], return_type)

@@ -9,7 +9,7 @@ from office365.runtime.types.collections import StringCollection
 from office365.sharepoint.publishing.pages.boostproperties import SitePageBoostProperties
 from office365.sharepoint.publishing.pages.coauth_state import SitePageCoAuthState
 from office365.sharepoint.publishing.pages.collaborator import SitePageCollaborator
-from office365.sharepoint.publishing.sitepageauthoringmetadata import SitePageAuthoringMetadata
+from office365.sharepoint.publishing.sites.page_authoring_metadata import SitePageAuthoringMetadata
 
 
 class SitePageFieldsData(ClientValue):

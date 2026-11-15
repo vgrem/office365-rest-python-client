@@ -4,10 +4,10 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.ability_status import SharingAbilityStatus
-from office365.sharepoint.sharing.linkexpirationabilitystatus import (
+from office365.sharepoint.sharing.links.expiration_ability_status import (
     SharingLinkExpirationAbilityStatus,
 )
-from office365.sharepoint.sharing.linkpasswordabilitystatus import (
+from office365.sharepoint.sharing.links.password_ability_status import (
     SharingLinkPasswordAbilityStatus,
 )
 

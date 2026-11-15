@@ -2,7 +2,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.publishing.pages.reposts.repost import RepostPage
+from office365.sharepoint.publishing.pages.reposts.page import RepostPage
 
 
 class RepostPageCollection(EntityCollection[RepostPage]):

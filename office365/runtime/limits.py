@@ -20,7 +20,7 @@ the targets with no member name. They are unified where a reader looks, in ``Typ
 one object holds the properties, the class limits and the member limits, and answers for the
 whole type.
 
-Product packages declare the concrete values — ``office365.sharepoint.thresholds``
+Product packages declare the concrete values — ``office365.sharepoint.limits``
 for SharePoint/CSOM limits, and the ``quotas`` module of each Graph product
 (``outlook``, ``teams``, ``reports``, ``security``, ``onedrive``, ``onedrive.workbooks``,
 ``directory``, ``communications``) for throttling quotas. This module owns the

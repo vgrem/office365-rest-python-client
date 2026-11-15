@@ -14,8 +14,8 @@ from office365.runtime.types.odata_property import odata
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.fields.schema import FieldSchema
 from office365.sharepoint.fields.type import FieldType
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.translation.user_resource import UserResource
 
 #: ``TypeAsString`` spellings, grouped by the question a caller asks of a column. A column's

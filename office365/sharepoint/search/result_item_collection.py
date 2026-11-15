@@ -22,7 +22,7 @@ class SearchResultItemCollection(Entity):
             event_details (str):
                 eventDetails parameter
         """
-        from office365.sharepoint.search.searchresultitemcollection import (
+        from office365.sharepoint.search.result_item_collection import (
             SearchResultItemCollection,
         )
 
@@ -50,7 +50,7 @@ class SearchResultItemCollection(Entity):
             payload (str):
                 payload parameter
         """
-        from office365.sharepoint.search.searchresultitemcollection import (
+        from office365.sharepoint.search.result_item_collection import (
             SearchResultItemCollection,
         )
 
@@ -78,7 +78,7 @@ class SearchResultItemCollection(Entity):
             entitytypes (str):
                 entitytypes parameter
         """
-        from office365.sharepoint.search.searchresultitemcollection import (
+        from office365.sharepoint.search.result_item_collection import (
             SearchResultItemCollection,
         )
 

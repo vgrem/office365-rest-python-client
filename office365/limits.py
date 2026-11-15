@@ -34,7 +34,7 @@ import office365.onenote.quotas  # noqa: F401
 import office365.outlook.quotas  # noqa: F401
 import office365.reports.quotas  # noqa: F401
 import office365.security.quotas  # noqa: F401
-import office365.sharepoint.thresholds  # noqa: F401
+import office365.sharepoint.limits  # noqa: F401
 import office365.subscriptions.quotas  # noqa: F401
 import office365.teams.quotas  # noqa: F401
 from office365.runtime.limits import (

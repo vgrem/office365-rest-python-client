@@ -24,8 +24,8 @@ if TYPE_CHECKING:
     from office365.sharepoint.viva.connections.url_configuration import (
         VivaConnectionsUrlConfiguration,
     )
+    from office365.sharepoint.viva.resources import VivaResources
     from office365.sharepoint.viva.targetedsitedetails import TargetedSiteDetails
-    from office365.sharepoint.viva.vivaresources import VivaResources
 
 
 class EmployeeEngagement(Entity):
@@ -96,7 +96,7 @@ class EmployeeEngagement(Entity):
     @property
     def viva_resources(self) -> VivaResources:
         """Gets the VivaResources property"""
-        from office365.sharepoint.viva.vivaresources import VivaResources
+        from office365.sharepoint.viva.resources import VivaResources
 
         return self.properties.get(
             "VivaResources", VivaResources(self.context, ResourcePath("VivaResources", self.resource_path))

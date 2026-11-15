@@ -1,7 +1,7 @@
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.forms.form import Form
-from office365.sharepoint.pages.page_type import PageType
+from office365.sharepoint.pages.type import PageType
 
 
 class FormCollection(EntityCollection[Form]):
@@ -25,9 +25,9 @@ class FormCollection(EntityCollection[Form]):
         If there is no list form with the specified page type, the server MUST return NULL.
 
         Args:
-            form_type (str or office365.sharepoint.pages.page_type.PageType): Specifies the page type of the list form
+            form_type (str or office365.sharepoint.pages.type.PageType): Specifies the page type of the list form
                 to return.
-                It MUST be DISPLAYFORM, EDITFORM or NEWFORM. Type: office365.sharepoint.pages.page_type.PageType
+                It MUST be DISPLAYFORM, EDITFORM or NEWFORM. Type: office365.sharepoint.pages.type.PageType
         """
         return Form(
             self.context,

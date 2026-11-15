@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.sharepoint.sites.site_suggestion_item import SiteSuggestionItem
+from office365.sharepoint.sites.suggestion_item import SiteSuggestionItem
 
 
 class SiteSuggestionResponse(ClientValue):

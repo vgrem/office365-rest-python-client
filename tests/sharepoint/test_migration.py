@@ -8,7 +8,7 @@ from office365.sharepoint.sites.azure_container_Info import (
     ProvisionedTemporaryAzureContainerInfo,
 )
 from office365.sharepoint.sites.copy_job_progress import CopyJobProgress
-from office365.sharepoint.sites.copy_migration_iInfo import CopyMigrationInfo
+from office365.sharepoint.sites.copy_migration_info import CopyMigrationInfo
 from office365.sharepoint.sites.migration.copyoptions import CopyMigrationOptions
 from office365.sharepoint.sites.site import Site
 

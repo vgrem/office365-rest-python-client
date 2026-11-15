@@ -101,14 +101,14 @@ from office365.sharepoint.tenant.administration.secondary_administrators_fields_
 from office365.sharepoint.tenant.administration.secondary_administrators_info import (
     SecondaryAdministratorsInfo,
 )
-from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
-    SiteInfoForSitePicker,
-)
 from office365.sharepoint.tenant.administration.sites.administrators_info import (
     SiteAdministratorsInfo,
 )
 from office365.sharepoint.tenant.administration.sites.creation_properties import (
     SiteCreationProperties,
+)
+from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
+    SiteInfoForSitePicker,
 )
 from office365.sharepoint.tenant.administration.sites.properties import SiteProperties
 from office365.sharepoint.tenant.administration.sites.properties_collection import (
@@ -205,11 +205,17 @@ if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.copilot.transpilerresponse import (
         CopilotTranspilerResponse,
     )
+    from office365.sharepoint.tenant.administration.data_loss_prevention_quarantine_settings import (
+        TenantDataLossPreventionQuarantineSettings,
+    )
     from office365.sharepoint.tenant.administration.dataset_metadata_request_info import (
         DatasetMetadataRequestInfo,
     )
     from office365.sharepoint.tenant.administration.dataset_metadata_response import (
         DatasetMetadataResponse,
+    )
+    from office365.sharepoint.tenant.administration.embedded_client_log_properties import (
+        SharePointEmbeddedClientLogProperties,
     )
     from office365.sharepoint.tenant.administration.ibsegmentinfo import IBSegmentInfo
     from office365.sharepoint.tenant.administration.insights.queueitem import (
@@ -239,25 +245,22 @@ if TYPE_CHECKING:
     from office365.sharepoint.tenant.administration.recentactionpayload import (
         TenantAdminRecentActionPayload,
     )
-    from office365.sharepoint.tenant.administration.report_query_response import (
+    from office365.sharepoint.tenant.administration.reports.query_response import (
         ReportQueryResponse,
     )
     from office365.sharepoint.tenant.administration.settings.dataproperty import (
         SettingDataProperty,
     )
-    from office365.sharepoint.tenant.administration.sharepointembeddedclientlogproperties import (
-        SharePointEmbeddedClientLogProperties,
-    )
-    from office365.sharepoint.tenant.administration.siteadministratorsfieldsdata import (
+    from office365.sharepoint.tenant.administration.sites.administrators_fields_data import (
         SiteAdministratorsFieldsData,
     )
-    from office365.sharepoint.tenant.administration.sitecohortssummary import (
+    from office365.sharepoint.tenant.administration.sites.cohorts_summary import (
         SiteCohortsSummary,
     )
     from office365.sharepoint.tenant.administration.sites.creation_source import (
         SiteCreationSource,
     )
-    from office365.sharepoint.tenant.administration.siteusergroupsdata import (
+    from office365.sharepoint.tenant.administration.sites.user_groups_data import (
         SiteUserGroupsData,
     )
     from office365.sharepoint.tenant.administration.spdeletedcontainerproperties import (
@@ -289,9 +292,6 @@ if TYPE_CHECKING:
     )
     from office365.sharepoint.tenant.administration.syntex.applicationproperties import (
         SPSyntexApplicationProperties,
-    )
-    from office365.sharepoint.tenant.administration.tenant_data_loss_prevention_quarantine_settings import (
-        TenantDataLossPreventionQuarantineSettings,
     )
     from office365.sharepoint.tenantadministration.catalog_management_collection import (
         CatalogManagementCollection,
@@ -1700,7 +1700,7 @@ class Tenant(Entity):
     @property
     def autofill_columns_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the AutofillColumnsSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2198,7 +2198,7 @@ class Tenant(Entity):
     @property
     def document_understanding_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the DocumentUnderstandingSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2378,7 +2378,7 @@ class Tenant(Entity):
     @property
     def e_signature_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the ESignatureSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2564,7 +2564,7 @@ class Tenant(Entity):
     @property
     def image_tagging_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the ImageTaggingSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2726,7 +2726,7 @@ class Tenant(Entity):
     @property
     def knowledge_agent_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the KnowledgeAgentSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2882,7 +2882,7 @@ class Tenant(Entity):
     @property
     def ocr_admin_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the OCRAdminSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -2918,7 +2918,7 @@ class Tenant(Entity):
     @property
     def ocr_compliance_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the OCRComplianceSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -3140,7 +3140,7 @@ class Tenant(Entity):
     @property
     def prebuilt_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the PrebuiltSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -3482,7 +3482,7 @@ class Tenant(Entity):
     @property
     def taxonomy_tagging_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the TaxonomyTaggingSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -3518,7 +3518,7 @@ class Tenant(Entity):
     @property
     def translation_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the TranslationSiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 
@@ -3678,7 +3678,7 @@ class Tenant(Entity):
     @property
     def tenant_data_loss_prevention_quarantine_settings(self) -> TenantDataLossPreventionQuarantineSettings:
         """Gets the TenantDataLossPreventionQuarantineSettings property"""
-        from office365.sharepoint.tenant.administration.tenant_data_loss_prevention_quarantine_settings import (
+        from office365.sharepoint.tenant.administration.data_loss_prevention_quarantine_settings import (
             TenantDataLossPreventionQuarantineSettings,
         )
 
@@ -4413,7 +4413,7 @@ class Tenant(Entity):
             top_records (int):
                 topRecords parameter
         """
-        from office365.sharepoint.tenant.administration.report_query_response import (
+        from office365.sharepoint.tenant.administration.reports.query_response import (
             ReportQueryResponse,
         )
 
@@ -4926,7 +4926,7 @@ class Tenant(Entity):
             view (str):
                 view parameter
         """
-        from office365.sharepoint.tenant.administration.sitecohortssummary import (
+        from office365.sharepoint.tenant.administration.sites.cohorts_summary import (
             SiteCohortsSummary,
         )
 
@@ -7557,7 +7557,7 @@ class Tenant(Entity):
     @property
     def smart_wiki_entry_site_info_list(self) -> ClientValueCollection[SiteInfoForSitePicker]:
         """Gets the SmartWikiEntrySiteInfoList property"""
-        from office365.sharepoint.tenant.administration.siteinfo_for_site_picker import (
+        from office365.sharepoint.tenant.administration.sites.info_for_site_picker import (
             SiteInfoForSitePicker,
         )
 

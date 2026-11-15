@@ -233,7 +233,7 @@ them at a call site, and discover them from any resource or tool.
 
 ```python
 from office365.limits import catalog, catalog_products, limit, limits_of, verify_limits
-from office365.sharepoint.thresholds import Limits
+from office365.sharepoint.limits import Limits
 
 
 @limit(Limits.LIST_VIEW, arg="page_size")  # declare + enforce (warn by default)

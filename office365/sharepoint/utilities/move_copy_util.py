@@ -19,8 +19,8 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.sharepoint.entity import Entity
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:

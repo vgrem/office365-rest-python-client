@@ -65,7 +65,7 @@ from office365.sharepoint.publishing.pages.versioninfocollection import (
 from office365.sharepoint.publishing.publishpublicationresponse import (
     PublishPublicationResponse,
 )
-from office365.sharepoint.publishing.sitepageauthoringmetadata import (
+from office365.sharepoint.publishing.sites.page_authoring_metadata import (
     SitePageAuthoringMetadata,
 )
 from office365.sharepoint.publishing.statusresponse import PublishingStatusResponse

@@ -9,9 +9,9 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.principal.principal import Principal
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.utilities.principal_info import PrincipalInfo
 
 if TYPE_CHECKING:

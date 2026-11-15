@@ -5,7 +5,7 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.search.analytics.action import AnalyticsAction
 from office365.sharepoint.search.analytics.actor import AnalyticsActor
-from office365.sharepoint.search.analytics.analyticsitem import AnalyticsItem
+from office365.sharepoint.search.analytics.item import AnalyticsItem
 
 
 class AnalyticsSignal(ClientValue):

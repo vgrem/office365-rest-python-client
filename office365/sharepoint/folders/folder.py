@@ -20,6 +20,7 @@ from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.folders.delete_parameters import FolderDeleteParameters
+from office365.sharepoint.limits import SAFE_PAGE_SIZE, Limits, limit
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.permissions.base_permissions import BasePermissions
@@ -32,7 +33,6 @@ from office365.sharepoint.sharing.object_sharing_information import (
 from office365.sharepoint.sharing.user_role_assignment import UserRoleAssignment
 from office365.sharepoint.sharing.user_sharing_result import UserSharingResult
 from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
-from office365.sharepoint.thresholds import SAFE_PAGE_SIZE, Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.move_copy_options import MoveCopyOptions
 from office365.sharepoint.utilities.move_copy_util import MoveCopyUtil

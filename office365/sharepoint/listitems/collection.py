@@ -6,8 +6,8 @@ from typing_extensions import Self
 
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.sharepoint.entity_collection import EntityCollection
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD
 from office365.sharepoint.listitems.listitem import ListItem
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 
 if TYPE_CHECKING:
     from office365.runtime.converters.upsert import UpsertTarget

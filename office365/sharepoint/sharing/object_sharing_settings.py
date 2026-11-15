@@ -12,7 +12,7 @@ from office365.sharepoint.sharing.object_sharing_information import (
 from office365.sharepoint.sharing.permission_information import (
     SharingPermissionInformation,
 )
-from office365.sharepoint.sharing.sharepoint_sharing_settings import (
+from office365.sharepoint.sharing.settings import (
     SharePointSharingSettings,
 )
 

@@ -2,7 +2,7 @@ from dataclasses import field
 from typing import Optional
 
 from office365.runtime.client_value import ClientValue
-from office365.sharepoint.publishing.sharepointpublishingstatus import (
+from office365.sharepoint.publishing.status import (
     SharePointPublishingStatus,
 )
 

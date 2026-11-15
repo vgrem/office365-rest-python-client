@@ -42,6 +42,7 @@ from office365.sharepoint.files.move_operations import MoveOperations
 from office365.sharepoint.files.versions.collection import FileVersionCollection
 from office365.sharepoint.files.versions.event import FileVersionEvent
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.listitem import ListItem
 from office365.sharepoint.pages.customized_page_status import CustomizedPageStatus
@@ -58,7 +59,6 @@ from office365.sharepoint.sharing.links.share_response import ShareLinkResponse
 from office365.sharepoint.sharing.object_sharing_information import (
     ObjectSharingInformation,
 )
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.utilities.upload_status import UploadStatus
 from office365.sharepoint.utilities.wopi_frame_action import SPWOPIFrameAction

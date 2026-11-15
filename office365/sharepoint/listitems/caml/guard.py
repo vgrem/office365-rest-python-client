@@ -11,8 +11,8 @@ from __future__ import annotations
 import warnings
 from typing import Optional
 
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE
 from office365.sharepoint.listitems.caml.query import CamlQuery
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, SAFE_PAGE_SIZE
 
 
 def indexing_candidates(query: CamlQuery) -> set[str]:

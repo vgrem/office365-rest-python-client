@@ -18,7 +18,7 @@ from office365.sharepoint.sites.manager.documents_data_source import DocumentsDa
 from office365.sharepoint.sites.manager.inactive_documents_query_result import InactiveDocumentsQueryResult
 from office365.sharepoint.sites.manager.missinglinksresult import MissingLinksResult
 from office365.sharepoint.sites.manager.retirablepagesqueryresult import RetirablePagesQueryResult
-from office365.sharepoint.sites.manager.sitemanagersignals import SiteManagerSignals
+from office365.sharepoint.sites.manager.signals import SiteManagerSignals
 from office365.sharepoint.sites.manager.suggestionitem import SuggestionItem
 from office365.sharepoint.sites.manager.topsitefilesresult import TopSiteFilesResult
 

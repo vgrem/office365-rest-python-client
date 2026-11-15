@@ -42,6 +42,12 @@ from office365.sharepoint.flows.connector_result import ConnectorResult
 from office365.sharepoint.flows.synchronization_result import FlowSynchronizationResult
 from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.forms.collection import FormCollection
+from office365.sharepoint.limits import (
+    LIST_VIEW_THRESHOLD,
+    SAFE_PAGE_SIZE,
+    Limits,
+    limit,
+)
 from office365.sharepoint.listitems.caml.guard import warn_if_unpaged
 from office365.sharepoint.listitems.caml.query import CamlQuery
 from office365.sharepoint.listitems.collection import ListItemCollection
@@ -77,12 +83,6 @@ from office365.sharepoint.permissions.securable_object import SecurableObject
 from office365.sharepoint.principal.users.user import User
 from office365.sharepoint.sharing.object_sharing_settings import ObjectSharingSettings
 from office365.sharepoint.sitescripts.utility import SiteScriptUtility
-from office365.sharepoint.thresholds import (
-    LIST_VIEW_THRESHOLD,
-    SAFE_PAGE_SIZE,
-    Limits,
-    limit,
-)
 from office365.sharepoint.translation.user_resource import UserResource
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
@@ -115,10 +115,10 @@ if TYPE_CHECKING:
     from office365.sharepoint.documents.createhvcsitemapprovalrequestparameters import (
         CreateHVCSItemApprovalRequestParameters,
     )
-    from office365.sharepoint.documents.documentgenerationinfo import (
+    from office365.sharepoint.documents.fieldvalueswithurl import FieldValuesWithUrl
+    from office365.sharepoint.documents.generation_info import (
         DocumentGenerationInfo,
     )
-    from office365.sharepoint.documents.fieldvalueswithurl import FieldValuesWithUrl
     from office365.sharepoint.documents.itemorderupdatevalue import ItemOrderUpdateValue
     from office365.sharepoint.documents.lockfiledata import LockFileData
     from office365.sharepoint.documents.placeholderv2 import PlaceholderV2
@@ -134,13 +134,13 @@ if TYPE_CHECKING:
     from office365.sharepoint.documents.templatemetadata import TemplateMetaData
     from office365.sharepoint.documents.updatetemplateinfo import UpdateTemplateInfo
     from office365.sharepoint.documents.updatetemplateinfov2 import UpdateTemplateInfoV2
-    from office365.sharepoint.files.versionbatchdeleteparameters import (
+    from office365.sharepoint.files.versions.batch_delete_parameters import (
         FileVersionBatchDeleteParameters,
     )
-    from office365.sharepoint.lists.extended_share_point_permission_settings import (
+    from office365.sharepoint.lists.extended_sharepoint_permission_settings import (
         ExtendedSharePointPermissionSettings,
     )
-    from office365.sharepoint.lists.listform import ListForm
+    from office365.sharepoint.lists.form import ListForm
     from office365.sharepoint.lists.rules.action import SPRuleAction
     from office365.sharepoint.lists.templatization_metadata import (
         TemplatizationMetaData,
@@ -2368,7 +2368,7 @@ class List(SecurableObject):
     @property
     def extended_sharepoint_permission_settings(self) -> ExtendedSharePointPermissionSettings:
         """Gets the ExtendedSharePointPermissionSettings property"""
-        from office365.sharepoint.lists.extended_share_point_permission_settings import (
+        from office365.sharepoint.lists.extended_sharepoint_permission_settings import (
             ExtendedSharePointPermissionSettings,
         )
 
@@ -2628,7 +2628,7 @@ class List(SecurableObject):
             parameters (ListForm):
                 parameters parameter
         """
-        from office365.sharepoint.lists.listform import ListForm
+        from office365.sharepoint.lists.form import ListForm
 
         return_type = ClientResult(self.context, ListForm())
         qry = ServiceOperationQuery(self, "CreateListForm", None, {"parameters": parameters}, None, return_type)
@@ -2766,7 +2766,7 @@ class List(SecurableObject):
             bsanitize (bool):
                 bSanitize parameter
         """
-        from office365.sharepoint.lists.listform import ListForm
+        from office365.sharepoint.lists.form import ListForm
 
         return_type = ClientResult(self.context, ClientValueCollection[ListForm]())
         qry = FunctionQuery(self, "GetListForms", [bsanitize], return_type)
@@ -3351,7 +3351,7 @@ class List(SecurableObject):
             parameters (ListForm):
                 parameters parameter
         """
-        from office365.sharepoint.lists.listform import ListForm
+        from office365.sharepoint.lists.form import ListForm
 
         return_type = ClientResult(self.context, ListForm())
         qry = ServiceOperationQuery(self, "UpdateListForm", None, {"parameters": parameters}, None, return_type)

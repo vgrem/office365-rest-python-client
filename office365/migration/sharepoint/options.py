@@ -1,7 +1,7 @@
 """SharePoint assessment options — the SharePoint defaults for the scanners.
 
 Seeds the product-agnostic :class:`~office365.migration.assessment.scanners.AssessmentOptions`
-with the SharePoint thresholds (from ``office365.sharepoint.thresholds.Limits``)
+with the SharePoint thresholds (from ``office365.sharepoint.limits.Limits``)
 and the ``limits`` mapping, so findings reference the authoritative limit.
 """
 
@@ -14,7 +14,7 @@ from office365.migration.assessment.scanners import AssessmentOptions
 from office365.runtime.limits import Limit
 from office365.sharepoint.fields.builtin_field_name import SYSTEM_FIELD_NAMES
 from office365.sharepoint.fields.schema import CONTAINER_ATTRIBUTES, SERVER_ASSIGNED_ATTRIBUTES
-from office365.sharepoint.thresholds import Limits
+from office365.sharepoint.limits import Limits
 
 
 def _limits() -> dict[str, Limit]:

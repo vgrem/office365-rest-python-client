@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.sharepoint.sharing.direct_abilities import DirectSharingAbilities
-from office365.sharepoint.sharing.link_abilities import SharingLinkAbilities
+from office365.sharepoint.sharing.links.abilities import SharingLinkAbilities
 from office365.sharepoint.sharing.mainlinkabilities import MainLinkAbilities
 from office365.sharepoint.sharing.settingsabilities import (
     SharingSettingsAbilities,

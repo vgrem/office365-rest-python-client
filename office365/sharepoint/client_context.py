@@ -26,6 +26,7 @@ from office365.runtime.transport.requests_transport import DEFAULT_POOL_CONNECTI
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.verbs import verb
 from office365.sharepoint.exceptions import SecurityValidationException
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.permissions import SiteLevel, site_access
 from office365.sharepoint.portal.groups.creation_params import GroupCreationParams
 from office365.sharepoint.portal.groups.site_info import GroupSiteInfo
@@ -42,7 +43,6 @@ from office365.sharepoint.sites.site import Site
 from office365.sharepoint.tenant.administration.hubsites.collection import (
     HubSiteCollection,
 )
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,
     PeoplePickerWebServiceInterface,
@@ -53,7 +53,7 @@ from office365.sharepoint.webs.web import Web
 if TYPE_CHECKING:
     from office365.runtime.queries.batch import BatchQuery
     from office365.runtime.queries.client_query import ClientQuery
-    from office365.sharepoint.apps.app_collection import AppCollection
+    from office365.sharepoint.apps.collection import AppCollection
     from office365.sharepoint.brandcenter.brand_center import BrandCenter
     from office365.sharepoint.clientsidecomponent.component_context_info import ComponentContextInfo
     from office365.sharepoint.contentcenter.machinelearning.hub import SPMachineLearningHub
@@ -825,7 +825,7 @@ class ClientContext(ClientRuntimeContext):
     @property
     def apps(self) -> AppCollection:
         """"""
-        from office365.sharepoint.apps.app_collection import AppCollection
+        from office365.sharepoint.apps.collection import AppCollection
 
         return AppCollection(self, ResourcePath("Apps"))
 

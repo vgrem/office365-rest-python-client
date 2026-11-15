@@ -18,7 +18,7 @@ class AppSiteContextUtility(Entity):
     @site_access(SiteLevel.READ)
     def get_app_site_context_collection(context: ClientContext) -> ClientResult[ClientValueCollection[AppSiteContext]]:
         """GetAppSiteContextCollection operation."""
-        from office365.sharepoint.apps.appsitecontextutility import (
+        from office365.sharepoint.apps.site_context_utility import (
             AppSiteContextUtility,
         )
         from office365.sharepoint.viva.appsitecontext import AppSiteContext

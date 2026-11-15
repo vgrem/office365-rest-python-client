@@ -17,9 +17,9 @@ from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.files.creation_information import FileCreationInformation
 from office365.sharepoint.files.file import File
 from office365.sharepoint.files.publish.status import FileStatus
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD, Limits, ensure_within, limit
 from office365.sharepoint.pages.template_file_type import TemplateFileType
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits, ensure_within, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 if TYPE_CHECKING:

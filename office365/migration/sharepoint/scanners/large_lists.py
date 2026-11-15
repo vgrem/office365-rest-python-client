@@ -2,7 +2,7 @@
 ``ITEM_COUNT_EXCEED_INDEX_LIMIT`` / ``ITEM_COUNT_EXCEED_LIMIT`` readiness checks.
 
 A ``LIST``-container scan over a list's item count, graded by the SharePoint
-limits (``office365.sharepoint.thresholds.Limits``):
+limits (``office365.sharepoint.limits.Limits``):
 
 - over the list view threshold (5,000)   → info   (classic views throttle; migration is fine)
 - over the index-add threshold (20,000)  → warning (a column index can't be added)

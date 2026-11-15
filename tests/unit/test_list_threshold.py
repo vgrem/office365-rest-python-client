@@ -17,10 +17,10 @@ from office365.migration.offline import offline_sharepoint_context
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.sharepoint.fields.field import Field
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD
 from office365.sharepoint.listitems.caml import Caml, CamlQuery
 from office365.sharepoint.listitems.caml.guard import threshold_warnings, warn_if_unpaged
 from office365.sharepoint.lists.list import List
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 
 
 def _query(column: str = "Status", *, paged: bool = False) -> CamlQuery:

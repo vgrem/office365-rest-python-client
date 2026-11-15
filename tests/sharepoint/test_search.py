@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 
 from office365.runtime.exceptions import AccessDeniedException
 from office365.sharepoint.client_context import ClientContext
+from office365.sharepoint.search.query.result import QueryResult
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.search.query.suggestion_results import QuerySuggestionResults
-from office365.sharepoint.search.query_result import QueryResult
 from office365.sharepoint.search.result import SearchResult
 from office365.sharepoint.search.service import SearchService
 

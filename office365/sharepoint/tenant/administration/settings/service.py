@@ -25,7 +25,7 @@ from office365.sharepoint.tenant.administration.newsubsiteinmodernoffformodernte
 )
 from office365.sharepoint.tenant.administration.newteamsitemanagedpath import NewTeamSiteManagedPath
 from office365.sharepoint.tenant.administration.parentsiteurl import ParentSiteUrl
-from office365.sharepoint.tenant.administration.policyoption import PolicyOption
+from office365.sharepoint.tenant.administration.policies.option import PolicyOption
 from office365.sharepoint.tenant.administration.requiresecondarycontact import RequireSecondaryContact
 from office365.sharepoint.tenant.administration.settings.default_time_zone_id import (
     TenantDefaultTimeZoneId,
@@ -34,11 +34,11 @@ from office365.sharepoint.tenant.administration.shownextgenerationsyncclientonte
     ShowNextGenerationSyncClientOnTeamSite,
 )
 from office365.sharepoint.tenant.administration.showselfservicesitecreation import ShowSelfServiceSiteCreation
-from office365.sharepoint.tenant.administration.sitecreationnewux import SiteCreationNewUX
-from office365.sharepoint.tenant.administration.sitepagesenabled import SitePagesEnabled
 from office365.sharepoint.tenant.administration.sites.creation_default_storage_quota import (  # noqa: E501
     SiteCreationDefaultStorageQuota,
 )
+from office365.sharepoint.tenant.administration.sites.creation_new_ux import SiteCreationNewUX
+from office365.sharepoint.tenant.administration.sites.pages_enabled import SitePagesEnabled
 from office365.sharepoint.tenant.administration.smtp_server import SmtpServer
 from office365.sharepoint.tenant.administration.splistmodernuxoff import SPListModernUXOff
 from office365.sharepoint.tenant.administration.types import (

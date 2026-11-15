@@ -44,8 +44,8 @@ class AppTileProperties(Entity):
             is_tenant_app (bool):
                 isTenantApp parameter
         """
-        from office365.sharepoint.apps.apptileproperties import AppTileProperties
         from office365.sharepoint.apps.properties import AppProperties
+        from office365.sharepoint.apps.tile_properties import AppTileProperties
 
         return_type = ClientResult(context, AppProperties())
         qry = ServiceOperationQuery(

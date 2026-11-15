@@ -1,6 +1,6 @@
 """Generate the service-limits reference page (mkdocs-gen-files plugin).
 
-The table mirrors :meth:`office365.sharepoint.thresholds.Limits.catalog`, so the docs
+The table mirrors :meth:`office365.sharepoint.limits.Limits.catalog`, so the docs
 can't drift from the code, and adds a **Bound at** column scanned from the ``@limit``
 decorators on the model. The Graph throttling quotas — the other half of the same
 ``Limit`` vocabulary — are tabulated in [Throttling](throttling.md), because there they
@@ -17,14 +17,14 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 import mkdocs_gen_files  # noqa: E402
 from _limit_bindings import bound_at, row_attrs, scan_bindings  # noqa: E402
-from office365.sharepoint.thresholds import Limits  # noqa: E402
+from office365.sharepoint.limits import Limits  # noqa: E402
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 _HEADER = """# Service limits
 
 SharePoint enforces the limits below. The library declares them in
-`office365.sharepoint.thresholds.Limits` and binds the ones a call can be measured
+`office365.sharepoint.limits.Limits` and binds the ones a call can be measured
 against to the model with the `@limit` decorator — **warnings by default**, never a
 silent truncation. The list view threshold is the one most callers meet; see
 [Large lists and folders](large-lists.md) for the paging and indexing recipes.
@@ -37,7 +37,7 @@ with the signals in [Throttling](throttling.md), and every row is answerable as 
 
 ```python
 from office365.limits import catalog, catalog_products
-from office365.sharepoint.thresholds import Limits, limit, warn_if_exceeds
+from office365.sharepoint.limits import Limits, limit, warn_if_exceeds
 
 warn_if_exceeds(Limits.LIST_VIEW, item_count, context="list 'Orders'")
 

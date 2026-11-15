@@ -10,8 +10,8 @@ from office365.sharepoint.folders.coloring_information import (
 )
 from office365.sharepoint.folders.colors import FolderColors
 from office365.sharepoint.folders.folder import Folder
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 
 

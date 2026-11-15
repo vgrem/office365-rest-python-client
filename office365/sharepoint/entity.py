@@ -14,8 +14,8 @@ from office365.runtime.paths.v3.entity import EntityPath
 from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.verbs import verb
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.permissions import SiteLevel, site_access
-from office365.sharepoint.thresholds import Limits, limit
 
 if TYPE_CHECKING:
     from office365.sharepoint.client_context import ClientContext

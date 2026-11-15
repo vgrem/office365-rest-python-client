@@ -19,7 +19,7 @@ from office365.sharepoint.social.posts.creation_data import SocialPostCreationDa
 from office365.sharepoint.social.thread import SocialThread
 
 if TYPE_CHECKING:
-    from office365.sharepoint.social.feedoptions import SocialFeedOptions
+    from office365.sharepoint.social.feed.options import SocialFeedOptions
 
 
 class SocialFeedManager(Entity):

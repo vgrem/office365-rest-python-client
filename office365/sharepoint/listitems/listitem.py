@@ -33,6 +33,7 @@ from office365.sharepoint.fields.string_values import FieldStringValues
 from office365.sharepoint.fields.url_value import FieldUrlValue
 from office365.sharepoint.files.system_object_type import FileSystemObjectType
 from office365.sharepoint.likes.liked_by_information import LikedByInformation
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.listitems.compliance_info import ListItemComplianceInfo
 from office365.sharepoint.listitems.form_update_value import ListItemFormUpdateValue
 from office365.sharepoint.listitems.moderation_status import SPModerationStatusType
@@ -54,7 +55,6 @@ from office365.sharepoint.sharing.object_sharing_information import (
 from office365.sharepoint.sharing.result import SharingResult
 from office365.sharepoint.taxonomy.field import TaxonomyField
 from office365.sharepoint.taxonomy.field_value_col import TaxonomyFieldValueCollection
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.wopi_action import SPWOPIAction
 from office365.sharepoint.ui.applicationpages.peoplepicker.web_service_interface import (
     ClientPeoplePickerWebServiceInterface,

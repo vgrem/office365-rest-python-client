@@ -21,7 +21,7 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Tuple
 
 from office365.runtime.parallel import run_parallel
-from office365.sharepoint.thresholds import Limits
+from office365.sharepoint.limits import Limits
 
 if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder

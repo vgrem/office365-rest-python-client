@@ -38,7 +38,7 @@ from office365.runtime.limits import (
 from office365.runtime.schema import TypeSchema
 from office365.runtime.types.odata_property import odata
 from office365.sharepoint.client_context import ClientContext
-from office365.sharepoint.thresholds import LIST_VIEW_THRESHOLD, Limits
+from office365.sharepoint.limits import LIST_VIEW_THRESHOLD, Limits
 from office365.subscriptions.collection import SubscriptionCollection
 from office365.subscriptions.subscription import Subscription
 from office365.teams.chats.messages.message import ChatMessage

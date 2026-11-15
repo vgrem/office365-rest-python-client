@@ -5,7 +5,7 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
-from office365.sharepoint.tenant.administration.site_property_scope_config import SitePropertyScopeConfig
+from office365.sharepoint.tenant.administration.sites.property_scope_config import SitePropertyScopeConfig
 
 
 class CatalogManagementCustomPropertyMap(ClientValue):

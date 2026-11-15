@@ -34,7 +34,8 @@ from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
 from office365.sharepoint.eventreceivers.definition_collection import EventReceiverDefinitionCollection
 from office365.sharepoint.features.collection import FeatureCollection
-from office365.sharepoint.files.versionbatchdeleteparameters import FileVersionBatchDeleteParameters
+from office365.sharepoint.files.versions.batch_delete_parameters import FileVersionBatchDeleteParameters
+from office365.sharepoint.limits import Limits, limit
 from office365.sharepoint.lists.list import List
 from office365.sharepoint.lists.templates.type import ListTemplateType
 from office365.sharepoint.onboarding.customerkeyinfo import CustomerKeyInfo
@@ -50,7 +51,7 @@ from office365.sharepoint.sites.asyncreadoptions import AsyncReadOptions
 from office365.sharepoint.sites.autolabellingworkinformation import AutoLabellingWorkInformation
 from office365.sharepoint.sites.azure_container_Info import ProvisionedTemporaryAzureContainerInfo
 from office365.sharepoint.sites.copy_job_progress import CopyJobProgress
-from office365.sharepoint.sites.copy_migration_iInfo import CopyMigrationInfo
+from office365.sharepoint.sites.copy_migration_info import CopyMigrationInfo
 from office365.sharepoint.sites.enqueuejobinformation import EnqueueJobInformation
 from office365.sharepoint.sites.health.summary import SiteHealthSummary
 from office365.sharepoint.sites.home.site import SPHSite
@@ -70,7 +71,6 @@ from office365.sharepoint.storagemetrics.storage_metrics import StorageMetrics
 from office365.sharepoint.teams.channel_capabilities import ChannelCapabilities
 from office365.sharepoint.tenant.administration.hubsites.creation_information import HubSiteCreationInformation
 from office365.sharepoint.tenant.administration.sites.administrators_info import SiteAdministratorsInfo
-from office365.sharepoint.thresholds import Limits, limit
 from office365.sharepoint.types.resource_path import ResourcePath as SPResPath
 from office365.sharepoint.usercustomactions.collection import UserCustomActionCollection
 from office365.sharepoint.webs.templates.collection import WebTemplateCollection
