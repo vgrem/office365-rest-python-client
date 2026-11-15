@@ -6,7 +6,8 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
                --tenant contoso.onmicrosoft.com --client-id <id> [--scopes User.Read Mail.Read]
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
-    o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]
+    o365 <product> <noun> [navigation ...] [action] [-o table|wide|json|csv|tsv|url|name] [flags]
+    o365 help <any words>               -- the page for them, or ``-h`` at the leaf
     o365 completion bash|zsh|fish        -- print the shell script that completes the words
     o365 completion --warm [product ...] -- fill the cache, so no TAB pays an import
 
@@ -38,6 +39,10 @@ answer a command line was asked for. ``-o json`` prints everything the object lo
 ``--columns`` says which names the table shows. ``Web`` is 118 fields loaded and two printed;
 the other 116 are not hidden, they are unasked for. A type that ranks nothing prints its
 payload, because a settings object with sixteen config switches has no name a reader came for.
+Which column is a link is a declaration too (``@odata(facet=link)``, ``TypeSchema.links``), and
+the drawing lives in ``office365/runtime/render.py`` -- a header row, numbers right-aligned, a
+cut value marked with ``…``, a sentence when nothing was found -- because the notebook ``repr``
+in ``display.py`` answers a different question.
 
 The words a shell may offer are the model's own, so they are read from it rather than listed
 here: ``o365 __complete`` is the hidden half of the protocol (absent from ``--help`` for the
@@ -56,6 +61,7 @@ import inspect
 import json
 import os
 import sys
+import textwrap
 import time
 import types
 from collections.abc import Mapping
@@ -96,10 +102,18 @@ def main(argv: "list[str] | None" = None) -> int:
         return _complete(words[1:])
     if words[:1] == ["completion"]:
         return _completion(words[1:])
-    audience, words = _audience_words(words)
-    if not words or words[0] in ("-h", "--help"):
-        print(_usage() if words else _served(audience) if audience else _usage())
-        return 0 if words or audience else 2
+    return _dispatch(*_audience_words(words))
+
+
+def _dispatch(audience: str, words: "list[str]") -> int:
+    """Read the grammar: a page to show, a session to open, or a route ending in an action."""
+    if not words or words[0] in ("-h", "--help", "help"):
+        # `help` is the same question `-h` asks, by name: it names the route it wants a page
+        # for, and answers the served list or the usage when it names nothing.
+        if words[1:]:
+            return _help(audience, words[1:])
+        print(_served(audience) if audience else _usage())
+        return 0 if audience else 2
     word, rest = words[0], words[1:]
     if word == "login":
         return login(audience or "graph", rest)
@@ -107,13 +121,21 @@ def main(argv: "list[str] | None" = None) -> int:
         return whoami(audience)
     if word == "logout":
         return logout(audience)
+    # `o365 graph <noun>` names no product: the audience word was standing in for one, because
+    # 25 products share the graph token and none of them is a package called `graph`.
+    product = audience if audience and not _is_product(word) else word
+    if product != word:
+        # The audience word was the product's stand-in, and only `graph` needs one: 25 products
+        # share its token and none of them is a package called `graph`, so it has to be named.
+        print(f"o365: {product} is a token, not a product; {_served(product)}", file=sys.stderr)
+        return 2
     if not rest:
-        print(f"o365: unknown command {word!r}\n{_usage()}", file=sys.stderr)
+        print(f"o365: unknown command {product!r}\n{_usage()}", file=sys.stderr)
         return 2
     noun, rest = rest[0], rest[1:]
     # The words name the route and stop where the first flag starts; a flag's value is not a word.
     cut = next((position for position, item in enumerate(rest) if item.startswith("-")), len(rest))
-    return command(word, [noun, *rest[:cut]], rest[cut:])
+    return command(product, [noun, *rest[:cut]], rest[cut:])
 
 
 def login(audience: str, argv: "list[str]") -> int:
@@ -315,7 +337,12 @@ def _after(product: str, path: "list[str]") -> "list[tuple[str, str]]":
 
 def _top() -> "list[tuple[str, str]]":
     """Nothing typed yet: what owns a token, what owns types, and the two words with no noun."""
-    return [(name, "audience") for name in AUDIENCES] + _products() + _sessions() + [("completion", "shell script")]
+    return (
+        [(name, "audience") for name in AUDIENCES]
+        + _products()
+        + _sessions()
+        + [("completion", "shell script"), ("help", "any of these pages")]
+    )
 
 
 def _products() -> "list[tuple[str, str]]":
@@ -337,16 +364,31 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
             continue
         answer.append(("--" + name.replace("_", "-"), getattr(_unoptional(parameter.annotation), "__name__", "")))
     return answer + [
-        ("-o", "table or json"),
-        ("--output", "table or json"),
+        ("-o", "the format to print"),
+        ("--output", "the format to print"),
         ("--columns", "the names the table shows"),
+        ("--no-headers", "rows without the header line"),
+        ("--link", "when a name carries its URL"),
     ]
 
 
 def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[str, str]]":
     """The values a flag takes, when the line stopped on that flag's name."""
     if typed[-1] in ("-o", "--output"):
-        return [("table", "one line per object"), ("json", "the payload as it came")]
+        from office365.runtime.render import FORMATS
+
+        told = {
+            "table": "the columns a reader wants",
+            "wide": "every field the payload carried",
+            "json": "the payload as it came",
+            "csv": "for a spreadsheet",
+            "tsv": "for a spreadsheet, tab separated",
+            "url": "one address per line",
+            "name": "one name per line",
+        }
+        return [(fmt, told.get(fmt, "")) for fmt in FORMATS]
+    if typed[-1] == "--link":
+        return [("auto", "when printing to a terminal"), ("always", "even into a pipe"), ("never", "plain text")]
     if typed[-1] == "--columns" and walk:
         from office365.routing import route
         from office365.runtime.schema import TypeSchema
@@ -393,6 +435,31 @@ def _completion(argv: "list[str]") -> int:
     return 0
 
 
+def _help(audience: str, words: "list[str]") -> int:
+    """``o365 help <product> <noun> ...``: the page a route answers, or the arguments of a leaf.
+
+    It goes through :func:`command` with ``-h`` so that one place decides what a route means:
+    a node prints its page, an action prints the flags of the method the route reached. A
+    person who typed ``o365 help sharepoint web lists list`` gets the same text as
+    ``o365 sharepoint web lists list -h``, which is what ``kubectl help`` and ``docker help`` do.
+    """
+    spoken = list(words)
+    if spoken and (spoken[0] in AUDIENCES or _is_product(spoken[0])):
+        product, spoken = spoken[0], spoken[1:]
+    elif audience:
+        product = audience
+    else:
+        print(_usage(), file=sys.stderr)
+        return 2
+    if not spoken:
+        print(_served(product))
+        return 0
+    try:
+        return command(product, spoken, ["-h"])
+    except SystemExit as stop:  # argparse answers -h with the code it promises
+        return int(stop.code or 0)
+
+
 def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     """Run ``<product> <noun> [navigation ...] [action]``: the words are the route, the flags are
     the method's own.
@@ -405,7 +472,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     except LookupError as err:
         return _refuse(str(err))
     if found.verb is None:
-        print(f"{product} {spoken}: " + ", ".join(sorted(found.commands)))
+        print(_page(product, spoken, found))
         return 0
     target = found.here
     if target is None:
@@ -421,9 +488,15 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         if walk
         else f"{found.method}() on {target.__name__}",
     )
+    from office365.runtime.render import FORMATS
+
     _flags(parser, method, set())
-    parser.add_argument("-o", "--output", choices=("table", "json"), default="table", help="what to print")
-    parser.add_argument("--columns", default="", help="comma separated names the table shows")
+    parser.add_argument("-o", "--output", choices=FORMATS, default="table", help="what to print")
+    parser.add_argument("--columns", default=None, help="comma separated names the table shows")
+    parser.add_argument("--no-headers", action="store_true", help="print rows without the header line")
+    parser.add_argument(
+        "--link", choices=("auto", "always", "never"), default="auto", help="when a name carries its URL"
+    )
     args = parser.parse_args(argv)
     given = _accepted(args, method)
 
@@ -436,13 +509,170 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
             f"{product} {spoken} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
         )
-    return _send(client, getattr(functools.reduce(getattr, walk, client), found.method), given, args, found.entity)
+    noun = found.walk[-1] if found.walk else found.noun
+    return _send(
+        client,
+        getattr(functools.reduce(getattr, walk, client), found.method),
+        given,
+        args,
+        found.entity,
+        empty=f"No {noun} found.",
+    )
 
 
-def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.Namespace, entity: type) -> int:
-    """Call the method, run the one query it queued, and print what came back."""
+#: What a role does, in the words a command line uses. A role is a closed vocabulary in the
+#: model (``ROLES``), so its sentence belongs here, once -- writing it on 4,000 methods would
+#: be 4,000 places to keep in step. An ``action`` has no sentence of its own: it is the
+#: service's operation, and its docstring (written by the generator from the metadata's own
+#: summary) is the only text that says what it does.
+_ROLE_SENTENCE = {
+    "get": "read this one back",
+    "list": "read every one it holds",
+    "create": "create one here",
+    "update": "change what you name",
+    "delete": "remove this one",
+    "action": "",
+}
+
+#: The order actions are shown in, and the heading each group gets. Effects are declared, not
+#: inferred from a spelling here, so a destructive action can never be listed as a read.
+_EFFECTS = (("read", "READ"), ("write", "WRITE"), ("destroy", "DESTROY"), ("local", "SESSION"))
+
+#: How many links a page lists before it stops being a page; a TAB still offers all of them.
+LINK_WORDS = 12
+
+#: How wide the action-name column is allowed to get: `get-managed-app-diagnostic-statuses`
+#: would otherwise push every sentence off to the right.
+_WORD_WIDTH = 26
+
+#: Where a service's one-line summary is cut: long enough for a real sentence, short enough
+#: that the page stays a page.
+_SENTENCE_WIDTH = 70
+
+
+def _page(product: str, spoken: str, found: Any) -> str:
+    """The page a node answers: what it is, what it answers, what it holds, what to type next.
+
+    Every line is read off the model: the actions are the type's stamped verbs, the groups are
+    the effect each declares, the links are the getters the walk accepts, and the columns a
+    read shows are the type's ranked defaults (``-o wide`` shows every field the payload
+    carried). So nothing here is a vocabulary someone has to keep in step with the library.
+    """
+    from office365.routing import navigations
+    from office365.runtime.schema import TypeSchema
+
+    here = found.here or found.entity
+    schema = TypeSchema.of(here)
+    lines = [f"{product} {spoken} \u2014 {here.__name__}"]
+    if schema.defaults:
+        lines.append(f"  a read shows {', '.join(schema.defaults)}")
+    width = min(max((len(word) for word in found.commands), default=0), _WORD_WIDTH)
+    for effect, title in _EFFECTS:
+        rows = [
+            (word, _sentence(half, method, meta))
+            for word, (half, method, meta) in sorted(found.commands.items())
+            if meta.effect == effect
+        ]
+        if not rows:
+            continue
+        lines.append("")
+        lines.append(title)
+        for word, sentence in rows:
+            if len(word) > width:
+                # A word past the column keeps its sentence on the next line rather than
+                # pushing every other row's text out of line.
+                lines.append(f"  {word}".rstrip())
+                if sentence:
+                    lines.append(f"      {sentence}")
+            else:
+                lines.append(f"  {word.ljust(width)}  {sentence}".rstrip())
+    # Shortest first: the words a person types are the short ones (`lists`, `webs`, `items`),
+    # and alphabetical order would spend the twelve on `access_requests_list`.
+    links = sorted((word for word in navigations(here) if word not in found.commands), key=lambda w: (len(w), w))
+    if links:
+        lines.append("")
+        lines.append("LINK")
+        shown = links[:LINK_WORDS]
+        lines.extend("  " + line for line in textwrap.wrap("  ".join(shown), width=76) or [""])
+        if len(links) > len(shown):
+            lines.append(f"  \u2026and {len(links) - len(shown)} more; a TAB offers every one")
+    lines.append("")
+    lines.append("TRY")
+    lines.extend("  " + line for line in _examples(product, spoken, found, links))
+    lines.append("")
+    lines.append("  every action answers -h  \u00b7  -o json|csv|url prints it for a program")
+    return "\n".join(lines)
+
+
+def _sentence(half: type, method: str, meta: Any) -> str:
+    """The one line that says what an action does: the service's summary, or the role's sentence."""
+    if meta.role != "action":
+        return _ROLE_SENTENCE.get(meta.role, "")
+    declared = (inspect.getdoc(getattr(half, method, None)) or "").split("\n")[0].strip().rstrip(".")
+    # A docstring that opens with a block header (`Requires permissions:`) has no summary of
+    # its own, and printing the header alone would say nothing.
+    if not declared or declared.endswith(":"):
+        return ""
+    return declared[: _SENTENCE_WIDTH - 1] + "\u2026" if len(declared) > _SENTENCE_WIDTH else declared
+
+
+def _examples(product: str, spoken: str, found: Any, links: "list[str]") -> "list[str]":
+    """Two lines worth copying: a read of this node, and a word deeper into the model."""
+    from office365.runtime.schema import TypeSchema
+
+    examples = []
+    for word in ("get", "list"):
+        if word not in found.commands:
+            continue
+        columns = TypeSchema.of(found.here or found.entity).defaults
+        flags = f" --columns {','.join(columns)}" if word == "list" and columns else ""
+        examples.append(f"o365 {product} {spoken} {word}{flags}")
+    if not examples and found.commands:
+        examples.append(f"o365 {product} {spoken} {sorted(found.commands)[0]}")
+    examples.extend(f"o365 {product} {spoken} {word} list" for word in _feeds(product, spoken, links, 2))
+    return examples
+
+
+def _feeds(product: str, spoken: str, links: "list[str]", wanted: int) -> "list[str]":
+    """The first links that answer ``list`` themselves, so the example reads something back.
+
+    A link that is a single object would make ``... folders`` an example of walking nowhere;
+    the feed is the one a reader wants, and the model already says which links are one.
+    """
+    from office365.routing import route
+
+    found = []
+    for word in sorted(links, key=lambda word: (len(word), word)):
+        try:
+            deeper = route(product, *spoken.split(" "), word)
+        except LookupError:
+            continue
+        if "list" in deeper.commands:
+            found.append(word)
+            if len(found) == wanted:
+                break
+    return found or links[:wanted]
+
+
+def _send(
+    client: Any,
+    method: Any,
+    given: "Mapping[str, Any]",
+    args: argparse.Namespace,
+    entity: type,
+    *,
+    empty: str = "",
+) -> int:
+    """Call the method, run the one query it queued, and print what came back.
+
+    The table is rendered by :mod:`office365.runtime.render` rather than by the notebook's
+    ``describe_collection``: a terminal wants a header row, aligned numbers and a link, and
+    a repr wants to be bounded and indented. Which fields are a link is the type's answer
+    (``TypeSchema.links``, the ``link`` facet), not a list of spellings kept here.
+    """
     from office365.runtime.client_request_exception import ClientRequestException
-    from office365.runtime.display import describe_collection
+    from office365.runtime.render import render
+    from office365.runtime.schema import TypeSchema
 
     result = method(**given)
     try:
@@ -450,25 +680,41 @@ def _send(client: Any, method: Any, given: "Mapping[str, Any]", args: argparse.N
     except ClientRequestException as err:
         return _refuse(str(err), 1)
     records = _rows(result)
-    if args.output == "json":
-        print(json.dumps(records, indent=2, default=str))
-    elif any(records):
-        print(
-            describe_collection(
-                records,
-                name=type(result).__name__,
-                columns=_columns(records, args.columns, entity),
-                max_items=None,
-                max_column_width=None,
-            )
+    print(
+        render(
+            records,
+            args.output,
+            columns=_columns(records, args.columns, entity),
+            links=None,
+            origin=render_origin(client),
+            resources=_addresses(result),
+            fields=TypeSchema.of(entity).links,
+            link=args.link,
+            headers=not args.no_headers,
+            tty=sys.stdout.isatty(),
+            empty=empty,
         )
+    )
     return 0
 
 
-def _columns(records: "list[Any]", chosen: str, entity: type) -> "list[str] | None":
+def render_origin(client: Any) -> str:
+    """``scheme://host`` for the server-relative links a SharePoint payload carries."""
+    from office365.runtime.render import origin_of
+
+    return origin_of(getattr(client, "service_root_url", None))
+
+
+def _addresses(result: Any) -> "list[str | None]":
+    """Each record's own REST address, when the record is an object rather than a payload."""
+    items = result if isinstance(result, list) else [result]
+    return [None if isinstance(item, Mapping) else getattr(item, "resource_url", None) for item in items]
+
+
+def _columns(records: "list[Any]", chosen: "str | None", entity: type) -> "list[str] | None":
     """The columns a table shows: the ones asked for, or the ones the type says a reader wants."""
     if chosen:
-        return [name.strip() for name in chosen.split(",")]
+        return [name.strip() for name in chosen.split(",") if name.strip()]
     from office365.runtime.schema import TypeSchema
 
     spelled = {name.lower(): name for name in sorted({name for r in records if isinstance(r, Mapping) for name in r})}
@@ -630,7 +876,8 @@ def _usage() -> str:
     """What this command line knows: a session, a route of words, and the shell script."""
     return (
         "usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]\n"
-        "       o365 <product> <noun> [navigation ...] [action] [-o table|json] [flags]\n"
+        "       o365 <product> <noun> [navigation ...] [action] [flags]\n"
+        "       o365 <product> <noun> list [-o table|wide|json|csv|tsv|url|name]\n"
         "       o365 graph <product> <noun> [navigation ...] [action]\n"
         "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]"

@@ -162,43 +162,77 @@ a word, 0.23 s for ``outlook message attachments``.
 prints a row: ``kubectl get pod`` prints ``NAME READY STATUS RESTARTS AGE``, ``kubectl describe``
 is the separate verb that prints everything, ``az`` prints JSON and is the cautionary example.
 
-The model does not state which columns those are — measured: ``identity=True`` appears **5**
-times in 12 069 ``@odata`` declarations, and no property declares a facet at all. ``identities``
-is therefore too thin to be a table (``Web`` gives ``Url ServerRelativeUrl``, ``Message`` and
-``DriveItem`` give nothing) and too narrow (a message table without its subject). What the type
-*does* state, everywhere, is the word it calls itself by.
+**As built, the columns are declared, not guessed.** Two marker arguments carry the two facts a
+printer needs, and both are read through ``TypeSchema`` so that nothing in the command line
+repeats them:
 
-So the default view is three columns: the first three of ``NAMES`` the record has — ``title``,
-``name``, ``displayName``, ``subject``, ``userPrincipalName``, ``mail``, ``url``, the two dates,
-``id`` last. Measured against the declared columns:
+| fact | declared as | read as | declarations |
+| --- | --- | --- | --- |
+| which columns a reader came for, and in what order | ``@odata(default=<rank>)`` | ``TypeSchema.defaults`` | 23 |
+| which column is an address a person can open | ``@odata(facet=link)`` | ``TypeSchema.links`` | 11 of 17 |
 
-| type | 118 → | table |
-| --- | --- | --- |
-| ``Web`` | 118 | ``Title Url Id`` |
-| ``List`` | 98 | ``Title Id`` |
-| ``User`` | 81 | ``displayName userPrincipalName mail`` |
-| ``Message`` | 34 | ``subject receivedDateTime id`` |
-| ``DriveItem`` | 32 | ``id name lastModifiedDateTime`` |
+```
+$ grep -rn '@odata' office365 --include=*.py | grep -c 'default=[0-9]'   # 23
+$ grep -rn '@odata' office365 --include=*.py | grep -c 'facet=LINK'      # 11
+```
 
-``-o json`` prints the payload, ``--columns a,b`` says what the table shows. The rendering is not
-new: ``office365/runtime/display.py`` already renders a bounded table for ``repr()``, so the two
-additions there are options, not code — ``describe_collection(columns=...)`` and a ``Mapping``
-counted as a record. The CLI passes ``max_items=None`` and ``max_column_width=None`` because a
-command line shows what it fetched (146 lists, measured) and does not cut a subject in half.
+An earlier draft of this section proposed a ``NAMES`` heuristic — the first three of
+``title name displayName subject …`` a record happened to carry — because *measured then*, no
+property declared a facet at all and ``identity=True`` appeared five times in 12 069
+declarations. That is no longer the shape of the tree: ``List`` ranks ``Title`` and ``ItemCount``
+and declares ``DefaultViewUrl`` as its address, ``Web`` ranks ``Title`` and ``Url`` and declares
+``Url`` then ``ServerRelativeUrl``, ``BaseItem``/``Team``/``Message`` declare ``webUrl``/``webLink``.
+The heuristic is gone, and the ranking is a fact a reviewer can see in the source.
+
+Two renderers, because there are two readers. ``office365/runtime/display.py`` still draws the
+notebook ``repr``: bounded, indented, prefixed with the class name — a preview of a Python value.
+``office365/runtime/render.py`` draws a terminal: a header row, numbers right-aligned, over-long
+cells cut and marked with ``…``, a sentence when there is nothing to show, and a column that opens
+in a browser as an OSC-8 link (only when stdout is a terminal, so a pipe never receives escape
+codes). Neither imports the model, so printing can never become a reason to send a request.
+
+The formats are the ones a mature command line offers: ``-o table`` (default), ``wide`` (every
+field the payload carried), ``json``, ``csv``, ``tsv``, ``url``, ``name``; ``--columns a,b``,
+``--no-headers`` and ``--link auto|always|never`` say the rest. ``-o url`` and ``-o name`` exist
+for ``xargs``, which is why they print a bare value per line rather than a table.
 
 Live, both halves of the same command:
 
 ```
 $ o365 sharepoint web get
-Web(count=1)
-  Title         Url                               Id
-  SiteU74H3Z9O  https://mediadev8.sharepoint.com  cd5c86f3-261c-4d3a-8a91-34d6392cdfb9
-$ o365 sharepoint web lists list
-ListCollection(count=146)
-  Title                  Id
-  _catalogs/hubsite      4692bf0a-264a-4707-be11-3be708834095
-  appdata                0a1773f6-6b04-40d1-b3c8-1ca45cadc66e
+URL       https://mediadev8.sharepoint.com
+Title     SiteU74H3Z9O
+Url       https://mediadev8.sharepoint.com
+
+$ o365 sharepoint web lists list --columns Title,ItemCount
+TITLE                  ITEMCOUNT
+_catalogs/hubsite              4
+appdata                        3
 ```
+
+### 2.4 What a group answers — the node page
+
+``o365 sharepoint web`` used to answer one comma-joined line of words. ``kubectl``, ``gh`` and
+``docker`` answer a bare group with what it holds, grouped by what the words do, and answer
+``<group> <cmd> -h`` with that command's arguments. Both are read off the model:
+
+* the actions are the stamped verbs (``office365/runtime/verbs.py``), so a word the router would
+  refuse can never be printed;
+* the headings are ``VerbMeta.effect`` — ``READ``, ``WRITE``, ``DESTROY``, ``SESSION`` — so a
+  destructive action is never listed under a read;
+* the sentence for a role is one line in ``cli.py``, because a role is a closed vocabulary and
+  its text would otherwise be repeated on 4 000 methods;
+* an ``action``'s sentence is the service's own summary, which the generator wrote from the
+  metadata's ``Summary`` attribute; a docstring that opens with a block header
+  (``Requires permissions:``) has no summary and prints none rather than the header;
+* the ``LINK`` section is ``routing.navigations``, shortest word first, capped at twelve with the
+  rest left to a TAB — a page is read by a person, and ``lists`` is worth more than
+  ``access_requests_list``;
+* ``TRY`` offers lines that work: a read of this node, and a link that is itself a feed.
+
+``o365 help <anything>`` is the same page, and ``o365 help sharepoint web lists list`` is
+``o365 sharepoint web lists list -h``: ``-h`` at any depth prints the flags of the method the
+route actually reached, read from its signature.
 
 ## 3. Decisions proposed
 
