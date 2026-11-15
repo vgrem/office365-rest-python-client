@@ -15,9 +15,9 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.admin.browser_shared_cookie import BrowserSharedCookie
-    from office365.admin.browser_site import BrowserSite
-    from office365.admin.browser_site_list import BrowserSiteList
+    from office365.admin.edge.browser_shared_cookie import BrowserSharedCookie
+    from office365.admin.edge.browser_site import BrowserSite
+    from office365.admin.edge.browser_site_list import BrowserSiteList
 
 
 class BrowserSiteList(Entity):
@@ -73,7 +73,7 @@ class BrowserSiteList(Entity):
     @property
     def shared_cookies(self) -> EntityCollection[BrowserSharedCookie]:
         """Gets the sharedCookies property"""
-        from office365.admin.browser_shared_cookie import BrowserSharedCookie
+        from office365.admin.edge.browser_shared_cookie import BrowserSharedCookie
 
         return self.properties.get(
             "sharedCookies",
@@ -86,7 +86,7 @@ class BrowserSiteList(Entity):
     @property
     def sites(self) -> EntityCollection[BrowserSite]:
         """Gets the sites property"""
-        from office365.admin.browser_site import BrowserSite
+        from office365.admin.edge.browser_site import BrowserSite
 
         return self.properties.get(
             "sites", EntityCollection[BrowserSite](self.context, BrowserSite, ResourcePath("sites", self.resource_path))
@@ -117,7 +117,7 @@ class BrowserSiteList(Entity):
             shared_cookies (ClientValueCollection[BrowserSharedCookie]):
                 sharedCookies parameter
         """
-        from office365.admin.browser_site_list import BrowserSiteList
+        from office365.admin.edge.browser_site_list import BrowserSiteList
 
         return_type = BrowserSiteList(self.context)
         qry = ServiceOperationQuery(

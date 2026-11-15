@@ -7,7 +7,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.internet_explorer_mode import InternetExplorerMode
+    from office365.admin.edge.internet_explorer_mode import InternetExplorerMode
 
 
 class Edge(Entity):
@@ -15,7 +15,7 @@ class Edge(Entity):
     @property
     def internet_explorer_mode(self) -> InternetExplorerMode:
         """Gets the internetExplorerMode property"""
-        from office365.admin.internet_explorer_mode import InternetExplorerMode
+        from office365.admin.edge.internet_explorer_mode import InternetExplorerMode
 
         return self.properties.get(
             "internetExplorerMode",

@@ -20,9 +20,9 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.onenote.onenote_page_preview import OnenotePagePreview
-    from office365.onenote.onenote_patch_content_command import OnenotePatchContentCommand
     from office365.onenote.operations.onenote import OnenoteOperation
+    from office365.onenote.pages.preview import OnenotePagePreview
+    from office365.onenote.patch_content_command import OnenotePatchContentCommand
 
 
 class OnenotePage(OnenoteEntitySchemaObjectModel):
@@ -169,7 +169,7 @@ class OnenotePage(OnenoteEntitySchemaObjectModel):
     @verb(role="action", effect="read")
     def preview(self) -> ClientResult[OnenotePagePreview]:
         """preview operation."""
-        from office365.onenote.onenote_page_preview import OnenotePagePreview
+        from office365.onenote.pages.preview import OnenotePagePreview
 
         return_type = ClientResult(self.context, OnenotePagePreview())
         qry = FunctionQuery(self, "preview", None, return_type)

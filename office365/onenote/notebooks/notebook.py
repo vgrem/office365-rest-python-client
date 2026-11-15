@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity_collection import EntityCollection
 from office365.onenote.entity_hierarchy_model import OnenoteEntityHierarchyModel
-from office365.onenote.notebook_links import NotebookLinks
+from office365.onenote.notebooks.links import NotebookLinks
 from office365.onenote.sections.collection import OnenoteSectionCollection
 from office365.onenote.userrole import OnenoteUserRole
 from office365.permissions import require_permission

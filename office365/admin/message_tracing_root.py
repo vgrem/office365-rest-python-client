@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.exchange.exchange_message_trace import ExchangeMessageTrace
+    from office365.admin.exchange.message_trace import ExchangeMessageTrace
 
 
 class MessageTracingRoot(Entity):
@@ -16,7 +16,7 @@ class MessageTracingRoot(Entity):
     @property
     def message_traces(self) -> EntityCollection[ExchangeMessageTrace]:
         """Gets the messageTraces property"""
-        from office365.admin.exchange.exchange_message_trace import ExchangeMessageTrace
+        from office365.admin.exchange.message_trace import ExchangeMessageTrace
 
         return self.properties.get(
             "messageTraces",

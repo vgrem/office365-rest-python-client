@@ -4,7 +4,7 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.directory.permissions.identity_set import IdentitySet
-from office365.onenote.notebook_links import NotebookLinks
+from office365.onenote.notebooks.links import NotebookLinks
 from office365.onenote.userrole import OnenoteUserRole
 from office365.runtime.client_value import ClientValue
 

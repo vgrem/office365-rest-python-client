@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.admin.browser_site_list import BrowserSiteList
+    from office365.admin.edge.browser_site_list import BrowserSiteList
 
 
 class InternetExplorerMode(Entity):
@@ -16,7 +16,7 @@ class InternetExplorerMode(Entity):
     @property
     def site_lists(self) -> EntityCollection[BrowserSiteList]:
         """Gets the siteLists property"""
-        from office365.admin.browser_site_list import BrowserSiteList
+        from office365.admin.edge.browser_site_list import BrowserSiteList
 
         return self.properties.get(
             "siteLists",

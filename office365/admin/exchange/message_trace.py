@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from office365.admin.exchange.exchange_message_trace_status import ExchangeMessageTraceStatus
+from office365.admin.exchange.message_trace_status import ExchangeMessageTraceStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
@@ -12,7 +12,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.admin.exchange.exchange_message_trace_detail import ExchangeMessageTraceDetail
+    from office365.admin.exchange.message_trace_detail import ExchangeMessageTraceDetail
 
 
 class ExchangeMessageTrace(Entity):
@@ -83,7 +83,7 @@ class ExchangeMessageTrace(Entity):
             recipient_address (str):
                 recipientAddress parameter
         """
-        from office365.admin.exchange.exchange_message_trace_detail import ExchangeMessageTraceDetail
+        from office365.admin.exchange.message_trace_detail import ExchangeMessageTraceDetail
 
         return_type = EntityCollection(self.context, ExchangeMessageTraceDetail)
         qry = FunctionQuery(self, "getDetailsByRecipient", {"recipientAddress": recipient_address}, return_type)
