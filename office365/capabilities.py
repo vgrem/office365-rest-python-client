@@ -29,6 +29,10 @@ declarations name, which is the vocabulary
     >>> caps = capabilities_of(CallRecordCollection)
     >>> caps.queries.supports("top")
     False
+
+:func:`hints_of` is the same join said out loud: one command's permission, the confirmation
+its effect implies, its licences, whether only the beta root answers it, and whether the
+type declares a form that walks every page -- a sentence each, for a help page to print.
 """
 
 from __future__ import annotations
@@ -120,6 +124,44 @@ def capabilities_of(target: Any) -> Capabilities:
     raise TypeError(f"capabilities_of asks about a type or a callable, not {type(target).__name__}")
 
 
+def hints_of(target: Any, method: str) -> Tuple[str, ...]:
+    """What a caller should know before running one command, a sentence each.
+
+    Five facts, all declared already and none of them new: the permission stamped on the
+    method (or the honest absence of one), whether the verb's effect makes it the kind of
+    command that is confirmed first, whether the type is preview-only (``@version("beta")``,
+    so only the beta root answers it), whether the type declares a form that walks every
+    page, and the licences the declaration names.
+
+    This is the join a help page prints, and the reason it is a function rather than five
+    questions asked in the consumer: asked separately, four of the five are one call each
+    and the fifth is the one that gets forgotten (``confirm`` is a property nobody read).
+
+    Read it, do not parse it. A caller that needs the answer as data has ``capabilities_of``
+    and does not need this: ``confirm`` is a flag there, and a licence is a tuple.
+    """
+    capabilities = capabilities_of(target)
+    declaration = capabilities.declarations.get(method)
+    verb = capabilities.verbs.get(method)
+    if verb is None:
+        raise ValueError(
+            f"{method} names no verb: hints_of answers for a command, and a method that declares "
+            "none is not one -- decorate it with @verb(role=...) or leave it out of the help page"
+        )
+    lines = [
+        declaration.to_hint() if declaration is not None else "Declares no permission.",
+    ]
+    if verb.confirm:
+        lines.append(f"Confirmed before it is sent: it {verb.effect}s what the service holds.")
+    if declaration is not None and declaration.licenses:
+        lines.append(f"Needs one of these licences: {', '.join(declaration.licenses)}.")
+    if capabilities.schema is not None and capabilities.schema.versions == frozenset({"beta"}):
+        lines.append("Only the beta root answers it.")
+    if capabilities.paged is not None:
+        lines.append(f"{capabilities.paged} walks every page.")
+    return tuple(line for line in lines if line)
+
+
 def _paged_name(target: Any) -> Optional[str]:
     """The one command that walks every page, if the target declares one."""
     return next(iter(paged_of(target)), None)
@@ -161,4 +203,4 @@ def _fqn(target: Any) -> str:
     return f"{getattr(target, '__module__', '')}:{qualified}"
 
 
-__all__ = ["Capabilities", "capabilities_of"]
+__all__ = ["Capabilities", "capabilities_of", "hints_of"]
