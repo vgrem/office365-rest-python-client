@@ -40,7 +40,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.endpoint import Endpoint
+    from office365.directory.endpoint import Endpoint
     from office365.directory.policies.app_management import AppManagementPolicy
     from office365.directory.policies.claims_mapping_policy import ClaimsMappingPolicy
     from office365.directory.policies.home_realm_discovery import (
@@ -781,7 +781,7 @@ class ServicePrincipal(DirectoryObject):
     @property
     def endpoints(self) -> EntityCollection[Endpoint]:
         """Gets the endpoints property"""
-        from office365.common.endpoint import Endpoint
+        from office365.directory.endpoint import Endpoint
 
         return self.properties.get(
             "endpoints",

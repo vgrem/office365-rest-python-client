@@ -45,7 +45,6 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.prompt import Prompt
     from office365.communications.calls.audio_routing_group import AudioRoutingGroup
     from office365.communications.calls.content_sharing_session import (
         ContentSharingSession,
@@ -58,6 +57,7 @@ if TYPE_CHECKING:
     from office365.communications.operations.play_prompt_operation import PlayPromptOperation
     from office365.communications.operations.record_operation import RecordOperation
     from office365.communications.operations.subscribe_to_tone_operation import SubscribeToToneOperation
+    from office365.communications.prompt import Prompt
     from office365.communications.send_dtmf_tones_operation import SendDtmfTonesOperation
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Optional
 
-from office365.directory.identitygovernance.operationstatus import OperationStatus
+from office365.common.operationstatus import OperationStatus
 from office365.entity import Entity
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata

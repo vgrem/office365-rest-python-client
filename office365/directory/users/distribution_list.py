@@ -12,10 +12,10 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
-    from office365.common.member import Member
     from office365.directory.extensions.extended_property import SingleValueLegacyExtendedProperty
     from office365.directory.users.distribution_list import DistributionList
     from office365.directory.users.distribution_list_member import DistributionListMember
+    from office365.directory.users.member import Member
 
 
 class DistributionList(OutlookItem):

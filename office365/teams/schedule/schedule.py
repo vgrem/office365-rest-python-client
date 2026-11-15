@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from typing_extensions import Self
 
-from office365.directory.identitygovernance.operationstatus import OperationStatus
+from office365.common.operationstatus import OperationStatus
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.outlook.calendar.dayofweek import DayOfWeek

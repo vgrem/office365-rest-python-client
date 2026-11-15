@@ -9,7 +9,7 @@
   },
   "office365/intune": {
     "missing": 12,
-    "undeclared": 741,
+    "undeclared": 743,
     "extra": 8
   },
   "office365/teams": {

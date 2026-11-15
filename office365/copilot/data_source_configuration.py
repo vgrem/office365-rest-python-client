@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.common.sharepoint_embedded_configuration import (
+from office365.copilot.sharepoint_embedded_configuration import (
     SharePointEmbeddedConfiguration,
 )
 from office365.runtime.client_value import ClientValue

@@ -289,6 +289,7 @@ type_routing:
   CrossCloudAzureActiveDirectoryTenant: office365.directory
   MultiTenant*: office365.directory
   RelatedTenantsRefreshStatus: office365.directory
+  RelatedTenantsRefreshRequest: office365.directory
   ExternalTokenBasedSapIagConnectionInfo: office365.directory
   IdentitySet: office365.directory
   ProfileCardAnnotation: office365.directory
@@ -300,7 +301,8 @@ type_routing:
   OAuthConsentAppDetail: office365.directory
   ApplicationResourcePermission: office365.directory
   ComplexExtensionValue: office365.common
-  DataSourceConfiguration: office365.common
+  # `copilotRoot.retrieval` is the only navigation that carries either of them.
+  DataSourceConfiguration: office365.copilot
   Dictionaries: office365.common
   ErrorDetail: office365.admin
   IPv4Range: office365.directory.identities
@@ -309,11 +311,14 @@ type_routing:
   KeyValue: office365.common
   MimeContent: office365.intune
   OsVersionCount: office365.intune.devices.management.windowsmalware
-  Prompt: office365.common
-  ProvisionResponse: office365.common
+  # `mediaPrompt` derives it and `participant.startHoldMusic` reads it; securityCopilot
+  # reads the same shape, so the base class breaks the tie toward communications.
+  Prompt: office365.communications
+  # Returned by `device.provision(provisioningBlob)` (Autopilot).
+  ProvisionResponse: office365.intune.devices
   ProxiedDomain: office365.intune.devices.management
   SettingSource: office365.intune.devices
-  SharePointEmbeddedConfiguration: office365.common
+  SharePointEmbeddedConfiguration: office365.copilot
   ActivityMetadata: office365.security
   CoachmarkLocation: office365.security
   Process: office365.security
@@ -329,6 +334,9 @@ type_routing:
   WorkforceIntegrationEncryption: office365.teams
 
 # Graph enums (bare microsoft.graph.* types, placed by referrer).
+  # Read off operation.status, commsOperation.status, schedule.provisionStatus and
+  # securityAction.status: a shared enum, not an identity-governance one.
+  OperationStatus: office365.common
   ApplicationPermissionType: office365.directory
   BaselineParameterType: office365.admin
   BinaryOperator: office365.externalconnectors
@@ -667,8 +675,20 @@ type_routing:
   CurrentLabel: office365.security.datasecurity
 
 # The OData error envelope the runtime already parses (innerError,
-# PublicError/PublicInnerError): a model, not a new public error type.
+# PublicError/PublicInnerError/PublicErrorDetail): a model, not a new public error type.
   Error: office365.runtime.types
+  PublicErrorDetail: office365.runtime.types
+# `operation` is the base of onenoteOperation, commsOperation, richLongRunningOperation and
+# teamsAsyncOperation: four products share it, so it stays with the other shared models.
+  Operation: office365.common
+
+# Three types the catch-all used to describe by importing products: `Endpoint` hangs off
+# servicePrincipal/group and derives DirectoryObject, `Member` is the parameter of
+# `distributionList.addMembers`, and `StorageQuotaBreakdown` is the base of the
+# serviceStorageQuotaBreakdown that `unifiedStorageQuota.services` reads.
+  Endpoint: office365.directory
+  Member: office365.directory.users
+  StorageQuotaBreakdown: office365.directory
 
 # Types the table used to leave to the catch-all, placed by their nearest *placed*
 # neighbour in the reference graph (a type one hop from an Outlook type and one hop
