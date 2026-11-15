@@ -6,8 +6,8 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.alerts.entitymappings.object_mapping import ObjectMapping
 from office365.security.container_filter import ContainerFilter
+from office365.security.filters.string_key_string_value_pair import StringKeyStringValuePair
 from office365.security.group_filter import GroupFilter
-from office365.security.string_key_string_value_pair import StringKeyStringValuePair
 
 
 class SynchronizationRule(ClientValue):

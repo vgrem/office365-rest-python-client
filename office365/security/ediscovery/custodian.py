@@ -11,15 +11,15 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
-from office365.security.data_source_container import DataSourceContainer
+from office365.security.datasecurity.data_source_container import DataSourceContainer
 
 if TYPE_CHECKING:
     from office365.security.ediscovery.index_operation import (
         EdiscoveryIndexOperation,
     )
+    from office365.security.ediscovery.site_source import SiteSource
     from office365.security.ediscovery.unified_group_source import UnifiedGroupSource
-    from office365.security.site_source import SiteSource
-    from office365.security.user_source import UserSource
+    from office365.security.ediscovery.user_source import UserSource
 
 
 class EdiscoveryCustodian(DataSourceContainer):
@@ -56,7 +56,7 @@ class EdiscoveryCustodian(DataSourceContainer):
     @property
     def site_sources(self) -> EntityCollection[SiteSource]:
         """Gets the siteSources property"""
-        from office365.security.site_source import SiteSource
+        from office365.security.ediscovery.site_source import SiteSource
 
         return self.properties.get(
             "siteSources",
@@ -80,7 +80,7 @@ class EdiscoveryCustodian(DataSourceContainer):
     @property
     def user_sources(self) -> EntityCollection[UserSource]:
         """Gets the userSources property"""
-        from office365.security.user_source import UserSource
+        from office365.security.ediscovery.user_source import UserSource
 
         return self.properties.get(
             "userSources",

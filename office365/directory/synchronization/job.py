@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from office365.directory.synchronization.job_application_parameters import SynchronizationJobApplicationParameters
     from office365.directory.synchronization.job_restart_criteria import SynchronizationJobRestartCriteria
     from office365.directory.synchronization.secret_key_string_value_pair import SynchronizationSecretKeyStringValuePair
-    from office365.security.string_key_string_value_pair import StringKeyStringValuePair
+    from office365.security.filters.string_key_string_value_pair import StringKeyStringValuePair
 
 
 class SynchronizationJob(Entity):
@@ -115,7 +115,7 @@ class SynchronizationJob(Entity):
             parameters (ClientValueCollection[SynchronizationJobApplicationParameters]):
                 parameters parameter
         """
-        from office365.security.string_key_string_value_pair import StringKeyStringValuePair
+        from office365.security.filters.string_key_string_value_pair import StringKeyStringValuePair
 
         return_type = ClientResult(self.context, StringKeyStringValuePair())
         qry = ServiceOperationQuery(self, "provisionOnDemand", None, {"parameters": parameters}, None, return_type)

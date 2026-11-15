@@ -7,6 +7,7 @@ from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
+from office365.security.attacksimulations.payload_detail import PayloadDetail
 from office365.security.attacksimulations.payloadbrand import PayloadBrand
 from office365.security.attacksimulations.payloadcomplexity import PayloadComplexity
 from office365.security.attacksimulations.payloaddeliveryplatform import PayloadDeliveryPlatform
@@ -16,7 +17,6 @@ from office365.security.attacksimulations.simulationattacktechnique import Simul
 from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
 from office365.security.attacksimulations.simulationcontentsource import SimulationContentSource
 from office365.security.attacksimulations.simulationcontentstatus import SimulationContentStatus
-from office365.security.payload_detail import PayloadDetail
 
 
 class Payload(Entity):

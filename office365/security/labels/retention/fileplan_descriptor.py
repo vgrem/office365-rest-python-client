@@ -3,16 +3,16 @@ from __future__ import annotations
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.authority_template import AuthorityTemplate
-from office365.security.category_template import CategoryTemplate
-from office365.security.citation_template import CitationTemplate
-from office365.security.department_template import DepartmentTemplate
-from office365.security.file_plan_applied_category import FilePlanAppliedCategory
-from office365.security.file_plan_authority import FilePlanAuthority
-from office365.security.file_plan_citation import FilePlanCitation
-from office365.security.file_plan_department import FilePlanDepartment
-from office365.security.file_plan_reference import FilePlanReference
-from office365.security.file_plan_reference_template import (
+from office365.security.labels.authority_template import AuthorityTemplate
+from office365.security.labels.category_template import CategoryTemplate
+from office365.security.labels.citation_template import CitationTemplate
+from office365.security.labels.department_template import DepartmentTemplate
+from office365.security.labels.file_plan_applied_category import FilePlanAppliedCategory
+from office365.security.labels.file_plan_authority import FilePlanAuthority
+from office365.security.labels.file_plan_citation import FilePlanCitation
+from office365.security.labels.file_plan_department import FilePlanDepartment
+from office365.security.labels.file_plan_reference import FilePlanReference
+from office365.security.labels.file_plan_reference_template import (
     FilePlanReferenceTemplate,
 )
 

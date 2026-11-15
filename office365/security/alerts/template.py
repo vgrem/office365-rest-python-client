@@ -7,7 +7,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.alerts.custom_details import AlertCustomDetails
 from office365.security.alerts.entitymappings.configuration import EntityMappingConfiguration
 from office365.security.alerts.severity import AlertSeverity
-from office365.security.mitre_tactic import MitreTactic
+from office365.security.threatintelligence.mitre_tactic import MitreTactic
 
 
 class AlertTemplate(ClientValue):

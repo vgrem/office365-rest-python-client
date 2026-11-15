@@ -8,8 +8,8 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.statisticsoptions import StatisticsOptions
+from office365.security.ediscovery.report_file_metadata import ReportFileMetadata
 from office365.security.ediscovery.search import EdiscoverySearch
-from office365.security.report_file_metadata import ReportFileMetadata
 
 
 class EdiscoveryEstimateOperation(PollableOperation, Entity):

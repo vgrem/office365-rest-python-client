@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.security.payload_detail import PayloadDetail
+from office365.security.attacksimulations.payload_detail import PayloadDetail
 
 
 class EmailPayloadDetail(PayloadDetail):

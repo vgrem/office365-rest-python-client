@@ -7,7 +7,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.datasecurity.dlp_action_info import DlpActionInfo
 from office365.security.datasecurity.policy_location import PolicyLocation
-from office365.security.useractivitytypes import UserActivityTypes
+from office365.security.datasecurity.useractivitytypes import UserActivityTypes
 
 
 class PolicyScopeBase(ClientValue):

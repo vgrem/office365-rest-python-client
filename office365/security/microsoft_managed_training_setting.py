@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from office365.security.attacksimulations.training_setting import TrainingSetting
 from office365.security.attacksimulations.trainingcompletionduration import (
     TrainingCompletionDuration,
 )
-from office365.security.training_setting import TrainingSetting
 
 
 class MicrosoftManagedTrainingSetting(TrainingSetting):

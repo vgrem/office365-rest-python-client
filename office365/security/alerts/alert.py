@@ -12,6 +12,7 @@ from office365.security.alerts.comment import AlertComment
 from office365.security.alerts.detection import AlertDetection
 from office365.security.alerts.detectionsource import DetectionSource
 from office365.security.alerts.determination import AlertDetermination
+from office365.security.alerts.dictionary import Dictionary
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.feedback import AlertFeedback
 from office365.security.alerts.file_security_state import FileSecurityState
@@ -30,11 +31,10 @@ from office365.security.alerts.states.user_security import UserSecurityState
 from office365.security.alerts.states.vulnerability import VulnerabilityState
 from office365.security.alerts.status import AlertStatus
 from office365.security.alerts.trigger import AlertTrigger
-from office365.security.dictionary import Dictionary
 from office365.security.network_connection import NetworkConnection
 from office365.security.process import Process
 from office365.security.resource import SecurityResource
-from office365.security.vendor_information import SecurityVendorInformation
+from office365.security.securescores.vendor_information import SecurityVendorInformation
 
 
 class Alert(Entity):

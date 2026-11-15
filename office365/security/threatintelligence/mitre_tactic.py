@@ -1,0 +1,18 @@
+from __future__ import annotations
+
+from dataclasses import field
+
+from office365.runtime.client_value import ClientValue
+from office365.runtime.client_value_collection import ClientValueCollection
+from office365.security.threatintelligence.mitre_technique import MitreTechnique
+
+
+class MitreTactic(ClientValue):
+    tactic: str | None = None
+    techniques: ClientValueCollection[MitreTechnique] = field(
+        default_factory=lambda: ClientValueCollection(MitreTechnique)
+    )
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.MitreTactic"

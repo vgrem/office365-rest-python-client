@@ -9,7 +9,7 @@ from office365.security.alerts.entitymappings.object_mapping_metadata_entry impo
     ObjectMappingMetadataEntry,
 )
 from office365.security.attribute_mapping import AttributeMapping
-from office365.security.filter import Filter
+from office365.security.filters.filter import Filter
 
 
 class ObjectMapping(ClientValue):

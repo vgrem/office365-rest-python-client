@@ -4,10 +4,6 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.audit.whois_history_record import WhoisHistoryRecord
 from office365.security.audit.whois_record import WhoisRecord
-from office365.security.intelligence_profile_indicator import IntelligenceProfileIndicator
-from office365.security.passive_dns_record import PassiveDnsRecord
-from office365.security.ssl_certificate import SslCertificate
-from office365.security.subdomain import Subdomain
 from office365.security.threatintelligence.articles.collection import ArticleCollection
 from office365.security.threatintelligence.articles.indicator import ArticleIndicator
 from office365.security.threatintelligence.hosts.component import HostComponent
@@ -17,8 +13,12 @@ from office365.security.threatintelligence.hosts.pair import HostPair
 from office365.security.threatintelligence.hosts.port import HostPort
 from office365.security.threatintelligence.hosts.ssl_certificate import HostSslCertificate
 from office365.security.threatintelligence.hosts.tracker import HostTracker
+from office365.security.threatintelligence.intelligence_profile_indicator import IntelligenceProfileIndicator
+from office365.security.threatintelligence.passive_dns_record import PassiveDnsRecord
 from office365.security.threatintelligence.profile import IntelligenceProfile
-from office365.security.vulnerability import Vulnerability
+from office365.security.threatintelligence.ssl_certificate import SslCertificate
+from office365.security.threatintelligence.subdomain import Subdomain
+from office365.security.threatintelligence.vulnerability import Vulnerability
 
 
 class ThreatIntelligence(Entity):

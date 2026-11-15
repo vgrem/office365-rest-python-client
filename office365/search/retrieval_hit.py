@@ -9,7 +9,7 @@ from office365.search.resource_metadata_dictionary import (
     SearchResourceMetadataDictionary,
 )
 from office365.search.retrieval_extract import RetrievalExtract
-from office365.security.sensitivity_label_info import SensitivityLabelInfo
+from office365.security.labels.sensitivity_label_info import SensitivityLabelInfo
 
 
 class RetrievalHit(ClientValue):

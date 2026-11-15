@@ -8,7 +8,8 @@ from office365.directory.permissions.email_identity import EmailIdentity
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.account_target_content import AccountTargetContent
+from office365.security.attacksimulations.account_target_content import AccountTargetContent
+from office365.security.attacksimulations.end_user_notification_setting import EndUserNotificationSetting
 from office365.security.attacksimulations.payloaddeliveryplatform import PayloadDeliveryPlatform
 from office365.security.attacksimulations.reports.report import (
     SimulationReport,
@@ -16,8 +17,7 @@ from office365.security.attacksimulations.reports.report import (
 from office365.security.attacksimulations.simulationattacktechnique import SimulationAttackTechnique
 from office365.security.attacksimulations.simulationattacktype import SimulationAttackType
 from office365.security.attacksimulations.simulationstatus import SimulationStatus
-from office365.security.end_user_notification_setting import EndUserNotificationSetting
-from office365.security.training_setting import TrainingSetting
+from office365.security.attacksimulations.training_setting import TrainingSetting
 
 if TYPE_CHECKING:
     from office365.security.attacksimulations.landing_page import LandingPage

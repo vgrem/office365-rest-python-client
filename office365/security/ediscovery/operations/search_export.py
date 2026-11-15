@@ -11,8 +11,8 @@ from office365.security.cases.additionaloptions import AdditionalOptions
 from office365.security.cases.exportcriteria import ExportCriteria
 from office365.security.cases.exportformat import ExportFormat
 from office365.security.cases.exportlocation import ExportLocation
-from office365.security.cloudattachmentversion import CloudAttachmentVersion
-from office365.security.export_file_metadata import ExportFileMetadata
+from office365.security.ediscovery.cloudattachmentversion import CloudAttachmentVersion
+from office365.security.ediscovery.export_file_metadata import ExportFileMetadata
 from office365.security.search.documentversion import DocumentVersion
 
 if TYPE_CHECKING:

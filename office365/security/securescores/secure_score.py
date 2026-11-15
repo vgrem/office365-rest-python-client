@@ -7,9 +7,9 @@ from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.average_comparative_score import AverageComparativeScore
-from office365.security.control_score import ControlScore
-from office365.security.vendor_information import SecurityVendorInformation
+from office365.security.securescores.average_comparative_score import AverageComparativeScore
+from office365.security.securescores.control_score import ControlScore
+from office365.security.securescores.vendor_information import SecurityVendorInformation
 
 
 class SecureScore(Entity):

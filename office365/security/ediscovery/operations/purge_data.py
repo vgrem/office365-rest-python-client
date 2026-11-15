@@ -4,7 +4,7 @@ from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
-from office365.security.report_file_metadata import ReportFileMetadata
+from office365.security.ediscovery.report_file_metadata import ReportFileMetadata
 
 
 class EdiscoveryPurgeDataOperation(PollableOperation, Entity):

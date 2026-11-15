@@ -6,7 +6,7 @@ from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.search.recommended_action import RecommendedAction
 from office365.security.attacksimulations.event import TrainingEventsContent
-from office365.security.simulation_events_content import (
+from office365.security.attacksimulations.simulation_events_content import (
     SimulationEventsContent,
 )
 

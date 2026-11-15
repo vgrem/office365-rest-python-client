@@ -9,7 +9,7 @@ from office365.directory.synchronization.statuscode import SynchronizationStatus
 from office365.directory.synchronization.task_execution import SynchronizationTaskExecution
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.string_key_long_value_pair import StringKeyLongValuePair
+from office365.security.filters.string_key_long_value_pair import StringKeyLongValuePair
 
 
 class SynchronizationStatus(ClientValue):

@@ -26,12 +26,12 @@ if TYPE_CHECKING:
     from office365.security.cases.exportformat import ExportFormat
     from office365.security.cases.exportlocation import ExportLocation
     from office365.security.cases.statisticsoptions import StatisticsOptions
-    from office365.security.cloudattachmentversion import CloudAttachmentVersion
+    from office365.security.ediscovery.cloudattachmentversion import CloudAttachmentVersion
     from office365.security.ediscovery.estimate_operation import (
         EdiscoveryEstimateOperation,
     )
-    from office365.security.purgeareas import PurgeAreas
-    from office365.security.purgetype import PurgeType
+    from office365.security.ediscovery.purgeareas import PurgeAreas
+    from office365.security.ediscovery.purgetype import PurgeType
     from office365.security.search.documentversion import DocumentVersion
 
 

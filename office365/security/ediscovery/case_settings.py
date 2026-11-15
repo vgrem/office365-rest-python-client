@@ -9,9 +9,9 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 from office365.security.cases.reviewsetsettings import ReviewSetSettings
 from office365.security.cases.type import CaseType
-from office365.security.ocr_settings import OcrSettings
-from office365.security.redundancy_detection_settings import RedundancyDetectionSettings
-from office365.security.topic_modeling_settings import TopicModelingSettings
+from office365.security.ediscovery.ocr_settings import OcrSettings
+from office365.security.ediscovery.redundancy_detection_settings import RedundancyDetectionSettings
+from office365.security.ediscovery.topic_modeling_settings import TopicModelingSettings
 
 
 class EdiscoveryCaseSettings(Entity):

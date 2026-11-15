@@ -8,7 +8,7 @@ from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.alerts.states.monitor import MonitorStatus
-from office365.security.monitor_mode import MonitorMode
+from office365.security.detections.monitor_mode import MonitorMode
 from office365.teams.members.open_complex_dictionary_type import OpenComplexDictionaryType
 
 if TYPE_CHECKING:

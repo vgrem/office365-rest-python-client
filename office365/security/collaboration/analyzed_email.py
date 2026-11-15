@@ -8,7 +8,6 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.alerts.states.threat_type import ThreatType
-from office365.security.antispam_directionality import AntispamDirectionality
 from office365.security.collaboration.analyzed_email_attachment import AnalyzedEmailAttachment
 from office365.security.collaboration.analyzed_email_authentication_detail import AnalyzedEmailAuthenticationDetail
 from office365.security.collaboration.analyzed_email_delivery_detail import AnalyzedEmailDeliveryDetail
@@ -19,8 +18,9 @@ from office365.security.collaboration.analyzed_email_exchange_transport_rule_inf
 from office365.security.collaboration.analyzed_email_recipient_detail import AnalyzedEmailRecipientDetail
 from office365.security.collaboration.analyzed_email_sender_detail import AnalyzedEmailSenderDetail
 from office365.security.collaboration.analyzed_email_url import AnalyzedEmailUrl
-from office365.security.threat_detection_detail import ThreatDetectionDetail
-from office365.security.timeline_event import TimelineEvent
+from office365.security.collaboration.antispam_directionality import AntispamDirectionality
+from office365.security.collaboration.threat_detection_detail import ThreatDetectionDetail
+from office365.security.collaboration.timeline_event import TimelineEvent
 
 
 class AnalyzedEmail(Entity):

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.security.end_user_notification_setting import EndUserNotificationSetting
-from office365.security.simulation_notification import SimulationNotification
+from office365.security.attacksimulations.end_user_notification_setting import EndUserNotificationSetting
+from office365.security.attacksimulations.simulation_notification import SimulationNotification
 
 
 class NoTrainingNotificationSetting(EndUserNotificationSetting):

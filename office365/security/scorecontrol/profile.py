@@ -9,7 +9,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.security.securescores.control_state_update import SecureScoreControlStateUpdate
-from office365.security.vendor_information import SecurityVendorInformation
+from office365.security.securescores.vendor_information import SecurityVendorInformation
 
 
 class SecureScoreControlProfile(Entity):

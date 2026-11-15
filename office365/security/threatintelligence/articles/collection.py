@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from office365.entity_collection import EntityCollection
 from office365.runtime.query_capabilities import query_capabilities
-from office365.security.article import Article
+from office365.security.threatintelligence.articles.article import Article
 
 _DOC = "https://learn.microsoft.com/en-us/graph/api/security-threatintelligence-list-articles"
 

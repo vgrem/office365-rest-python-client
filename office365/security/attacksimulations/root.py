@@ -16,10 +16,10 @@ from office365.security.attacksimulations.operations.operation import (
 from office365.security.attacksimulations.simulation import Simulation
 
 if TYPE_CHECKING:
+    from office365.security.attacksimulations.end_user_notification import EndUserNotification
     from office365.security.attacksimulations.login_page import LoginPage
     from office365.security.attacksimulations.payload import Payload
-    from office365.security.end_user_notification import EndUserNotification
-    from office365.security.training import Training
+    from office365.security.attacksimulations.training import Training
 
 
 class AttackSimulationRoot(Entity):
@@ -82,7 +82,7 @@ class AttackSimulationRoot(Entity):
     @property
     def end_user_notifications(self) -> EntityCollection[EndUserNotification]:
         """Gets the endUserNotifications property"""
-        from office365.security.end_user_notification import (
+        from office365.security.attacksimulations.end_user_notification import (
             EndUserNotification,
         )
 
@@ -118,7 +118,7 @@ class AttackSimulationRoot(Entity):
     @property
     def trainings(self) -> EntityCollection[Training]:
         """Gets the trainings property"""
-        from office365.security.training import Training
+        from office365.security.attacksimulations.training import Training
 
         return self.properties.get(
             "trainings",

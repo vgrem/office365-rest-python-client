@@ -4,7 +4,7 @@ from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.audit.whois_history_record import WhoisHistoryRecord
-from office365.security.whois_base_record import WhoisBaseRecord
+from office365.security.threatintelligence.whois_base_record import WhoisBaseRecord
 
 
 class WhoisRecord(WhoisBaseRecord):

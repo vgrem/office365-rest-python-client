@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from office365.security.ai_agent_platform import AiAgentPlatform
 from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.securityforai.ai_agent_platform import AiAgentPlatform
 
 
 class AiAgentEvidence(AlertEvidence):

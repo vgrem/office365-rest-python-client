@@ -10,7 +10,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
-from office365.security.object_definition import ObjectDefinition
+from office365.security.filters.object_definition import ObjectDefinition
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.definition import DirectoryDefinition

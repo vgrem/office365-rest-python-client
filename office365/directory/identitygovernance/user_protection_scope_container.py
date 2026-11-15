@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from office365.security.datasecurity.integrated_application_metadata import IntegratedApplicationMetadata
     from office365.security.datasecurity.policy_location import PolicyLocation
     from office365.security.datasecurity.policy_user_scope import PolicyUserScope
-    from office365.security.policypivotproperty import PolicyPivotProperty
-    from office365.security.useractivitytypes import UserActivityTypes
+    from office365.security.datasecurity.useractivitytypes import UserActivityTypes
+    from office365.security.detections.policypivotproperty import PolicyPivotProperty
 
 
 class UserProtectionScopeContainer(Entity):

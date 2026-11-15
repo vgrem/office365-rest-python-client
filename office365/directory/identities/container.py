@@ -18,9 +18,9 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 from office365.security.healthissues.health_issue import HealthIssue
 from office365.security.identity_accounts import IdentityAccounts
-from office365.security.sensor import Sensor
-from office365.security.sensor_candidate import SensorCandidate
-from office365.security.sensor_candidate_activation_configuration import (
+from office365.security.iot.sensor import Sensor
+from office365.security.iot.sensor_candidate import SensorCandidate
+from office365.security.iot.sensor_candidate_activation_configuration import (
     SensorCandidateActivationConfiguration,
 )
 from office365.security.settings_container import SettingsContainer

@@ -4,6 +4,7 @@ from dataclasses import field
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.security.alerts.dictionary import Dictionary
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.evidence.ip import IpEvidence
 from office365.security.alerts.evidence.kubernetes_controller import (
@@ -15,7 +16,6 @@ from office365.security.alerts.evidence.kubernetes_namespace import (
 from office365.security.alerts.evidence.kubernetes_service_account import (
     KubernetesServiceAccountEvidence,
 )
-from office365.security.dictionary import Dictionary
 
 if TYPE_CHECKING:
     from office365.security.alerts.evidence.container import ContainerEvidence

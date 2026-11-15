@@ -9,11 +9,11 @@ from office365.runtime.pollable import PollableOperation
 from office365.runtime.types.odata_property import odata
 from office365.security.cases.exportfilestructure import ExportFileStructure
 from office365.security.cases.exportoptions import ExportOptions
+from office365.security.ediscovery.export_file_metadata import ExportFileMetadata
 from office365.security.ediscovery.review_set import EdiscoveryReviewSet
 from office365.security.ediscovery.review_set_query import (
     EdiscoveryReviewSetQuery,
 )
-from office365.security.export_file_metadata import ExportFileMetadata
 
 
 class EdiscoveryExportOperation(PollableOperation, Entity):

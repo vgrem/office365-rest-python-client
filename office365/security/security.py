@@ -18,7 +18,7 @@ from office365.security.cases.root import CasesRoot
 from office365.security.datasecurity.governance import (
     TenantDataSecurityAndGovernance,
 )
-from office365.security.hunting_query_results import HuntingQueryResults
+from office365.security.hunting.query_results import HuntingQueryResults
 from office365.security.incidents.incident import Incident
 from office365.security.labels.root import LabelsRoot
 from office365.security.quotas import DETECTIONS_BUDGETS
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from office365.security.collaboration.root import (
         CollaborationRoot,
     )
-    from office365.security.rules_root import RulesRoot
+    from office365.security.detections.rules_root import RulesRoot
     from office365.security.securescores.secure_score import SecureScore
 
 
@@ -231,6 +231,6 @@ class Security(Entity):
     @property
     def rules(self) -> RulesRoot:
         """Gets the rules property"""
-        from office365.security.rules_root import RulesRoot
+        from office365.security.detections.rules_root import RulesRoot
 
         return self.properties.get("rules", RulesRoot(self.context, ResourcePath("rules", self.resource_path)))

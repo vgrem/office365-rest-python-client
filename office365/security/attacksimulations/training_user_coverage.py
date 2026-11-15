@@ -5,7 +5,7 @@ from dataclasses import field
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.attacksimulations.user import AttackSimulationUser
-from office365.security.user_training_status_info import (
+from office365.security.attacksimulations.users.training_status_info import (
     UserTrainingStatusInfo,
 )
 

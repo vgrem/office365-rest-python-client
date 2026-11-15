@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.certification_control import CertificationControl
+from office365.security.labels.certification_control import CertificationControl
 
 
 class ComplianceInformation(ClientValue):

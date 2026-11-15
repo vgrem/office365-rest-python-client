@@ -2,11 +2,11 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.authority_template import AuthorityTemplate
-from office365.security.category_template import CategoryTemplate
-from office365.security.citation_template import CitationTemplate
-from office365.security.department_template import DepartmentTemplate
-from office365.security.file_plan_reference_template import FilePlanReferenceTemplate
+from office365.security.labels.authority_template import AuthorityTemplate
+from office365.security.labels.category_template import CategoryTemplate
+from office365.security.labels.citation_template import CitationTemplate
+from office365.security.labels.department_template import DepartmentTemplate
+from office365.security.labels.file_plan_reference_template import FilePlanReferenceTemplate
 from office365.security.labels.retention.collection import RetentionLabelCollection
 
 

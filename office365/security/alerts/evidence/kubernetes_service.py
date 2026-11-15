@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value_collection import ClientValueCollection
+from office365.security.alerts.dictionary import Dictionary
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.evidence.ip import IpEvidence
 from office365.security.alerts.evidence.kubernetes_namespace import KubernetesNamespaceEvidence
 from office365.security.alerts.kubernetesservicetype import KubernetesServiceType
-from office365.security.dictionary import Dictionary
-from office365.security.kubernetes_service_port import KubernetesServicePort
+from office365.security.iot.kubernetes_service_port import KubernetesServicePort
 
 
 class KubernetesServiceEvidence(AlertEvidence):

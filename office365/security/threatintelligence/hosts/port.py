@@ -7,11 +7,11 @@ from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.ssl_certificate import SslCertificate
 from office365.security.threatintelligence.hosts.port_banner import HostPortBanner
 from office365.security.threatintelligence.hosts.port_component import HostPortComponent
 from office365.security.threatintelligence.hosts.port_protocol import HostPortProtocol
 from office365.security.threatintelligence.hosts.port_status import HostPortStatus
+from office365.security.threatintelligence.ssl_certificate import SslCertificate
 
 if TYPE_CHECKING:
     from office365.security.threatintelligence.hosts.host import Host

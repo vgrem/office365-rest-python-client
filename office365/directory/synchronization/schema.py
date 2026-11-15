@@ -20,9 +20,9 @@ from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
     from office365.directory.synchronization.filter_operator_schema import FilterOperatorSchema
-    from office365.security.attribute_definition import AttributeDefinition
-    from office365.security.expression_input_object import ExpressionInputObject
-    from office365.security.parse_expression_response import ParseExpressionResponse
+    from office365.security.filters.attribute_definition import AttributeDefinition
+    from office365.security.filters.expression_input_object import ExpressionInputObject
+    from office365.security.filters.parse_expression_response import ParseExpressionResponse
 
 
 class SynchronizationSchema(Entity):
@@ -88,7 +88,7 @@ class SynchronizationSchema(Entity):
             target_attribute_definition (AttributeDefinition):
                 targetAttributeDefinition parameter
         """
-        from office365.security.parse_expression_response import ParseExpressionResponse
+        from office365.security.filters.parse_expression_response import ParseExpressionResponse
 
         return_type = ClientResult(self.context, ParseExpressionResponse())
         qry = ServiceOperationQuery(

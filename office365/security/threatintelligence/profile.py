@@ -9,14 +9,14 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.formatted_content import FormattedContent
-from office365.security.intelligence_profile_country_or_region_of_origin import (  # noqa: E501
+from office365.security.threatintelligence.formatted_content import FormattedContent
+from office365.security.threatintelligence.intelligence_profile_country_or_region_of_origin import (  # noqa: E501
     IntelligenceProfileCountryOrRegionOfOrigin,
 )
-from office365.security.intelligence_profile_indicator import (
+from office365.security.threatintelligence.intelligence_profile_indicator import (
     IntelligenceProfileIndicator,
 )
-from office365.security.intelligence_profile_kind import IntelligenceProfileKind
+from office365.security.threatintelligence.intelligence_profile_kind import IntelligenceProfileKind
 
 
 class IntelligenceProfile(Entity):

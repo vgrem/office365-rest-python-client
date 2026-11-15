@@ -132,7 +132,7 @@ if TYPE_CHECKING:
         DeviceManagementTroubleshootingEvent,
     )
     from office365.intune.devices.management.virtualendpoint.cloudpcs.cloud_pc import CloudPC
-    from office365.security.cloud_clipboard_root import CloudClipboardRoot
+    from office365.security.datasecurity.cloud_clipboard_root import CloudClipboardRoot
 
 
 class User(DirectoryObject):
@@ -1741,7 +1741,7 @@ class User(DirectoryObject):
     @property
     def cloud_clipboard(self) -> CloudClipboardRoot:
         """Gets the cloudClipboard property"""
-        from office365.security.cloud_clipboard_root import CloudClipboardRoot
+        from office365.security.datasecurity.cloud_clipboard_root import CloudClipboardRoot
 
         return self.properties.get(
             "cloudClipboard", CloudClipboardRoot(self.context, ResourcePath("cloudClipboard", self.resource_path))

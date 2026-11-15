@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from office365.security.cases.exportfilestructure import ExportFileStructure
     from office365.security.cases.exportoptions import ExportOptions
     from office365.security.cases.itemstoinclude import ItemsToInclude
-    from office365.security.cloudattachmentversion import CloudAttachmentVersion
+    from office365.security.ediscovery.cloudattachmentversion import CloudAttachmentVersion
     from office365.security.ediscovery.search import EdiscoverySearch
     from office365.security.search.documentversion import DocumentVersion
 

@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.assigned_training_info import AssignedTrainingInfo
+from office365.security.attacksimulations.assigned_training_info import AssignedTrainingInfo
 
 
 class TrainingEventsContent(ClientValue):

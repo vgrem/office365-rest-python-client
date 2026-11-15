@@ -8,7 +8,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
 if TYPE_CHECKING:
-    from office365.security.retention_event import RetentionEvent
+    from office365.security.labels.retention.event import RetentionEvent
 
 
 class TriggersRoot(Entity):
@@ -22,7 +22,7 @@ class TriggersRoot(Entity):
     @property
     def retention_events(self) -> EntityCollection[RetentionEvent]:
         """Gets the retentionEvents property"""
-        from office365.security.retention_event import RetentionEvent
+        from office365.security.labels.retention.event import RetentionEvent
 
         return self.properties.get(
             "retentionEvents",

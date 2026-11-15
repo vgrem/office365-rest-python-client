@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import field
 
+from office365.security.alerts.dictionary import Dictionary
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.evidence.kubernetes_namespace import KubernetesNamespaceEvidence
-from office365.security.dictionary import Dictionary
 
 
 class KubernetesControllerEvidence(AlertEvidence):

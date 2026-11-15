@@ -11,9 +11,9 @@ from office365.security.cases.additionaldataoptions import (
     AdditionalDataOptions,
 )
 from office365.security.cases.itemstoinclude import ItemsToInclude
-from office365.security.cloudattachmentversion import CloudAttachmentVersion
+from office365.security.ediscovery.cloudattachmentversion import CloudAttachmentVersion
+from office365.security.ediscovery.report_file_metadata import ReportFileMetadata
 from office365.security.ediscovery.review_set import EdiscoveryReviewSet
-from office365.security.report_file_metadata import ReportFileMetadata
 from office365.security.search.documentversion import DocumentVersion
 
 if TYPE_CHECKING:

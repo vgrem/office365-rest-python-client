@@ -9,7 +9,7 @@ from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
-from office365.security.data_source_container import DataSourceContainer
+from office365.security.datasecurity.data_source_container import DataSourceContainer
 from office365.security.search.data_source import DataSource
 
 if TYPE_CHECKING:

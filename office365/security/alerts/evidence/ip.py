@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.security.alerts.evidence.base import AlertEvidence
-from office365.security.geo_location import GeoLocation
 from office365.security.stream import Stream
+from office365.security.threatintelligence.geo_location import GeoLocation
 
 
 class IpEvidence(AlertEvidence):

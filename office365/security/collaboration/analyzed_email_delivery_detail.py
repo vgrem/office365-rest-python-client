@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
 from office365.security.alerts.actions.delivery import DeliveryAction
-from office365.security.delivery_location import DeliveryLocation
+from office365.security.collaboration.delivery_location import DeliveryLocation
 
 
 class AnalyzedEmailDeliveryDetail(ClientValue):
