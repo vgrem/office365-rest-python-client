@@ -15,7 +15,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.log_item_query import ChangeLogItemQuery
 from office365.sharepoint.changes.query import ChangeQuery
@@ -1598,7 +1598,7 @@ class List(SecurableObject):
         """Specifies the server-relative URL of the default view for the list."""
         return self.properties.get("DefaultViewPath", SPResPath())
 
-    @odata(name="DefaultViewUrl", readonly=True)
+    @odata(name="DefaultViewUrl", readonly=True, facet=LINK)
     @property
     def default_view_url(self) -> Optional[str]:
         """
@@ -1968,7 +1968,7 @@ class List(SecurableObject):
             EventReceiverDefinitionCollection(self.context, ResourcePath("eventReceivers", self.resource_path), self),
         )
 
-    @odata(name="ItemCount", readonly=True)
+    @odata(name="ItemCount", readonly=True, default=2)
     @property
     def item_count(self) -> Optional[int]:
         """Gets a value that specifies the number of list items in the list"""

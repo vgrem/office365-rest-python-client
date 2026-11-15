@@ -32,7 +32,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
@@ -501,7 +501,7 @@ class Message(OutlookItem):
         """The unique identifier for the message's parent mailFolder."""
         return self.properties.get("parentFolderId", None)
 
-    @odata(name="webLink")
+    @odata(name="webLink", readonly=True, facet=LINK)
     @property
     def web_link(self) -> Optional[str]:
         """

@@ -39,7 +39,7 @@ from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
-from office365.runtime.types.odata_property import Compare, odata
+from office365.runtime.types.odata_property import LINK, Compare, odata
 from office365.runtime.verbs import verb
 
 if TYPE_CHECKING:
@@ -388,7 +388,7 @@ class Event(OutlookItem):
         """
         return self.properties.get("type", None)
 
-    @odata(name="webLink", readonly=True)
+    @odata(name="webLink", readonly=True, facet=LINK)
     @property
     def web_link(self) -> Optional[str]:
         """

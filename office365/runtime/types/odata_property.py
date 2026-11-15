@@ -26,7 +26,12 @@ both service roots declare and one only the preview one does, and ``@version(PRE
 AUTHORSHIP = "authorship"
 PERMISSIONS = "permissions"
 MODERATION = "moderation"
-FACETS = frozenset({AUTHORSHIP, MODERATION, PERMISSIONS})
+#: The addresses an object can be opened at -- ``Web.Url``, ``List.DefaultViewUrl``,
+#: ``DriveItem.webUrl``, ``Message.webLink``. A caller that has to hand a person a link
+#: asks the type rather than matching column names itself, and gets every address it
+#: declares in the order the class states them, which is absolute before site-scoped.
+LINK = "link"
+FACETS = frozenset({AUTHORSHIP, LINK, MODERATION, PERMISSIONS})
 
 
 def request_version(context: Any) -> Optional[str]:

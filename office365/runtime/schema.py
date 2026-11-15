@@ -54,6 +54,7 @@ from typing import (
 from office365.runtime.limits import Limit, LimitDecl, collect_class_limits, collect_limit_meta
 from office365.runtime.types.odata_property import (
     _ODATA_MARKER,
+    LINK,
     PREVIEW,
     ODataPropertyMeta,
     require_declared_member,
@@ -397,6 +398,21 @@ class TypeSchema:
         principal's login name before the user principal name the directory knows it by.
         """
         return tuple(name for name in self.columns if self.properties[name].identity)
+
+    @cached_property
+    def links(self) -> Tuple[str, ...]:
+        """The OData names that address the object, best first: where a person opens it.
+
+        Taken from the ``link`` facet, so a type says which of its columns is an address
+        rather than a caller recognising ``Url``/``DefaultViewUrl``/``webLink`` by
+        spelling. Ordered by the class body, which puts an absolute address before the
+        same address scoped to its site collection; a reader that wants the shortest
+        path a browser can follow can take the last one instead.
+
+        Empty is a real answer: a list item is reached through its list, and a directory
+        object through the portal, so neither declares an address of its own.
+        """
+        return self.columns_of_facet(LINK)
 
     def declared(self, attr: str) -> Optional[ODataPropertyMeta]:
         """The declaration the Python attribute ``attr`` carries, if any."""

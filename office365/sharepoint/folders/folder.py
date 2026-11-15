@@ -14,7 +14,7 @@ from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
-from office365.runtime.types.odata_property import key, odata
+from office365.runtime.types.odata_property import LINK, key, odata
 from office365.sharepoint.changes.collection import ChangeCollection
 from office365.sharepoint.changes.query import ChangeQuery
 from office365.sharepoint.contenttypes.content_type_id import ContentTypeId
@@ -911,7 +911,7 @@ class Folder(Entity):
         """Gets when the folder was created in UTC."""
         return self.properties.get("TimeCreated", datetime.min)
 
-    @odata(name="ServerRelativeUrl", readonly=True)
+    @odata(name="ServerRelativeUrl", readonly=True, facet=LINK)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the server-relative URL of the list folder."""

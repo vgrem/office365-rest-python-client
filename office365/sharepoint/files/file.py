@@ -33,7 +33,7 @@ from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.transport.base import HeadersCallback
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 from office365.sharepoint.activities.capabilities import ActivityCapabilities
 from office365.sharepoint.entity import Entity
 from office365.sharepoint.entity_collection import EntityCollection
@@ -1274,7 +1274,7 @@ class File(AbstractFile):
             User(self.context, ResourcePath("LockedByUser", self.resource_path)),
         )
 
-    @odata(name="ServerRelativeUrl", readonly=True)
+    @odata(name="ServerRelativeUrl", readonly=True, facet=LINK)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Gets the relative URL of the file based on the URL for the server."""

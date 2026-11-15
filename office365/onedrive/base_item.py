@@ -11,7 +11,7 @@ from office365.onedrive.listitems.item_reference import ItemReference
 from office365.onedrive.quotas import FILES_QUOTAS
 from office365.runtime.limits import limit
 from office365.runtime.paths.resource_path import ResourcePath
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 
 if TYPE_CHECKING:
     from office365.directory.users.user import User
@@ -98,7 +98,7 @@ class BaseItem(Entity):
     def description(self, value: str) -> None:
         self.set_property("description", value)
 
-    @odata(name="webUrl", default=3)
+    @odata(name="webUrl", default=3, facet=LINK)
     @property
     def web_url(self) -> str:
         """URL that displays the resource in the browser"""

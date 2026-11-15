@@ -15,7 +15,7 @@ from office365.runtime.limits import limit
 from office365.runtime.paths.builder import ODataPathBuilder
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 from office365.runtime.verbs import verb
 from office365.teams.apps.installation import TeamsAppInstallation
 from office365.teams.channels.channel import Channel
@@ -118,7 +118,7 @@ class Team(Entity):
         """The visibility of the group and team. Defaults to Public."""
         return self.properties.get("visibility", TeamVisibilityType.unknown)
 
-    @odata(name="webUrl", default=2)
+    @odata(name="webUrl", default=2, facet=LINK)
     @property
     def web_url(self) -> str | None:
         """A hyperlink that will go to the team in the Microsoft Teams client. This is the URL that you get when

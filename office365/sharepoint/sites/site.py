@@ -16,7 +16,7 @@ from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import GuidCollection, StringCollection
-from office365.runtime.types.odata_property import odata
+from office365.runtime.types.odata_property import LINK, odata
 from office365.sharepoint.administration.unlicensedodblicenseenforcementwarningcontext import (
     UnlicensedOdbLicenseEnforcementWarningContext,
 )
@@ -928,13 +928,13 @@ class Site(Entity):
         """
         return self.properties.get("RequiredDesignerVersion", None)
 
-    @odata(name="Url")
+    @odata(name="Url", facet=LINK)
     @property
     def url(self) -> Optional[str]:
         """Specifies the full URL of the site (2), including host name, port number and path"""
         return self.properties.get("Url", None)
 
-    @odata(name="ServerRelativeUrl")
+    @odata(name="ServerRelativeUrl", facet=LINK)
     @property
     def server_relative_url(self) -> Optional[str]:
         """Specifies the server-relative URL of the top-level site in the site collection."""
