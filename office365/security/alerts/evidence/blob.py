@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.alerts.blob_container_evidence import BlobContainerEvidence
 from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.evidence.blob_container import BlobContainerEvidence
 from office365.security.alerts.file_hash import FileHash
 
 

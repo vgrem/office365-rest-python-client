@@ -4,7 +4,7 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.alerts.actions.account_object_id import AccountObjectIdAction
+from office365.security.alerts.actions.account import AccountObjectIdAction
 from office365.security.alerts.actions.account_sid import AccountSidAction
 from office365.security.alerts.actions.device import DeviceAction
 from office365.security.alerts.actions.email import EmailAction

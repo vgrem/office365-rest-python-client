@@ -70,6 +70,45 @@ It reads the tree, not the metadata, so it answers in a second and takes the sam
   and a second run proposes nothing. `--place` on an already-placed tree is a no-op, and
   that is the invariant the test asserts for `office365/intune`.
 
+## Families
+
+Descent reads the **opening word** of a class name, and some families are not named that
+way: every `*AuditRecord` belongs in `audit/records`, with the source word as a subfolder
+instead of the stem, so `AuditConfigAuditRecord` used to land flat in `audit/` and
+`VivaAuditRecord` in `audit/viva_record.py`.
+
+`generator/planning/families.py` is the table that answers first, and it answers for
+both readers -- the renderer and `--place`:
+
+| scope | suffix | folder | source subfolder |
+| --- | --- | --- | --- |
+| `office365.security.audit` | `AuditRecord` | `security/audit/records` | yes |
+| `office365.security.alerts` | `Evidence` | `security/alerts/evidence` | |
+| `office365.security.alerts` | `EntityMapping` | `security/alerts/entitymappings` | |
+| `office365.security.alerts` | `ObjectIdAction` | `security/alerts/actions` | |
+| `office365.security.alerts` | `State`, `Status` | `security/alerts/states` | |
+
+- **the folder says the family**, so the stem drops the family word
+  (`ai_agent_evidence.py` -> `evidence/ai_agent.py`);
+- **a source subfolder claims the leading word** when it exists, and the stem drops it
+  (`viva/audit_record.py`); a folder that does not exist is never created, so an unknown
+  source keeps its word (`records/fabric_audit_record.py`) and the later move into a real
+  folder is allowed to shorten it;
+- **a family names a subtree, not a product**: `*Status` under `office365.security.alerts`
+  is an alert's, while `SimulationStatus` stays in `attacksimulations/` where its
+  navigation reads it.
+
+Two consequences of the pass meeting a family are explicit rather than incidental: a
+family that would re-add a word the class name carries keeps the **stem on disk**, since
+that stem is the shorter decision (`AuditConfigAuditRecord` stays `config_audit_record.py`
+when it moves); and a file already parked in a source subfolder of the family's folder is
+not climbed back out of, because the family cannot see why it went there.
+
+`tests/tooling/test_generator_families.py` pins the table: every `*AuditRecord` under
+`audit/` and every `*Evidence` under `alerts/` sits in its family folder, every family
+names a folder the tree has, and a type that does not exist yet (`FabricAuditRecord`)
+lands where the rule says.
+
 A target file that is already taken is reported as **blocked** rather than overwritten:
 that is a duplicate to review, not a move to make. Moved modules have their importers
 rewritten in the same pass — textually, over `.py` and `.md`, whole tokens only, so a

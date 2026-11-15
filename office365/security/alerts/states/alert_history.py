@@ -4,7 +4,7 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.security.alerts.feedback import AlertFeedback
-from office365.security.alerts.status import AlertStatus
+from office365.security.alerts.states.alert import AlertStatus
 
 
 class AlertHistoryState(ClientValue):

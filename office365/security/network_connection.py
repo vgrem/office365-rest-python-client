@@ -4,10 +4,10 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.security.alerts.connection_direction import ConnectionDirection
-from office365.security.alerts.connectionstatus import ConnectionStatus
 from office365.security.alerts.network_protocol import (
     SecurityNetworkProtocol,
 )
+from office365.security.alerts.states.connection import ConnectionStatus
 
 
 class NetworkConnection(ClientValue):

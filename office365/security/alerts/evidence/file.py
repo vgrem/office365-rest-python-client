@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from dataclasses import field
 
-from office365.security.alerts.detectionstatus import DetectionStatus
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.file_details import FileDetails
+from office365.security.alerts.states.detection import DetectionStatus
 
 
 class FileEvidence(AlertEvidence):

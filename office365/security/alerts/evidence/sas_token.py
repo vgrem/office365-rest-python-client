@@ -4,7 +4,7 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.runtime.types.collections import StringCollection
-from office365.security.alerts.azure_resource_evidence import AzureResourceEvidence
+from office365.security.alerts.evidence.azure_resource import AzureResourceEvidence
 from office365.security.alerts.evidence.base import AlertEvidence
 
 

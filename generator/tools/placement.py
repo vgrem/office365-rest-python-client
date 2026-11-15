@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterable, List, Mapping, Optional
 
+from generator.planning.families import family_target
 from generator.planning.routing import descend_module
 
 #: Files whose text may name a moved module. Markdown counts: the docs and the examples
@@ -165,8 +166,17 @@ def plan_placement(root: Path | str, output_base: str, repo_root: Path | str) ->
         class_name = classes[0]
         package, _, stem = module_of(relative).rpartition(".")
         module_path, new_stem = descend_module(package, class_name, str(output_base))
+        if len(new_stem) > len(stem) and family_target(package, class_name, str(output_base)) is not None:
+            # A family claims the file but would re-add the word the class name carries;
+            # the stem on disk is the shorter decision, so the move keeps it.
+            new_stem = stem
         new_path = f"{module_path}.{new_stem}".replace(".", "/") + ".py"
         if new_path == relative:
+            continue
+        # A move descends, never climbs: a family answers with its own folder, and a file
+        # already parked in a source subfolder of it is a decision the family cannot see.
+        current, target = Path(relative).parent, Path(new_path).parent
+        if target != current and current not in target.parents:
             continue
         # A move may shorten a stem and nest it; it may not lengthen one. Lengthening
         # re-adds the prefix the parent package already says (`data.py`,

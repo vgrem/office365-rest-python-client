@@ -24,6 +24,7 @@ from typing import Iterable, Optional
 from generator.build.context import BuilderContext
 from generator.build.naming import python_name, to_snake_case
 from generator.odata.type_system import TypeRef
+from generator.planning.families import family_target
 
 
 def _module_segment(segment: str) -> str:
@@ -209,8 +210,11 @@ def _collides(directory: str, stem: str, class_name: str) -> bool:
 def descend_module(module_path: str, class_name: str, output_base: str) -> tuple[str, str]:
     """Place a new type in a matching subsystem package, stripping prefixes.
 
-    Three steps, all only for new files (placed types stay put: sticky):
+    Four steps, all only for new files (placed types stay put: sticky):
 
+    0. a **family** answers first: ``AuditRecord`` and its kind belong in the folder the
+       tree already gives them, not in the folder their opening word suggests
+       (:mod:`generator.planning.families`);
     1. strip leading words implied by the module path
        (``WorkbookChartAxisFormat`` + ``...workbooks.charts`` -> ``axis_format``);
     2. descend into a subpackage whose name matches the remaining prefix,
@@ -227,8 +231,22 @@ def descend_module(module_path: str, class_name: str, output_base: str) -> tuple
     base = module_directory(module_path, output_base)
     if not os.path.isdir(base):
         return module_path, file_stem
+    family = family_target(module_path, class_name, output_base)
+    if family is not None:
+        return family
     words = _strip_path_prefix(file_stem.split("_"), module_path)
+    descent = _subpackage_of(base, words, file_stem, class_name)
+    if descent is not None:
+        dirname, remaining = descent
+        return f"{module_path}.{dirname}", remaining
+    remaining = "_".join(words)
+    if remaining and remaining != file_stem and not _collides(base, remaining, class_name):
+        return module_path, remaining
+    return module_path, file_stem
 
+
+def _subpackage_of(base: str, words: list[str], file_stem: str, class_name: str) -> tuple[str, str] | None:
+    """The subpackage of ``base`` that consumes the most leading ``words``, and the rest."""
     best: tuple[int, int, str] | None = None
     for entry in sorted(os.listdir(base)):
         subdir = os.path.join(base, entry)
@@ -239,17 +257,13 @@ def descend_module(module_path: str, class_name: str, output_base: str) -> tuple
         consumed = _consume_prefix(entry, words)
         if consumed and (best is None or len(entry) > best[0]):
             best = (len(entry), consumed, entry)
-    if best is not None:
-        _, consumed, dirname = best
-        remaining = "_".join(words[consumed:]) or file_stem
-        if not _collides(os.path.join(base, dirname), remaining, class_name):
-            return f"{module_path}.{dirname}", remaining
-        return f"{module_path}.{dirname}", file_stem
-
-    remaining = "_".join(words)
-    if remaining and remaining != file_stem and not _collides(base, remaining, class_name):
-        return module_path, remaining
-    return module_path, file_stem
+    if best is None:
+        return None
+    _, consumed, dirname = best
+    remaining = "_".join(words[consumed:]) or file_stem
+    if not _collides(os.path.join(base, dirname), remaining, class_name):
+        return dirname, remaining
+    return dirname, file_stem
 
 
 def planned_module(type_name: str, schema, registry, router: Router, output_base: str = "") -> Optional[str]:

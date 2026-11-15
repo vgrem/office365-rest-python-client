@@ -12,7 +12,7 @@ from __future__ import annotations
 from typing import ClassVar, Optional
 
 from office365.security.alerts.severity import AlertSeverity
-from office365.security.alerts.status import AlertStatus
+from office365.security.alerts.states.alert import AlertStatus
 
 from tests.decorators import requires_delegated
 from tests.graph_case import GraphDelegatedTestCase

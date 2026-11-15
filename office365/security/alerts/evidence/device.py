@@ -5,8 +5,8 @@ from datetime import datetime
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.collections import StringCollection
-from office365.security.alerts.defenderavstatus import DefenderAvStatus
 from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.states.defender_av import DefenderAvStatus
 from office365.security.alerts.states.device_health import DeviceHealthStatus
 from office365.security.alerts.states.onboarding import OnboardingStatus
 from office365.security.logged_on_user import LoggedOnUser

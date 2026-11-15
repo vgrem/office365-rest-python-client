@@ -15,11 +15,12 @@ from office365.security.alerts.determination import AlertDetermination
 from office365.security.alerts.dictionary import Dictionary
 from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.feedback import AlertFeedback
-from office365.security.alerts.file_security_state import FileSecurityState
-from office365.security.alerts.history_state import AlertHistoryState
 from office365.security.alerts.service_source import ServiceSource
 from office365.security.alerts.severity import AlertSeverity
+from office365.security.alerts.states.alert import AlertStatus
+from office365.security.alerts.states.alert_history import AlertHistoryState
 from office365.security.alerts.states.cloud_app_security import CloudAppSecurityState
+from office365.security.alerts.states.file_security import FileSecurityState
 from office365.security.alerts.states.host_security import HostSecurityState
 from office365.security.alerts.states.investigation import InvestigationState
 from office365.security.alerts.states.investigation_security import InvestigationSecurityState
@@ -29,7 +30,6 @@ from office365.security.alerts.states.registry_key import RegistryKeyState
 from office365.security.alerts.states.uri_click_security import UriClickSecurityState
 from office365.security.alerts.states.user_security import UserSecurityState
 from office365.security.alerts.states.vulnerability import VulnerabilityState
-from office365.security.alerts.status import AlertStatus
 from office365.security.alerts.trigger import AlertTrigger
 from office365.security.network_connection import NetworkConnection
 from office365.security.process import Process
