@@ -5,7 +5,7 @@ from datetime import datetime
 
 from office365.runtime.types.collections import StringCollection
 from office365.security.alerts.azure_resource_evidence import AzureResourceEvidence
-from office365.security.alerts.evidence import AlertEvidence
+from office365.security.alerts.evidence.base import AlertEvidence
 
 
 class SasTokenEvidence(AlertEvidence):

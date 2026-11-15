@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
+from office365.security.alerts.states.threat_type import ThreatType
 from office365.security.detonation_details import DetonationDetails
-from office365.security.threat_type import ThreatType
 
 
 class AnalyzedEmailUrl(ClientValue):

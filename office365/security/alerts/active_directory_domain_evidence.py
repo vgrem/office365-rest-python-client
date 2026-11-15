@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import field
 
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.alerts.evidence import AlertEvidence
+from office365.security.alerts.evidence.base import AlertEvidence
 
 
 class ActiveDirectoryDomainEvidence(AlertEvidence):

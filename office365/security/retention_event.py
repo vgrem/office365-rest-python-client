@@ -8,9 +8,9 @@ from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
+from office365.security.alerts.states.retention_event import RetentionEventStatus
 from office365.security.event_propagation_result import EventPropagationResult
 from office365.security.event_query import EventQuery
-from office365.security.retention_event_status import RetentionEventStatus
 from office365.security.triggertypes.event_type import RetentionEventType
 
 

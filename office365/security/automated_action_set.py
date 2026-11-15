@@ -4,13 +4,13 @@ from dataclasses import field
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.client_value_collection import ClientValueCollection
-from office365.security.account_object_id_action import AccountObjectIdAction
-from office365.security.account_sid_action import AccountSidAction
-from office365.security.device_action import DeviceAction
-from office365.security.email_action import EmailAction
-from office365.security.file_action import FileAction
-from office365.security.isolate_device_action import IsolateDeviceAction
-from office365.security.stop_and_quarantine_file_action import StopAndQuarantineFileAction
+from office365.security.alerts.actions.account_object_id import AccountObjectIdAction
+from office365.security.alerts.actions.account_sid import AccountSidAction
+from office365.security.alerts.actions.device import DeviceAction
+from office365.security.alerts.actions.email import EmailAction
+from office365.security.alerts.actions.file import FileAction
+from office365.security.alerts.actions.isolate_device import IsolateDeviceAction
+from office365.security.alerts.actions.stop_and_quarantine_file import StopAndQuarantineFileAction
 
 
 class AutomatedActionSet(ClientValue):

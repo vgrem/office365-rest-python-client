@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.security.query_type import QueryType
+from office365.security.alerts.states.query_type import QueryType
 
 
 class EventQuery(ClientValue):

@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import field
 from datetime import datetime
 
-from office365.security.alerts.evidence import AlertEvidence
-from office365.security.device_evidence import DeviceEvidence
-from office365.security.user_evidence import UserEvidence
+from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.evidence.device import DeviceEvidence
+from office365.security.alerts.evidence.user import UserEvidence
 
 
 class HostLogonSessionEvidence(AlertEvidence):

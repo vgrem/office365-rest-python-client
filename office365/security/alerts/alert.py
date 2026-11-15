@@ -12,29 +12,29 @@ from office365.security.alerts.comment import AlertComment
 from office365.security.alerts.detection import AlertDetection
 from office365.security.alerts.detectionsource import DetectionSource
 from office365.security.alerts.determination import AlertDetermination
-from office365.security.alerts.evidence import AlertEvidence
+from office365.security.alerts.evidence.base import AlertEvidence
 from office365.security.alerts.feedback import AlertFeedback
 from office365.security.alerts.file_security_state import FileSecurityState
 from office365.security.alerts.history_state import AlertHistoryState
+from office365.security.alerts.service_source import ServiceSource
 from office365.security.alerts.severity import AlertSeverity
+from office365.security.alerts.states.cloud_app_security import CloudAppSecurityState
+from office365.security.alerts.states.host_security import HostSecurityState
+from office365.security.alerts.states.investigation import InvestigationState
+from office365.security.alerts.states.investigation_security import InvestigationSecurityState
+from office365.security.alerts.states.malware import MalwareState
+from office365.security.alerts.states.message_security import MessageSecurityState
+from office365.security.alerts.states.registry_key import RegistryKeyState
+from office365.security.alerts.states.uri_click_security import UriClickSecurityState
+from office365.security.alerts.states.user_security import UserSecurityState
+from office365.security.alerts.states.vulnerability import VulnerabilityState
 from office365.security.alerts.status import AlertStatus
 from office365.security.alerts.trigger import AlertTrigger
-from office365.security.cloud_app_security_state import CloudAppSecurityState
 from office365.security.dictionary import Dictionary
-from office365.security.host_security_state import HostSecurityState
-from office365.security.investigation_security_state import InvestigationSecurityState
-from office365.security.investigation_state import InvestigationState
-from office365.security.malware_state import MalwareState
-from office365.security.message_security_state import MessageSecurityState
 from office365.security.network_connection import NetworkConnection
 from office365.security.process import Process
-from office365.security.registry_key_state import RegistryKeyState
 from office365.security.resource import SecurityResource
-from office365.security.service_source import ServiceSource
-from office365.security.uri_click_security_state import UriClickSecurityState
-from office365.security.user_security_state import UserSecurityState
 from office365.security.vendor_information import SecurityVendorInformation
-from office365.security.vulnerability_state import VulnerabilityState
 
 
 class Alert(Entity):

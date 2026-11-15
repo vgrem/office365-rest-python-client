@@ -5,8 +5,8 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-from office365.security.detection_action import DetectionAction
-from office365.security.detection_rule_status import DetectionRuleStatus
+from office365.security.alerts.actions.detection import DetectionAction
+from office365.security.alerts.states.detection_rule import DetectionRuleStatus
 from office365.security.query_condition import QueryCondition
 from office365.security.rule_schedule import RuleSchedule
 

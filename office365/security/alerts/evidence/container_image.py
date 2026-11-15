@@ -1,0 +1,16 @@
+from __future__ import annotations
+
+from dataclasses import field
+
+from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.evidence.container_registry import ContainerRegistryEvidence
+
+
+class ContainerImageEvidence(AlertEvidence):
+    imageId: str | None = None
+    digestImage: ContainerImageEvidence | None = None
+    registry: ContainerRegistryEvidence = field(default_factory=ContainerRegistryEvidence)
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.ContainerImageEvidence"

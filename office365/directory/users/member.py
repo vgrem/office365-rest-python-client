@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.security.recipient_type import RecipientType
+from office365.security.alerts.states.recipient_type import RecipientType
 
 
 class Member(ClientValue):

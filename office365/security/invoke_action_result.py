@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from office365.runtime.client_value import ClientValue
-from office365.security.action import Action
+from office365.security.alerts.actions.action import Action
 
 if TYPE_CHECKING:
     from office365.directory.identities.provider import IdentityProvider

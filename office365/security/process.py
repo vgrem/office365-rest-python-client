@@ -5,7 +5,7 @@ from datetime import datetime
 
 from office365.intune.devices.management.process_integrity_level import ProcessIntegrityLevel
 from office365.runtime.client_value import ClientValue
-from office365.security.file_hash import FileHash
+from office365.security.alerts.file_hash import FileHash
 
 
 class Process(ClientValue):

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 from office365.entity import Entity
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
-from office365.security.recipient_type import RecipientType
+from office365.security.alerts.states.recipient_type import RecipientType
 
 if TYPE_CHECKING:
     from office365.outlook.contacts.contact import Contact

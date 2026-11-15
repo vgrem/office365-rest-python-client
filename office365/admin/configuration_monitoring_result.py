@@ -7,7 +7,7 @@ from office365.admin.error_detail import ErrorDetail
 from office365.entity import Entity
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.types.odata_property import odata
-from office365.security.monitor_run_status import MonitorRunStatus
+from office365.security.alerts.states.monitor_run import MonitorRunStatus
 
 
 class ConfigurationMonitoringResult(Entity):

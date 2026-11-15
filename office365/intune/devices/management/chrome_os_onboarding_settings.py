@@ -5,7 +5,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata, version
-from office365.security.onboarding_status import OnboardingStatus
+from office365.security.alerts.states.onboarding import OnboardingStatus
 
 
 @version("beta")

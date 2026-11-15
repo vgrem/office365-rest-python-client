@@ -1,0 +1,20 @@
+from __future__ import annotations
+
+from dataclasses import field
+
+from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.evidence.ip import IpEvidence
+from office365.security.alerts.states.protocol_type import ProtocolType
+
+
+class NetworkConnectionEvidence(AlertEvidence):
+    destinationAddress: IpEvidence = field(default_factory=IpEvidence)
+    destinationPort: int | None = None
+    sourceAddress: IpEvidence = field(default_factory=IpEvidence)
+    sourcePort: int | None = None
+
+    @property
+    def entity_type_name(self) -> str:
+        return "microsoft.graph.security.NetworkConnectionEvidence"
+
+    protocol: ProtocolType = ProtocolType.tcp

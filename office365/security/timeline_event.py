@@ -5,8 +5,8 @@ from datetime import datetime
 
 from office365.runtime.client_value import ClientValue
 from office365.runtime.types.collections import StringCollection
+from office365.security.alerts.states.timeline_event_type import TimelineEventType
 from office365.security.event_source import EventSource
-from office365.security.timeline_event_type import TimelineEventType
 
 
 class TimelineEvent(ClientValue):

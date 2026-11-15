@@ -4,9 +4,9 @@ from dataclasses import field
 from datetime import datetime
 
 from office365.security.alerts.detectionstatus import DetectionStatus
-from office365.security.alerts.evidence import AlertEvidence
-from office365.security.file_details import FileDetails
-from office365.security.user_account import UserAccount
+from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.file_details import FileDetails
+from office365.security.alerts.user_account import UserAccount
 
 
 class ProcessEvidence(AlertEvidence):

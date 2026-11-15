@@ -4,8 +4,8 @@ from dataclasses import field
 
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.security.alerts.blob_container_evidence import BlobContainerEvidence
-from office365.security.alerts.evidence import AlertEvidence
-from office365.security.file_hash import FileHash
+from office365.security.alerts.evidence.base import AlertEvidence
+from office365.security.alerts.file_hash import FileHash
 
 
 class BlobEvidence(AlertEvidence):

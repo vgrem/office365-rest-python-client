@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from office365.runtime.client_value import ClientValue
-from office365.security.coachmark_location_type import CoachmarkLocationType
+from office365.security.alerts.states.coachmark_location_type import CoachmarkLocationType
 
 
 class CoachmarkLocation(ClientValue):

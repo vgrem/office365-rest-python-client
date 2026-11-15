@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from office365.security.alerts.evidence import AlertEvidence
+from office365.security.alerts.evidence.base import AlertEvidence
 
 
 class AzureResourceEvidence(AlertEvidence):

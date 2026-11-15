@@ -12,7 +12,7 @@ from office365.runtime.verbs import verb
 from office365.security.account import Account
 
 if TYPE_CHECKING:
-    from office365.security.action import Action
+    from office365.security.alerts.actions.action import Action
     from office365.security.identity_provider import IdentityProvider
     from office365.security.invoke_action_result import InvokeActionResult
 

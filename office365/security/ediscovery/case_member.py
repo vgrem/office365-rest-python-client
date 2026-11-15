@@ -4,7 +4,7 @@ from typing import Optional
 
 from office365.entity import Entity
 from office365.runtime.types.odata_property import odata
-from office365.security.recipient_type import RecipientType
+from office365.security.alerts.states.recipient_type import RecipientType
 
 
 class EdiscoveryCaseMember(Entity):
