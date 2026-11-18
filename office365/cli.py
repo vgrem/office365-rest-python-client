@@ -369,6 +369,8 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
         ("--columns", "the names the table shows"),
         ("--no-headers", "rows without the header line"),
         ("--link", "when a name carries its URL"),
+        ("--yes", "send a destroy action without asking"),
+        ("--dry-run", "print the request and send nothing"),
     ]
 
 
@@ -497,11 +499,18 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     parser.add_argument(
         "--link", choices=("auto", "always", "never"), default="auto", help="when a name carries its URL"
     )
+    parser.add_argument("-y", "--yes", action="store_true", help="send a destroy action without asking")
+    parser.add_argument("-n", "--dry-run", action="store_true", help="print the request and send nothing")
     args = parser.parse_args(argv)
     given = _accepted(args, method)
+    # A destroy action is the one that asks, and `confirm` is derived from the effect, so this
+    # gate cannot drift from the effect the page printed. It sits before the session is read:
+    # "may I?" is answerable with no token, and a refusal costs no request.
+    if found.verb.confirm and not (args.yes or args.dry_run):
+        return _refuse(f"`{words[-1]}` destroys what the service holds; send it again with --yes")
 
     try:
-        client = _client(_audience(found.entity))
+        client = _client(_audience(found.entity), live=not args.dry_run)
     except LookupError as err:
         return _refuse(str(err))
     if walk is None:
@@ -678,6 +687,9 @@ def _send(
     asked = _asked_for(args, entity)
     if asked and _can_select(result):
         result.select(asked)
+    if args.dry_run:
+        print(_preview(client))
+        return 0
     try:
         client.execute_query()
     except ClientRequestException as err:
@@ -704,6 +716,24 @@ def _send(
         )
     )
     return 0
+
+
+def _preview(client: Any) -> str:
+    """The requests the method queued, as they would be sent: method, URL, and any body.
+
+    Built by the request class the session already uses, so the preview cannot describe a
+    request the client would not send -- the version, the path and the payload are its answer.
+    Authentication is not run, which is what makes this printable before a token is read.
+    """
+    request = client.pending_request()
+    lines = []
+    for query in client.queries:
+        built = request.build_request(query)
+        lines.append(f"{built.method.value} {built.url}")
+        if built.data:
+            body = built.data if isinstance(built.data, str) else json.dumps(built.data, indent=2, default=str)
+            lines.extend("  " + line for line in body.splitlines())
+    return "\n".join(lines)
 
 
 def _asked_for(args: argparse.Namespace, entity: type) -> "list[str]":
@@ -811,7 +841,7 @@ def _audience(entity: type) -> str:
     return product if product in AUDIENCES else "graph"
 
 
-def _client(audience: str) -> Any:
+def _client(audience: str, live: bool = True) -> Any:
     """A client for ``audience``, holding the token its session kept.
 
     A command does not log in: it either finds a live token in the store or says to run
@@ -823,6 +853,10 @@ def _client(audience: str) -> Any:
         ran = "o365 login" if audience == "graph" else f"o365 {audience} login"
         raise LookupError(f"no session for {audience}; run {ran}")
     client = _root(audience)(**dict(entry["constructor"]))
+    if not live:
+        # `--dry-run` prints the request the client would send, and building it reads the
+        # path and the payload but no token -- so a stale session can still be inspected.
+        return client
     token = _token(entry)
     # The OAuth response shape, not just the secret: a provider reads the scheme too.
     client.pending_request().with_access_token(lambda: {"access_token": token, "token_type": "Bearer"})
@@ -949,6 +983,7 @@ def _usage() -> str:
         "usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]\n"
         "       o365 <product> <noun> [navigation ...] [action] [flags]\n"
         "       o365 <product> <noun> list [-o table|wide|json|csv|tsv|url|name]\n"
+        "       o365 <product> <noun> ... delete [--yes] [-n|--dry-run]\n"
         "       o365 graph <product> <noun> [navigation ...] [action]\n"
         "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]"

@@ -153,6 +153,15 @@ class ClientRuntimeContext(ABC):
         """Whether there are pending queries to execute."""
         return len(self._queries) > 0
 
+    @property
+    def queries(self) -> Tuple[ClientQuery, ...]:
+        """The queries queued so far, in the order they would be sent.
+
+        A copy, not the queue: a caller that prints what is pending -- ``o365 --dry-run`` --
+        describes the request without being able to change it.
+        """
+        return tuple(self._queries)
+
     def execute_query_retry(
         self,
         max_retry: int = 5,

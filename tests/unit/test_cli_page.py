@@ -20,10 +20,12 @@ they do not send a request, and neither does the page.
 from __future__ import annotations
 
 import argparse
+from types import SimpleNamespace
 
 import pytest
 from office365.cli import _page, _sentence, main
 from office365.routing import route
+from office365.runtime.http.method import HttpMethod
 from office365.runtime.odata.query_options import QueryOptions
 
 #: A page wraps its links and stops; six lines is the twelve words plus the "and N more" line.
@@ -187,6 +189,20 @@ class _Object:
         return dict(self.payload)
 
 
+class _Request:
+    """The request class a session uses, reduced to what a preview reads."""
+
+    def build_request(self, query: "_Queued"):
+        return query.request
+
+
+class _Queued:
+    """One query as the runtime queues it: building it answers the request it would send."""
+
+    def __init__(self, method: HttpMethod, url: str, data: "dict | None" = None) -> None:
+        self.request = SimpleNamespace(method=method, url=url, data=data)
+
+
 class _Client:
     """Just enough client: the command calls the one query the method queued."""
 
@@ -194,13 +210,32 @@ class _Client:
 
     def __init__(self) -> None:
         self.queried = 0
+        self.pending = []
+
+    def queue(self, method: HttpMethod, url: str, data: "dict | None" = None) -> "_Client":
+        self.pending.append(_Queued(method, url, data))
+        return self
+
+    @property
+    def queries(self) -> "tuple":
+        return tuple(self.pending)
+
+    def pending_request(self) -> _Request:
+        return _Request()
 
     def execute_query(self) -> None:
         self.queried += 1
 
 
-def _arguments(link: str = "auto", output: str = "table", columns: "str | None" = None) -> "argparse.Namespace":
-    return argparse.Namespace(output=output, columns=columns, link=link, no_headers=False)
+def _arguments(
+    link: str = "auto",
+    output: str = "table",
+    columns: "str | None" = None,
+    *,
+    dry_run: bool = False,
+    yes: bool = False,
+) -> "argparse.Namespace":
+    return argparse.Namespace(output=output, columns=columns, link=link, no_headers=False, dry_run=dry_run, yes=yes)
 
 
 def test_a_feed_is_one_row_per_item_and_each_row_keeps_its_own_address(capsys: pytest.CaptureFixture[str]) -> None:
@@ -307,3 +342,67 @@ def test_one_object_is_a_block_of_fields_not_a_row_per_field(capsys: pytest.Capt
     assert lines[0].split() == ["Title", "SiteU74H3Z9O"]
     assert lines[1].split() == ["Url", "https://mediadev8.sharepoint.com"]
     assert "VALUE" not in "\n".join(lines)
+
+
+def test_dry_run_prints_the_request_the_method_queued(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    client = _Client().queue(HttpMethod.Get, "https://graph.microsoft.com/v1.0/me")
+    sent = _send(client, lambda **given: _Object({"displayName": "alpha"}), {}, _arguments(dry_run=True), Team)
+
+    assert sent == 0
+    assert client.queried == 0  # printing a request is not sending one
+    assert capsys.readouterr().out.strip() == "GET https://graph.microsoft.com/v1.0/me"
+
+
+def test_dry_run_shows_the_body_under_the_line_it_would_send(capsys: pytest.CaptureFixture[str]) -> None:
+    from office365.cli import _send
+    from office365.teams.team import Team
+
+    client = _Client().queue(HttpMethod.Patch, "https://graph.microsoft.com/v1.0/users/1", {"displayName": "alpha"})
+    _send(client, lambda **given: _Object({"displayName": "alpha"}), {}, _arguments(dry_run=True), Team)
+
+    lines = capsys.readouterr().out.splitlines()
+    assert lines[0] == "PATCH https://graph.microsoft.com/v1.0/users/1"
+    # Indented under the method and URL, so one command's preview stays one block.
+    assert lines[1] == "  {"
+    assert '    "displayName": "alpha"' in lines
+
+
+def test_a_destroy_action_refuses_without_yes(capsys: pytest.CaptureFixture[str]) -> None:
+    # The gate is before the session is read, so "may I?" is answerable with no token.
+    assert main(["sharepoint", "web", "delete"]) == REFUSED
+    printed = capsys.readouterr().err
+
+    assert "destroys" in printed and "--yes" in printed
+
+
+def test_yes_takes_a_destroy_action_past_the_gate(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("office365.cli._load", dict)
+
+    assert main(["sharepoint", "web", "delete", "--yes"]) == REFUSED
+    # Past the gate: the next thing it needs is a session, and it says so instead of asking again.
+    assert "--yes" not in capsys.readouterr().err
+
+
+def test_a_stale_session_can_still_be_previewed_but_not_run(monkeypatch: pytest.MonkeyPatch) -> None:
+    from office365.cli import _client
+
+    # A kept session whose token has expired: exactly the state a preview is for.
+    monkeypatch.setattr(
+        "office365.cli._load",
+        lambda: {
+            "sharepoint": {
+                "mode": "device-flow",
+                "constructor": {"base_url": "https://contoso.sharepoint.com"},
+                "token": {"access_token": "stale", "expires_on": 0},
+            }
+        },
+    )
+
+    assert _client("sharepoint", live=False).service_root_url.startswith("https://contoso.sharepoint.com")
+    with pytest.raises(LookupError):
+        _client("sharepoint")

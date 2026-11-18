@@ -268,6 +268,45 @@ nothing. ``o365 sharepoint web`` used to answer one comma-joined line of words. 
 ``o365 sharepoint web lists list -h``: ``-h`` at any depth prints the flags of the method the
 route actually reached, read from its signature.
 
+### 2.5 What a command does *before* it sends
+
+Two flags, both read off a stamp rather than declared beside it:
+
+* ``--yes`` (``-y``). ``VerbMeta.confirm`` is derived — ``effect == "destroy"`` — so the gate
+  cannot drift from the effect the node page printed. It sits **before** the session is read, so
+  "may I?" is answerable with no token:
+
+  ```
+  $ o365 sharepoint web delete
+  o365: `delete` destroys what the service holds; send it again with --yes
+  ```
+
+* ``--dry-run`` (``-n``). The method is called, so the query is queued exactly as it would be —
+  including the ``$select`` a table asks for — and then each queued query is built by the
+  request class the session already uses (``ClientRuntimeContext.queries``, new) and printed
+  instead of sent:
+
+  ```
+  $ o365 directory user delete -n
+  DELETE https://graph.microsoft.com/v1.0/me
+  $ o365 sharepoint web get -n
+  GET https://media.dev8.sharepoint.com/_api/Web?$select=Title,Url,ServerRelativeUrl
+  ```
+
+  Because ``ClientRequest.build_request`` is the same call the transport makes, the preview
+  cannot describe a request the client would not send — the version, the path and the payload
+  are the client's own answer. Authentication is not run (``_client(..., live=False)``), which
+  is what lets a stale session be inspected: the second command above works with an expired
+  token, ``o365 sharepoint web get`` does not.
+
+Both flags are taught to completion (``_flag_words``), and ``--dry-run`` also answers the
+destroy gate: printing a request sends nothing, so it needs no ``--yes``.
+
+Measured: ``tests/unit/test_cli_page.py`` — ``test_dry_run_prints_the_request_the_method_queued``
+(``client.queried == 0``), ``test_dry_run_shows_the_body_under_the_line_it_would_send``,
+``test_a_destroy_action_refuses_without_yes``, ``test_yes_takes_a_destroy_action_past_the_gate``,
+``test_a_stale_session_can_still_be_previewed_but_not_run``.
+
 ## 3. Decisions proposed
 
 **S1 — One store, keyed by audience.** A session belongs to an *audience* (``graph``,
