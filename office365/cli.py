@@ -364,8 +364,12 @@ def _sites(entry: "Mapping[str, Any]", current: str, audience: str) -> str:
         for site in entry.get("contexts", [])
         if site.get("url")
     ]
-    if not rows:
+    if not rows and not current:
         return f"no sites remembered; o365 {audience} use <url>"
+    if not rows:
+        # A store written before sites were listed still knows where it is, so say that rather
+        # than claim nothing is remembered.
+        rows = [(current, _site_name(current), "")]
     named = [(url, name or _site_name(url), title) for url, name, title in rows]
     width = max(len(name) for _, name, _ in named)
     lines: "list[str]" = []
