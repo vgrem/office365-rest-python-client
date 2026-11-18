@@ -225,15 +225,23 @@ class ClientContext(ClientRuntimeContext):
         return self
 
     @verb(role="action", effect="local", name="login")
-    def with_device_flow(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
+    def with_device_flow(
+        self,
+        tenant: str,
+        client_id: str,
+        scopes: Optional[List[str]] = None,
+        token_cache: Any = None,
+    ) -> Self:
         """Initializes a client to acquire a token via device flow auth.
 
         Args:
             tenant (str): Tenant name, for example: contoso.onmicrosoft.com
             client_id (str): The OAuth client id of the calling application.
             scopes (list[str] or None): Scopes requested to access a protected API (a resource)
+            token_cache (Any): MSAL cache handed to the authentication context, so that a
+                login renews the refresh token it already holds instead of asking again
         """
-        self.authentication_context.with_device_flow(tenant, client_id, scopes)
+        self.authentication_context.with_device_flow(tenant, client_id, scopes, token_cache=token_cache)
         return self
 
     @verb(role="action", effect="local", name="login", expose=False)

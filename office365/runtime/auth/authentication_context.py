@@ -211,7 +211,13 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_device_flow(self, tenant: str, client_id: str, scopes: List[str] | None = None) -> Self:
+    def with_device_flow(
+        self,
+        tenant: str,
+        client_id: str,
+        scopes: List[str] | None = None,
+        token_cache: Any = None,
+    ) -> Self:
         """
         Authenticate using device flow
 
@@ -219,6 +225,8 @@ class AuthenticationContext:
             tenant: Tenant name
             client_id: Application client ID
             scopes: Requested permission scopes (optional)
+            token_cache: Cache to read and write, so a later session renews the refresh token
+                the cache already holds instead of asking for a new device code
 
         Returns:
             Self: Supports method chaining
@@ -234,7 +242,15 @@ class AuthenticationContext:
                 client_id,
                 authority=self._get_authority_url(tenant),
                 client_credential=None,
+                token_cache=token_cache,
             )
+            # A cache that already holds this account answers without a code: only a cache with
+            # nothing to renew reaches the prompt below, which is what makes a login cheap.
+            accounts = app.get_accounts()
+            if accounts:
+                renewed = app.acquire_token_silent(scopes, account=accounts[0])
+                if renewed:
+                    return TokenResponse.from_json(renewed)
 
             flow = app.initiate_device_flow(scopes=scopes)
             if "user_code" not in flow:

@@ -364,6 +364,98 @@ answers by title (``…by_its_title_as_well_as_its_name``), a host-less session 
 (``test_the_refusal_names_the_site_a_delete_would_reach``), and ``--site`` reaches it in a preview
 (``test_a_dry_run_shows_the_full_address_of_the_chosen_site``).
 
+### 2.7 What a login asks once, and where it looks before asking
+
+The complaint this answers is narrow and fair: ``o365 login --tenant contoso.onmicrosoft.com
+--client-id 4b7e…`` is the same four hundred characters every time, and every other tool the
+person uses asks it once. ``az``, ``m365`` and ``Connect-AzAccount`` do not solve it with
+configuration cleverness; they ship a **first-party multi-tenant public-client app id inside the
+binary** and ask only for the account. That is the real fix and it costs no code — it costs three
+app registrations and the trust that comes with shipping an id everybody shares. Until those ids
+exist this library still has to be told, so the three things it is told are answered in a fixed
+order and one of them is a file the person owns:
+
+```
+--client-id / --tenant         this run, and nothing else
+O365_CLIENT_ID / O365_TENANT   the environment
+~/.o365/config.json            yours: {"client_id": "…", "tenant": "contoso.onmicrosoft.com", "site": "https://contoso.sharepoint.com/sites/finance"}
+error naming that file         because a missing answer should say where an answer goes
+```
+
+* The file is **read and never written**: ``sessions.json`` holds secrets and state (mode 0600,
+  ours to rewrite), ``config.json`` holds who you are (yours) — the split ``~/.aws/credentials``
+  versus ``~/.aws/config`` makes, and ``~/.docker/config.json`` makes against contexts. Nothing
+  else changes about a login: a flag still wins, so a second tenant is still one command.
+* **The site is optional, and asked of the tenant rather than guessed at.** In order: a
+  ``--base-url``; ``O365_SITE``; ``site`` in the config file; Graph's ``/sites/root`` read
+  through a stored Graph session *for the same tenant* (one request, no prompt, and the only
+  answer that is true after a SharePoint host has been renamed); Microsoft's documented default
+  for a ``<label>.onmicrosoft.com`` tenant; else a refusal. A vanity domain (``contoso.com``)
+  derives nothing, because a mail domain does not say where its SharePoint lives, and a tenant
+  GUID derives nothing for the same reason:
+
+  ```
+  $ python -c "from office365 import cli; print(cli._derived_site('mediadev8.onmicrosoft.com'))"
+  https://mediadev8.sharepoint.com
+  $ python -c "from office365 import cli; print(cli._derived_site('contoso.com') or '<nothing>')"
+  <nothing>
+  $ python -c "from office365 import cli; print(cli._derived_site('af6a80a4-8b4b-4879-88af-42ff8a545211') or '<nothing>')"
+  <nothing>
+  ```
+
+* **The cache is read back, which it never was.** ``login`` built a fresh
+  ``msal.SerializableTokenCache()`` per run, put it into the store's ``cache`` field, and nothing
+  ever called ``deserialize`` on it — so the field was only ever *written*, every silent acquire
+  started from zero accounts, and “log in once” was false for Graph too. It is now loaded from
+  the entry before the login runs. And the cache reaches the provider through the **login
+  method**, not the constructor, because the cache is the authentication context's state
+  (``with_device_flow(..., token_cache=cache)``); SharePoint's legacy context had no cache at all
+  and so always showed a device code. The CLI's gate is therefore “the root **or** the login
+  method declares ``token_cache``”, which is what makes ``o365 sharepoint login`` renew from the
+  refresh token it already holds:
+
+  ```
+  first login  rc: 0 | codes shown: 1        # contoso.onmicrosoft.com, fake MSAL, O365_HOME=/tmp/…
+    constructor: {'base_url': 'https://contoso.sharepoint.com'} | cache kept: True
+  second login rc: 0 | codes shown: 1        # no new code: acquire_token_silent answered
+    token: renewed
+  ```
+
+  (A scratch script with a stand-in ``msal``: the two branches are “cache with an account returns
+  silently and shows nothing” and “empty cache shows the code”. No test asserts it — the store
+  round-trip is what the code does, and the live run is what it does against the service.)
+
+* ``context`` grew the three verbs ``docker context`` has, because a site *is* a context — an
+  endpoint a session is addressed at, with a name a person types:
+
+  ```
+  $ o365 sharepoint context ls
+  * fin   mediadev8.sharepoint.com/sites/finance  Finance
+    home  mediadev8.sharepoint.com                 Home
+  $ o365 sharepoint context inspect
+  site:  https://mediadev8.sharepoint.com/sites/finance
+  name:  finance
+  title: Finance
+  $ o365 sharepoint use finance --as fin --no-check     # named, so it answers to `fin`
+  context: mediadev8.sharepoint.com/sites/finance
+  $ o365 __complete --describe sharepoint context
+  ls       the sites this session remembers
+  use      address another site
+  inspect  the site it is addressed at
+  ```
+
+  A site answers to four names — the one given with ``--as`` (kept only when said, so a rename
+  cannot masquerade as a second site), its last path segment, its host (``use
+  contoso.sharepoint.com``), and its title. ``-s/--site`` defaults to ``O365_SITE``, the way
+  ``docker --context`` defaults to ``DOCKER_CONTEXT``; the per-command flag still beats the store
+  and is still never written.
+
+Measured: the four commands above, plus ``O365_SITE=home o365 sharepoint web get -n`` →
+``GET https://mediadev8.sharepoint.com/_api/Web?$select=Title,Url,ServerRelativeUrl`` (the env
+variable addresses one command and the store is untouched). ``tests/unit/test_cli_context.py``
+still passes unchanged — 12 tests, ``python -m pytest tests/unit/test_cli_context.py`` — because
+``name`` is written to a context only when it was given.
+
 ## 3. Decisions proposed
 
 **S1 — One store, keyed by audience.** A session belongs to an *audience* (``graph``,

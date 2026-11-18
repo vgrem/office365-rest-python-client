@@ -46,10 +46,16 @@ class _FakePublicClientApplication:
 
 
 class _FakeTokenCache:
-    """The one thing a session store needs from MSAL's cache: it serializes."""
+    """The two things a session store needs from MSAL's cache: it serializes and reads back."""
+
+    def __init__(self) -> None:
+        self._data = '{"AccessToken": {}}'
+
+    def deserialize(self, data: str) -> None:
+        self._data = data
 
     def serialize(self):
-        return '{"AccessToken": {}}'
+        return self._data
 
 
 def _install_fake_msal(monkeypatch) -> list[_FakePublicClientApplication]:

@@ -2,13 +2,13 @@
 
 Grammar, ``az``-shaped and with the audience first because a token belongs to one::
 
-    o365 login [--audience graph|sharepoint|exchange] [--mode device-flow] \\
-               --tenant contoso.onmicrosoft.com --client-id <id> [--scopes User.Read Mail.Read]
+    o365 login [--audience graph|sharepoint|exchange] [--mode device-flow] [--tenant <tenant>] \\
+               [--client-id <id>] [--scopes User.Read Mail.Read]
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
     o365 <product> <noun> [navigation ...] [action] [-o table|wide|json|csv|tsv|url|name] [flags]
-    o365 sharepoint use <site>          -- address this session at one site collection
-    o365 sharepoint context             -- where it is addressed, and what it remembers
+    o365 sharepoint use <site> [--as <name>]  -- address this session at one site collection
+    o365 sharepoint context [ls|use <name>|inspect] -- where it is addressed, and what it remembers
     o365 help <any words>               -- the page for them, or ``-h`` at the leaf
     o365 completion bash|zsh|fish        -- print the shell script that completes the words
     o365 completion --warm [product ...] -- fill the cache, so no TAB pays an import
@@ -23,18 +23,28 @@ because *that* declares it - one rule, read off the signatures:
 So the six ways to log in stay one word with a ``--mode``, because ``@verb`` already
 states the difference, and the credentials are whatever the method says they are.
 
-Two things the command line supplies rather than accepts: the ``token_cache`` (the
-session file *is* the cache) and ``client_id``, which is mandatory - this library ships
-no app registration of its own, so ``--client-id`` or ``O365_CLIENT_ID`` is required.
-A ``--password`` is a flag like any other, which also means it is visible in the process
-list; a secret store behind ``--authority``/``--client-secret`` is the better habit.
+Two things the command line supplies rather than accepts: the ``token_cache`` (the session
+file *is* the cache, and it is read back on every login, so a refresh token it already holds
+is renewed rather than asked for again) and the site, which a login can find rather than be told.
+
+What it has to be *told*, it asks once and keeps in ``~/.o365/config.json`` -- your file, read
+and never written here: ``client_id``, ``tenant``, ``site``. In that order a flag wins, then
+``O365_CLIENT_ID``/``O365_TENANT``/``O365_SITE``, then the file, then an error that names it.
+This library ships no app registration of its own, so a client id has to come from somewhere;
+the difference worth having is being asked once instead of every run. A ``--password`` is a flag
+like any other, which also means it is visible in the process list; a secret store behind
+``--authority``/``--client-secret`` is the better habit.
 
 A SharePoint session is addressed at one *site collection*, because that is the boundary the
 model draws: ``ClientContext(base_url)`` is one site, ``client.tenant`` is the tenant that holds
 them, and ``clone(url)`` switches site while reusing the token and the transport. So the store
 keeps the sites a session has been pointed at and which one is current, ``o365 sharepoint use``
-changes it, ``--site`` overrides it for one command, and every sentence that could cost
-something -- the ``--yes`` refusal, ``--dry-run``'s URL -- names the site it would reach.
+changes it, ``context`` lists them the way ``docker context ls`` does, ``--site``/``O365_SITE``
+overrides it for one command, and every sentence that could cost something -- the ``--yes``
+refusal, ``--dry-run``'s URL -- names the site it would reach. A login with no site asks
+Graph's ``/sites/root`` through a session that already holds a token, else takes Microsoft's
+documented ``https://<label>.sharepoint.com`` for a ``<label>.onmicrosoft.com`` tenant, and
+otherwise refuses rather than writes a guess into the store.
 
 A session is one token, so it is kept per audience and not per product. What is kept is
 the access token itself, plus MSAL's cache where the root has one to hold: ``GraphClient``
@@ -176,18 +186,36 @@ def login(audience: str, argv: "list[str]") -> int:
     method = next(attribute for attribute, meta in logins.items() if meta.mode == args.mode)
 
     given = _accepted(args, root) | _accepted(args, getattr(root, method))
-    given["client_id"] = given.get("client_id") or os.environ.get("O365_CLIENT_ID", "")
+    # A client id and a tenant are facts about the person, not arguments that change between
+    # runs, so they are looked for once: this run's flag, their environment, their config file.
+    prefs = _prefs()
+    wanted = set(_signature(root).parameters) | set(_signature(getattr(root, method)).parameters)
+    given["client_id"] = given.get("client_id") or os.environ.get("O365_CLIENT_ID") or prefs.get("client_id", "")
     if not given["client_id"]:
-        parser.error("--client-id (or O365_CLIENT_ID) is required: this library ships no app registration of its own")
+        parser.error('no client id: pass --client-id, set O365_CLIENT_ID, or put "client_id" in ' + str(_config()))
+    tenant = given.get("tenant") or os.environ.get("O365_TENANT") or prefs.get("tenant", "")
+    if tenant and "tenant" in wanted:
+        given["tenant"] = tenant
+    if "base_url" in wanted and not given.get("base_url"):
+        given["base_url"] = _site_for(given.get("tenant", ""), prefs)
+        if not given["base_url"]:
+            parser.error('no site: pass --base-url, set O365_SITE, or put "site" in ' + str(_config()))
 
     import msal
 
-    # The session file *is* the cache, so it is handed in rather than accepted as a flag.
-    cache = msal.SerializableTokenCache() if "token_cache" in inspect.signature(root).parameters else None
-    if cache is not None:
+    # The session file *is* the cache, and it is read back: a cache that is only ever written
+    # renews nothing, so every login would show a device code for a token MSAL could have
+    # renewed from the refresh token the store already held.
+    kept = _load().get(audience) or {}
+    wants_cache = any("token_cache" in _signature(fn).parameters for fn in (root, getattr(root, method)))
+    cache = None
+    if wants_cache:
+        cache = msal.SerializableTokenCache()
+        if kept.get("cache"):
+            cache.deserialize(kept["cache"])
         given["token_cache"] = cache
 
-    constructor = {name: value for name, value in given.items() if name in inspect.signature(root).parameters}
+    constructor = {name: value for name, value in given.items() if name in _signature(root).parameters}
     client = root(**constructor)
     getattr(client, method)(**{name: value for name, value in given.items() if name not in constructor})
     # Both providers state the same property: acquired on first read, cached, never validated.
@@ -247,7 +275,7 @@ def _session(audience: str, word: str, rest: "list[str]") -> int:
         return logout(audience)
     if word == "use":
         return use(audience, rest)
-    return context(audience)
+    return context(audience, rest)
 
 
 def use(audience: str, argv: "list[str]") -> int:
@@ -268,6 +296,7 @@ def use(audience: str, argv: "list[str]") -> int:
         description="Address this session at one site. A URL, a remembered site, or a name under /sites/.",
     )
     parser.add_argument("site", help="the site: a URL, a remembered name, or a name under /sites/")
+    parser.add_argument("--as", dest="name", default="", help="remember it under this name")
     parser.add_argument("--no-check", action="store_true", help="remember it without reading its title")
     args = parser.parse_args(argv)
     try:
@@ -281,25 +310,83 @@ def use(audience: str, argv: "list[str]") -> int:
         except Exception as err:  # the service's own answer, said as it came
             return _refuse(f"{_short(url)}: {err}")
         title = getattr(site, "title", None) or ""
-    sessions[audience] = _remember(entry, url, title)
+    sessions[audience] = _remember(entry, url, title, args.name)
     _save(sessions)
     print(f"context: {_short(url)}" + (f" — {title}" if title else ""))
     return 0
 
 
-def context(audience: str) -> int:
-    """Where this session is addressed, and the sites it remembers: read, never asked."""
+def context(audience: str, argv: "list[str] | None" = None) -> int:
+    """Where this session is addressed, and the sites it can be moved to: read, never asked.
+
+    ``context`` answers both at once, ``context ls`` is the list with the current one marked,
+    ``context use`` is :func:`use`, and ``context inspect`` is the current site on its own lines.
+    A noun with those verbs is ``docker context``'s shape, because a site is what a docker
+    context is: an endpoint a session is addressed at, whose name is what a person types.
+    """
     entry = _load().get(audience)
     if entry is None:
         return _refuse(f"no session for {audience}; run o365 {audience} login")
-    print(_summary(audience, entry))
+    spoken = list(argv or [])
+    if spoken[:1] == ["use"]:
+        # Handed to `use` whole, so that its own flags (``--as``, ``--no-check``) reach it.
+        return use(audience, spoken[1:])
+    parser = argparse.ArgumentParser(
+        prog=f"o365 {audience} context",
+        description="The sites this session can be addressed at, and which one it is at.",
+    )
+    parser.add_argument("word", nargs="?", choices=("ls", "inspect"), default="")
+    args = parser.parse_args(spoken)
     current = _current(audience, entry)
-    others = [site.get("url", "") for site in entry.get("contexts", []) if site.get("url", "").rstrip("/") != current]
+    if args.word == "inspect":
+        print(_inspect(audience, entry, current))
+        return 0
+    if args.word == "ls":
+        print(_sites(entry, current, audience))
+        return 0
+    print(_summary(audience, entry))
+    others = [site for site in entry.get("contexts", []) if str(site.get("url", "")).rstrip("/") != current]
     if others:
-        print("  also: " + ", ".join(_short(url) for url in others))
+        print("  also: " + ", ".join(_site_name(str(site.get("url", ""))) for site in others))
     else:
         print(f"  another site: o365 {audience} use <url>")
     return 0
+
+
+def _sites(entry: "Mapping[str, Any]", current: str, audience: str) -> str:
+    """The sites a session remembers, the current one marked: what ``docker context ls`` prints.
+
+    The name is what a ``use`` accepts, so it is the first column; the URL follows because two
+    sites of different tenants can share a name.
+    """
+    rows = [
+        (str(site.get("url", "")).rstrip("/"), str(site.get("name") or ""), str(site.get("title") or ""))
+        for site in entry.get("contexts", [])
+        if site.get("url")
+    ]
+    if not rows:
+        return f"no sites remembered; o365 {audience} use <url>"
+    named = [(url, name or _site_name(url), title) for url, name, title in rows]
+    width = max(len(name) for _, name, _ in named)
+    lines: "list[str]" = []
+    for url, name, title in named:
+        mark = "*" if url == current else " "
+        lines.append(f"{mark} {name.ljust(width)}  {_short(url)}" + (f"  {title}" if title else ""))
+    return "\n".join(lines)
+
+
+def _inspect(audience: str, entry: "Mapping[str, Any]", current: str) -> str:
+    """The current site, one fact per line: the address as it is sent, and the name it answers to."""
+    if not current:
+        return f"no site: o365 {audience} use <url>"
+    held = next(
+        (site for site in entry.get("contexts", []) if str(site.get("url", "")).rstrip("/") == current),
+        {},
+    )
+    lines = [f"site:  {current}", f"name:  {held.get('name') or _site_name(current)}"]
+    if held.get("title"):
+        lines.append(f"title: {held.get('title')}")
+    return "\n".join(lines)
 
 
 def _current(audience: str, entry: "Mapping[str, Any]") -> str:
@@ -316,8 +403,19 @@ def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
     """
     for known in entry.get("contexts", []):
         url = str(known.get("url", "")).rstrip("/")
-        name = url.rsplit("/", 1)[-1].lower() if url else ""
-        if wanted.lower() in (name, str(known.get("title", "")).lower(), url.lower()):
+        if not url:
+            continue
+        # A site answers to the name it was given, the one its URL spells, and its title: the
+        # three things a person can remember having typed or read.
+        answers = {
+            str(known.get("name") or "").lower(),
+            _site_name(url).lower(),
+            # The host as well as the URL, so the root site answers to ``use contoso.sharepoint.com``.
+            url.split("://", 1)[-1].lower(),
+            str(known.get("title", "")).lower(),
+            url.lower(),
+        }
+        if wanted.lower() in answers:
             return url
     if "://" in wanted:
         return wanted.rstrip("/")
@@ -329,7 +427,7 @@ def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
     return f"https://{host}/sites/{wanted}"
 
 
-def _remember(entry: "Mapping[str, Any]", url: str, title: str) -> "dict[str, Any]":
+def _remember(entry: "Mapping[str, Any]", url: str, title: str, name: str = "") -> "dict[str, Any]":
     """The session with ``url`` current, and first among the sites it remembers.
 
     The site that was current before is remembered too, even when a login wrote it and no
@@ -342,12 +440,63 @@ def _remember(entry: "Mapping[str, Any]", url: str, title: str) -> "dict[str, An
     if previous and all(str(site.get("url", "")).rstrip("/") != previous for site in held):
         held.insert(0, {"url": previous, "title": ""})
     kept = [site for site in held if str(site.get("url", "")).rstrip("/") != url]
-    known = next((site.get("title", "") for site in held if str(site.get("url", "")).rstrip("/") == url), "")
-    return {
-        **entry,
-        "current": url,
-        "contexts": [{"url": url, "title": title or known}, *kept][:SITE_MEMORY],
-    }
+    was = next((site for site in held if str(site.get("url", "")).rstrip("/") == url), {})
+    # A name is kept only when it was said: the URL's last segment already answers otherwise,
+    # and writing it down would make a rename look like a different site.
+    chosen = name or str(was.get("name") or "")
+    here: "dict[str, Any]" = {"url": url, "title": title or str(was.get("title") or "")}
+    if chosen:
+        here["name"] = chosen
+    return {**entry, "current": url, "contexts": [here, *kept][:SITE_MEMORY]}
+
+
+def _site_name(url: str) -> str:
+    """The name a site answers to by default: its last path segment, or ``root`` at the host."""
+    rest = url.split("://", 1)[-1].rstrip("/")
+    return rest.rsplit("/", 1)[-1] if "/" in rest else "root"
+
+
+def _site_for(tenant: str, prefs: "Mapping[str, str]") -> str:
+    """The site a login should address, when it was not told one.
+
+    Three answers, most trustworthy first: the site in the config file; the tenant's own, read
+    from Graph's ``/sites/root`` through a session that already holds a token; and Microsoft's
+    documented default host for a ``<label>.onmicrosoft.com`` tenant. Nothing is derived from a
+    vanity domain, because a domain name does not say where its SharePoint lives.
+    """
+    return os.environ.get("O365_SITE", "") or prefs.get("site", "") or _graph_site(tenant) or _derived_site(tenant)
+
+
+def _graph_site(tenant: str) -> str:
+    """``https://<host>`` for the tenant one stored Graph session already reads, else nothing.
+
+    ``/sites/root`` is the documented way to ask a tenant where its SharePoint is, and it costs
+    one request and no prompt because it reuses the token the store keeps. It is only trusted
+    for the tenant that session belongs to, so a second tenant never inherits the first's host.
+    """
+    entry = _load().get("graph") or {}
+    known = str((entry.get("constructor") or {}).get("tenant") or (entry.get("claims") or {}).get("tid") or "")
+    if not known or (tenant and tenant.lower() != known.lower()):
+        return ""
+    try:
+        root = _client("graph").sites.root.get().select(["webUrl"]).execute_query()
+    except Exception:  # no live token, no Sites.Read.All, no answer: say nothing rather than guess
+        return ""
+    return str(getattr(root, "web_url", "") or "").rstrip("/")
+
+
+def _derived_site(tenant: str) -> str:
+    """Microsoft's default SharePoint host for ``<label>.onmicrosoft.com``, or nothing.
+
+    A tenant's SharePoint domain starts out as its tenant name, so this is the documented
+    default rather than a guess at one -- renameable afterwards, which is why whatever it
+    answers is checked with one read before it becomes what the session is addressed at.
+    """
+    label = tenant.strip().lower()
+    if not label.endswith(".onmicrosoft.com"):
+        return ""
+    label = label[: -len(".onmicrosoft.com")]
+    return f"https://{label}.sharepoint.com" if label else ""
 
 
 def _short(url: str) -> str:
@@ -374,8 +523,7 @@ def _known_sites(audience: str) -> "list[tuple[str, str]]":
         url = str(site.get("url", "")).rstrip("/")
         if not url:
             continue
-        name = url.rsplit("/", 1)[-1] if "/sites/" in url else _short(url)
-        answer.append((name, str(site.get("title") or _short(url))))
+        answer.append((str(site.get("name") or _site_name(url)), str(site.get("title") or _short(url))))
     return answer
 
 
@@ -489,6 +637,14 @@ def _after(product: str, path: "list[str]") -> "list[tuple[str, str]]":
     """What may follow ``<product> <path>``: nouns, a route's words, or a command's flags."""
     if product in CONTEXT_AUDIENCES and path[:1] == ["use"]:
         return _known_sites(product)
+    if product in CONTEXT_AUDIENCES and path[:1] == ["context"]:
+        if len(path) > 1 and path[1] == "use":
+            return _known_sites(product)
+        return [
+            ("ls", "the sites this session remembers"),
+            ("use", "address another site"),
+            ("inspect", "the site it is addressed at"),
+        ]
     from office365.completion import following
 
     cut = next((position for position, item in enumerate(path) if item.startswith("-")), len(path))
@@ -681,7 +837,12 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         "--link", choices=("auto", "always", "never"), default="auto", help="when a name carries its URL"
     )
     if "base_url" in _signature(_root(_audience(found.entity))).parameters:
-        parser.add_argument("-s", "--site", default=None, help="address another site for this command only")
+        parser.add_argument(
+            "-s",
+            "--site",
+            default=os.environ.get("O365_SITE") or None,
+            help="address another site for this command only (default: $O365_SITE)",
+        )
     parser.add_argument("-y", "--yes", action="store_true", help="send a destroy action without asking")
     parser.add_argument("-n", "--dry-run", action="store_true", help="print the request and send nothing")
     args = parser.parse_args(argv)
@@ -1134,6 +1295,25 @@ def _store() -> Path:
     return Path(home) / "sessions.json"
 
 
+def _config() -> Path:
+    """What has to be answered once rather than every run; ``O365_HOME`` overrides it too."""
+    home = os.environ.get("O365_HOME") or str(Path.home() / ".o365")
+    return Path(home) / "config.json"
+
+
+def _prefs() -> "dict[str, str]":
+    """The config file, read and never written: a client id and a site are the person's, not ours.
+
+    A session is a secret and lives in the store, writable by this command and readable only by
+    its owner; a preference is not a secret and this command has no business editing your file.
+    """
+    try:
+        kept = json.loads(_config().read_text("utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return {name: str(value) for name, value in kept.items() if isinstance(value, (str, int))}
+
+
 def _load() -> "dict[str, Any]":
     """Every kept session, or nothing when there is no readable store."""
     try:
@@ -1168,7 +1348,7 @@ def _summary(audience: str, entry: "dict[str, Any]") -> str:
     grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
     expires = int(claims.get("exp") or 0)
     left = "" if not expires else f", {max(0, expires - int(time.time())) // 60} min left"
-    state = " (expired; run o365 login)" if expires and expires < time.time() else left
+    state = f" (expired; run o365 {audience} login)" if expires and expires < time.time() else left
     line = f"{audience}: {who} (tenant {claims.get('tid', '-')}, mode {entry['mode']}{state})\n  grants: {grants}"
     site = _current(audience, entry)
     if site:
@@ -1187,9 +1367,11 @@ def _usage() -> str:
         "       o365 <product> <noun> list [-o table|wide|json|csv|tsv|url|name]\n"
         "       o365 <product> <noun> ... delete [--yes] [-n|--dry-run]\n"
         "       o365 graph <product> <noun> [navigation ...] [action]\n"
-        "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]\n"
-        "       o365 sharepoint use <site>|context            (a site is one ClientContext)\n"
-        "       o365 completion bash|zsh|fish [--warm [product ...]]"
+        "       o365 login [--tenant <tenant>] [--client-id <id>] [--mode device-flow] [--scopes ...]\n"
+        "       o365 sharepoint use <site> [--as <name>]   (a site is one ClientContext)\n"
+        "       o365 sharepoint context [ls|use <name>|inspect]\n"
+        "       o365 completion bash|zsh|fish [--warm [product ...]]\n"
+        "  a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json"
     )
 
 
