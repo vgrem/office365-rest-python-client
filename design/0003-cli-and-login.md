@@ -307,6 +307,63 @@ Measured: ``tests/unit/test_cli_page.py`` — ``test_dry_run_prints_the_request_
 ``test_a_destroy_action_refuses_without_yes``, ``test_yes_takes_a_destroy_action_past_the_gate``,
 ``test_a_stale_session_can_still_be_previewed_but_not_run``.
 
+### 2.6 Where a SharePoint session is addressed — the site boundary
+
+A ``ClientContext`` is one **site collection**, not one tenant: ``ClientContext(base_url)`` is the
+site, ``client.tenant`` is the tenant that holds them, and ``clone(url)`` gives a second site the
+same token, the same transport and a fresh query queue. So "switch site" is not a subsystem, it
+is an address, and the command line keeps it in the session entry it already has:
+
+```json
+"sharepoint": {"mode": "device-flow", "constructor": {"base_url": "https://contoso.sharepoint.com"},
+               "current": "https://contoso.sharepoint.com/sites/finance",
+               "contexts": [{"url": "https://contoso.sharepoint.com/sites/finance", "title": "Finance"},
+                            {"url": "https://contoso.sharepoint.com", "title": ""}]}
+```
+
+* ``o365 sharepoint use <site>`` — sticky, written to the store. ``<site>`` is a full URL, a
+  remembered site (by its title or its last path segment) or a bare name, which means
+  ``https://<known host>/sites/<name>``: a person switching sites types ``finance``, not the
+  hostname again. The choice is checked with **one** read (``/Web?$select=Title,Url``) because a
+  wrong URL should fail here and not in front of a delete; ``--no-check`` remembers it without
+  the read. A failed check writes nothing.
+* ``o365 sharepoint context`` — the session's ``_summary``, then the remembered sites. It reads
+  the store and sends nothing, so it answers with an expired token.
+* ``--site/-s <site>`` — ephemeral, for one command, never written. It is declared only where the
+  root's constructor has ``base_url``, so ``o365 directory user list --site x`` is not offered.
+* Every address a person could act on is absolute: ``--dry-run`` prints the site's full URL, and
+  the ``--yes`` refusal names the site it would reach.
+
+```
+$ o365 sharepoint use sites/finance --no-check
+context: mediadev8.sharepoint.com/sites/finance
+$ o365 sharepoint context                    # grants line elided
+sharepoint: vadimadm@mediadev8.onmicrosoft.com (tenant af6a80a4-…, mode device-flow (expired))
+  at mediadev8.sharepoint.com/sites/finance
+  also: mediadev8.sharepoint.com
+$ o365 sharepoint web delete
+o365: `delete` on mediadev8.sharepoint.com/sites/finance destroys what the service holds; send it again with --yes
+$ o365 sharepoint web get -n
+GET https://mediadev8.sharepoint.com/sites/finance/_api/Web?$select=Title,Url,ServerRelativeUrl
+$ o365 sharepoint use hr                      # one read, and the token has expired
+o365: mediadev8.sharepoint.com/sites/hr: the device-flow session has no live token here; run login again
+```
+
+``login`` writes ``current`` from the ``base_url`` it was given and remembers it as a site, so the
+first ``use`` does not lose the site login chose. Completion reads the same store, before any
+import: ``sharepoint use <TAB>`` and ``sharepoint web get --site <TAB>`` both offer the remembered
+sites by name with their titles as the detail, and ``o365 sharepoint <TAB>`` offers
+``login whoami logout use context`` before the 684 nouns.
+
+Measured: ``tests/unit/test_cli_context.py`` (12 tests) — a bare name resolves under the known
+host (``test_a_bare_name_means_the_site_of_that_name_under_the_known_host``), a remembered site
+answers by title (``…by_its_title_as_well_as_its_name``), a host-less session refuses to guess
+(``…refused_rather_than_guessed``), ``use`` reads then remembers
+(``test_use_reads_the_site_then_remembers_it``), a failed check leaves the store untouched
+(``test_a_site_that_does_not_answer_is_not_current``), the refusal names the site
+(``test_the_refusal_names_the_site_a_delete_would_reach``), and ``--site`` reaches it in a preview
+(``test_a_dry_run_shows_the_full_address_of_the_chosen_site``).
+
 ## 3. Decisions proposed
 
 **S1 — One store, keyed by audience.** A session belongs to an *audience* (``graph``,

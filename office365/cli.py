@@ -7,6 +7,8 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
     o365 whoami [--audience ...]
     o365 logout [--audience ...]
     o365 <product> <noun> [navigation ...] [action] [-o table|wide|json|csv|tsv|url|name] [flags]
+    o365 sharepoint use <site>          -- address this session at one site collection
+    o365 sharepoint context             -- where it is addressed, and what it remembers
     o365 help <any words>               -- the page for them, or ``-h`` at the leaf
     o365 completion bash|zsh|fish        -- print the shell script that completes the words
     o365 completion --warm [product ...] -- fill the cache, so no TAB pays an import
@@ -26,6 +28,13 @@ session file *is* the cache) and ``client_id``, which is mandatory - this librar
 no app registration of its own, so ``--client-id`` or ``O365_CLIENT_ID`` is required.
 A ``--password`` is a flag like any other, which also means it is visible in the process
 list; a secret store behind ``--authority``/``--client-secret`` is the better habit.
+
+A SharePoint session is addressed at one *site collection*, because that is the boundary the
+model draws: ``ClientContext(base_url)`` is one site, ``client.tenant`` is the tenant that holds
+them, and ``clone(url)`` switches site while reusing the token and the transport. So the store
+keeps the sites a session has been pointed at and which one is current, ``o365 sharepoint use``
+changes it, ``--site`` overrides it for one command, and every sentence that could cost
+something -- the ``--yes`` refusal, ``--dry-run``'s URL -- names the site it would reach.
 
 A session is one token, so it is kept per audience and not per product. What is kept is
 the access token itself, plus MSAL's cache where the root has one to hold: ``GraphClient``
@@ -68,6 +77,7 @@ from collections.abc import Mapping
 from enum import Enum
 from pathlib import Path
 from typing import Any, Union, get_args, get_origin
+from urllib.parse import urlparse
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -86,6 +96,17 @@ SUPPLIED = ("self", "token_cache", "token_callback")
 
 #: The words an audience prefixes: ``o365 sharepoint login`` is a session, not a noun.
 SESSION = ("login", "whoami", "logout")
+
+#: The audiences whose root is addressed at one site: a ``ClientContext`` is one site
+#: collection, so it is also the one place a session can be *switched*. A graph or exchange
+#: root is addressed by the token alone.
+CONTEXT_AUDIENCES = ("sharepoint",)
+
+#: How many sites a session remembers. Enough to switch by name, few enough to print.
+SITE_MEMORY = 10
+
+#: The two words that move a session's site boundary, for the audiences that have one.
+SITE_WORDS = ("use", "context")
 
 #: The derived index the generator writes: the model's discovery answers as data (built by
 #: ``generator graph --index``, never edited). Reading it costs 4 ms; computing the same answers
@@ -115,12 +136,8 @@ def _dispatch(audience: str, words: "list[str]") -> int:
         print(_served(audience) if audience else _usage())
         return 0 if audience else 2
     word, rest = words[0], words[1:]
-    if word == "login":
-        return login(audience or "graph", rest)
-    if word == "whoami":
-        return whoami(audience)
-    if word == "logout":
-        return logout(audience)
+    if word in SESSION or (audience in CONTEXT_AUDIENCES and word in SITE_WORDS):
+        return _session(audience, word, rest)
     # `o365 graph <noun>` names no product: the audience word was standing in for one, because
     # 25 products share the graph token and none of them is a package called `graph`.
     product = audience if audience and not _is_product(word) else word
@@ -178,7 +195,8 @@ def login(audience: str, argv: "list[str]") -> int:
     claims = _claims(token)
 
     sessions = _load()
-    sessions[audience] = {
+    kept = _remember(sessions.get(audience) or {}, str(constructor.get("base_url") or ""), "")
+    sessions[audience] = kept | {
         "mode": args.mode,
         "method": method,
         "client_id": given["client_id"],
@@ -219,6 +237,148 @@ def logout(audience: str) -> int:
     return 0
 
 
+def _session(audience: str, word: str, rest: "list[str]") -> int:
+    """Run one word that speaks to the session rather than to the service."""
+    if word == "login":
+        return login(audience or "graph", rest)
+    if word == "whoami":
+        return whoami(audience)
+    if word == "logout":
+        return logout(audience)
+    if word == "use":
+        return use(audience, rest)
+    return context(audience)
+
+
+def use(audience: str, argv: "list[str]") -> int:
+    """Address this session at one site collection, and remember it.
+
+    The site is the boundary the model draws -- one ``ClientContext`` per site collection, one
+    token for all of them -- so switching changes the address and nothing else: the kept token
+    is reused, and ``clone`` shares the transport when a caller switches inside one process.
+    The choice is checked with one read, the site's ``Title``, because a wrong URL should fail
+    here rather than in front of a delete.
+    """
+    sessions = _load()
+    entry = sessions.get(audience)
+    if entry is None:
+        return _refuse(f"no session for {audience}; run o365 {audience} login")
+    parser = argparse.ArgumentParser(
+        prog=f"o365 {audience} use",
+        description="Address this session at one site. A URL, a remembered site, or a name under /sites/.",
+    )
+    parser.add_argument("site", help="the site: a URL, a remembered name, or a name under /sites/")
+    parser.add_argument("--no-check", action="store_true", help="remember it without reading its title")
+    args = parser.parse_args(argv)
+    try:
+        url = _address(audience, entry, args.site)
+    except LookupError as err:
+        return _refuse(str(err))
+    title = ""
+    if not args.no_check:
+        try:
+            site = _client(audience, site=url).web.get().select(["Title", "Url"]).execute_query()
+        except Exception as err:  # the service's own answer, said as it came
+            return _refuse(f"{_short(url)}: {err}")
+        title = getattr(site, "title", None) or ""
+    sessions[audience] = _remember(entry, url, title)
+    _save(sessions)
+    print(f"context: {_short(url)}" + (f" — {title}" if title else ""))
+    return 0
+
+
+def context(audience: str) -> int:
+    """Where this session is addressed, and the sites it remembers: read, never asked."""
+    entry = _load().get(audience)
+    if entry is None:
+        return _refuse(f"no session for {audience}; run o365 {audience} login")
+    print(_summary(audience, entry))
+    current = _current(audience, entry)
+    others = [site.get("url", "") for site in entry.get("contexts", []) if site.get("url", "").rstrip("/") != current]
+    if others:
+        print("  also: " + ", ".join(_short(url) for url in others))
+    else:
+        print(f"  another site: o365 {audience} use <url>")
+    return 0
+
+
+def _current(audience: str, entry: "Mapping[str, Any]") -> str:
+    """The site a session is addressed at: the one `use` set, else what login was given."""
+    return str(entry.get("current") or (entry.get("constructor") or {}).get("base_url") or "").rstrip("/")
+
+
+def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
+    """A site URL from what was typed, without asking the service what sites exist.
+
+    A remembered site answers by its title or its name, a full URL is taken as given, and a
+    bare name means the site of that name under the host this session already knows -- because
+    a person switching sites types ``finance``, not the tenant's hostname again.
+    """
+    for known in entry.get("contexts", []):
+        url = str(known.get("url", "")).rstrip("/")
+        name = url.rsplit("/", 1)[-1].lower() if url else ""
+        if wanted.lower() in (name, str(known.get("title", "")).lower(), url.lower()):
+            return url
+    if "://" in wanted:
+        return wanted.rstrip("/")
+    host = urlparse(_current(audience, entry)).netloc
+    if not host:
+        raise LookupError(f"no site to resolve {wanted!r} against; pass a full URL")
+    if "/" in wanted:
+        return f"https://{host}/{wanted.strip('/')}"
+    return f"https://{host}/sites/{wanted}"
+
+
+def _remember(entry: "Mapping[str, Any]", url: str, title: str) -> "dict[str, Any]":
+    """The session with ``url`` current, and first among the sites it remembers.
+
+    The site that was current before is remembered too, even when a login wrote it and no
+    ``use`` ever named it: the store's ``constructor.base_url`` is a site like any other, and
+    losing it on the first switch would make the earlier answer unreachable.
+    """
+    url = url.rstrip("/")
+    held = list(entry.get("contexts", []))
+    previous = str(entry.get("current") or (entry.get("constructor") or {}).get("base_url") or "").rstrip("/")
+    if previous and all(str(site.get("url", "")).rstrip("/") != previous for site in held):
+        held.insert(0, {"url": previous, "title": ""})
+    kept = [site for site in held if str(site.get("url", "")).rstrip("/") != url]
+    known = next((site.get("title", "") for site in held if str(site.get("url", "")).rstrip("/") == url), "")
+    return {
+        **entry,
+        "current": url,
+        "contexts": [{"url": url, "title": title or known}, *kept][:SITE_MEMORY],
+    }
+
+
+def _short(url: str) -> str:
+    """A site without its scheme: what a sentence can carry, and what a person can type."""
+    return url.split("://", 1)[-1].rstrip("/")
+
+
+def _site_of(audience: str, wanted: "str | None" = None) -> str:
+    """The site a command would reach, short, for a sentence that has to name it."""
+    entry = _load().get(audience) or {}
+    if wanted:
+        try:
+            return _short(_address(audience, entry, wanted))
+        except LookupError:
+            return wanted
+    return _short(_current(audience, entry))
+
+
+def _known_sites(audience: str) -> "list[tuple[str, str]]":
+    """The sites this session remembers, under the short name a ``use`` accepts."""
+    entry = _load().get(audience) or {}
+    answer = []
+    for site in entry.get("contexts", []):
+        url = str(site.get("url", "")).rstrip("/")
+        if not url:
+            continue
+        name = url.rsplit("/", 1)[-1] if "/sites/" in url else _short(url)
+        answer.append((name, str(site.get("title") or _short(url))))
+    return answer
+
+
 def _refuse(message: str, code: int = 2) -> int:
     """Say why nothing ran, and answer the shell with a non-zero code."""
     print(f"o365: {message}", file=sys.stderr)
@@ -229,14 +389,15 @@ def _audience_words(words: "list[str]") -> tuple[str, "list[str]"]:
     """Take a leading audience word off the line, and say which session the line is about.
 
     An audience word is taken in two cases: a session verb follows it, so ``o365 sharepoint
-    login`` is the sharepoint session and not the sharepoint product; or the tree has no package
-    of that name, which is ``graph`` alone, so ``o365 graph directory user get`` is the directory
-    user and ``o365 graph`` asks what that one token serves. ``o365 sharepoint web get`` keeps its
-    word, because there is a package behind it.
+    login`` is the sharepoint session and not the sharepoint product -- and ``use``/``context``
+    are session verbs where a site boundary exists; or the tree has no package of that name,
+    which is ``graph`` alone, so ``o365 graph directory user get`` is the directory user and
+    ``o365 graph`` asks what that one token serves. ``o365 sharepoint web get`` keeps its word,
+    because there is a package behind it and the word after it is a noun.
     """
     if not words or words[0] not in AUDIENCES:
         return "", words
-    if len(words) > 1 and words[1] in SESSION:
+    if len(words) > 1 and (words[1] in SESSION or (words[0] in CONTEXT_AUDIENCES and words[1] in SITE_WORDS)):
         return words[0], words[1:]
     if _is_product(words[0]):
         return "", words
@@ -310,14 +471,24 @@ def _following(words: "list[str]", prefix: str) -> "list[tuple[str, str]]":
     head, rest = words[0], words[1:]
     if not (_is_product(head) or head in AUDIENCES):
         return []
-    offered = _after(head, rest)
     if not rest and head in AUDIENCES:
-        offered += _sessions()
-    return _prefixed(offered, prefix)
+        # The session's own words come first: `o365 sharepoint login` is the question a person
+        # asks before any noun, and the model's nouns are long enough to bury it.
+        return _prefixed(_sessions() + _context_words(head) + _after(head, rest), prefix)
+    return _prefixed(_after(head, rest), prefix)
+
+
+def _context_words(audience: str) -> "list[tuple[str, str]]":
+    """The two words that move a session's site boundary, for the audiences that have one."""
+    if audience not in CONTEXT_AUDIENCES:
+        return []
+    return [("use", "address another site"), ("context", "where this session is addressed")]
 
 
 def _after(product: str, path: "list[str]") -> "list[tuple[str, str]]":
     """What may follow ``<product> <path>``: nouns, a route's words, or a command's flags."""
+    if product in CONTEXT_AUDIENCES and path[:1] == ["use"]:
+        return _known_sites(product)
     from office365.completion import following
 
     cut = next((position for position, item in enumerate(path) if item.startswith("-")), len(path))
@@ -363,15 +534,23 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
         if name in SUPPLIED or parameter.kind in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD):
             continue
         answer.append(("--" + name.replace("_", "-"), getattr(_unoptional(parameter.annotation), "__name__", "")))
-    return answer + [
-        ("-o", "the format to print"),
-        ("--output", "the format to print"),
-        ("--columns", "the names the table shows"),
-        ("--no-headers", "rows without the header line"),
-        ("--link", "when a name carries its URL"),
-        ("--yes", "send a destroy action without asking"),
-        ("--dry-run", "print the request and send nothing"),
-    ]
+    return (
+        answer
+        + [
+            ("-o", "the format to print"),
+            ("--output", "the format to print"),
+            ("--columns", "the names the table shows"),
+            ("--no-headers", "rows without the header line"),
+            ("--link", "when a name carries its URL"),
+            ("--yes", "send a destroy action without asking"),
+            ("--dry-run", "print the request and send nothing"),
+        ]
+        + (
+            [("-s", "another site for this command"), ("--site", "another site for this command")]
+            if _audience(found.entity) in CONTEXT_AUDIENCES
+            else []
+        )
+    )
 
 
 def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[str, str]]":
@@ -389,6 +568,8 @@ def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[
             "name": "one name per line",
         }
         return [(fmt, told.get(fmt, "")) for fmt in FORMATS]
+    if typed[-1] in ("-s", "--site") and walk:
+        return _known_sites(product)
     if typed[-1] == "--link":
         return [("auto", "when printing to a terminal"), ("always", "even into a pipe"), ("never", "plain text")]
     if typed[-1] == "--columns" and walk:
@@ -499,6 +680,8 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     parser.add_argument(
         "--link", choices=("auto", "always", "never"), default="auto", help="when a name carries its URL"
     )
+    if "base_url" in _signature(_root(_audience(found.entity))).parameters:
+        parser.add_argument("-s", "--site", default=None, help="address another site for this command only")
     parser.add_argument("-y", "--yes", action="store_true", help="send a destroy action without asking")
     parser.add_argument("-n", "--dry-run", action="store_true", help="print the request and send nothing")
     args = parser.parse_args(argv)
@@ -507,10 +690,15 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     # gate cannot drift from the effect the page printed. It sits before the session is read:
     # "may I?" is answerable with no token, and a refusal costs no request.
     if found.verb.confirm and not (args.yes or args.dry_run):
-        return _refuse(f"`{words[-1]}` destroys what the service holds; send it again with --yes")
+        # The site is named because "which one" is the mistake a destroy action cannot undo.
+        where = _site_of(_audience(found.entity), getattr(args, "site", None))
+        return _refuse(
+            f"`{words[-1]}`" + (f" on {where}" if where else "") + " destroys what the service holds;"
+            " send it again with --yes"
+        )
 
     try:
-        client = _client(_audience(found.entity), live=not args.dry_run)
+        client = _client(_audience(found.entity), live=not args.dry_run, site=getattr(args, "site", None))
     except LookupError as err:
         return _refuse(str(err))
     if walk is None:
@@ -841,7 +1029,7 @@ def _audience(entity: type) -> str:
     return product if product in AUDIENCES else "graph"
 
 
-def _client(audience: str, live: bool = True) -> Any:
+def _client(audience: str, live: bool = True, site: "str | None" = None) -> Any:
     """A client for ``audience``, holding the token its session kept.
 
     A command does not log in: it either finds a live token in the store or says to run
@@ -852,7 +1040,14 @@ def _client(audience: str, live: bool = True) -> Any:
     if entry is None:
         ran = "o365 login" if audience == "graph" else f"o365 {audience} login"
         raise LookupError(f"no session for {audience}; run {ran}")
-    client = _root(audience)(**dict(entry["constructor"]))
+    constructor = dict(entry["constructor"])
+    if "base_url" in constructor:
+        # The site is the boundary: this command addresses one site collection, and `use` or
+        # `--site` says which. What login was given is the answer until one is chosen.
+        wanted = site or _current(audience, entry)
+        if wanted:
+            constructor["base_url"] = _address(audience, entry, wanted)
+    client = _root(audience)(**constructor)
     if not live:
         # `--dry-run` prints the request the client would send, and building it reads the
         # path and the payload but no token -- so a stale session can still be inspected.
@@ -974,7 +1169,14 @@ def _summary(audience: str, entry: "dict[str, Any]") -> str:
     expires = int(claims.get("exp") or 0)
     left = "" if not expires else f", {max(0, expires - int(time.time())) // 60} min left"
     state = " (expired; run o365 login)" if expires and expires < time.time() else left
-    return f"{audience}: {who} (tenant {claims.get('tid', '-')}, mode {entry['mode']}{state})\n  grants: {grants}"
+    line = f"{audience}: {who} (tenant {claims.get('tid', '-')}, mode {entry['mode']}{state})\n  grants: {grants}"
+    site = _current(audience, entry)
+    if site:
+        remembered = next(
+            (held.get("title", "") for held in entry.get("contexts", []) if held.get("url", "").rstrip("/") == site), ""
+        )
+        line += f"\n  at {_short(site)}" + (f" — {remembered}" if remembered else "")
+    return line
 
 
 def _usage() -> str:
@@ -986,6 +1188,7 @@ def _usage() -> str:
         "       o365 <product> <noun> ... delete [--yes] [-n|--dry-run]\n"
         "       o365 graph <product> <noun> [navigation ...] [action]\n"
         "       o365 login --tenant <tenant> --client-id <id> [--mode device-flow] [--scopes ...]\n"
+        "       o365 sharepoint use <site>|context            (a site is one ClientContext)\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]"
     )
 
