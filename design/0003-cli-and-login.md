@@ -305,10 +305,10 @@ Two flags, both read off a stamp rather than declared beside it:
 Both flags are taught to completion (``_flag_words``), and ``--dry-run`` also answers the
 destroy gate: printing a request sends nothing, so it needs no ``--yes``.
 
-Measured: ``tests/unit/test_cli_page.py`` — ``test_dry_run_prints_the_request_the_method_queued``
-(``client.queried == 0``), ``test_dry_run_shows_the_body_under_the_line_it_would_send``,
-``test_a_destroy_action_refuses_without_yes``, ``test_yes_takes_a_destroy_action_past_the_gate``,
-``test_a_stale_session_can_still_be_previewed_but_not_run``.
+Measured at the prompt, in the transcripts above: the preview prints the line and the body
+without sending (``client.queried`` is 0), a destroy without ``--yes`` refuses, ``--yes`` takes it
+past the gate, and the stale session is the difference between the two commands at the top of
+this section — the second answers because it sends nothing.
 
 ### 2.6 Where a SharePoint session is addressed — the site boundary
 
