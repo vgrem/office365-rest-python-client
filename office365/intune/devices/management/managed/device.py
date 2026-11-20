@@ -32,6 +32,7 @@ from office365.intune.devices.management.managed.partnerreportedhealthstate impo
 from office365.intune.devices.management.managed.state import ManagementState
 from office365.intune.devices.registrationstate import DeviceRegistrationState
 from office365.permissions import require_permission
+from office365.permissions.declaration import requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -50,6 +51,8 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.windows_protection_state import WindowsProtectionState
 
 
+#: What it takes: managing a device is Intune, so the seat must carry it.
+@requires_license("INTUNE_A")
 class ManagedDevice(Entity):
     """Devices that are managed or pre-enrolled through Intune"""
 

@@ -8,6 +8,7 @@ from office365.directory.policies.conditionalaccess.deletable_item import Policy
 from office365.directory.policies.conditionalaccess.policystate import ConditionalAccessPolicyState
 from office365.directory.policies.conditionalaccess.session_controls import ConditionalAccessSessionControls
 from office365.directory.quotas import IDENTITY_PROTECTION_QUOTAS
+from office365.permissions.declaration import requires_license
 from office365.runtime.limits import limit
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -20,7 +21,9 @@ if TYPE_CHECKING:
     )
 
 
+#: What it takes: a conditional access policy exists only where Entra ID P1 does.
 @limit(*IDENTITY_PROTECTION_QUOTAS)
+@requires_license("AAD_PREMIUM")
 class ConditionalAccessPolicy(PolicyDeletableItem):
     """
     Represents an Azure Active Directory conditional access policy.

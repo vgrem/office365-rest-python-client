@@ -830,6 +830,8 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         description=f"Walk {' -> '.join(walk)}, then {found.method}() on {target.__name__}"
         if walk
         else f"{found.method}() on {target.__name__}",
+        epilog="\n".join(_hints(target, found.method)),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     from office365.runtime.render import FORMATS
 
@@ -882,6 +884,22 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     )
 
 
+def _hints(target: Any, method: str) -> "list[str]":
+    """What to know before sending this command: its permission, its licence, its beta root.
+
+    The five facts are already declared and are joined by :func:`office365.capabilities.hints_of`;
+    this asks it rather than restating any of them, so a sentence can never appear here that the
+    model does not say. A target that declares no verb answers nothing: ``-h`` is still the help
+    page for its flags, and an invented sentence would be worse than a missing one.
+    """
+    from office365.capabilities import hints_of
+
+    try:
+        return list(hints_of(target, method))
+    except (TypeError, ValueError):
+        return []
+
+
 #: What a role does, in the words a command line uses. A role is a closed vocabulary in the
 #: model (``ROLES``), so its sentence belongs here, once -- writing it on 4,000 methods would
 #: be 4,000 places to keep in step. An ``action`` has no sentence of its own: it is the
@@ -920,6 +938,7 @@ def _page(product: str, spoken: str, found: Any) -> str:
     read shows are the type's ranked defaults (``-o wide`` shows every field the payload
     carried). So nothing here is a vocabulary someone has to keep in step with the library.
     """
+    from office365.permissions.declaration import licenses_of
     from office365.routing import navigations
     from office365.runtime.schema import TypeSchema
 
@@ -928,6 +947,11 @@ def _page(product: str, spoken: str, found: Any) -> str:
     lines = [f"{product} {spoken} \u2014 {found.shows.__name__}"]
     if schema.defaults:
         lines.append(f"  a read shows {', '.join(schema.defaults)}")
+    licences = licenses_of(found.shows) or licenses_of(here)
+    if licences:
+        # Any one of them carries the capability; the licence is declared on the type, so the
+        # page says it once rather than on each of the actions below.
+        lines.append(f"  needs a licence: {', '.join(licences)}")
     width = min(max((len(word) for word in found.commands), default=0), _WORD_WIDTH)
     for effect, title in _EFFECTS:
         rows = [

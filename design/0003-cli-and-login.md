@@ -262,7 +262,10 @@ nothing. ``o365 sharepoint web`` used to answer one comma-joined line of words. 
 * the ``LINK`` section is ``routing.navigations``, shortest word first, capped at twelve with the
   rest left to a TAB — a page is read by a person, and ``lists`` is worth more than
   ``access_requests_list``;
-* ``TRY`` offers lines that work: a read of this node, and a link that is itself a feed.
+* ``TRY`` offers lines that work: a read of this node, and a link that is itself a feed;
+* a family that needs a licence says so once, above its actions — ``o365 intune managed-device``
+  prints ``needs a licence: INTUNE_A`` — because the licence is declared on the type and not on
+  each verb (`design/0004-licences-on-the-type.md`).
 
 ``o365 help <anything>`` is the same page, and ``o365 help sharepoint web lists list`` is
 ``o365 sharepoint web lists list -h``: ``-h`` at any depth prints the flags of the method the

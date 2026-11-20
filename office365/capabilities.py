@@ -37,11 +37,11 @@ type declares a form that walks every page -- a sentence each, for a help page t
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
 
-from office365.permissions.declaration import STAMP, PermissionRequirement
+from office365.permissions.declaration import STAMP, PermissionRequirement, licenses_of
 from office365.runtime.limits import LimitDecl, limits_of
 from office365.runtime.query_capabilities import QueryCapability, query_capabilities_of
 from office365.runtime.schema import TypeSchema
@@ -81,8 +81,15 @@ class Capabilities:
 
     @property
     def licenses(self) -> Tuple[str, ...]:
-        """Every service plan the declarations name, once each."""
-        named = {plan for declaration in self.declarations.values() for plan in declaration.licenses}
+        """Every service plan named for this type, once each.
+
+        Two sources, one vocabulary: the licences stamped on the type (what the family needs
+        at all, inherited by every member) and the ones a declaration narrows to. A plan
+        named by either is a plan the caller must hold, so this is the union and not the
+        nearest declaration - a family with a basic licence and one P2-only verb needs both.
+        """
+        named = set(licenses_of(self.target))
+        named.update(plan for declaration in self.declarations.values() for plan in declaration.licenses)
         return tuple(sorted(named))
 
 
@@ -153,13 +160,20 @@ def hints_of(target: Any, method: str) -> Tuple[str, ...]:
     ]
     if verb.confirm:
         lines.append(f"Confirmed before it is sent: it {verb.effect}s what the service holds.")
-    if declaration is not None and declaration.licenses:
-        lines.append(f"Needs one of these licences: {', '.join(declaration.licenses)}.")
+    if capabilities.licenses and not _already_named(declaration, capabilities.licenses):
+        # One sentence per fact: a declaration that already names every licence has said this
+        # in its own line, and repeating it here would print the same plan twice.
+        lines.append(f"Needs one of these licences: {', '.join(capabilities.licenses)}.")
     if capabilities.schema is not None and capabilities.schema.versions == frozenset({"beta"}):
         lines.append("Only the beta root answers it.")
     if capabilities.paged is not None:
         lines.append(f"{capabilities.paged} walks every page.")
     return tuple(line for line in lines if line)
+
+
+def _already_named(declaration: Optional[PermissionRequirement], plans: Tuple[str, ...]) -> bool:
+    """Whether the declaration's own sentence already states exactly these licences."""
+    return declaration is not None and set(declaration.licenses) == set(plans)
 
 
 def _paged_name(target: Any) -> Optional[str]:
@@ -180,6 +194,16 @@ def _declarations_of(cls: type) -> Mapping[str, PermissionRequirement]:
             declaration = _declaration_of(member)
             if declaration is not None:
                 found[name] = declaration
+    inherited = licenses_of(cls)
+    if inherited:
+        # The type's licence reaches every member that did not name one itself: a family's
+        # licence is the same fact for `get` as for `delete`, and restating it 30 times per
+        # class would be 30 places to forget. A member that names its own keeps it - that is
+        # how one call states it is narrower than the family it lives in.
+        found = {
+            name: declaration if declaration.licenses else replace(declaration, licenses=inherited)
+            for name, declaration in found.items()
+        }
     return MappingProxyType(found)
 
 

@@ -8,6 +8,7 @@ from office365.directory.protection.riskyusers.risklevel import RiskLevel
 from office365.directory.protection.riskyusers.riskstate import RiskState
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
+from office365.permissions.declaration import requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
     from office365.directory.protection.riskyusers.history_item import RiskyUserHistoryItem
 
 
+#: What it takes: risk detection and remediation is Entra ID P2, not a permission.
+@requires_license("AAD_PREMIUM_P2")
 class RiskyUser(Entity):
     """
     Represents Azure AD users who are at risk. Azure AD continually evaluates user risk based on various

@@ -4,7 +4,9 @@ Five questions, one package:
 
 :mod:`~office365.permissions.declaration`
     What a *model method* needs - ``@require_permission`` beside the request it builds, read
-    back with :func:`~office365.permissions.declaration.declared` without calling the method.
+    back with :func:`~office365.permissions.declaration.declared` without calling the method -
+    and what a *type* needs to exist at all, ``@requires_license`` above the class, read back
+    with :func:`~office365.permissions.declaration.licenses_of`.
 :mod:`~office365.permissions.requirement`
     What a *caller* needs - one :class:`~office365.permissions.requirement.Requirement` per
     flow, joinable across calls, checked against a tenant's facts. A live test and a model
@@ -34,7 +36,14 @@ them. This package is the vocabulary a caller uses, not a service namespace.
 """
 
 from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog, catalog, catalog_resources
-from office365.permissions.declaration import PermissionRequirement, declared, derived_from, require_permission
+from office365.permissions.declaration import (
+    PermissionRequirement,
+    declared,
+    derived_from,
+    licenses_of,
+    require_permission,
+    requires_license,
+)
 from office365.permissions.index import Index, Operation, index
 from office365.permissions.requirement import FLOWS, Requirement, TenantFacts
 from office365.permissions.resource import ResourceName
@@ -59,7 +68,9 @@ __all__ = [
     "declared",
     "derived_from",
     "index",
+    "licenses_of",
     "require_permission",
+    "requires_license",
 ]
 
 #: The permission catalog: it names what products require, it is not one.

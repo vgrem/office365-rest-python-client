@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
+from office365.permissions.declaration import requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.types.odata_property import odata
 
@@ -15,6 +16,9 @@ if TYPE_CHECKING:
     )
 
 
+#: What it takes: a *schedule* is PIM, and PIM is Entra ID P2. A standing assignment is
+#: not one of these - it is granted without a schedule, and needs no P2.
+@requires_license("AAD_PREMIUM_P2")
 class UnifiedRoleScheduleBase(Entity):
     @odata(name="appScopeId")
     @property

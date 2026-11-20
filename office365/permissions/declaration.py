@@ -7,6 +7,12 @@ another declared method borrows its mark with ``@derived_from`` instead of resta
 Nothing calls the method to learn what it needs, so the declaration cannot drift from the code
 by being wrong at the wrong time - it is either there or it is not.
 
+``@requires_license(...)`` marks the *type* when what it speaks to is a paid capability rather
+than a grant: a conditional access policy is Entra ID P1 whichever verb reads it, so the
+licence is declared once, above the class, and every member answers with it. The two markers
+use one vocabulary - service plan names, the ones a tenant's ``subscribedSkus`` already
+carries - because a licence is read the same way whichever of them named it.
+
 The decorator does three things, one helper each:
 
 :func:`_stamp`
@@ -40,6 +46,15 @@ F = TypeVar("F", bound=Callable[..., Any])
 #: Where the declaration is visible on a decorated method. Read it with :func:`declared`,
 #: which explains what a missing one means.
 STAMP = "__required_permissions__"
+
+#: Where a type's licences are visible. Read it with :func:`licenses_of`; a method without a
+#: licence of its own inherits what its type declared, so the mark is written once per family
+#: instead of once per verb.
+LICENSE_STAMP = "__required_licenses__"
+
+#: The shortest ``__qualname__`` that names a class *and* a member: ``Owner.member``. One part
+#: is a module-level function, which belongs to no class and therefore to no licence.
+_QUALIFIED_MEMBER = 2
 
 
 @dataclass(frozen=True)
@@ -109,6 +124,10 @@ class PermissionRequirement:
             scopes.append(f"delegated {', '.join(self.delegated)}")
         if self.directory_roles:
             scopes.append(f"directory role {', '.join(self.directory_roles)}")
+        if self.licenses:
+            # A licence is not a grant that can be given here: it is bought, so the hint says
+            # which capability is missing rather than which permission to add.
+            scopes.append(f"one of the licences {', '.join(self.licenses)}")
         if not scopes:
             return ""
         where = "" if str(self.resource) == str(ResourceName.Graph) else f" (on {self.resource})"
@@ -167,7 +186,10 @@ def require_permission(
         delegated: Scope names for a signed-in user, e.g. ``["Mail.Send"]``.
         application: App-only permission names for the same call.
         directory_roles: Entra ID roles - holding one satisfies the whole call.
-        licenses: SKU part numbers - one must be held.
+        licenses: Service plan names - one must be held. A SKU part number is packaging and a
+            service plan is the capability inside it, so the plan is what a requirement can be
+            checked against. Declare a licence on the *type* with ``@requires_license`` when it
+            holds for every verb, and here only when one call narrows it.
         notes: Free text for anything the columns cannot say.
         resource: The API the names belong to, e.g. ``ResourceName.SharePoint`` for the
             endpoints under :mod:`office365.sharepoint`. Defaults to Microsoft Graph; the names
@@ -191,6 +213,84 @@ def require_permission(
         return _document(_tag_query(_stamp(func, declaration), declaration), declaration)
 
     return decorate
+
+
+def requires_license(*plans: str) -> Callable[[F], F]:
+    """Declare the licences that carry what the decorated type does.
+
+    A licence decides whether a *capability* can be used at all, not whether one request may
+    be sent, so the mark belongs on the type - ``@requires_license("AAD_PREMIUM")`` above
+    ``class ConditionalAccessPolicy`` - and every member inherits it. A call that is narrower
+    than its family states its own with ``licenses=`` on :func:`require_permission`, and the
+    nearer declaration wins.
+
+    Names are **service plan names**, the vocabulary a tenant's ``subscribedSkus`` already
+    carries. A SKU part number (``SPE_E5``) is packaging: the same capability arrives inside
+    several of them, and one SKU turns on dozens of plans. A requirement written in plans can
+    therefore be checked against any tenant, including one that bought the capability in
+    different packaging.
+
+    Args:
+        *plans: Service plan names, e.g. ``"AAD_PREMIUM_P2"``. One of them must be held.
+
+    Raises:
+        ValueError: If no plan is named - an empty licence declaration would state a
+            requirement that nothing can check.
+    """
+    if not plans:
+        raise ValueError(
+            f"{requires_license.__name__} names no plan: pass at least one service plan, "
+            "e.g. requires_license('AAD_PREMIUM')"
+        )
+    named = tuple(plans)
+
+    def decorate(target: F) -> F:
+        setattr(target, LICENSE_STAMP, named)
+        return target
+
+    return decorate
+
+
+def licenses_of(target: Any) -> tuple[str, ...]:
+    """The service plans that carry what ``target`` does, or ``()`` when it names none.
+
+    Answers for a class, and for a member whose qualified name places it in that class - the
+    two ways a caller holds a type's own declaration. A member *inherited* from a base answers
+    for the base, because that is the class its name spells: the licence of the type you are
+    holding it against is :attr:`office365.capabilities.Capabilities.licenses`, which is asked
+    with the type and the member together.
+
+    Nearest declaration wins: a class that restates a base's licence replaces it (attribute
+    lookup already walks the MRO), and a member stamped directly answers with its own.
+
+    This is the type's answer alone. A member's ``licenses=`` is a *narrowing* of it and lives
+    on the permission declaration; :attr:`Capabilities.licenses` is the union of the two, which
+    is what a caller must hold.
+    """
+    named = getattr(target, LICENSE_STAMP, None)
+    if named is None:
+        owner = getattr(target, "__self__", None)  # a bound method: ask the type that owns it
+        if owner is None:
+            owner = _owner_type(target)  # an unbound one: its qualified name says which
+        named = getattr(owner, LICENSE_STAMP, None) if owner is not None else None
+    return tuple(named) if named else ()
+
+
+def _owner_type(func: Any) -> Any:
+    """The class a plain function was defined in, resolved from its qualified name.
+
+    A function does not point back at its class, but ``__qualname__`` spells the walk to it
+    (``ConditionalAccessPolicy.delete_object``) and every step is an attribute the module that
+    defined the function already holds - so this is a dictionary lookup and a few ``getattr``s,
+    not an import, and a function built in a local scope answers ``None`` rather than guessing.
+    """
+    parts = str(getattr(func, "__qualname__", "")).split(".")
+    if len(parts) < _QUALIFIED_MEMBER or "<locals>" in parts:
+        return None
+    owner = func.__globals__.get(parts[0])
+    for part in parts[1:-1]:
+        owner = getattr(owner, part, None)
+    return owner if isinstance(owner, type) else None
 
 
 def derived_from(callee: Callable[..., Any]) -> Callable[[F], F]:
