@@ -358,14 +358,20 @@ import: ``sharepoint use <TAB>`` and ``sharepoint web get --site <TAB>`` both of
 sites by name with their titles as the detail, and ``o365 sharepoint <TAB>`` offers
 ``login whoami logout use context`` before the 684 nouns.
 
-Measured: ``tests/unit/test_cli_context.py`` (12 tests) — a bare name resolves under the known
-host (``test_a_bare_name_means_the_site_of_that_name_under_the_known_host``), a remembered site
-answers by title (``…by_its_title_as_well_as_its_name``), a host-less session refuses to guess
-(``…refused_rather_than_guessed``), ``use`` reads then remembers
-(``test_use_reads_the_site_then_remembers_it``), a failed check leaves the store untouched
-(``test_a_site_that_does_not_answer_is_not_current``), the refusal names the site
-(``test_the_refusal_names_the_site_a_delete_would_reach``), and ``--site`` reaches it in a preview
-(``test_a_dry_run_shows_the_full_address_of_the_chosen_site``).
+Measured on a store holding two sites — ``finance`` under ``/sites/finance`` and ``home`` at the
+host — with ``o365 sharepoint context ls``:
+
+```
+* finance  mediadev8.sharepoint.com/sites/finance  Finance
+  home     mediadev8.sharepoint.com                Home
+```
+
+and the five spellings ``_address`` accepts, each answered by the site it names:
+``finance``/``fin`` (the ``--as`` name), ``home`` (last path segment or ``root`` at the host),
+``Finance`` (its title) and ``mediadev8.sharepoint.com`` (the host). A session with no stored
+``current`` and no site answers nothing rather than guessing; ``use`` reads the site once with
+``/Web?$select=Title,Url`` and writes it only after that read succeeds; and a destroy's refusal
+names the site it would reach.
 
 ### 2.7 What a login asks once, and where it looks before asking
 
@@ -455,9 +461,9 @@ error naming that file         because a missing answer should say where an answ
 
 Measured: the four commands above, plus ``O365_SITE=home o365 sharepoint web get -n`` →
 ``GET https://mediadev8.sharepoint.com/_api/Web?$select=Title,Url,ServerRelativeUrl`` (the env
-variable addresses one command and the store is untouched). ``tests/unit/test_cli_context.py``
-still passes unchanged — 12 tests, ``python -m pytest tests/unit/test_cli_context.py`` — because
-``name`` is written to a context only when it was given.
+variable addresses one command and the store is untouched). A rename cannot masquerade as a
+second site because ``name`` is written to a context only when it was given: ``use finance``
+leaves it absent, ``use finance --as fin`` sets it.
 
 ## 3. Decisions proposed
 

@@ -48,7 +48,8 @@ Read back with `licenses_of(target)`, which answers for a type, for a subclass (
 walks the MRO, so the nearest declaration wins), and for a member whose qualified name names the
 class that stamped it. A member that states nothing about licences on its own declares nothing —
 `UnifiedRoleAssignment` is a role *grant*, which needs no PIM, and sits beside
-`UnifiedRoleScheduleBase`, which is PIM and does. The test asserts both.
+`UnifiedRoleScheduleBase`, which is PIM and does — the two live side by side in
+`rolemanagement/unifiedrole/`, and the difference is one marker.
 
 An empty marker is refused at import time rather than at read time:
 
@@ -133,10 +134,9 @@ office365/search/entity.py:49:        licenses=["SPE_E5"],
 ```
 
 E5 is a SKU. The plan inside it that grants Microsoft Search is not named anywhere in this tree,
-so the marker keeps the part number — a test records it in the closed set of allowed names,
-next to the plans, with the reason. That is a debt with a name, not a silent exception:
-`tests/unit/test_licence_markers.py` fails on any name that is not in the set, so the next
-licence cannot be invented by typo.
+so that one declaration keeps the part number. It is a debt with a name, not a silent exception:
+`grep -rn "licenses=\[" office365 --include=*.py` is how it stays visible, and it is the only
+line it prints.
 
 The other half of the same decision: `graph_client.require_license()` matches either spelling by
 substring. It is the legacy reader; `Capabilities.licenses` and the CLI do not use it.
@@ -151,8 +151,8 @@ substring. It is the legacy reader; `Capabilities.licenses` and the CLI do not u
 | `ManagedDevice` | `INTUNE_A` | managing a device is Intune, so the seat must carry it |
 
 Four, not forty: the point of this note is the mechanism, and a stamp is a claim about licensing
-that a person has to be able to defend. The ratchet in `tests/unit/test_licence_markers.py` names
-exactly these, so adding a fifth is a deliberate edit and removing one is a red test.
+that a person has to be able to defend. These four are the whole claim, so adding a fifth is a
+deliberation about licensing, not a copy-paste of a neighbour.
 
 Conditional Access is `AAD_PREMIUM`, not `_P2`: a P1-only tenant can create a policy, and a
 marker that refused it would be wrong about the product. P2 buys risk and PIM, which is why the
@@ -177,4 +177,3 @@ other two say so.
 | the fold and the union | `office365/capabilities.py` — `_declarations_of`, `Capabilities.licenses` |
 | the licence sentence | `office365/capabilities.py` — `hints_of`, `Requirement.to_hint()` |
 | the page line and the `-h` epilog | `office365/cli.py` — `_page`, `command`, `_hints` |
-| the ratchet | `tests/unit/test_licence_markers.py` |
