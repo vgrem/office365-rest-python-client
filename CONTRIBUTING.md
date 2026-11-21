@@ -231,6 +231,20 @@ byte-for-byte the same eleven lines, 13 of them replaced. If a test needs a tran
 does something new, the something new belongs in the shared module, where the next test
 finds it instead of writing their own.
 
+A seventh pass deleted files rather than tests, and asked one question of each: is the
+subject a *decision*, or the way a decision is spelled? `test_caml_builder.py` (8 tests)
+compared XML strings the builder emits, and `tests/sharepoint/test_large_list.py` and
+`test_list_item.py` already read a real list through the same builder. `test_formats.py`
+(7 tests) round-tripped a file through pyarrow, duckdb and pandas — third-party bridges whose
+subject `test_data_pipeline.py` already walks in its own round trips. `test_repr.py`
+(9 tests) pinned how a debugging aid prints. Three subjects survived the cut and moved into
+the file that already owns the pipeline: a resolved collection exports without a second round
+trip, a paged export writes its header once, and a DataFrame reaches a folder as
+`utf-8-sig`. `tests/unit` went from 404 tests in 33 files to 381 in 30 — 299 lines of imports
+and fixtures for 24 test functions. The notebook renderer (`runtime/display.py`) lost its only
+offline pin, which is what that subject was worth: a mangled `repr` is seen the moment it is
+printed, and no caller branches on it.
+
 ### End-to-end tests (maintainers / optional)
 
 The product suites (`tests/sharepoint/`, `tests/onedrive/`, …) are end-to-end and

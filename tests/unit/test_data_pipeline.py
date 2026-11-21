@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import io
 import unittest
+import unittest.mock
 import warnings
 from datetime import datetime, timezone
 from typing import Any, List
@@ -17,7 +18,7 @@ from typing import Any, List
 import pytest
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
-from office365.migration.offline import offline_context
+from office365.migration.offline import offline_context, offline_sharepoint_context
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.converters.csv_reader import read_csv_records
@@ -29,12 +30,15 @@ from office365.runtime.converters.dataframe import (
 )
 from office365.runtime.converters.excel import read_excel, write_excel
 from office365.runtime.converters.records import declared_columns, deserialize_records, iter_records
+from office365.runtime.converters.streamers import streamer_for
 from office365.runtime.converters.upsert import keyed_queue, record_key
 from office365.runtime.operations import query_progress_hook
+from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.record_collection import RecordCollection
 from office365.runtime.schema import TypeSchema
 from office365.sharepoint.fields.collection import field_type_from_kind
 from office365.sharepoint.fields.type import FieldType
+from office365.sharepoint.folders.folder import Folder
 from office365.sharepoint.listitems.collection import ListItemCollection
 
 CSV_TEXT = (
@@ -381,3 +385,55 @@ def test_keyed_queue_upserts_existing():
     assert (queued, skipped) == (2, 0)
     assert len(target.created) == 1  # the new row
     assert target.updated[0][0] == 7  # noqa: PLR2004 — the existing row id
+
+
+def _rows(path) -> list:
+    """What a reader sees in a file a writer just closed."""
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        return read_csv_records(handle)
+
+
+def _resolved_users(*names: str) -> RecordCollection:
+    """A collection already resolved: nothing is pending, nothing will be fetched."""
+    col = RecordCollection(GraphClient(), User, None)
+    for name in names:
+        col.add_child(col.create_typed_object({"userPrincipalName": f"{name}@contoso.com", "displayName": name}))
+    col.query_options.select = ["userPrincipalName", "displayName"]
+    return col
+
+
+def test_a_resolved_collection_exports_without_a_second_round_trip(tmp_path):
+    # ``execute_query(); to_csv(path)`` is what a chained read leaves behind: an export
+    # registered through ``after_execute`` would never fire, because nothing is pending.
+    path = tmp_path / "loaded.csv"
+
+    _resolved_users("A", "B").to_csv(str(path))
+
+    assert [r["displayName"] for r in _rows(path)] == ["A", "B"]
+
+
+def test_a_paged_export_writes_the_header_once(tmp_path):
+    # One writer per page, so the header belongs to the first one: a page loop that reopened
+    # the file per page would repeat it, and a reader would see the header as a row.
+    path = tmp_path / "paged.csv"
+    factory = streamer_for("csv")
+    assert factory is not None, "csv is appendable, so a paged export exists"
+    stream = factory(str(path))
+    stream.write([{"a": 1, "b": "x"}])
+    stream.write([{"a": 2, "b": "y"}])
+    stream.close()
+
+    assert path.read_text(encoding="utf-8").count("a,b") == 1
+    assert [r["a"] for r in _rows(path)] == ["1", "2"]
+
+
+def test_a_dataframe_uploaded_to_a_folder_is_utf8_with_a_bom():
+    pd = pytest.importorskip("pandas")
+    folder = Folder(offline_sharepoint_context(), ResourcePath("Web/getFolderByServerRelativeUrl('Shared Documents')"))
+
+    with unittest.mock.patch.object(Folder, "upload_file") as upload:
+        folder.write_dataframe("data.csv", pd.DataFrame({"a": [1, 2]}))
+
+    name, content = upload.call_args.args[:2]
+    assert name == "data.csv"
+    assert content.startswith(b"\xef\xbb\xbf")  # utf-8-sig, so Excel keeps the columns as columns
