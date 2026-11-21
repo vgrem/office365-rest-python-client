@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
@@ -17,6 +17,9 @@ from office365.runtime.queries.delete_entity import DeleteEntityQuery
 from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.queries.upsert_entity import UpsertEntityQuery
 
+if TYPE_CHECKING:
+    from office365.licensing.guard import LicenceGuard
+
 
 class GraphRequest(ODataRequest):
     """Microsoft Graph API request handler with authentication support."""
@@ -29,6 +32,7 @@ class GraphRequest(ODataRequest):
         authority: Optional[str] = None,
         scopes: Optional[List[str]] = None,
         token_cache: Any = None,
+        licence_guard: Optional[LicenceGuard] = None,
     ):
         """
         Initialize a Microsoft Graph API request handler.
@@ -40,6 +44,9 @@ class GraphRequest(ODataRequest):
             authority: Override the MSAL authority URL (e.g. https://<tenant>.ciamlogin.com)
             scopes: Scopes requested to access the API
             token_cache: MSAL token cache to keep the session in
+            licence_guard: Asked about a query before it becomes a request, so a call this
+                tenant cannot make is refused rather than sent and denied. ``None`` (the
+                default) asks nothing; the client passes its own guard in.
         """
         super().__init__("", V4JsonFormat())
         self._version = version
@@ -53,6 +60,7 @@ class GraphRequest(ODataRequest):
         )
         self.beforeExecute += self.authenticate_request
         self._async_authenticate = self.authenticate_request_async
+        self._licence_guard = licence_guard
 
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
         """
@@ -194,6 +202,10 @@ class GraphRequest(ODataRequest):
         setattr(request, ASYNC_AUTHENTICATED_FLAG, True)
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
+        if self._licence_guard is not None:
+            # Before anything is built: a refusal here is a call that never reached the service,
+            # which is what tells it apart from the 403 an unlicensed tenant would answer with.
+            self._licence_guard.check_query(query)
         request = super().build_request(query)
         if isinstance(query, UpsertEntityQuery):
             request.method = HttpMethod.Patch

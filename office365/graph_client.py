@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
@@ -57,6 +58,7 @@ from office365.intune.devices.collection import DeviceCollection
 from office365.intune.devices.management.app_management import DeviceAppManagement
 from office365.intune.devices.management.management import DeviceManagement
 from office365.intune.print.print import Print
+from office365.licensing.guard import ENVIRONMENT, OFF, LicenceGuard
 from office365.onedrive.drives.collection import DriveCollection
 from office365.onedrive.shares.collection import SharesCollection
 from office365.onedrive.sites.with_root import SitesWithRoot
@@ -144,6 +146,7 @@ class GraphClient(ClientRuntimeContext):
         self._scopes = scopes
         self._directory: Optional[Directory] = None
         self._authority = authority
+        self._licence_guard: Optional[LicenceGuard] = None
 
     @verb(role="action", effect="local", name="login")
     def with_certificate(
@@ -333,7 +336,10 @@ class GraphClient(ClientRuntimeContext):
         """
         if not keywords:
             return self
-        names = self.licences.get_all().execute_query().value.names
+        names = self.licence_guard.names
+        if names is None:
+            print("Missing required license: the tenant's subscriptions could not be read")
+            sys.exit(1)
         matched = [name for name in names if any(keyword.lower() in name.lower() for keyword in keywords)]
         if not matched:
             print(f"Missing required license: no subscribed SKU matches: {', '.join(keywords)}")
@@ -576,6 +582,7 @@ class GraphClient(ClientRuntimeContext):
                 authority=self._authority,
                 scopes=self._scopes,
                 token_cache=self._token_cache,
+                licence_guard=self.licence_guard,
             )
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
@@ -770,6 +777,31 @@ class GraphClient(ClientRuntimeContext):
             >>> [sku.sku_part_number for sku in held.unassigned]
         """
         return LicenceManager(self)
+
+    @property
+    def licence_guard(self) -> LicenceGuard:
+        """The tenant's plans, read once, asked before a marked call becomes a request.
+
+        Off unless a mode is chosen, here or with ``O365_LICENCE_GUARD``:
+
+            >>> client.licence_guard.mode = "warn"  # say what this tenant cannot do
+            >>> client.licence_guard.mode = "enforce"  # refuse instead of sending
+
+        A licence is bought rather than granted, so this is the one check a consent screen
+        cannot fix: ``warn`` names the missing plan and sends anyway, ``enforce`` raises
+        :class:`~office365.licensing.guard.LicenceRequired` before the request is built. Only
+        types marked with :func:`~office365.permissions.declaration.requires_license` are
+        asked about; everything else declares nothing, so nothing is read for it.
+
+        The pending :class:`~office365.graph_request.GraphRequest` is handed this guard when it
+        is built - the request asks its own dependency, never its client.
+        """
+        if self._licence_guard is None:
+            self._licence_guard = LicenceGuard(
+                read=lambda: self.licences.get_all().execute_query().value,
+                mode=os.environ.get(ENVIRONMENT, OFF),
+            )
+        return self._licence_guard
 
     @property
     def group_lifecycle_policies(self) -> EntityCollection[GroupLifecyclePolicy]:
