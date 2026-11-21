@@ -35,7 +35,7 @@ Graph's own permissions *entities* - ``identity``, ``identitySet``, ``resourceSp
 them. This package is the vocabulary a caller uses, not a service namespace.
 """
 
-from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog, catalog, catalog_resources
+from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog
 from office365.permissions.declaration import (
     PermissionRequirement,
     declared,
@@ -63,8 +63,6 @@ __all__ = [
     "ResourceName",
     "TenantFacts",
     "TokenClaims",
-    "catalog",
-    "catalog_resources",
     "declared",
     "derived_from",
     "index",

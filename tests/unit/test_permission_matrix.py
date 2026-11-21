@@ -12,7 +12,7 @@ import unittest
 from unittest import TestCase, mock
 
 from office365.outlook.mail.messages.message import Message
-from office365.permissions import ResourceName
+from office365.permissions import Catalog, ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
 from tests.capabilities import Needs, Requirement, TenantState, declared_calls
 from tests.decorators import requires_call, requires_delegated
@@ -49,7 +49,10 @@ class TestRequirement(TestCase):
     def test_a_name_the_api_does_not_publish_never_satisfies_the_group(self):
         """A directory records whatever string a grant names; the API is what decides."""
         requirement = Requirement(delegated=("BackupRestore.Read.All",))
-        state = TenantState(delegated=frozenset({"BackupRestore.Read.All"}))
+        state = TenantState(
+            delegated=frozenset({"BackupRestore.Read.All"}),
+            published=Catalog(delegated=frozenset({"Mail.Read"})),
+        )
         self.assertEqual(
             requirement.unmet(state),
             [

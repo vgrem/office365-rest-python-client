@@ -26,10 +26,11 @@ from pathlib import Path
 from types import ModuleType
 from unittest import TestCase
 
+from office365.directory.permissions.guard import published_permissions
 from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.graph_client import GraphClient
 from office365.permissions import FLOWS as PERMISSION_FLOWS
-from office365.permissions import ResourceName, catalog
+from office365.permissions import Catalog, ResourceName
 from office365.runtime.client_request_exception import ClientRequestException
 
 from tests.capabilities import (
@@ -173,17 +174,17 @@ class Grant:
         return f"{self.label()}: {', '.join(self.names)}"
 
 
-def _published(names: tuple[str, ...], flow: str, resource: str) -> tuple[str, ...]:
+def _published(names: tuple[str, ...], flow: str, published: Catalog | None) -> tuple[str, ...]:
     """The names the API itself publishes, in the order given.
 
     The tenant records whatever string it is handed, but the token is minted from the names
     the API publishes - so a name that is not among them is consented in the directory and
-    absent from every token. Asking for one is a plan that cannot succeed.
+    absent from every token. Asking for one is a plan that cannot succeed. A vocabulary the
+    caller could not read keeps every name, because an unreadable answer is not a refusal.
     """
-    snapshot = catalog(resource)
-    if snapshot is None or flow not in PERMISSION_FLOWS:
+    if published is None or flow not in PERMISSION_FLOWS:
         return names
-    return tuple(name for name in names if snapshot.publishes(name, flow))
+    return tuple(name for name in names if published.publishes(name, flow))
 
 
 def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> list[Grant]:
@@ -200,12 +201,13 @@ def grant_plan(found: list[Needs], states: dict[Requirement, TenantState]) -> li
         for requirement, _ in needs.unmet_for(states):
             for label, names in requirement.shortfall(states[requirement]):
                 by_group.setdefault((label, str(requirement.resource)), []).append(names)
+    vocabularies = {str(requirement.resource): state.published for requirement, state in states.items()}
     plan: list[Grant] = []
     for (label, resource), groups in by_group.items():
         remaining = list(groups)
         chosen: list[str] = []
         offered = tuple({name for group in groups for name in group})
-        preferred = set(_published(offered, label, resource))
+        preferred = set(_published(offered, label, vocabularies.get(resource)))
         while remaining:
             counts: dict[str, int] = {}
             for group in remaining:
@@ -253,7 +255,7 @@ def apply_plan(client: GraphClient, plan: list[Grant], app_id: str, upn: str = "
                 held, reason = _grant_role(client, name, upn)
                 (done if held else failed).append(entry if held else f"{entry}: {reason} {_ROLE_HINT}")
                 continue
-            if not _published((name,), grant.flow, grant.resource):
+            if not _published((name,), grant.flow, published_permissions(client, grant.resource)):
                 failed.append(f"{entry}: {grant.resource} does not publish this name")
                 continue
             try:

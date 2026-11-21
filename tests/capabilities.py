@@ -28,9 +28,10 @@ from office365.directory.permissions.guard import (
     _cached_app_permissions,
     _cached_delegated_permissions,
     _cached_directory_roles,
+    published_permissions,
 )
 from office365.graph_client import GraphClient
-from office365.permissions import Requirement, TokenClaims
+from office365.permissions import Catalog, Requirement, TokenClaims
 from office365.runtime.client_request_exception import ClientRequestException
 
 
@@ -53,7 +54,13 @@ def forget_cached_tenant_facts() -> None:
     run and wrong for a program that has just changed the answer: after granting a
     permission, the same question must be asked again rather than answered from memory.
     """
-    for cached in (_cached_delegated_permissions, _cached_app_permissions, _cached_directory_roles, _cached_licenses):
+    for cached in (
+        _cached_delegated_permissions,
+        _cached_app_permissions,
+        _cached_directory_roles,
+        _cached_licenses,
+        published_permissions,
+    ):
         cached.cache_clear()
 
 
@@ -71,6 +78,8 @@ class TenantState:
     licenses: frozenset[str] = frozenset()
     #: Why the facts could not be read at all (a refused permission lookup).
     unverifiable: str = ""
+    #: The names the requirement's API publishes, or ``None`` when they could not be read.
+    published: Catalog | None = None
 
     @classmethod
     def of(cls, client: GraphClient, client_id: str, requirement: Requirement) -> TenantState:
@@ -117,7 +126,23 @@ class TenantState:
                 if isinstance(exc, AttributeError):
                     return cls(unverifiable="reading the tenant's grants needs a Microsoft Graph client")
                 return cls(unverifiable="the permission lookup needs a scope this token does not have")
-        return cls(delegated=delegated, application=application, roles=roles, licenses=licenses)
+        published = _published_by(client, requirement)
+        return cls(delegated=delegated, application=application, roles=roles, licenses=licenses, published=published)
+
+
+def _published_by(client: GraphClient, requirement: Requirement) -> Catalog | None:
+    """The names the requirement's API publishes, or ``None`` when this token cannot read them.
+
+    Reading another API's definition takes ``Application.Read.All``, which a delegated user
+    token rarely carries. An unreadable vocabulary leaves the answer to the grants the test
+    actually needs, rather than failing a call that may well work.
+    """
+    if not (requirement.delegated or requirement.application):
+        return None
+    try:
+        return published_permissions(client, requirement.resource)
+    except (AttributeError, ClientRequestException):
+        return None
 
 
 def _read_grants(client: GraphClient, client_id: str, requirement: Requirement) -> tuple[frozenset[str], frozenset[str]]:

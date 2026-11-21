@@ -238,8 +238,11 @@ had answered 403 with the role still declared.
 Name only permissions the API publishes. A directory records whatever string a grant
 names, so a tenant can hold `BackupRestore.Read.All` — a name Microsoft Graph never
 minted — and mint a token carrying it, while every request that declared the name answers
-403. `catalog(ResourceName.Graph).publishes(name, kind)` is the check, and a requirement
-that names something unpublished is reported as unmet however the tenant's grants read.
+403. `published_permissions(client, resource).publishes(name, kind)` is the check: the
+service principal is read once and cached, and a requirement that names something
+unpublished is reported as unmet however the tenant's grants read. Where the vocabulary
+cannot be read at all — a delegated token without `Application.Read.All` — the answer is
+"unknown" and the grants decide alone, because an unreadable answer is not a refusal.
 
 Add `flow="application"` to `@requires_call` for an app-only suite. The declared
 requirements are read off the test tree, so what a tenant must grant is known before a
@@ -330,14 +333,11 @@ def add_item(self, creation_information: ListItemCreationInformation) -> ListIte
 Name the **weakest** rung that works: a read-only endpoint that claims `MANAGE` makes a live test
 skip on a tenant that could have run it.
 
-A name has to be one the API actually publishes, and that is checked offline against
-`office365/permissions/snapshots/` — one generated module per API, holding the names its own
-service principal offers. When a name is wrong, or an API ships a new permission you want to
-use, re-read the API and commit what it writes:
-
-```bash
-uv run python scripts/gen_permission_catalog.py
-```
+A name has to be one the API actually publishes, and nothing offline can say which those are:
+the answer changes with the service, so it is read from the service principal that owns it and
+cached for the run (`published_permissions`). `tests/graph/test_declared_permissions.py` walks
+every declaration and compares it with that answer, so a misspelled or retired name fails a test
+rather than a call that answers 403.
 
 ## Publish a release
 

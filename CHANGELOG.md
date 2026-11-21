@@ -37,6 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   stopped importing altogether in 3.3.1 (`functools.cache`). An older interpreter now
   gets a resolver error instead of a traceback.
 
+- **The permission catalog is read from the tenant, not kept beside the declarations.**
+  `office365.permissions.catalog(ResourceName.Graph)` and `catalog_resources()` are gone, and
+  with them the generated `office365/permissions/snapshots/` modules and
+  `scripts/gen_permission_catalog.py`. A copy of an API's published names answers for the day it
+  was taken: three weeks after the last one was generated, the same tenant published ten more
+  delegated names and twelve more app roles than the copy held, and nothing had failed. Use
+  `Catalog.of(principal)` to build one from a principal you have already read, or
+  `office365.directory.permissions.guard.published_permissions(client, resource)` to read the
+  API's own service principal once and cache it. `Requirement.unpublished()` takes the tenant
+  state, so it answers "not known" where the vocabulary could not be read rather than "nothing
+  is published" from a file.
+
 ### Added
 
 - **A resumable run can keep its state in a SQLite ledger.** Give `checkpoint_path` a

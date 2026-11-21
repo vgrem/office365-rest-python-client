@@ -33,7 +33,7 @@ from office365.directory.rolemanagement.roles.role import DirectoryRole
 from office365.directory.serviceprincipals.service_principal import ServicePrincipal
 from office365.entity_collection import EntityCollection
 from office365.graph_client import GraphClient
-from office365.permissions import ResourceName
+from office365.permissions import Catalog, ResourceName
 from office365.runtime.types.collections import StringCollection
 
 
@@ -49,6 +49,25 @@ class ResourcePermissions:
 def _resource_principal(client: GraphClient, resource: str) -> ServicePrincipal:
     """The service principal that owns ``resource``'s permission definitions and grants."""
     return client.service_principals.find_by_name(resource, required=True)
+
+
+#: What carries an API's own vocabulary: the names it can grant, per flow.
+PUBLISHED_PROPERTIES = ["appRoles", "oauth2PermissionScopes"]
+
+
+@lru_cache(maxsize=None)
+def published_permissions(client: GraphClient, resource: str = ResourceName.Graph) -> Catalog:
+    """The names ``resource`` publishes, read from its own service principal and cached.
+
+    A different question from "is it granted", and refused differently: a name the API never
+    minted is absent from every token, so the call it was declared for answers 403 while the
+    directory faithfully shows a grant of it. Reading the definition needs
+    ``Application.Read.All`` - as an app role or a delegated scope - and a caller without it
+    gets an exception rather than a guess, because "cannot read" and "not published" lead to
+    opposite conclusions.
+    """
+    principal = _resource_principal(client, resource).select(PUBLISHED_PROPERTIES).get().execute_query()
+    return Catalog.of(principal)
 
 
 @lru_cache(maxsize=None)

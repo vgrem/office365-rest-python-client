@@ -23,11 +23,12 @@ client.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterable, Protocol
+from typing import TYPE_CHECKING, Iterable, Optional, Protocol
 
 from office365.permissions.resource import ResourceName
 
 if TYPE_CHECKING:
+    from office365.permissions.catalog import Catalog
     from office365.permissions.declaration import PermissionRequirement
 
 #: The ways a token can be obtained. A call runs under exactly one of them, so a requirement
@@ -49,6 +50,11 @@ class TenantFacts(Protocol):
 
     @property
     def licenses(self) -> frozenset[str]: ...
+
+    @property
+    def published(self) -> Optional[Catalog]:
+        """The names the requirement's API publishes, or ``None`` when they could not be read."""
+        ...
 
     @property
     def unverifiable(self) -> str:
@@ -147,28 +153,29 @@ class Requirement:
         """A group's label, naming the resource when it is not the default one."""
         return group if str(self.resource) == str(ResourceName.Graph) else f"{group} on {self.resource}"
 
-    def unpublished(self) -> tuple[str, ...]:
+    def unpublished(self, state: TenantFacts) -> tuple[str, ...]:
         """The declared names this API does not publish, so no grant of them is possible.
 
         A directory records whatever string it is handed, so a tenant can hold a grant of a name
         the API never minted: a token is requested for it, the token carries it, and every call
         it was declared for still answers 403. Measured on one tenant -
         ``BackupRestore.Read.All`` minted a token and refused every request.
-        """
-        from office365.permissions.catalog import catalog
 
-        snapshot = catalog(str(self.resource))
-        if snapshot is None:
+        The API's vocabulary comes from the state, because reading it takes a tenant: ``None``
+        is "not known", never "nothing is published".
+        """
+        catalog = state.published
+        if catalog is None:
             return ()
         declared = [(name, "delegated") for name in self.delegated]
         declared += [(name, "application") for name in self.application]
-        return tuple(name for name, kind in declared if not snapshot.publishes(name, kind))
+        return tuple(name for name, kind in declared if not catalog.publishes(name, kind))
 
     def shortfall(self, state: TenantFacts) -> list[tuple[str, tuple[str, ...]]]:
         """The declared groups ``state`` leaves unmet, as (label, names) - empty when it may run."""
         if state.unverifiable or (self.bypass_roles and set(self.bypass_roles) & state.roles):
             return []
-        unpublished = set(self.unpublished())
+        unpublished = set(self.unpublished(state))
         return [
             (label, names)
             for label, names, attribute in self.groups()
@@ -181,7 +188,7 @@ class Requirement:
         if state.unverifiable:
             return [state.unverifiable]
         missing = [f"{self.label(label)}: any of {', '.join(names)}" for label, names in self.shortfall(state)]
-        return missing + [f"{name} is not a name {self.resource} publishes" for name in self.unpublished()]
+        return missing + [f"{name} is not a name {self.resource} publishes" for name in self.unpublished(state)]
 
     def satisfied_by(self, state: TenantFacts) -> bool:
         """Whether ``state`` meets this requirement."""

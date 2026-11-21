@@ -1,8 +1,12 @@
-"""What the tree declares, and whether the API it names agrees.
+"""What the tree declares, and whether it says it at all.
 
-A live run cannot answer these: a misspelled permission is refused, and the harness reads the
-refusal as "not granted", so a typo and a missing grant look identical; a declaration that is
-missing fails nothing at all. A walk of the package is the only thing that sees either.
+A live run cannot answer these: a declaration that is missing fails nothing, because a call
+without a declared permission is simply a call, and the grant it silently relied on looks like
+an unused one. A walk of the package is the only thing that sees either.
+
+Whether a declared *name* exists is the other question, and it is asked where a tenant is: the
+API's own service principal is the only authority for what it publishes. That check lives in
+``tests/graph/test_declared_permissions.py``.
 """
 
 from __future__ import annotations
@@ -11,7 +15,7 @@ import office365
 from office365.capabilities import capabilities_of
 from office365.communications.callrecords.collection import CallRecordCollection
 from office365.outlook.mail.messages.message import Message
-from office365.permissions import APPLICATION, DELEGATED, catalog, index, require_permission
+from office365.permissions import index, require_permission
 
 #: One walk of the tree: what the library promises and where it still says nothing.
 LIBRARY = index(office365)
@@ -50,31 +54,6 @@ LICENSED: dict[str, tuple[str, ...]] = {
 
 def test_every_requesting_method_names_the_permission_it_needs():
     assert LIBRARY.debt() == PENDING, "declare the permission on the method, or record the new count"
-
-
-def test_every_declared_permission_is_one_the_api_publishes():
-    """A name is a grant only if the API that owns it offers it.
-
-    ``office365/permissions/snapshots`` holds the names each service principal publishes, so a
-    declaration cannot outlive the permission it names.
-    """
-    unpublished, unknown = [], set()
-    for operation in LIBRARY.declared():
-        for requirement in operation.declaration.requirements():
-            snapshot = catalog(requirement.resource)
-            if snapshot is None:
-                unknown.add(str(requirement.resource))
-                continue
-            for kind, names in ((DELEGATED, requirement.delegated), (APPLICATION, requirement.application)):
-                unpublished += [
-                    f"{requirement.resource} does not publish {kind} {name}"
-                    for name in names
-                    if not snapshot.publishes(name, kind)
-                ]
-
-    assert LIBRARY.declared(), "no declarations found - the index is empty, not the tree"
-    assert unpublished == [], "a declaration names a permission the API does not publish"
-    assert unknown == set(), "no snapshot for this API: run scripts/gen_permission_catalog.py"
 
 
 def test_a_licence_gate_is_written_down_with_its_operation():
