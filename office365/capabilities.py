@@ -37,11 +37,11 @@ type declares a form that walks every page -- a sentence each, for a help page t
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
 
-from office365.permissions.declaration import STAMP, PermissionRequirement, licenses_of
+from office365.permissions.declaration import STAMP, PermissionRequirement, licenses_of, with_licences
 from office365.runtime.limits import LimitDecl, limits_of
 from office365.runtime.query_capabilities import QueryCapability, query_capabilities_of
 from office365.runtime.schema import TypeSchema
@@ -196,14 +196,9 @@ def _declarations_of(cls: type) -> Mapping[str, PermissionRequirement]:
                 found[name] = declaration
     inherited = licenses_of(cls)
     if inherited:
-        # The type's licence reaches every member that did not name one itself: a family's
-        # licence is the same fact for `get` as for `delete`, and restating it 30 times per
-        # class would be 30 places to forget. A member that names its own keeps it - that is
-        # how one call states it is narrower than the family it lives in.
-        found = {
-            name: declaration if declaration.licenses else replace(declaration, licenses=inherited)
-            for name, declaration in found.items()
-        }
+        # The type's licence reaches every member that did not name one itself, by the same
+        # rule the query is tagged with, so a help page and a denial cannot disagree about it.
+        found = {name: with_licences(declaration, inherited) for name, declaration in found.items()}
     return MappingProxyType(found)
 
 

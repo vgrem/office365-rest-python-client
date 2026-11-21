@@ -5,6 +5,9 @@ until it is asked to, reads the tenant once, refuses *before* a token is asked f
 unreadable tenant as unknown rather than absent, and answers a family from any one of the plans
 it names. The catalogue of which plan carries which feature is Microsoft's data, so no test
 restates it.
+
+The last one asks the other half of the same question - what a *denial* says - because a licence
+written once above a class only helps a caller if the request that fails can name it.
 """
 
 from __future__ import annotations
@@ -16,8 +19,9 @@ import pytest
 from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
+from office365.intune.devices.management.managed.device import ManagedDevice
 from office365.licensing import ENFORCE, OFF, WARN, LicenceGuard, LicenceRequired
-from office365.permissions.declaration import requires_license
+from office365.permissions.declaration import declared, requires_license
 from office365.runtime.queries.client_query import ClientQuery
 
 if TYPE_CHECKING:
@@ -128,3 +132,12 @@ def _query(target: type) -> ClientQuery[Any]:
     query.permission_requirement = None
     query.return_type, query.binding_type = target, target
     return query
+
+
+def test_a_denial_from_a_family_names_the_licence_its_type_declares() -> None:
+    client = GraphClient(tenant="contoso.onmicrosoft.com")
+    # No token and nothing sent: the tag is written when the call queues its query, which is why
+    # a refusal can name the seat while none of the family's 20 members restate it.
+    client.device_management.managed_devices["abc"].retire()
+    assert "INTUNE_A" in client.last_query.permission_requirement.to_hint()
+    assert "INTUNE_A" not in declared(ManagedDevice.retire).to_hint()

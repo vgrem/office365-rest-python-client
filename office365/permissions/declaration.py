@@ -31,7 +31,7 @@ from __future__ import annotations
 import inspect
 import textwrap
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import wraps
 from typing import Any, Callable, TypeVar, cast
 
@@ -276,6 +276,26 @@ def licenses_of(target: Any) -> tuple[str, ...]:
     return tuple(named) if named else ()
 
 
+def with_licences(declaration: PermissionRequirement, plans: Iterable[str]) -> PermissionRequirement:
+    """``declaration`` carrying the licences of the type it belongs to, when it names none.
+
+    A family's licence is the same fact for every member - a conditional access policy is Entra
+    ID P1 whichever verb reads it - so it is written once above the class and folded into each
+    member's declaration where that declaration is read. A member that names its own keeps it:
+    that is how one call states it is narrower than the family it lives in.
+
+    Args:
+        declaration: What the member itself declares.
+        plans: The service plans its type declares, e.g. ``licenses_of(cls)``.
+
+    Folded, not restated, because a restatement is a second place to forget: 20 ``ManagedDevice``
+    declarations say nothing about Intune, and all 20 answer it here.
+    """
+    if declaration.licenses or not plans:
+        return declaration
+    return replace(declaration, licenses=tuple(plans))
+
+
 def _owner_type(func: Any) -> Any:
     """The class a plain function was defined in, resolved from its qualified name.
 
@@ -336,9 +356,14 @@ def _tag_query(func: F, declaration: PermissionRequirement) -> F:
         owner = args[0] if args else None
         previous = _last_query(owner)
         result: Any = func(*args, **kwargs)
+        # The class the member belongs to exists by now, so the licence its type declares can
+        # name itself on a denial instead of the caller reading the missing seat as a missing
+        # grant. Folded here, at the one moment the query is tagged - which is also the only
+        # moment both facts exist.
+        tagged = with_licences(declaration, licenses_of(func))
         if inspect.iscoroutine(result):
-            return _awaited(result, owner, previous, declaration)
-        _tag(owner, previous, declaration)
+            return _awaited(result, owner, previous, tagged)
+        _tag(owner, previous, tagged)
         return result
 
     return cast(F, wrapper)
