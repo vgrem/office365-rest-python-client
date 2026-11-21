@@ -3,11 +3,15 @@ from __future__ import annotations
 from office365.directory.protection.riskyusers.risky_user import RiskyUser
 from office365.entity_collection import EntityCollection
 from office365.permissions import require_permission
+from office365.permissions.declaration import requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.verbs import verb
 
 
+#: What it takes: dismissing or confirming a risk is Identity Protection, which is Entra ID P2. It
+#: is its own type rather than a member of ``RiskyUser``, so the entity's stamp does not reach it.
+@requires_license("AAD_PREMIUM_P2")
 class RiskyUserCollection(EntityCollection[RiskyUser]):
     """RiskyUser's collection"""
 

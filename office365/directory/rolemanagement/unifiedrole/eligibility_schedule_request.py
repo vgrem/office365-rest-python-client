@@ -11,6 +11,7 @@ from office365.directory.rolemanagement.unifiedrole.schedule_request_actions imp
 )
 from office365.directory.ticket_info import TicketInfo
 from office365.permissions import require_permission
+from office365.permissions.declaration import requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -27,6 +28,9 @@ if TYPE_CHECKING:
     )
 
 
+#: What it takes: making a role eligible is PIM, and PIM is Entra ID P2 - the same claim as its
+#: assignment twin, and the same reason for asking about the tenant rather than the caller.
+@requires_license("AAD_PREMIUM_P2")
 class UnifiedRoleEligibilityScheduleRequest(Request):
     @odata(name="action")
     @property

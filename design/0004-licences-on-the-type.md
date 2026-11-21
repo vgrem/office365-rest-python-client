@@ -31,7 +31,8 @@ office365/search/entity.py:49:        licenses=["SPE_E5"],
 ```
 
 One call site, and it is the *wrong kind* of one: a licence that belongs to a family, written on
-a single method because there was nowhere else to write it.
+a single method because there was nowhere else to write it. (It is gone now; §5 is what happened
+to it.)
 
 ## 2. The marker
 
@@ -106,10 +107,10 @@ Needs one of these licences: AAD_PREMIUM.
 and where a permission *is* declared, the licence joins that sentence instead of repeating it:
 
 ```
-$ o365 search entity query -h
+$ o365 graph directory risky-user dismiss -h
 ...
-This API declares: application Mail.Read, ...; delegated Mail.Read, ...; one of the licences
-SPE_E5. (Permissions depend on the entity types being queried)
+This API declares: application IdentityRiskyUser.ReadWrite.All; delegated
+IdentityRiskyUser.ReadWrite.All; one of the licences AAD_PREMIUM_P2.
 ```
 
 The rule is one sentence per fact: `hints_of` adds its own licence line only when the
@@ -119,7 +120,7 @@ data asks `capabilities_of`, which has had `licenses` all along.
 Both are read off the model, so no page can claim a licence the type does not declare, and a
 type that names none prints no line — `o365 sharepoint web` is unchanged.
 
-## 5. The vocabulary, and the one place it is not yet honest
+## 5. The vocabulary, and the two ratchets that keep it
 
 A licence is named by **service plan**, the vocabulary a tenant's `subscribedSkus` already
 carries, and the one `Capabilities.licenses` documents. A SKU part number is packaging: the same
@@ -127,16 +128,46 @@ capability arrives inside several SKUs and one SKU turns on dozens of plans, so 
 written in plans can be checked against any tenant.
 
 `declaration.py` used to call the field "SKU part numbers"; that docstring is now the paragraph
-above, because the ambiguity had already produced one wrong declaration:
+above. The ambiguity had left one declaration spelled the other way:
 
 ```
+$ grep -rn "licenses=\[" office365 --include=*.py   # before the ratchet existed
 office365/search/entity.py:49:        licenses=["SPE_E5"],
 ```
 
-E5 is a SKU. The plan inside it that grants Microsoft Search is not named anywhere in this tree,
-so that one declaration keeps the part number. It is a debt with a name, not a silent exception:
-`grep -rn "licenses=\[" office365 --include=*.py` is how it stays visible, and it is the only
-line it prints.
+`SPE_E5` is the SKU, and `LicenceGuard.held` is `LicencesReport.plans` - plan names only - so no
+tenant ever reported the part number as a plan: under `enforce` that marker refused every search.
+The fix was not a better spelling. `/search/query` has no licence of its own, because what it can
+reach depends on the entity types asked for, so the claim was deleted and the note beside it now
+carries the whole fact:
+
+```
+$ o365 search entity query -h
+...
+This API declares: application Mail.Read, ...; delegated Mail.Read, ..., Chat.Read. (Permissions
+depend on the entity types being queried)
+```
+
+Two ratchets keep the vocabulary, and both fail the *test*, never the call:
+
+| Ratchet | What it asserts | Test |
+| --- | --- | --- |
+| the published list | every plan a marker spells is in `tests/data/service_plans.txt`, the `Service_Plan_Name` column of Microsoft's licensing CSV, refreshed by `python scripts/fetch_service_plans.py` | `test_a_licence_names_a_plan_the_service_publishes` |
+| the census | a declaring type in a family that sells a capability names a plan, or is recorded in `SILENT` with the reason it cannot | `test_a_paid_family_says_which_licence_carries_it` |
+
+The census is what found three types §6 had missed. The two PIM schedule requests and the
+risky-user collection declare a permission of their own and inherit no stamp - `UnifiedRoleScheduleBase`
+is a sibling of the requests, not their base - so they name `AAD_PREMIUM_P2` now. Which families are
+compared is itself a decision, written down as `PAID`: a capability that is sold is claimed, and the
+free tree (`sharepoint`, `onedrive`, `teams`, ...) is not.
+
+Both read the tree with `ast`, so a marker in a class nobody imports is still checked, and a plan
+name built from a variable is refused instead of passing unread:
+
+```
+$ .venv/bin/python -m pytest tests/unit/test_permission_vocabulary.py -q
+5 passed
+```
 
 The other half of the same decision: `graph_client.require_license()` matches either spelling by
 substring. It is the legacy reader; `Capabilities.licenses` and the CLI do not use it.
@@ -151,6 +182,8 @@ judgement about one family, not a copy of a neighbour:
 | `ConditionalAccessPolicy` | `AAD_PREMIUM` | P1 is what makes the feature exist; no grant creates it on a P1-less tenant |
 | `RiskyUser` | `AAD_PREMIUM_P2` | identity protection is P2 |
 | `UnifiedRoleScheduleBase` | `AAD_PREMIUM_P2` | a *schedule* is PIM, and PIM is P2 |
+| `UnifiedRoleAssignmentScheduleRequest`, `UnifiedRoleEligibilityScheduleRequest` | `AAD_PREMIUM_P2` | activating or making a role eligible is PIM; the tenant holds the plan, so the claim is `TENANT` - an administrator may create one for someone else |
+| `RiskyUserCollection` | `AAD_PREMIUM_P2` | dismissing or confirming a risk is its own type, so the entity's stamp does not reach it |
 | `PrivilegedAccessScheduleRequest` + its two requests | `AAD_PREMIUM_P2` | PIM for groups is the same product as PIM for roles |
 | `AccessReviewInstance`, `AccessReviewStage`, `AccessReviewHistoryInstance` | `AAD_PREMIUM_P2` | access reviews are a P2 feature |
 | access packages — `AccessPackage`, its assignment, its request, its resource, its upload session | `AAD_PREMIUM_P2` | entitlement management is P2 |
@@ -171,10 +204,10 @@ Measured, not estimated:
 
 ```
 $ grep -rn '^@requires_license' --include=*.py office365 | wc -l
-78
+81
 $ python -  # sum len(capabilities_of(c).declarations) over the stamped classes
-types: 78  declarations reached: 183
-{'AAD_PREMIUM_P2': [11, 18], 'AAD_PREMIUM': [1, 0], 'INTUNE_A': [66, 165]}
+types: 81  declarations reached: 188
+{'AAD_PREMIUM_P2': [14, 23], 'AAD_PREMIUM': [1, 0], 'INTUNE_A': [66, 165]}
 ```
 
 `AAD_PREMIUM` reaches 0 declarations because `ConditionalAccessPolicy` declares no permission of
@@ -226,12 +259,12 @@ activating. The rest stay `TENANT`, including Intune - the seat Intune requires 
 *device's* user, which is a third question (`subject=`) needing a lookup per device per call, and
 the service's own 403 answers it better. See `0005-licence-seat.md`.
 
-One thing is still missing on purpose:
-
-* **Nothing checks that a plan *name* exists.** `@requires_license("AAD_PREMIUM_P")` and a tenant
-  holding `AAD_PREMIUM_P2` answer the same way — *not held* — and under `enforce` the typo refuses
-  a call the tenant paid for. The fix is a committed name set read from Microsoft's published plan
-  list plus a ratchet over the markers; data only, never read at request time.
+One thing used to be missing on purpose, and now is not: **nothing checked that a plan *name*
+exists**. `@requires_license("AAD_PREMIUM_P")` and a tenant holding `AAD_PREMIUM_P2` answered the
+same way - *not held* - so under `enforce` the typo refused a call the tenant paid for. §5 is that
+fix: a committed name set from Microsoft's published list, and a census of the families that sell a
+capability. The three split judgements above are `SILENT` entries there, so the next type to arrive
+in one of them is a decision instead of a drift.
 
 ## 8. Where the code is
 

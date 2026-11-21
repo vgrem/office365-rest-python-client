@@ -11,6 +11,7 @@ from office365.directory.rolemanagement.unifiedrole.schedule_request_actions imp
 )
 from office365.directory.ticket_info import TicketInfo
 from office365.permissions import require_permission
+from office365.permissions.declaration import requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -34,6 +35,10 @@ if TYPE_CHECKING:
     from office365.security.evaluation_outcome import EvaluationOutcome
 
 
+#: What it takes: activating, extending or cancelling an assignment through PIM is Entra ID P2. The
+#: tenant's plan is the claim, not the caller's seat: an administrator may create one on someone
+#: else's behalf (`principalId`), so a seat check would refuse a call the API itself allows.
+@requires_license("AAD_PREMIUM_P2")
 class UnifiedRoleAssignmentScheduleRequest(Request):
     """In PIM, represents a request for an active role assignment to a principal. The role assignment can be
     permanently active with or without an expiry date, or temporarily active after activation of an eligible

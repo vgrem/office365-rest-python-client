@@ -106,8 +106,8 @@ class PrivilegedAccessScheduleRequest(Request):
 where the licensed identity genuinely is the one calling: an eligibility schedule request is
 created *by* the person activating, and the plan is assigned to them.
 
-**Nothing else flipped.** Intune is 66 of the 78 stamps and stays `TENANT`
-(`grep -rn "^@requires_license" --include=*.py office365 | wc -l` → `78`): the seat Intune requires
+**Nothing else flipped.** Intune is 66 of the 81 stamps and stays `TENANT`
+(`grep -rn "^@requires_license" --include=*.py office365 | wc -l` → `81`): the seat Intune requires
 belongs to the *device's* user, not the caller's, which is a third question — `subject=` — needing a
 lookup per device per call. The service's own 403 answers that one better than a guess. Access
 reviews and access packages stay `TENANT`: the plan is bought for the tenant's governance features,
