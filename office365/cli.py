@@ -141,10 +141,12 @@ def main(argv: "list[str] | None" = None) -> int:
         return _complete(words[1:])
     if words[:1] == ["completion"]:
         return _completion(words[1:])
-    # `licences` is the one word that asks the tenant a question about the whole library rather
-    # than about one product, so it is answered before a product is looked for.
+    # `licences` and `doctor` are the two words that ask the tenant a question about the whole
+    # library rather than about one product, so they are answered before a product is looked for.
     if words[:1] == ["licences"]:
         return licences(words[1:])
+    if words[:1] == ["doctor"]:
+        return doctor(words[1:])
     return _dispatch(*_audience_words(words))
 
 
@@ -611,6 +613,288 @@ def _assigned(client: Any) -> "frozenset[str] | None":
         return None
 
 
+#: What ``o365 doctor`` prints as: the page, or the whole page as one object. Not the record
+#: formats, because four different shapes would have to flatten into one header row.
+DOCTOR_FORMATS = ("table", "json")
+
+#: The cells a requirement table shows: which kind of fact it is, the names it names, and what
+#: this session proves of them - the licence report's own three words, so ``no`` never means
+#: ``maybe``.
+NEEDS_COLUMNS = ("fact", "names", "state")
+
+#: What a requirement row says: this session proves the name, or does not. The third answer is
+#: the licence report's ``unknown`` - the word it uses for a read that did not happen, which is
+#: not the same as a name that is absent.
+HAVE, MISSING = "have", "missing"
+
+
+def doctor(argv: "list[str]") -> int:
+    """What is configured, held and missing: this environment, or one command's requirement.
+
+    Two questions behind one word, because both are asked before the first command runs and
+    both are answered from declarations rather than from a call. With no route it answers for
+    the *environment*: the sessions this store keeps, what the tenant bought, the roles the
+    caller holds, and how many of each product's words those plans open. With a route it
+    answers for *one command*: the permission its declaration names, which of those names the
+    token proves, the licence it needs and the roles that bypass it.
+
+    Nothing here is sent to the service being asked about, which is the point: a refusal says
+    *what happened*, this says *why*, and only one of them can be printed before the fact. A
+    read that cannot be made is ``unknown`` and never ``no`` - an unread licence is not a
+    missing one, and a doctor that accused a tenant of not paying for what it bought would be
+    worse than a silent one.
+    """
+    parser = argparse.ArgumentParser(
+        prog="o365 doctor",
+        description="What is configured, held and missing; name a route to ask about one command",
+    )
+    parser.add_argument("words", nargs="*", metavar="<product> <noun> [action]", help="one command to ask about")
+    parser.add_argument("-o", "--output", choices=DOCTOR_FORMATS, default="table", help="what to print")
+    args = parser.parse_args(argv)
+    if args.words:
+        return _doctor_route(args.words, args.output)
+    return _doctor_environment(args.output)
+
+
+def _doctor_environment(output: str) -> int:
+    """The sessions this store holds, the tenant they speak for, and what that tenant buys.
+
+    Three reads at most, and the product block takes none of them: it is the index alone, so a
+    machine with no session still learns how many words each product opens and how many of them
+    name a licence at all.
+    """
+    from office365.licensing.report import COLUMNS, PRODUCT_COLUMNS, headline, of, products, rows
+    from office365.runtime.render import render
+
+    document = json.loads(INDEX.read_text("utf-8"))
+    declared = of(document)
+    sessions = _load()
+    facts = _tenant_facts()
+    tenant, held, assigned, roles = facts["tenant"], facts["held"], facts["assigned"], facts["roles"]
+    named = rows(declared, held or (), assigned) if held is not None else []
+    opened = products(document)
+    if output == "json":
+        print(
+            json.dumps(
+                {
+                    "sessions": [dict(_shown(sessions[name]), audience=name) for name in sorted(sessions)],
+                    "tenant": tenant,
+                    "held": sorted(held or ()),
+                    "roles": list(roles or ()),
+                    "licences": named,
+                    "products": opened,
+                    "note": facts["why"],
+                },
+                indent=2,
+                default=str,
+            )
+        )
+        return 0
+    for name in sorted(sessions):
+        print(_summary(name, sessions[name], brief=True))
+    if not sessions:
+        print("no session: run o365 login to see what this tenant holds")
+    if facts["why"]:
+        print(facts["why"])
+    else:
+        print()
+        print(headline(named, tenant))
+        print(_roles_sentence(roles))
+        print()
+        print(render(named, "table", columns=COLUMNS))
+    print()
+    print(render(opened, "table", columns=PRODUCT_COLUMNS))
+    print()
+    print("next: o365 licences                      every licence, and the areas it opens")
+    print("      o365 doctor <product> <noun> ...   what one command needs from this session")
+    return 0
+
+
+def _roles_sentence(roles: "tuple[str, ...] | None") -> str:
+    """The directory roles as one line: the names, ``none``, or why it is unknown."""
+    if roles is None:
+        return "roles: unknown - the directory roles could not be read"
+    return f"roles: {', '.join(roles) or 'none'}"
+
+
+def _doctor_route(words: "list[str]", output: str) -> int:
+    """One command's declarations, marked against the session this store holds.
+
+    The route comes from the model - one product package imported, nothing sent - and the marks
+    come from the token's own ``scp``/``roles`` plus one ``subscribedSkus`` read, never from a
+    call to the endpoint: the endpoint would answer with a status code, and the question is
+    which *name* is missing from where.
+    """
+    from office365.capabilities import capabilities_of
+    from office365.permissions.token import TokenClaims
+    from office365.routing import route
+    from office365.runtime.render import render
+
+    speaker = " ".join(words)
+    try:
+        found = route(*words)
+    except LookupError as error:
+        return _refuse(str(error))
+    if found.verb is None or found.here is None:
+        answers = ", ".join(found.commands) or "-"
+        return _refuse(f"{speaker} names a page, not a command; it answers: {answers}")
+    declaration = capabilities_of(found.here).declarations.get(found.method)
+    if declaration is None:
+        # Not a refusal: the tree publishes no marker for this call, so no token could fail it.
+        # Saying so is the honest answer, and an exit code would turn a gap into an error.
+        print(f"o365 {speaker} declares no permission: nothing about this session decides it")
+        return 0
+    entry = _load().get(_audience(found.entity)) or {}
+    kept = _kept_token(entry) if entry else None
+    records = _needs(TokenClaims.parse(kept[0]) if kept else None, declaration)
+    note = _note(kept, records)
+    if output == "json":
+        print(
+            json.dumps(
+                {"command": f"o365 {speaker}", "effect": found.verb.effect, "needs": records, "note": note}, indent=2
+            )
+        )
+        return 0
+    print(f"o365 {speaker}  ({found.verb.effect})")
+    print()
+    print(render(records, "table", columns=NEEDS_COLUMNS, width=None))
+    if note:
+        print()
+        print(note)
+    missing = [row["names"] for row in records if row["state"] == MISSING]
+    if missing:
+        print(f"needs  a session that holds: {'; '.join(missing)}")
+    return 0
+
+
+def _needs(claims: Any, declaration: Any) -> "list[dict[str, Any]]":
+    """One record per requirement ``declaration`` states, and what this session proves of it.
+
+    A declaration is two alternative flows and a licence, so a command that can run as a user or
+    as an app prints two rows: which one applies is the session's answer, not the model's.
+    """
+    from office365.licensing.report import YES, answer
+    from office365.permissions.declaration import USER
+    from office365.permissions.requirement import FLOWS
+
+    records = []
+    for flow in FLOWS:
+        names = getattr(declaration, flow)
+        if names:
+            proved = claims.proves(declaration.for_flow(flow)) if claims is not None else None
+            records.append({"fact": flow, "names": ", ".join(names), "state": _mark(proved, names)})
+    client = _live_graph() if declaration.licenses or declaration.directory_roles else None
+    if declaration.licenses:
+        held = _held_plans(client)
+        assigned = _assigned(client) if client is not None and declaration.seat == USER else None
+        proves_it = held is not None and answer(declaration.licenses, declaration.seat, held, assigned) == YES
+        records.append({"fact": "licence", "names": ", ".join(declaration.licenses), "state": _word(held, proves_it)})
+    if declaration.directory_roles and client is not None:
+        roles = _roles(client)
+        for role in declaration.directory_roles:
+            records.append({"fact": "role", "names": role, "state": _mark(roles, (role,))})
+    return records
+
+
+def _mark(proved: "frozenset[str] | tuple[str, ...] | None", names: "tuple[str, ...]") -> str:
+    """``have`` when any one of ``names`` is proved, ``missing`` when none, ``unknown`` unread.
+
+    Any one, because the marker's own reading is a disjunction: a method that says
+    ``A or B`` is satisfied by either, and that is what the guard checks too.
+    """
+    return _word(proved, bool(proved) and bool(frozenset(proved).intersection(names)))
+
+
+def _word(asked: Any, proved: bool) -> str:
+    """The row's answer: ``unknown`` when nothing was read at all, else ``have`` or ``missing``."""
+    from office365.licensing.report import UNKNOWN
+
+    if asked is None:
+        return UNKNOWN
+    return HAVE if proved else MISSING
+
+
+def _tenant_facts() -> "dict[str, Any]":
+    """What the tenant says about itself, and the sentence for what it could not say.
+
+    One read each: the subscriptions, the caller's own assignments, and the directory roles.
+    Every failure is a sentence and an ``unknown`` rather than an exit, because a doctor that
+    stopped at the first refusal would report nothing about the rest.
+    """
+    facts: dict[str, Any] = {"tenant": "", "held": None, "assigned": None, "roles": None, "why": ""}
+    try:
+        client = _client("graph")
+    except LookupError as error:
+        facts["why"] = f"the tenant could not be read: {error}"
+        return facts
+    facts["tenant"] = client.tenant_name or ""
+    facts["held"] = _held_plans(client)
+    if facts["held"] is None:
+        facts["why"] = "the tenant's subscriptions could not be read: is Licence.Read.All granted?"
+        return facts
+    facts["assigned"] = _assigned(client)
+    facts["roles"] = _roles(client)
+    return facts
+
+
+def _live_graph() -> Any:
+    """The graph client this store can still produce, or ``None`` when it cannot."""
+    try:
+        return _client("graph")
+    except LookupError:
+        return None
+
+
+def _held_plans(client: Any) -> "frozenset[str] | None":
+    """The plans this tenant's subscriptions provision, or ``None`` when the read did not happen.
+
+    The tenant's answer, not the caller's: which of these are assigned to a person is
+    :func:`_assigned`'s question, and it is only asked when a declared seat is a person's.
+    """
+    from office365.runtime.client_request_exception import ClientRequestException
+
+    if client is None:
+        return None
+    try:
+        return client.licences.get_all().execute_query().value.plans
+    except ClientRequestException:
+        return None
+
+
+def _roles(client: Any) -> "tuple[str, ...] | None":
+    """The directory roles the calling identity holds, or ``None`` when that read cannot be made.
+
+    ``GraphClient.require_role`` asks the same question and exits; here the answer is a row,
+    because a doctor reports. An app-only session has no ``/me`` at all and a delegated one may
+    lack ``RoleManagement.Read.Directory``: both are *unknown*, which is what the row says.
+    """
+    from office365.runtime.client_request_exception import ClientRequestException
+
+    if client is None:
+        return None
+    try:
+        found = client.me.get_directory_roles().execute_query()
+    except (ClientRequestException, LookupError, AttributeError):
+        return None
+    return tuple(sorted(role.display_name for role in found if role.display_name))
+
+
+def _note(kept: "tuple[str, int] | None", records: "list[dict[str, Any]]") -> str:
+    """The sentence under a requirement table: what the marks could not be read from."""
+    from office365.licensing.report import UNKNOWN
+
+    if kept is None:
+        return "no session: run o365 login to have the token's own grants checked"
+    if any(row["state"] == UNKNOWN for row in records):
+        return "unknown is not missing: this token does not answer for that name, and the tenant's grant might"
+    return ""
+
+
+def _shown(entry: "Mapping[str, Any]") -> "dict[str, Any]":
+    """A session as a report may print it: everything but the two fields that hold secrets."""
+    return {name: value for name, value in entry.items() if name not in ("token", "cache")}
+
+
 def _audience_words(words: "list[str]") -> tuple[str, "list[str]"]:
     """Take a leading audience word off the line, and say which session the line is about.
 
@@ -694,6 +978,10 @@ def _following(words: "list[str]", prefix: str) -> "list[tuple[str, str]]":
     """
     if not words:
         return _prefixed(_top(), prefix)
+    if words[0] == "doctor":
+        # The page takes the same route as the command it describes, so it answers with the same
+        # words: a product before a noun, then whatever the route reached.
+        return _prefixed(_products() if len(words) == 1 else _after(words[1], words[2:]), prefix)
     head, rest = words[0], words[1:]
     if not (_is_product(head) or head in AUDIENCES):
         return []
@@ -746,7 +1034,12 @@ def _top() -> "list[tuple[str, str]]":
         [(name, "audience") for name in AUDIENCES]
         + _products()
         + _sessions()
-        + [("completion", "shell script"), ("licences", "what this tenant holds"), ("help", "any of these pages")]
+        + [
+            ("completion", "shell script"),
+            ("licences", "what this tenant holds"),
+            ("doctor", "what this session can do"),
+            ("help", "any of these pages"),
+        ]
     )
 
 
@@ -1325,14 +1618,27 @@ def _client(audience: str, live: bool = True, site: "str | None" = None) -> Any:
 
 def _token(entry: "Mapping[str, Any]") -> str:
     """The access token the session still holds; nothing here refreshes it."""
-    kept = entry.get("token") or {}
-    if int(kept.get("expires_on", 0)) > time.time():
-        return kept["access_token"]
-    tokens = json.loads(entry.get("cache") or "{}").get("AccessToken", {})
-    live = [token for token in tokens.values() if int(token.get("expires_on", 0)) > time.time()]
-    if not live:
+    kept = _kept_token(entry)
+    if kept is None or kept[1] <= time.time():
         raise LookupError(f"the {entry['mode']} session has no live token here; run login again")
-    return max(live, key=lambda token: int(token["expires_on"]))["secret"]
+    return kept[0]
+
+
+def _kept_token(entry: "Mapping[str, Any]") -> "tuple[str, int] | None":
+    """The freshest token the session kept - expired or not - and when it expires.
+
+    ``_token`` refuses an expired one because a request would fail; a report does not, it says
+    how old its facts are. Two questions about one store, so one place reads it: the token
+    itself, and MSAL's cache beside it, which is where a renewed one lands.
+    """
+    kept = entry.get("token") or {}
+    candidates = []
+    if kept.get("access_token"):
+        candidates.append((str(kept["access_token"]), int(kept.get("expires_on", 0))))
+    for token in json.loads(entry.get("cache") or "{}").get("AccessToken", {}).values():
+        if token.get("secret"):
+            candidates.append((str(token["secret"]), int(token.get("expires_on", 0))))
+    return max(candidates, key=lambda held: held[1]) if candidates else None
 
 
 def _root(audience: str) -> type:
@@ -1445,11 +1751,19 @@ def _claims(access_token: str) -> "dict[str, Any]":
     return {name: data[name] for name in names if name in data}
 
 
-def _summary(audience: str, entry: "dict[str, Any]") -> str:
-    """One line of who the session is, and whether it still holds."""
+def _summary(audience: str, entry: "dict[str, Any]", brief: bool = False) -> str:
+    """One line of who the session is, and whether it still holds.
+
+    ``brief`` counts the token's grants instead of naming them: a doctor page asks what the
+    tenant has, and seventy scope names would push that off the screen. ``whoami`` is the word
+    that lists them.
+    """
     claims = entry.get("claims") or {}
     who = claims.get("preferred_username") or claims.get("upn") or claims.get("appid") or "<unknown>"
     grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
+    if brief and grants != "-":
+        counted = len(grants.split())
+        grants = f"{counted} scope" + ("s" if counted != 1 else "")
     expires = int(claims.get("exp") or 0)
     left = "" if not expires else f", {max(0, expires - int(time.time())) // 60} min left"
     state = f" (expired; run o365 {audience} login)" if expires and expires < time.time() else left
@@ -1476,6 +1790,7 @@ def _usage() -> str:
         "       o365 sharepoint context [ls|use <name>|inspect]\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]\n"
         "       o365 licences [-o table|wide|csv|tsv|json]\n"
+        "       o365 doctor [<product> <noun> [action]] [-o table|json]\n"
         "  a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json"
     )
 

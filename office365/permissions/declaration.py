@@ -35,6 +35,7 @@ context, and the tag is a local attribute write on a query that is already built
 from __future__ import annotations
 
 import inspect
+import sys
 import textwrap
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
@@ -374,11 +375,17 @@ def _owner_type(func: Any) -> Any:
     (``ConditionalAccessPolicy.delete_object``) and every step is an attribute the module that
     defined the function already holds - so this is a dictionary lookup and a few ``getattr``s,
     not an import, and a function built in a local scope answers ``None`` rather than guessing.
+
+    The module is read from ``__module__`` and not from ``__globals__``, because a decorator's
+    wrapper keeps the wrapped function's names but not its globals: ``@require_permission``
+    hands back a function defined in this module whose qualified name still says
+    ``ManagedDevice.retire``.
     """
     parts = str(getattr(func, "__qualname__", "")).split(".")
     if len(parts) < _QUALIFIED_MEMBER or "<locals>" in parts:
         return None
-    owner = func.__globals__.get(parts[0])
+    holder = sys.modules.get(str(getattr(func, "__module__", "")))
+    owner = getattr(holder, parts[0], None)
     for part in parts[1:-1]:
         owner = getattr(owner, part, None)
     return owner if isinstance(owner, type) else None

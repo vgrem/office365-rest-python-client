@@ -6,9 +6,10 @@ command that does not, which is the whole claim: a help page prints what the mod
 """
 
 import pytest
-from office365.capabilities import hints_of
+from office365.capabilities import capabilities_of, hints_of
 from office365.directory.users.user import User
 from office365.intune.devices.compliance.script_device_state import DeviceComplianceScriptDeviceState
+from office365.intune.devices.management.managed.device import ManagedDevice
 from office365.outlook.mail.messages.message import Message
 from office365.runtime.client_object_collection import ClientObjectCollection
 
@@ -28,6 +29,12 @@ def test_a_command_that_declares_no_permission_says_so_rather_than_nothing() -> 
     # Silence would read as "needs nothing", and `Message.delete_object` inherits its
     # request from a base that names no permission -- a debt to see, not to hide.
     assert hints_of(Message, "delete_object")[0] == "Declares no permission."
+
+
+def test_a_call_answers_the_licence_of_the_type_it_lives_in() -> None:
+    # `retire` is stamped with the permission and not with the plan: the plan is the family's,
+    # so asking about the call has to reach the class the same way asking about the type does.
+    assert capabilities_of(ManagedDevice.retire).licenses == ("INTUNE_A",)
 
 
 def test_a_preview_only_type_says_only_the_beta_root_answers_it() -> None:

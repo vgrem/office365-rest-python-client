@@ -72,6 +72,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`o365 doctor` says what this session can do before it runs anything.** With no arguments it
+  answers the environment — the session and its grants, the tenant's plans and the roles the
+  caller holds, then the index's own per-product totals — in four reads and ~2 s, and prints the
+  product table even when the tenant cannot be read at all. Given a route
+  (`o365 doctor intune managed-device retire`) it answers one command with **no request to the
+  service it asks about**: the delegated and application permissions the method declares, marked
+  against the token's own `scp`/`roles`, the licence the *type* names (the family's stamp folded
+  into every member's declaration), and one row per directory role the method asks for. `have`,
+  `missing`, and `unknown` keep a read that did not happen apart from a grant that is absent — a
+  token that cannot see the tenant is not evidence that the tenant lacks the plan. A command the
+  model does not describe is reported rather than refused (no marker, so no token could fail it),
+  a page route is refused with the words it does answer, and a typo with the router's close
+  matches. `-o json` for a script. The product table has no "usable" column on purpose: a licensed
+  word is still gated by the permission its call declares, so that number would claim an answer
+  only the plan-by-plan table can give.
+
 - **`o365 licences` says which licences the commands name, and whether this tenant holds them.**
   One read of `subscribedSkus` and, for the licences whose seat is the caller, one of
   `/me/licenseDetails` — the same two `LicenceGuard` makes — joined to the markers the library

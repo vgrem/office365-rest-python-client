@@ -118,6 +118,11 @@ def capabilities_of(target: Any) -> Capabilities:
         )
     if callable(target):
         declaration = _declaration_of(target)
+        if declaration is not None:
+            # A call answers the licence of the type it lives in, by the same fold the type's own
+            # members get: asking about ``ManagedDevice.retire`` rather than about
+            # ``ManagedDevice`` must still name INTUNE_A, or a help page and a denial disagree.
+            declaration = with_licences(declaration, licence_of(target))
         return Capabilities(
             name=_fqn(target),
             target=target,

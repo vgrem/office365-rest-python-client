@@ -35,6 +35,12 @@ YES, NO, UNKNOWN = "yes", "no", "unknown"
 #: has it, and how much of the tree it opens.
 COLUMNS = ("plan", "seat", "held", "nouns", "families")
 
+#: The cells a product line shows: what it is, how many words it opens, and how many of those
+#: words name a licence at all. There is no "usable" cell: a licensed word whose plan this tenant
+#: holds is still gated by the permission the call declares, so one number here would claim what
+#: only :func:`rows` - plan by plan, seat by seat - can answer.
+PRODUCT_COLUMNS = ("product", "nouns", "licensed")
+
 
 @dataclass(frozen=True)
 class Family:
@@ -111,7 +117,7 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
         {
             "plan": licence.name,
             "seat": licence.seat,
-            "held": _held(licence, tenant, assigned),
+            "held": answer(licence.plans, licence.seat, tenant, assigned),
             "nouns": licence.nouns,
             "families": _where(licence.families),
         }
@@ -131,17 +137,43 @@ def headline(records: Iterable[Mapping[str, Any]], tenant: str = "") -> str:
     return f"{tenant + ': ' if tenant else ''}holds {held} of the {total} {licence} a command names"
 
 
-def _held(licence: Licence, tenant: frozenset[str], assigned: frozenset[str] | None) -> str:
-    """Whether this licence is held, asked of the read the seat names.
+def answer(plans: Iterable[str], seat: str, held: Iterable[str], mine: Iterable[str] | None = None) -> str:
+    """Whether the plans are held, asked of the read the seat names.
 
     A licence is held when *any one* of its plans is: the marker's own reading, so this is
     ``isdisjoint`` rather than a subset check.
+
+    Args:
+        plans: The service plans the declaration names.
+        seat: ``tenant`` when the tenant must hold them, ``user`` when the caller must.
+        held: The plan names the tenant's subscriptions provision.
+        mine: The plan names assigned to the calling identity, or ``None`` when not read.
     """
-    if licence.seat != USER:
-        return NO if tenant.isdisjoint(licence.plans) else YES
-    if assigned is None:
+    if seat != USER:
+        return NO if frozenset(held).isdisjoint(plans) else YES
+    if mine is None:
         return UNKNOWN
-    return NO if assigned.isdisjoint(licence.plans) else YES
+    return NO if frozenset(mine).isdisjoint(plans) else YES
+
+
+def products(document: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """One record per product, ready for :func:`office365.runtime.render.render`.
+
+    The two numbers are different facts, not a ratio: a product with no licensed word needs
+    nothing at all, while one whose plans this tenant did not buy is a purchase decision. Both
+    are read from the index, so this answers with no session and no request.
+
+    Args:
+        document: The parsed index, whose ``products`` maps a product name to its nouns.
+    """
+    return [
+        {
+            "product": product,
+            "nouns": len(nouns),
+            "licensed": sum(1 for noun in nouns.values() if noun.get("licence")),
+        }
+        for product, nouns in sorted(document["products"].items())
+    ]
 
 
 def _where(families: Iterable[Family]) -> str:

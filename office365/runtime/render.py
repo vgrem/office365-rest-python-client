@@ -252,6 +252,7 @@ def render(
     headers: bool = True,
     tty: bool = False,
     empty: str = "",
+    width: int | None = COLUMN_WIDTH,
 ) -> str:
     """Render ``payloads`` in ``fmt``: the one entry a command calls.
 
@@ -266,6 +267,8 @@ def render(
         link: ``auto`` (a terminal), ``always``, or ``never``.
         tty: Whether stdout is a terminal; only ``link=auto`` reads it.
         empty: What to print when there is nothing -- a sentence, never nothing.
+        width: Where a cell is cut. ``None`` prints identifiers - a permission name is not a
+            title to shorten - and ``-o wide`` means the same.
     """
     if not payloads:
         return empty
@@ -295,7 +298,7 @@ def render(
         columns,
         links=shown,
         headers=headers,
-        width=None if fmt == "wide" else COLUMN_WIDTH,
+        width=None if fmt == "wide" else width,
         limit=None if fmt == "wide" else MAX_COLUMNS,
     )
 

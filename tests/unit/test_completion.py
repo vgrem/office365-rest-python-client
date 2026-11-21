@@ -81,6 +81,13 @@ def test_the_command_line_answers_its_own_words_before_asking_the_model():
     assert _following(["nonsense"], "") == []
 
 
+def test_the_doctor_page_offers_the_route_words_the_command_would_take():
+    from office365.cli import _following
+
+    assert "intune" in [word for word, _ in _following(["doctor"], "i")]
+    assert "managed-device" in [word for word, _ in _following(["doctor", "intune"], "managed")]
+
+
 def test_the_script_asks_the_hidden_command_and_no_user_facing_word():
     written = completion.script("bash")
 

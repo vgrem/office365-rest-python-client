@@ -8,7 +8,7 @@ markers are (``tests/unit/test_permission_vocabulary.py``) rather than restated 
 
 import unittest
 
-from office365.licensing.report import NO, UNKNOWN, YES, area_of, headline, of, rows
+from office365.licensing.report import NO, UNKNOWN, YES, area_of, headline, of, products, rows
 from office365.permissions.declaration import TENANT, USER
 
 
@@ -84,6 +84,16 @@ class HeldTest(unittest.TestCase):
     def test_what_the_tenant_can_use_comes_first(self):
         found = rows(of(DOCUMENT), held=["INTUNE_A"], mine=None)
         self.assertEqual([row["held"] for row in found], [YES, UNKNOWN])
+
+
+class ProductsTest(unittest.TestCase):
+    def test_a_product_counts_its_words_and_those_that_name_a_licence(self):
+        self.assertEqual(products(DOCUMENT), [{"product": "intune", "nouns": 4, "licensed": 4}])
+
+    def test_a_product_that_needs_no_licence_still_names_its_words(self):
+        """Zero licensed is a fact about the model, not about the tenant: no tenant is read."""
+        document = {"products": {"admin": {"noun0": {"type": "office365.admin.exchange.client:Client"}}}}
+        self.assertEqual(products(document), [{"product": "admin", "nouns": 1, "licensed": 0}])
 
 
 class HeadlineTest(unittest.TestCase):
