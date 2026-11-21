@@ -19,7 +19,7 @@ from office365.directory.identitygovernance.accessreview.stages import (
 )
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     )
 
 
+@requires_license("AAD_PREMIUM_P2")
 class AccessReviewInstance(Entity):
     """
     Represents a Microsoft Entra access review recurrence. If the parent accessReviewScheduleDefinition is a

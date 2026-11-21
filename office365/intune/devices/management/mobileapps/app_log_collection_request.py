@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.intune.devices.management.apploguploadstate import AppLogUploadState
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     )
 
 
+@requires_license("INTUNE_A")
 class AppLogCollectionRequest(Entity):
     @odata(name="completedDateTime")
     @property

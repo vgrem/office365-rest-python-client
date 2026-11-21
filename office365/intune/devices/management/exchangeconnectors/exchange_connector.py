@@ -8,7 +8,7 @@ from typing_extensions import Self
 from office365.entity import Entity
 from office365.intune.devices.management.exchangeconnectors.status import DeviceManagementExchangeConnectorStatus
 from office365.intune.devices.management.exchangeconnectors.type import DeviceManagementExchangeConnectorType
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.exchangeconnectors.synctype import DeviceManagementExchangeConnectorSyncType
 
 
+@requires_license("INTUNE_A")
 class DeviceManagementExchangeConnector(Entity):
     @odata(name="connectorServerName")
     @property

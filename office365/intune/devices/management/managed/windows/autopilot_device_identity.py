@@ -7,12 +7,13 @@ from typing_extensions import Self
 
 from office365.entity import Entity
 from office365.intune.devices.enrollment.state import EnrollmentState
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class WindowsAutopilotDeviceIdentity(Entity):
     @odata(name="addressableUserName")
     @property

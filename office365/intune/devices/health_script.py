@@ -10,7 +10,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.health_script_parameter import DeviceHealthScriptParameter
 from office365.intune.devices.health_script_type import DeviceHealthScriptType
 from office365.intune.devices.management.mobileapps.runasaccounttype import RunAsAccountType
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DeviceHealthScript(Entity):
     @odata(name="createdDateTime", readonly=True)
     @property

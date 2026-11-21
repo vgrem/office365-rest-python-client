@@ -4,13 +4,14 @@ from datetime import datetime
 from typing import Optional
 
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class ApplePushNotificationCertificate(Entity):
     @odata(name="appleIdentifier")
     @property

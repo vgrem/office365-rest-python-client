@@ -13,7 +13,7 @@ from office365.intune.devices.management.configuration.policy_template_reference
 )
 from office365.intune.devices.management.configuration.technologies import DeviceManagementConfigurationTechnologies
 from office365.intune.devices.management.priority_meta_data import DeviceManagementPriorityMetaData
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DeviceManagementConfigurationPolicy(Entity):
     @odata(name="createdDateTime")
     @property

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional
 from typing_extensions import Self
 
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.managed.app.mobile.app import ManagedMobileApp
 
 
+@requires_license("INTUNE_A")
 class ManagedAppPolicy(Entity):
     """The ManagedAppPolicy resource represents a base type for platform specific policies."""
 

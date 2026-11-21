@@ -9,12 +9,13 @@ from office365.entity import Entity
 from office365.intune.devices.management.app_management_task_category import DeviceAppManagementTaskCategory
 from office365.intune.devices.management.app_management_task_priority import DeviceAppManagementTaskPriority
 from office365.intune.devices.management.app_management_task_status import DeviceAppManagementTaskStatus
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata, version
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DeviceAppManagementTask(Entity):
     @odata(name="assignedTo")
     @property

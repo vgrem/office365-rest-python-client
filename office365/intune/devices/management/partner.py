@@ -9,13 +9,14 @@ from office365.entity import Entity
 from office365.intune.devices.management.partner_assignment import DeviceManagementPartnerAssignment
 from office365.intune.devices.management.partnerapptype import DeviceManagementPartnerAppType
 from office365.intune.devices.management.partnertenantstate import DeviceManagementPartnerTenantState
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class DeviceManagementPartner(Entity):
     @odata(name="displayName")
     @property

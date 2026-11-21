@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.directory.identitygovernance.accessreview.history.status import AccessReviewHistoryStatus
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from office365.directory.identitygovernance.accessreview.history_instance import AccessReviewHistoryInstance
 
 
+@requires_license("AAD_PREMIUM_P2")
 class AccessReviewHistoryInstance(Entity):
     @odata(name="downloadUri")
     @property

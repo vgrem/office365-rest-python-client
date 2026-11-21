@@ -7,7 +7,7 @@ from typing_extensions import Self
 
 from office365.entity_collection import EntityCollection
 from office365.intune.print.printers.base import PrinterBase
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from office365.intune.print.tasks.trigger import PrintTaskTrigger
 
 
+@requires_license("INTUNE_A")
 class Printer(PrinterBase):
     """Represents a printer device that has been registered with the Universal Print service.
     Printer resources can be used to manage print jobs, printer settings, printer metadata and registration status.

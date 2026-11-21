@@ -17,7 +17,7 @@ from office365.intune.devices.management.managed.android.store_account_enrollmen
     AndroidManagedStoreAccountEnrollmentTarget,
 )
 from office365.intune.managed_google_play_enterprise_type import ManagedGooglePlayEnterpriseType
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -26,6 +26,7 @@ from office365.runtime.types.odata_property import odata, version
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class AndroidManagedStoreAccountEnterpriseSettings(Entity):
     @odata(name="androidDeviceOwnerFullyManagedEnrollmentEnabled")
     @property

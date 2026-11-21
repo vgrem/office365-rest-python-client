@@ -8,7 +8,7 @@ from office365.entity_collection import EntityCollection
 from office365.intune.devices.management.configuration.settings.instance import (
     DeviceManagementConfigurationSettingInstance,
 )
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata, version
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DeviceManagementReusablePolicySetting(Entity):
     @odata(name="createdDateTime", readonly=True)
     @property

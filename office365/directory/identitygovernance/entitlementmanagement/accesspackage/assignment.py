@@ -22,7 +22,7 @@ from office365.directory.identitygovernance.entitlementmanagement.accesspackage.
 )
 from office365.directory.identitygovernance.entitlementmanagement.schedule import EntitlementManagementSchedule
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -30,6 +30,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("AAD_PREMIUM_P2")
 class AccessPackageAssignment(Entity):
     @odata(name="expiredDateTime")
     @property

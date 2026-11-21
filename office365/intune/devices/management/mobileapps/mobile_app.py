@@ -12,7 +12,7 @@ from office365.intune.devices.management.mobileapps.publishingstate import (
     MobileAppPublishingState,
 )
 from office365.intune.mime_content import MimeContent
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     )
 
 
+@requires_license("INTUNE_A")
 class MobileApp(Entity):
     @odata(name="createdDateTime", readonly=True)
     @property

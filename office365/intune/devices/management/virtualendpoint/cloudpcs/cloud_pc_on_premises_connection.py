@@ -14,13 +14,14 @@ from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconn
 from office365.intune.devices.management.virtualendpoint.cloudpcs.onpremisesconnectiontype import (  # noqa: E501
     CloudPcOnPremisesConnectionType,
 )
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class CloudPcOnPremisesConnection(Entity):
     @odata(name="adDomainName")
     @property

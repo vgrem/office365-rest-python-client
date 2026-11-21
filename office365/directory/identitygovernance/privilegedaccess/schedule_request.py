@@ -8,9 +8,11 @@ from office365.directory.identitygovernance.privilegedaccess.schedule.requestact
 from office365.directory.request import Request
 from office365.directory.request_schedule import RequestSchedule
 from office365.directory.ticket_info import TicketInfo
+from office365.permissions import requires_license
 from office365.runtime.types.odata_property import odata
 
 
+@requires_license("AAD_PREMIUM_P2")
 class PrivilegedAccessScheduleRequest(Request):
     @odata(name="action")
     @property

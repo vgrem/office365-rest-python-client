@@ -11,7 +11,7 @@ from office365.intune.servicecommunications.health.types import (
     ServiceHealthClassificationType,
 )
 from office365.intune.servicecommunications.service_health_issue_post import ServiceHealthIssuePost
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.function import FunctionQuery
@@ -19,6 +19,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class ServiceHealthIssue(ServiceAnnouncementBase):
     """
     Represents a service sitehealth issue in a service.

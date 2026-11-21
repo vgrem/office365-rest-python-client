@@ -49,6 +49,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   state, so it answers "not known" where the vocabulary could not be read rather than "nothing
   is published" from a file.
 
+- **Seventy-eight types now declare the licence their family needs, and a refusal says
+  which.** `@requires_license` used to sit on four types; it now sits on 78 across four
+  plans — `INTUNE_A` on 66 Intune roots, `AAD_PREMIUM_P2` on access reviews, access
+  packages and the two PIM-for-groups requests, `AAD_PREMIUM` on conditional access. A
+  stamped type's page and `-h` name the plan, and a `403` from one of its declared members
+  names it too: the licence is folded into the requirement when the call queues its query,
+  rather than restated on every member. Nothing is enforced until `O365_LICENCE_GUARD` says
+  so.
+
 ### Added
 
 - **A resumable run can keep its state in a SQLite ledger.** Give `checkpoint_path` a

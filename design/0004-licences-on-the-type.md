@@ -141,33 +141,93 @@ line it prints.
 The other half of the same decision: `graph_client.require_license()` matches either spelling by
 substring. It is the legacy reader; `Capabilities.licenses` and the CLI do not use it.
 
-## 6. What was stamped, and why those four
+## 6. What was stamped
 
-| Type | Plan | Why it is not a permission |
+A stamp is a claim about licensing that a person has to be able to defend, so each row below is one
+judgement about one family, not a copy of a neighbour:
+
+| Family | Plan | Why it is not a permission |
 | --- | --- | --- |
 | `ConditionalAccessPolicy` | `AAD_PREMIUM` | P1 is what makes the feature exist; no grant creates it on a P1-less tenant |
 | `RiskyUser` | `AAD_PREMIUM_P2` | identity protection is P2 |
 | `UnifiedRoleScheduleBase` | `AAD_PREMIUM_P2` | a *schedule* is PIM, and PIM is P2 |
-| `ManagedDevice` | `INTUNE_A` | managing a device is Intune, so the seat must carry it |
+| `PrivilegedAccessScheduleRequest` + its two requests | `AAD_PREMIUM_P2` | PIM for groups is the same product as PIM for roles |
+| `AccessReviewInstance`, `AccessReviewStage`, `AccessReviewHistoryInstance` | `AAD_PREMIUM_P2` | access reviews are a P2 feature |
+| access packages — `AccessPackage`, its assignment, its request, its resource, its upload session | `AAD_PREMIUM_P2` | entitlement management is P2 |
+| 66 Intune types | `INTUNE_A` | a managed device, a policy, a report is Intune; the seat is what a tenant buys |
 
-Four, not forty: the point of this note is the mechanism, and a stamp is a claim about licensing
-that a person has to be able to defend. These four are the whole claim, so adding a fifth is a
-deliberation about licensing, not a copy-paste of a neighbour.
+Conditional Access is `AAD_PREMIUM`, not `_P2`: a P1-only tenant can create a policy, and a marker
+that refused it would be wrong about the product. P2 buys risk and PIM, which is why the others say
+so.
 
-Conditional Access is `AAD_PREMIUM`, not `_P2`: a P1-only tenant can create a policy, and a
-marker that refused it would be wrong about the product. P2 buys risk and PIM, which is why the
-other two say so.
+**A family stamps the root that owns the declarations, not the directory.** Intune is 907 files and
+847 classes; 66 of those classes carry a `@require_permission`, 160 of them written in those files
+and 165 reached once inheritance is counted, so marking the 781 classes that declare nothing would
+say nothing. Where two types share a base, one marker speaks for both:
+`licenses_of(PrivilegedAccessGroupAssignmentScheduleRequest)` answers `('AAD_PREMIUM_P2',)` without
+that file naming a plan.
 
-## 7. Not done
+Measured, not estimated:
 
-* **No guard.** Nothing refuses a call on a tenant without the licence — `Capabilities` reports,
-  the CLI prints, and the request is sent. Enforcing it is a session-level decision (off/warn/
-  enforce) and needs the tenant's SKUs, which is a request of its own; it is not a marker.
-* **No 403 → licence hint.** A refusal is still reported as a permission problem; the runtime has
-  no licence awareness today.
-* **Four families, not the families that matter.** Access packages, eDiscovery, records
-  management, threat intelligence and Intune reports are the obvious next ones, and each needs
-  someone to say which plan it is — the closed set is the place where that answer is written down.
+```
+$ grep -rn '^@requires_license' --include=*.py office365 | wc -l
+78
+$ python -  # sum len(capabilities_of(c).declarations) over the stamped classes
+types: 78  declarations reached: 183
+{'AAD_PREMIUM_P2': [11, 18], 'AAD_PREMIUM': [1, 0], 'INTUNE_A': [66, 165]}
+```
+
+`AAD_PREMIUM` reaches 0 declarations because `ConditionalAccessPolicy` declares no permission of
+its own: the page and `-h` still say `needs a licence: AAD_PREMIUM`, and a `403` from it has no
+declaration to attach the seat to. That is the shape of a type-only stamp, and it is why a denial
+hint is not the only place a licence has to be readable.
+
+Three surfaces now say it, all off the same two functions:
+
+```
+$ o365 graph intune device-management reports
+intune device-management reports — DeviceManagementReports
+  needs a licence: INTUNE_A
+...
+$ o365 graph intune device-management reports get-cached-report -h
+... one of the licences INTUNE_A.
+$ python -c "GraphClient(tenant=...); c.device_management.managed_devices['abc'].retire(); \
+             print(c.last_query.permission_requirement.to_hint())"
+... one of the licences INTUNE_A.
+```
+
+## 7. What is deliberately not stamped
+
+Three areas hold a plan this tenant has, but the *split inside the area* is a licensing judgement
+and one marker would be wrong for half of it. They stay unmarked rather than guessed:
+
+* `directory/synchronization` — cloud sync is P1, on-premises provisioning is free, and both live
+  under the same 50 files.
+* `security/labels` — a sensitivity label is E3; records and retention are `RECORDS_MANAGEMENT`,
+  which is a separate add-on.
+* `directory/rolemanagement` — a PIM schedule is P2 (`schedule_base.py` says so); role *definitions*
+  and plain assignments are free.
+
+Five families need a plan this tenant does not hold, so the name is unverifiable here: lifecycle
+workflows (Governance), eDiscovery, Copilot, Teams Premium, and `backuprestore`. Stamping them now
+would make a typo indistinguishable from "not bought" — the failure mode §5 exists to avoid.
+
+`security/threatintelligence` and `security/attacksimulations` stay unstamped for a different
+reason: neither has a `@verb` or a `@require_permission`
+(`grep -rn "@verb(" office365/security/threatintelligence | wc -l` answers `0`), so a marker there
+would be written and read by nothing — no page, no `-h`, no denial to attach it to. A stamp is only
+worth its claim where something asks.
+
+Two things are still missing on purpose:
+
+* **`scope=` — a seat on the user, not on the tenant.** One reader answers today
+  (`subscribedSkus`), and every stamped plan here is genuinely tenant-level, so nothing is wrong
+  yet. Intune and P2 are the cases where the *assignment* is what matters, and that needs a second
+  injected reader (`licenseDetails`), not a second marker shape.
+* **Nothing checks that a plan *name* exists.** `@requires_license("AAD_PREMIUM_P")` and a tenant
+  holding `AAD_PREMIUM_P2` answer the same way — *not held* — and under `enforce` the typo refuses
+  a call the tenant paid for. The fix is a committed name set read from Microsoft's published plan
+  list plus a ratchet over the markers; data only, never read at request time.
 
 ## 8. Where the code is
 

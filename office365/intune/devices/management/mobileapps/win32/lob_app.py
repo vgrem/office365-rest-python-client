@@ -10,13 +10,14 @@ from office365.intune.devices.management.mobileapps.win32.lob_app_msi_informatio
 from office365.intune.devices.management.mobileapps.win32.lob_app_return_code import Win32LobAppReturnCode
 from office365.intune.devices.management.mobileapps.win32.lob_app_rule import Win32LobAppRule
 from office365.intune.devices.management.mobileapps.windows.architecture import WindowsArchitecture
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class Win32LobApp(MobileLobApp):
     @odata(name="allowedArchitectures")
     @property

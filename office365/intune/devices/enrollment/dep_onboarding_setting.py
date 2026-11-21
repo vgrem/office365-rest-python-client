@@ -6,7 +6,7 @@ from typing import Optional
 from typing_extensions import Self
 
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -15,6 +15,7 @@ from office365.runtime.types.odata_property import odata, version
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DepOnboardingSetting(Entity):
     @odata(name="appleIdentifier")
     @property

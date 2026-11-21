@@ -18,7 +18,7 @@ from office365.intune.devices.management.mobileapps.relationship import (
 )
 from office365.intune.devices.management.vpptokens.vpp_token import VppToken
 from office365.intune.policies.managed_app import ManagedAppPolicy
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata
@@ -69,6 +69,7 @@ if TYPE_CHECKING:
     from office365.intune.devices.management.windows_management_app import WindowsManagementApp
 
 
+@requires_license("INTUNE_A")
 class DeviceAppManagement(Entity):
     """Singleton entity that acts as a container for all device and app management functionality."""
 

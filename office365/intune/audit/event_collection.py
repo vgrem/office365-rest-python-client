@@ -1,12 +1,13 @@
 from office365.entity_collection import EntityCollection
 from office365.intune.audit.event import AuditEvent
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.queries.function import FunctionQuery
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.verbs import verb
 
 
+@requires_license("INTUNE_A")
 class AuditEventCollection(EntityCollection[AuditEvent]):
     def __init__(self, context, resource_path=None):
         super().__init__(context, AuditEvent, resource_path)

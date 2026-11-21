@@ -31,7 +31,7 @@ from office365.intune.devices.management.virtualendpoint.virtual_endpoint import
     VirtualEndpoint,
 )
 from office365.intune.devices.management.windowsmalware.overview import WindowsMalwareOverview
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -315,6 +315,7 @@ if TYPE_CHECKING:
     from office365.intune.windows_quality_update_profile import WindowsQualityUpdateProfile
 
 
+@requires_license("INTUNE_A")
 class DeviceManagement(Entity):
     """
     The deviceManagement resource represents a tenant's collection device identities that have been pre-staged in

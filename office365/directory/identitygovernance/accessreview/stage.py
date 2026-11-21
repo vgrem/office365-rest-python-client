@@ -11,7 +11,7 @@ from office365.directory.identitygovernance.accessreview.instance_decision_item 
 from office365.directory.identitygovernance.accessreview.reviewer_scope import AccessReviewReviewerScope
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -19,6 +19,7 @@ from office365.runtime.types.odata_property import odata
 from office365.runtime.verbs import verb
 
 
+@requires_license("AAD_PREMIUM_P2")
 class AccessReviewStage(Entity):
     """
     Represents a stage of a Microsoft Entra access review. If the parent accessReviewScheduleDefinition has defined

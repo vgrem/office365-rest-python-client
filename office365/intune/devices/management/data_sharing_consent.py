@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.queries.service_operation import ServiceOperationQuery
 from office365.runtime.types.odata_property import odata, version
 
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 @version("beta")
+@requires_license("INTUNE_A")
 class DataSharingConsent(Entity):
     @odata(name="grantDateTime")
     @property

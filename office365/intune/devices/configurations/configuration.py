@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.client_value_collection import ClientValueCollection
 from office365.runtime.paths.resource_path import ResourcePath
@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     )
 
 
+@requires_license("INTUNE_A")
 class DeviceConfiguration(Entity):
     """Device Configuration."""
 

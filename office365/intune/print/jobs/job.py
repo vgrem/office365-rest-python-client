@@ -10,7 +10,7 @@ from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.intune.print.jobs.configuration import PrintJobConfiguration
 from office365.intune.print.jobs.status import PrintJobStatus
-from office365.permissions import require_permission
+from office365.permissions import require_permission, requires_license
 from office365.runtime.client_result import ClientResult
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from office365.intune.print.tasks.task import PrintTask
 
 
+@requires_license("INTUNE_A")
 class PrintJob(Entity):
     @odata(name="acknowledgedDateTime")
     @property
