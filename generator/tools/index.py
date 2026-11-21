@@ -1,10 +1,11 @@
 """The model's discovery answers, written once so a command line can read them in milliseconds.
 
 A command line asks the model a handful of questions before it sends anything: which products
-exist, which nouns one publishes, what a noun answers and holds, and whether a client can walk
-to it at all. Today each answer costs an import of the product packages - 22 packages, 6 557
-modules, 7.3 s measured here - and none of them depends on the request. So they are written
-once and read as data: ``office365/index.json``, which parses in 4 ms.
+exist, which nouns one publishes, what a noun answers and holds, whether a client can walk to
+it at all, and which licence the type behind it declares. Today each answer costs an import of
+the product packages - 22 packages, 6 557 modules, 7.3 s measured here - and none of them depends
+on the request. So they are written once and read as data: ``office365/index.json``, which parses
+in 4 ms.
 
 Four rules, because a derived index is a claim that it still agrees with the model:
 
@@ -36,8 +37,9 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any, Dict, Mapping
 
-#: The index layout, bumped when an older file would be read as this one.
-FORMAT = 1
+#: The index layout, bumped when an older file would be read as this one. ``2`` added the
+#: ``licence`` a noun's type declares (:mod:`office365.permissions.declaration`).
+FORMAT = 2
 
 #: The artefact, relative to the repository root.
 DEFAULT_PATH = "office365/index.json"
@@ -85,9 +87,11 @@ def render_index(document: Mapping[str, Any], path: Path) -> str:
     """One line: what was written, and how much of it a command can walk to."""
     products = document["products"]
     nouns = sum(len(entries) for entries in products.values())
-    walkable = sum(1 for entries in products.values() for record in entries.values() if record.get("walks"))
+    records = [record for entries in products.values() for record in entries.values()]
+    walkable = sum(1 for record in records if record.get("walks"))
+    licensed = sum(1 for record in records if record.get("licence"))
     return (
-        f"{nouns} nouns over {len(products)} products, {walkable} walkable -> {path}"
+        f"{nouns} nouns over {len(products)} products, {walkable} walkable, {licensed} licensed -> {path}"
         f" ({path.stat().st_size / 1e6:.1f} MB)"
     )
 
@@ -106,10 +110,30 @@ def _noun(found: Any, reached: Mapping[str, Mapping[type, tuple[str, ...]]]) -> 
     }
     if found.collection is not None:
         record["collection"] = _ref(found.collection)
+    licence = _licence_of(found)
+    if licence is not None:
+        record["licence"] = {"plans": list(licence.plans), "seat": licence.seat}
     walks = _walks_of(found, reached)
     if walks:
         record["walks"] = walks
     return record
+
+
+def _licence_of(found: Any) -> Any:
+    """The licence the noun's type declares, asked of the item first and then of its feed.
+
+    The item answers the question - a noun is what a command lists - but a family sometimes
+    stamps the collection and not the item (``RiskyUserCollection`` beside ``RiskyUser``), and
+    a noun whose feed declares a plan does require it.
+    """
+    from office365.permissions.declaration import licence_of
+
+    for target in (found.entity, found.collection):
+        if target is not None:
+            licence = licence_of(target)
+            if licence is not None:
+                return licence
+    return None
 
 
 def _walks_of(found: Any, reached: Mapping[str, Mapping[type, tuple[str, ...]]]) -> Dict[str, Dict[str, Any]]:

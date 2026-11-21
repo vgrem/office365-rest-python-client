@@ -72,6 +72,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`o365 licences` says which licences the commands name, and whether this tenant holds them.**
+  One read of `subscribedSkus` and, for the licences whose seat is the caller, one of
+  `/me/licenseDetails` — the same two `LicenceGuard` makes — joined to the markers the library
+  already carries. Each row is a plan, the seat it is asked of, whether it is held, how many nouns
+  it opens and which command families those nouns live in, with `-o wide` naming every family,
+  `-o csv` / `-o tsv` for a spreadsheet and `-o json` for a script — the piped formats keep the
+  sentence on stderr so stdout is the data. The words come from `office365/index.json`, whose
+  format 2 now records the licence behind each noun (item type first, then its collection, because
+  a family sometimes stamps the feed), so the report imports no model and sends no request of its
+  own. A plan the tenant did not buy reads `no`; a seat the token could not read reads `unknown`,
+  never `no` — an unread licence is not a missing one.
+
 - **A resumable run can keep its state in a SQLite ledger.** Give `checkpoint_path` a
   `.sqlite` / `.sqlite3` / `.db` extension and the same `Checkpoint` writes rows instead of
   one JSON document: `run` (one row) and `item` (one row per item), in one transaction per

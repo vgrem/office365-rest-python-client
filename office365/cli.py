@@ -118,6 +118,14 @@ SITE_MEMORY = 10
 #: The two words that move a session's site boundary, for the audiences that have one.
 SITE_WORDS = ("use", "context")
 
+#: What a licence report prints as: the record formats, and none of the address ones - ``url`` and
+#: ``name`` answer for a noun's records, and a plan is not something a client can address.
+LICENCE_FORMATS = ("table", "wide", "csv", "tsv", "json")
+
+#: The formats whose stdout is the data alone: the sentence describing the report goes to stderr,
+#: so `o365 licences -o csv` pipes into a spreadsheet without a stray line at the top.
+PIPED_FORMATS = ("csv", "tsv", "json")
+
 #: The derived index the generator writes: the model's discovery answers as data (built by
 #: ``generator graph --index``, never edited). Reading it costs 4 ms; computing the same answers
 #: by importing the tree costs 5.2 s, which is what the levels below cannot afford.
@@ -133,6 +141,10 @@ def main(argv: "list[str] | None" = None) -> int:
         return _complete(words[1:])
     if words[:1] == ["completion"]:
         return _completion(words[1:])
+    # `licences` is the one word that asks the tenant a question about the whole library rather
+    # than about one product, so it is answered before a product is looked for.
+    if words[:1] == ["licences"]:
+        return licences(words[1:])
     return _dispatch(*_audience_words(words))
 
 
@@ -537,6 +549,68 @@ def _refuse(message: str, code: int = 2) -> int:
     return code
 
 
+def licences(argv: "list[str]") -> int:
+    """Which licences a command names, and whether this tenant holds them.
+
+    Two reads, the two :class:`~office365.licensing.guard.LicenceGuard` makes: what the tenant
+    bought (``subscribedSkus``) and, for a licence whose seat is the caller, what is assigned to
+    them. The words come from ``office365/index.json``, which carries each noun's own marker, so
+    the vocabulary here is the declaration's rather than a list kept beside it - a stamp added to
+    a type shows up in this table once the index is re-rendered, and nothing else changes.
+    """
+    from office365.licensing.report import COLUMNS, headline, of, rows
+    from office365.runtime.client_request_exception import ClientRequestException
+    from office365.runtime.render import render
+
+    parser = argparse.ArgumentParser(
+        prog="o365 licences", description="Which licences a command names, and whether this tenant holds them"
+    )
+    parser.add_argument("-o", "--output", choices=LICENCE_FORMATS, default="table", help="what to print")
+    args = parser.parse_args(argv)
+    declared = of(json.loads(INDEX.read_text("utf-8")))
+    if not declared:
+        print("no type in this library declares a licence")
+        return 0
+    try:
+        client = _client("graph")
+        held = client.licences.get_all().execute_query().value
+    except LookupError as error:
+        return _refuse(str(error))
+    except ClientRequestException as error:
+        return _refuse(f"the tenant's subscriptions could not be read: {error}", 1)
+    tenant = client.tenant_name or ""
+    records = rows(declared, held.plans, _assigned(client))
+    sentence = headline(records, tenant)
+    if args.output == "json":
+        print(sentence, file=sys.stderr)
+        print(json.dumps({"tenant": tenant, "held": sorted(held.plans), "licences": records}, indent=2))
+        return 0
+    if args.output in PIPED_FORMATS:
+        print(sentence, file=sys.stderr)
+        print(render(records, args.output, columns=COLUMNS))
+        return 0
+    print(sentence)
+    print()
+    print(render(records, args.output, columns=COLUMNS))
+    return 0
+
+
+def _assigned(client: Any) -> "frozenset[str] | None":
+    """The plans assigned to the calling identity, or ``None`` when that read was not made.
+
+    A seat is a fact about the person making the call, so it costs a second read; a token
+    without ``User.Read.All`` cannot make it, and the answer is then *unknown* rather than *no* -
+    an unread licence is not a missing one, and a report that said otherwise would accuse a
+    tenant that paid for it.
+    """
+    from office365.runtime.client_request_exception import ClientRequestException
+
+    try:
+        return client.licences.get_user(client.me).execute_query().value.plans
+    except (ClientRequestException, LookupError):
+        return None
+
+
 def _audience_words(words: "list[str]") -> tuple[str, "list[str]"]:
     """Take a leading audience word off the line, and say which session the line is about.
 
@@ -672,7 +746,7 @@ def _top() -> "list[tuple[str, str]]":
         [(name, "audience") for name in AUDIENCES]
         + _products()
         + _sessions()
-        + [("completion", "shell script"), ("help", "any of these pages")]
+        + [("completion", "shell script"), ("licences", "what this tenant holds"), ("help", "any of these pages")]
     )
 
 
@@ -1401,6 +1475,7 @@ def _usage() -> str:
         "       o365 sharepoint use <site> [--as <name>]   (a site is one ClientContext)\n"
         "       o365 sharepoint context [ls|use <name>|inspect]\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]\n"
+        "       o365 licences [-o table|wide|csv|tsv|json]\n"
         "  a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json"
     )
 
