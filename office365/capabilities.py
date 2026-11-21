@@ -41,7 +41,7 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
 
-from office365.permissions.declaration import STAMP, PermissionRequirement, licenses_of, with_licences
+from office365.permissions.declaration import STAMP, PermissionRequirement, licence_of, licenses_of, with_licences
 from office365.runtime.limits import LimitDecl, limits_of
 from office365.runtime.query_capabilities import QueryCapability, query_capabilities_of
 from office365.runtime.schema import TypeSchema
@@ -194,10 +194,11 @@ def _declarations_of(cls: type) -> Mapping[str, PermissionRequirement]:
             declaration = _declaration_of(member)
             if declaration is not None:
                 found[name] = declaration
-    inherited = licenses_of(cls)
-    if inherited:
+    inherited = licence_of(cls)
+    if inherited is not None:
         # The type's licence reaches every member that did not name one itself, by the same
-        # rule the query is tagged with, so a help page and a denial cannot disagree about it.
+        # rule the query is tagged with, so a help page and a denial cannot disagree about it -
+        # the plans it declares, or the seat it is checked against.
         found = {name: with_licences(declaration, inherited) for name, declaration in found.items()}
     return MappingProxyType(found)
 

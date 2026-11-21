@@ -58,6 +58,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   rather than restated on every member. Nothing is enforced until `O365_LICENCE_GUARD` says
   so.
 
+- **A licence now says whose seat has to hold it.** `@requires_license(..., seat=USER)` marks a
+  capability the *caller* must be assigned rather than one the tenant merely bought, and the
+  guard answers it from `/me/licenseDetails` — a second, injected reader beside
+  `subscribedSkus`, cached under its own hour. A refusal names the seat that is missing
+  ("your assignments carry none of them" versus "the tenant's subscriptions carry none of
+  them"), the hint and page add `assigned to you`, and an app-only client with no `/me` is
+  told once instead of being refused for a fact it cannot read. One marker flipped —
+  `PrivilegedAccessScheduleRequest`, a PIM activation; Intune keeps the tenant seat because
+  the seat it requires belongs to the device's user, which is a different question.
+
 ### Added
 
 - **A resumable run can keep its state in a SQLite ledger.** Give `checkpoint_path` a

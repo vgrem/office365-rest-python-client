@@ -218,12 +218,16 @@ reason: neither has a `@verb` or a `@require_permission`
 would be written and read by nothing — no page, no `-h`, no denial to attach it to. A stamp is only
 worth its claim where something asks.
 
-Two things are still missing on purpose:
+**Whose seat it is, is declared too.** A marker can say `seat=USER`, which makes the guard read
+what the *caller* was assigned instead of what the tenant bought, because those are two facts from
+two reads (`subscribedSkus` and `/me/licenseDetails`). Exactly one marker flipped:
+`PrivilegedAccessScheduleRequest`, a PIM activation, where the licensed identity is the one
+activating. The rest stay `TENANT`, including Intune - the seat Intune requires belongs to the
+*device's* user, which is a third question (`subject=`) needing a lookup per device per call, and
+the service's own 403 answers it better. See `0005-licence-seat.md`.
 
-* **`scope=` — a seat on the user, not on the tenant.** One reader answers today
-  (`subscribedSkus`), and every stamped plan here is genuinely tenant-level, so nothing is wrong
-  yet. Intune and P2 are the cases where the *assignment* is what matters, and that needs a second
-  injected reader (`licenseDetails`), not a second marker shape.
+One thing is still missing on purpose:
+
 * **Nothing checks that a plan *name* exists.** `@requires_license("AAD_PREMIUM_P")` and a tenant
   holding `AAD_PREMIUM_P2` answer the same way — *not held* — and under `enforce` the typo refuses
   a call the tenant paid for. The fix is a committed name set read from Microsoft's published plan
@@ -234,6 +238,8 @@ Two things are still missing on purpose:
 | What | Where |
 | --- | --- |
 | `requires_license`, `licenses_of`, `LICENSE_STAMP` | `office365/permissions/declaration.py` |
+| `TENANT` / `USER` / `SEATS`, `Licence`, `licence_of`, `seat_suffix` | `office365/permissions/declaration.py` |
+| the seat check and its second reader | `office365/licensing/guard.py` — `held_by_user`, `_check_seat` |
 | the fold and the union | `office365/capabilities.py` — `_declarations_of`, `Capabilities.licenses` |
 | the licence sentence | `office365/capabilities.py` — `hints_of`, `Requirement.to_hint()` |
 | the page line and the `-h` epilog | `office365/cli.py` — `_page`, `command`, `_hints` |

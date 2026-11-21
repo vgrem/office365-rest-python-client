@@ -938,7 +938,7 @@ def _page(product: str, spoken: str, found: Any) -> str:
     read shows are the type's ranked defaults (``-o wide`` shows every field the payload
     carried). So nothing here is a vocabulary someone has to keep in step with the library.
     """
-    from office365.permissions.declaration import licenses_of
+    from office365.permissions.declaration import TENANT, licence_of
     from office365.routing import navigations
     from office365.runtime.schema import TypeSchema
 
@@ -947,11 +947,13 @@ def _page(product: str, spoken: str, found: Any) -> str:
     lines = [f"{product} {spoken} \u2014 {found.shows.__name__}"]
     if schema.defaults:
         lines.append(f"  a read shows {', '.join(schema.defaults)}")
-    licences = licenses_of(found.shows) or licenses_of(here)
-    if licences:
+    licence = licence_of(found.shows) or licence_of(here)
+    if licence is not None and licence.plans:
         # Any one of them carries the capability; the licence is declared on the type, so the
-        # page says it once rather than on each of the actions below.
-        lines.append(f"  needs a licence: {', '.join(licences)}")
+        # page says it once rather than on each of the actions below - and says whose seat has
+        # to hold it, because a per-person capability fails for a different reason.
+        seat = "" if licence.seat == TENANT else " (assigned to you)"
+        lines.append(f"  needs a licence: {', '.join(licence.plans)}{seat}")
     width = min(max((len(word) for word in found.commands), default=0), _WORD_WIDTH)
     for effect, title in _EFFECTS:
         rows = [

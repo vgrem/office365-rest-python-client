@@ -16,6 +16,9 @@ import unittest.mock
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
+from office365.directory.identitygovernance.privilegedaccess.group_eligibility_schedule_request import (
+    PrivilegedAccessGroupEligibilityScheduleRequest as PIMRequest,
+)
 from office365.directory.policies.conditionalaccess.conditional_access import ConditionalAccessPolicy
 from office365.directory.users.user import User
 from office365.graph_client import GraphClient
@@ -109,6 +112,37 @@ def test_warn_names_the_missing_plan_and_lets_the_call_go() -> None:
     with unittest.mock.patch("office365.licensing.guard.logger") as logger:
         guard.check(ConditionalAccessPolicy)
     assert "AAD_PREMIUM" in logger.warning.call_args[0][1]
+
+
+def test_a_user_seat_asks_what_the_caller_holds_not_only_what_the_tenant_bought() -> None:
+    # The tenant bought PIM; this identity was assigned Teams and nothing else. A tenant answer
+    # alone would have let the call through, which is what the seat is for.
+    read_user = unittest.mock.Mock(return_value=Plans("TEAMS1"))
+    guard = LicenceGuard(read=lambda: Plans("AAD_PREMIUM_P2"), read_user=read_user, mode=ENFORCE)
+    with pytest.raises(LicenceRequired, match="assigned to you"):
+        guard.check(PIMRequest)
+    assert read_user.call_count == ONE_READ
+
+
+def test_holding_the_assigned_seat_is_enough_for_a_user_seat() -> None:
+    read_user = unittest.mock.Mock(return_value=Plans("AAD_PREMIUM_P2"))
+    guard = LicenceGuard(read=lambda: Plans("AAD_PREMIUM_P2"), read_user=read_user, mode=ENFORCE)
+    guard.check(PIMRequest)
+
+
+def test_a_tenant_that_bought_none_of_it_is_refused_before_a_seat_is_asked_about() -> None:
+    read_user = unittest.mock.Mock(side_effect=AssertionError("nobody can be assigned a plan nobody bought"))
+    guard = LicenceGuard(read=lambda: Plans("TEAMS1"), read_user=read_user, mode=ENFORCE)
+    with pytest.raises(LicenceRequired, match="subscriptions carry none"):
+        guard.check(PIMRequest)
+    read_user.assert_not_called()
+
+
+def test_an_app_only_caller_has_no_seat_to_read_and_is_not_refused_for_it() -> None:
+    guard = LicenceGuard(read=lambda: Plans("AAD_PREMIUM_P2"), mode=ENFORCE)  # no /me to read
+    with unittest.mock.patch("office365.licensing.guard.logger") as logger:
+        guard.check(PIMRequest)  # unknown is not a refusal, and says so once
+    assert logger.warning.call_count == ONE_READ
 
 
 def test_the_client_hands_its_guard_to_the_request_it_builds() -> None:

@@ -12,9 +12,9 @@ Five questions, one package:
     flow, joinable across calls, checked against a tenant's facts. A live test and a model
     method state the same fact with the same type.
 :mod:`~office365.permissions.catalog`
-    What an *API* publishes - the names a declaration may use, generated from the API's own
-    service principal and committed, so a wrong name fails offline instead of looking like a
-    grant the tenant never gave.
+    What an *API* publishes - the names a declaration may use, read from the API's own service
+    principal and cached for the run, so a name it never minted is answered as unpublished
+    rather than looking like a grant the tenant never gave.
 :mod:`~office365.permissions.index`
     What a *package* has - every operation that issues a request or names a permission,
     answered from source, so "which requests still name nothing" is a number, not a rumour.
@@ -37,12 +37,18 @@ them. This package is the vocabulary a caller uses, not a service namespace.
 
 from office365.permissions.catalog import APPLICATION, DELEGATED, Catalog
 from office365.permissions.declaration import (
+    SEATS,
+    TENANT,
+    USER,
+    Licence,
     PermissionRequirement,
     declared,
     derived_from,
+    licence_of,
     licenses_of,
     require_permission,
     requires_license,
+    seat_suffix,
 )
 from office365.permissions.index import Index, Operation, index
 from office365.permissions.requirement import FLOWS, Requirement, TenantFacts
@@ -60,15 +66,21 @@ __all__ = [
     "Operation",
     "PermissionRequirement",
     "Requirement",
+    "SEATS",
+    "TENANT",
+    "USER",
+    "Licence",
     "ResourceName",
     "TenantFacts",
     "TokenClaims",
     "declared",
     "derived_from",
     "index",
+    "licence_of",
     "licenses_of",
     "require_permission",
     "requires_license",
+    "seat_suffix",
 ]
 
 #: The permission catalog: it names what products require, it is not one.

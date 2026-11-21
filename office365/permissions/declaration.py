@@ -13,6 +13,12 @@ licence is declared once, above the class, and every member answers with it. The
 use one vocabulary - service plan names, the ones a tenant's ``subscribedSkus`` already
 carries - because a licence is read the same way whichever of them named it.
 
+A licence also says *whose* seat has to hold it. ``subscribedSkus`` proves the tenant bought a
+plan for somebody; it never proves that the identity making the call has a seat, and for a
+per-person capability those are different answers from different reads. So the marker names a
+:data:`TENANT` or :data:`USER` seat, and the seat never varies by verb: a plan answers *which*
+capability, the type answers *whose*.
+
 The decorator does three things, one helper each:
 
 :func:`_stamp`
@@ -33,7 +39,7 @@ import textwrap
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from functools import wraps
-from typing import Any, Callable, TypeVar, cast
+from typing import Any, Callable, Optional, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
@@ -55,6 +61,35 @@ LICENSE_STAMP = "__required_licenses__"
 #: The shortest ``__qualname__`` that names a class *and* a member: ``Owner.member``. One part
 #: is a module-level function, which belongs to no class and therefore to no licence.
 _QUALIFIED_MEMBER = 2
+
+#: The licence was bought: it is in the tenant's subscriptions, and ``subscribedSkus`` says so.
+TENANT = "tenant"
+#: The licence is a seat assigned to the person making the call; ``licenseDetails`` answers it.
+USER = "user"
+
+#: What a plan can apply to. The service states the same distinction on every plan it lists, as
+#: ``ServicePlanInfo.appliesTo`` - ``"User"`` or ``"Company"`` - so this is its word, not ours.
+SEATS = (TENANT, USER)
+
+
+@dataclass(frozen=True)
+class Licence:
+    """What carries a capability, and whose seat has to hold it.
+
+    A plan name answers *which capability*; the seat answers *whose* - and the second question is
+    not decoration. ``subscribedSkus`` proves the tenant bought ``INTUNE_A`` for somebody; it
+    never proves that the identity making the call has one of the seats. The two are different
+    reads with different answers, so a marker that named a plan without saying which one it
+    meant would be checked against the easier question every time.
+    """
+
+    plans: tuple[str, ...]
+    seat: str = TENANT
+
+
+def seat_suffix(seat: str) -> str:
+    """How a licence reads when the seat is the caller's: ``", assigned to you"``, else nothing."""
+    return ", assigned to you" if seat == USER else ""
 
 
 @dataclass(frozen=True)
@@ -80,6 +115,7 @@ class PermissionRequirement:
     application: tuple[str, ...] = ()
     directory_roles: tuple[str, ...] = ()
     licenses: tuple[str, ...] = ()
+    seat: str = TENANT
     notes: str = ""
     resource: str = ResourceName.Graph
 
@@ -127,7 +163,7 @@ class PermissionRequirement:
         if self.licenses:
             # A licence is not a grant that can be given here: it is bought, so the hint says
             # which capability is missing rather than which permission to add.
-            scopes.append(f"one of the licences {', '.join(self.licenses)}")
+            scopes.append(f"one of the licences {', '.join(self.licenses)}{seat_suffix(self.seat)}")
         if not scopes:
             return ""
         where = "" if str(self.resource) == str(ResourceName.Graph) else f" (on {self.resource})"
@@ -142,10 +178,11 @@ class PermissionRequirement:
             ("Delegated", self.delegated),
             ("Application", self.application),
             ("Directory roles", self.directory_roles),
-            ("Licenses", self.licenses),
         )
         resource = [] if str(self.resource) == str(ResourceName.Graph) else [f"Resource: {self.resource}"]
         lines = resource + [f"{label}: {', '.join(names)}" for label, names in columns if names]
+        if self.licenses:
+            lines.append(f"Licenses: {', '.join(self.licenses)}{seat_suffix(self.seat)}")
         if self.notes:
             lines.append(f"Notes: {self.notes}")
         return "\n".join(lines)
@@ -215,7 +252,7 @@ def require_permission(
     return decorate
 
 
-def requires_license(*plans: str) -> Callable[[F], F]:
+def requires_license(*plans: str, seat: str = TENANT) -> Callable[[F], F]:
     """Declare the licences that carry what the decorated type does.
 
     A licence decides whether a *capability* can be used at all, not whether one request may
@@ -230,25 +267,53 @@ def requires_license(*plans: str) -> Callable[[F], F]:
     therefore be checked against any tenant, including one that bought the capability in
     different packaging.
 
+    ``seat`` says whose licence has to carry it, and it is not a detail: a plan bought by the
+    tenant is a fact about ``subscribedSkus``, while a capability that works per person needs
+    the identity making the call to hold a seat, which only ``licenseDetails`` answers. Passing
+    :data:`USER` makes the guard read the signed-in user's assignments; the default
+    :data:`TENANT` asks the easier question and says so.
+
     Args:
         *plans: Service plan names, e.g. ``"AAD_PREMIUM_P2"``. One of them must be held.
+        seat: :data:`TENANT` (bought by the tenant) or :data:`USER` (assigned to the caller).
 
     Raises:
         ValueError: If no plan is named - an empty licence declaration would state a
-            requirement that nothing can check.
+            requirement that nothing can check - or if ``seat`` is not one of :data:`SEATS`,
+            which is a typo that would otherwise be read as the default.
     """
     if not plans:
         raise ValueError(
             f"{requires_license.__name__} names no plan: pass at least one service plan, "
             "e.g. requires_license('AAD_PREMIUM')"
         )
-    named = tuple(plans)
+    if seat not in SEATS:
+        raise ValueError(
+            f"{requires_license.__name__} seat must be one of {', '.join(SEATS)}, not {seat!r}: "
+            "'tenant' is bought by the tenant, 'user' is assigned to the person making the call"
+        )
+    licence = Licence(plans=tuple(plans), seat=seat)
 
     def decorate(target: F) -> F:
-        setattr(target, LICENSE_STAMP, named)
+        setattr(target, LICENSE_STAMP, licence)
         return target
 
     return decorate
+
+
+def licence_of(target: Any) -> Optional[Licence]:
+    """The licence a type declares - the plans and the seat - or ``None`` when it declares none.
+
+    Answers for a class, and for a member whose qualified name places it in that class, exactly
+    as :func:`licenses_of` does; this is the whole fact, and that function is the plans alone.
+    """
+    named = getattr(target, LICENSE_STAMP, None)
+    if named is None:
+        owner = getattr(target, "__self__", None)  # a bound method: ask the type that owns it
+        if owner is None:
+            owner = _owner_type(target)  # an unbound one: its qualified name says which
+        named = getattr(owner, LICENSE_STAMP, None) if owner is not None else None
+    return named if isinstance(named, Licence) else None
 
 
 def licenses_of(target: Any) -> tuple[str, ...]:
@@ -266,34 +331,40 @@ def licenses_of(target: Any) -> tuple[str, ...]:
     This is the type's answer alone. A member's ``licenses=`` is a *narrowing* of it and lives
     on the permission declaration; :attr:`Capabilities.licenses` is the union of the two, which
     is what a caller must hold.
+
+    The plans only. :func:`licence_of` answers the same question with the seat it applies to,
+    which is what a guard has to know before it can read the tenant.
     """
-    named = getattr(target, LICENSE_STAMP, None)
-    if named is None:
-        owner = getattr(target, "__self__", None)  # a bound method: ask the type that owns it
-        if owner is None:
-            owner = _owner_type(target)  # an unbound one: its qualified name says which
-        named = getattr(owner, LICENSE_STAMP, None) if owner is not None else None
-    return tuple(named) if named else ()
+    licence = licence_of(target)
+    return licence.plans if licence is not None else ()
 
 
-def with_licences(declaration: PermissionRequirement, plans: Iterable[str]) -> PermissionRequirement:
-    """``declaration`` carrying the licences of the type it belongs to, when it names none.
+def with_licences(declaration: PermissionRequirement, licence: Optional[Licence]) -> PermissionRequirement:
+    """``declaration`` carrying what the type it belongs to declares.
 
     A family's licence is the same fact for every member - a conditional access policy is Entra
     ID P1 whichever verb reads it - so it is written once above the class and folded into each
-    member's declaration where that declaration is read. A member that names its own keeps it:
-    that is how one call states it is narrower than the family it lives in.
+    member's declaration where that declaration is read. A member that names its own plans keeps
+    them: that is how one call states it is narrower than the family it lives in.
+
+    The seat is always the type's, even when the member narrows the plans: a plan answers *which*
+    capability and the seat answers *whose*, and the second never varies by verb. A PIM
+    activation is a person's seat whichever request object carries it.
 
     Args:
         declaration: What the member itself declares.
-        plans: The service plans its type declares, e.g. ``licenses_of(cls)``.
+        licence: What its type declares, e.g. ``licence_of(cls)``.
 
     Folded, not restated, because a restatement is a second place to forget: 20 ``ManagedDevice``
     declarations say nothing about Intune, and all 20 answer it here.
     """
-    if declaration.licenses or not plans:
+    if licence is None or not licence.plans:
         return declaration
-    return replace(declaration, licenses=tuple(plans))
+    return replace(
+        declaration,
+        licenses=declaration.licenses or licence.plans,
+        seat=licence.seat,
+    )
 
 
 def _owner_type(func: Any) -> Any:
@@ -360,7 +431,7 @@ def _tag_query(func: F, declaration: PermissionRequirement) -> F:
         # name itself on a denial instead of the caller reading the missing seat as a missing
         # grant. Folded here, at the one moment the query is tagged - which is also the only
         # moment both facts exist.
-        tagged = with_licences(declaration, licenses_of(func))
+        tagged = with_licences(declaration, licence_of(func))
         if inspect.iscoroutine(result):
             return _awaited(result, owner, previous, tagged)
         _tag(owner, previous, tagged)

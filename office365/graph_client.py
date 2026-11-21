@@ -793,12 +793,19 @@ class GraphClient(ClientRuntimeContext):
         types marked with :func:`~office365.permissions.declaration.requires_license` are
         asked about; everything else declares nothing, so nothing is read for it.
 
+        Two reads are handed over and neither is made here: ``subscribedSkus`` answers what the
+        tenant bought, and ``/me/licenseDetails`` answers what this identity was assigned. The
+        second is only read for a marker that declares a
+        :data:`~office365.permissions.declaration.USER` seat, and an app-only client that cannot
+        read it is told so once rather than refused.
+
         The pending :class:`~office365.graph_request.GraphRequest` is handed this guard when it
         is built - the request asks its own dependency, never its client.
         """
         if self._licence_guard is None:
             self._licence_guard = LicenceGuard(
                 read=lambda: self.licences.get_all().execute_query().value,
+                read_user=lambda: self.licences.get_user(self.me).execute_query().value,
                 mode=os.environ.get(ENVIRONMENT, OFF),
             )
         return self._licence_guard
