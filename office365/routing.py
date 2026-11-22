@@ -67,6 +67,26 @@ class Route:
     verb: VerbMeta | None = None
     method: str = ""
 
+    @property
+    def listing(self) -> bool:
+        """Whether this route's action reads a feed (``list``).
+
+        The verb declares it, so it is asked in one place: a listing walks to the feed and then
+        ``get()``s it, while every other action lands on an item. Four callers asked it as
+        ``verb.role == "list"`` and each first had to establish that a verb was there at all.
+        """
+        return self.verb is not None and self.verb.role == "list"
+
+    @property
+    def reached(self) -> type:
+        """The class the words reached: the half that answers, or the item when nothing walked.
+
+        ``web lists get`` reached the feed, ``sharepoint web`` reached the web itself; a route
+        with no action is the noun, so the item is the answer. Every caller that wanted "what
+        the line is about" spelled it ``here or entity``.
+        """
+        return self.here or self.entity
+
     @cached_property
     def commands(self) -> "Mapping[str, tuple[type, str, VerbMeta]]":
         """Action -> the half that answers it, the attribute on it, and the declaration.
@@ -91,7 +111,7 @@ class Route:
         noun of the line says, and not the feed's, which ranks nothing. :attr:`here` is the half
         the words reached (the feed, for a listing), so the item type is asked for its fields.
         """
-        reached = self.here or self.entity
+        reached = self.reached
         if issubclass(reached, ClientObjectCollection):
             # A class that names its item in a string (`DeltaCollection["Message"]`) answers
             # ``None`` without a mapping of the product's types; the noun's own item is then
@@ -109,7 +129,7 @@ class Route:
         the difference asks :attr:`commands` or :func:`navigations`, and a caller that only
         completes words asks once.
         """
-        links = tuple(sorted(navigations(self.here or self.entity)))
+        links = tuple(sorted(navigations(self.reached)))
         return tuple(sorted(self.commands)) + tuple(word for word in links if word not in self.commands)
 
 

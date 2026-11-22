@@ -86,7 +86,7 @@ import sys
 import textwrap
 import time
 import types
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict, Union, get_args, get_origin
@@ -95,6 +95,7 @@ from urllib.parse import urlparse
 if TYPE_CHECKING:
     from office365.licensing.report import LicenceRecord
     from office365.permissions.token import TokenClaims
+    from office365.routing import Route
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -1154,7 +1155,7 @@ def _gates(audience: str, needed: bool) -> Gates:
     return Gates(claims, facts.held, facts.assigned, facts.roles, facts.why)
 
 
-def _statement(found: Any) -> Statement:
+def _statement(found: Route) -> Statement:
     """One noun as the gates a call under it must pass.
 
     The licence is the type's own stamp as well as any per-call one, because a noun whose verbs
@@ -1631,9 +1632,9 @@ def _sessions() -> "list[tuple[str, str]]":
     return [(name, "session") for name in SESSION]
 
 
-def _flag_words(found: Any) -> "list[tuple[str, str]]":
+def _flag_words(found: Route) -> "list[tuple[str, str]]":
     """The flags a command takes: its own parameters, then what every command prints with."""
-    method = getattr(found.here or found.entity, found.method)
+    method = getattr(found.reached, found.method)
     answer = []
     for name, parameter in _signature(method).parameters.items():
         if name in SUPPLIED or parameter.kind in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD):
@@ -1649,11 +1650,7 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
             ("--no-headers", "rows without the header line"),
             ("--link", "when a name carries its URL"),
         ]
-        + (
-            [("--yes", "send a destroy action without asking")]
-            if getattr(found, "verb", None) and found.verb.confirm
-            else []
-        )
+        + ([("--yes", "send a destroy action without asking")] if found.verb and found.verb.confirm else [])
         + [
             ("--dry-run", "print the request and send nothing"),
         ]
@@ -1777,7 +1774,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     walk = _walk(root, found)
     keyed = _keyed(found, method)
     address = _feed(root, found, product) if keyed else None
-    tail = found.walk if found.verb.role == "list" else ()
+    tail = found.walk if found.listing else ()
     parser = argparse.ArgumentParser(
         prog=f"o365 {product} {spoken}",
         description=_reaches(found, target, walk, address, tail),
@@ -1848,7 +1845,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     return _send(client, method, given, args, found.shows, empty=f"No {noun} found.")
 
 
-def _keyed(found: Any, method: Any) -> bool:
+def _keyed(found: Route, method: Callable[..., Any]) -> bool:
     """Whether ``--id`` names the item this command acts on.
 
     ``list`` reads a feed that hangs off an item (a message's attachments) and every other verb
@@ -1861,13 +1858,12 @@ def _keyed(found: Any, method: Any) -> bool:
 
     if found.collection is None or "id" in _signature(method).parameters:
         return False
-    if found.verb.role == "list":
+    if found.listing:
         return bool(found.walk)
-    here = found.here or found.entity
-    return isinstance(here, type) and not issubclass(here, ClientObjectCollection)
+    return not issubclass(found.reached, ClientObjectCollection)
 
 
-def _feed(root: type, found: Any, product: str) -> "tuple[str, ...] | None":
+def _feed(root: type, found: Route, product: str) -> "tuple[str, ...] | None":
     """The attributes to walk to the feed whose item ``--id`` names.
 
     A listing's item is the one the noun names -- ``message attachments list`` addresses a
@@ -1880,7 +1876,7 @@ def _feed(root: type, found: Any, product: str) -> "tuple[str, ...] | None":
     from office365.routing import chain, route
     from office365.runtime.client_object_collection import ClientObjectCollection
 
-    held = route(product, found.noun).collection if found.verb.role == "list" else found.collection
+    held = route(product, found.noun).collection if found.listing else found.collection
     if held is None or held in (ClientObjectCollection, EntityCollection):
         # A link typed `EntityCollection[X]` holds the base class at run time, so walking to it
         # would index whichever feed the walk reached first. A URL nobody asked for is worse
@@ -1890,7 +1886,11 @@ def _feed(root: type, found: Any, product: str) -> "tuple[str, ...] | None":
 
 
 def _reaches(
-    found: Any, target: type, walk: "tuple[str, ...] | None", address: "tuple[str, ...] | None", tail: "tuple[str, ...]"
+    found: Route,
+    target: type,
+    walk: "tuple[str, ...] | None",
+    address: "tuple[str, ...] | None",
+    tail: "tuple[str, ...]",
 ) -> str:
     """What ``-h`` says the command reaches, in the order it gets there.
 
@@ -1906,7 +1906,7 @@ def _reaches(
     return f"Walk {walked}, then {found.method}() on {target.__name__}"
 
 
-def _walk(root: type, found: Any) -> "tuple[str, ...] | None":
+def _walk(root: type, found: Route) -> "tuple[str, ...] | None":
     """The attributes to walk from the root to the object that holds the method.
 
     A ``list`` is ``get()`` on the feed, so it has to reach the feed and not one item of it:
@@ -1918,11 +1918,13 @@ def _walk(root: type, found: Any) -> "tuple[str, ...] | None":
     """
     from office365.routing import chain
 
-    feed = found.verb.role == "list" and isinstance(found.here, type)
-    path = chain(root, found.here if feed else found.entity)
-    if path is None:
-        return None
-    return path if feed else path + found.walk
+    if found.listing and isinstance(found.here, type):
+        # A listing's target is the feed the words reached, not one item of it
+        # (`chain(root, Message)` is ``None`` where ``chain(root, MessageCollection)`` is
+        # ``me.messages``); the walk is ``get()`` on that feed.
+        return chain(root, found.here)
+    path = chain(root, found.entity)
+    return None if path is None else path + found.walk
 
 
 def _hints(target: Any, method: str) -> "list[str]":
@@ -1971,7 +1973,7 @@ _WORD_WIDTH = 26
 _SENTENCE_WIDTH = 70
 
 
-def _page(product: str, spoken: str, found: Any) -> str:
+def _page(product: str, spoken: str, found: Route) -> str:
     """The page a node answers: what it is, what it answers, what it holds, what to type next.
 
     Every line is read off the model: the actions are the type's stamped verbs, the groups are
@@ -1983,7 +1985,7 @@ def _page(product: str, spoken: str, found: Any) -> str:
     from office365.routing import navigations
     from office365.runtime.schema import TypeSchema
 
-    here = found.here or found.entity
+    here = found.reached
     schema = TypeSchema.of(found.shows)
     lines = [f"{product} {spoken} \u2014 {found.shows.__name__}"]
     if schema.defaults:
@@ -2045,7 +2047,7 @@ def _sentence(half: type, method: str, meta: Any) -> str:
     return declared[: _SENTENCE_WIDTH - 1] + "\u2026" if len(declared) > _SENTENCE_WIDTH else declared
 
 
-def _examples(product: str, spoken: str, found: Any, links: "list[str]") -> "list[str]":
+def _examples(product: str, spoken: str, found: Route, links: "list[str]") -> "list[str]":
     """Two lines worth copying: a read of this node, and a word deeper into the model."""
     from office365.runtime.schema import TypeSchema
 
