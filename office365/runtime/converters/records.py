@@ -11,7 +11,7 @@ re-derives them for itself.
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Dict, List, cast, get_origin
+from typing import TYPE_CHECKING, Any, Dict, List, Sequence, cast, get_origin
 
 from office365.runtime.client_object_collection import ClientObjectCollection
 from office365.runtime.client_value import ClientValue
@@ -27,10 +27,13 @@ if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
     from office365.runtime.converters.streams import Source
 
+#: One row of a tabular form: a property name and the value a format can hold. The name is the
+#: type's own (see the module docstring), and the value has been made JSON-safe -- so a sheet, a
+#: line of NDJSON and a SQL column all receive the same dict, and no format re-invents the row.
+Record = Dict[str, Any]
 
-def iter_records(
-    collection: "ClientObjectCollection", raw: bool = False, rows_from: str | None = None
-) -> List[Dict[str, Any]]:
+
+def iter_records(collection: "ClientObjectCollection", raw: bool = False, rows_from: str | None = None) -> List[Record]:
     """Project a loaded collection into plain dict records.
 
     Feeds ``csv_writer.write_records``: plain select fields become columns,
@@ -70,7 +73,7 @@ def iter_records(
     )
 
 
-def declared_columns(items: List["ClientObject"]) -> List[str]:
+def declared_columns(items: Sequence["ClientObject"]) -> List[str]:
     """The columns of these items: the type's declarations, then the rest of the page.
 
     The response used to answer this question — the keys one page happened to carry,
@@ -96,12 +99,12 @@ def declared_columns(items: List["ClientObject"]) -> List[str]:
 
 
 def records_from_items(
-    items: List["ClientObject"],
+    items: Sequence["ClientObject"],
     select: List[str],
     expand: "set[str] | list[str]",
     raw: bool = False,
     rows_from: str | None = None,
-) -> List[Dict[str, Any]]:
+) -> List[Record]:
     """Project a list of loaded items into records (the page-level primitive).
 
     Used by :func:`iter_records` and by the paged (streaming) exporter, so a
@@ -122,10 +125,10 @@ def records_from_items(
     nav = next(iter(navs), None)
     plain = [field for field in select if "/" not in field]
 
-    records: List[Dict[str, Any]] = []
+    records: List[Record] = []
     for item in items:
         children = _resolve_property(item, nav, expand)
-        base: Dict[str, Any] = {key: _value(item.properties.get(key), raw) for key in plain}
+        base: Record = {key: _value(item.properties.get(key), raw) for key in plain}
         for child in children:
             record = dict(base)
             for _nav_prop, field_name in dotted:
@@ -135,8 +138,8 @@ def records_from_items(
 
 
 def _rows_from_children(
-    items: List["ClientObject"], select: List[str], rows_from: str, dotted: List[List[str]], raw: bool
-) -> List[Dict[str, Any]]:
+    items: Sequence["ClientObject"], select: List[str], rows_from: str, dotted: List[List[str]], raw: bool
+) -> List[Record]:
     """One record per child of ``rows_from``, with the child's own columns.
 
     A child's columns are the fields its type declares, in declaration order, so a
@@ -153,7 +156,7 @@ def _rows_from_children(
             f"rows_from={rows_from!r} makes one row per child, so select the columns that say whose row it is"
         )
 
-    records: List[Dict[str, Any]] = []
+    records: List[Record] = []
     child_columns: Dict[str, None] = {}
     for item in items:
         base = {key: _value(item.properties.get(key), raw) for key in plain}
@@ -176,7 +179,7 @@ def _children(value: Any) -> List[Any]:
     return [value]
 
 
-def _child_values(child: Any, raw: bool, rows_from: str) -> Dict[str, Any]:
+def _child_values(child: Any, raw: bool, rows_from: str) -> Record:
     """A child's fields as a record: declared order, spelled as the serializer spells them.
 
     A schema value is read field by field rather than straight off ``to_json``, because

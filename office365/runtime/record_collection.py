@@ -8,6 +8,12 @@ registry. ``from_*`` is the **streaming** entry (returns an
 :class:`~office365.runtime.imports.ImportResult` driver — bounded, resumable,
 idempotent); ``queue_*`` is the deferred queue-all entry.
 
+``source`` and ``target`` are ``Any`` on purpose. The registry is open, so what a reader
+takes and a writer takes -- a path, a URL, an open file object, a DataFrame, a database
+connection, a buffer -- is the format's answer, and naming a union here would refuse the
+next format a caller registers. ``opts`` is the same seam one level down: it is the
+writer's own keyword arguments, passed through untouched.
+
 Keyed imports (skip/upsert) are opt-in: a subclass exposes an
 :class:`~office365.runtime.converters.upsert.UpsertTarget` via :meth:`upsert_target`.
 The single-entity counterpart, :meth:`RecordCollection.upsert`, reconciles one
@@ -17,7 +23,7 @@ entity by key (create-if-missing, else write-idempotent update).
 from __future__ import annotations
 
 from os import PathLike
-from typing import IO, TYPE_CHECKING, Any, Callable, Dict, Iterable, List, Optional, Protocol, Union, cast
+from typing import IO, TYPE_CHECKING, Any, Callable, Iterable, Protocol, cast
 
 from typing_extensions import Self
 
@@ -30,6 +36,7 @@ from office365.runtime.verification import VerificationReport
 if TYPE_CHECKING:
     from office365.runtime.converters.dataframe import DataFrameResult
     from office365.runtime.converters.named import ConverterSpec
+    from office365.runtime.converters.records import Record
     from office365.runtime.converters.upsert import UpsertTarget
     from office365.runtime.imports import CheckpointStore, ImportCheckpoint, ImportResult
     from office365.runtime.operations import ProgressCallback
@@ -61,7 +68,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
     # ── Export ───────────────────────────────────────────────────
 
-    def _select_row_property(self, rows_from: Optional[str]) -> Optional[str]:
+    def _select_row_property(self, rows_from: str | None) -> str | None:
         """Project the child property a fan-out reads, which a caller's own select may omit.
 
         ``select`` adds rather than replaces, so this cannot drop the caller's columns.
@@ -75,8 +82,8 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         target: Any,
         *,
         format: str = "csv",  # noqa: A002
-        page_size: Optional[int] = None,
-        rows_from: Optional[str] = None,
+        page_size: int | None = None,
+        rows_from: str | None = None,
         **opts: Any,
     ) -> Self:
         """Deferred export of the loaded items to ``target`` in ``format``.
@@ -115,7 +122,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         writer(self, target, **opts)
         return self
 
-    def _export_paged(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
+    def _export_paged(self, target: Any, format: str, page_size: int, opts: dict[str, Any]) -> Self:  # noqa: A002
         """Page through the collection and append records (bounded memory)."""
         from office365.runtime.converters import streamers
         from office365.runtime.converters.records import records_from_items
@@ -149,8 +156,8 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         target: Any,
         *,
         format: str = "csv",  # noqa: A002
-        page_size: Optional[int] = None,
-        rows_from: Optional[str] = None,
+        page_size: int | None = None,
+        rows_from: str | None = None,
         **opts: Any,
     ) -> Self:
         """Async twin of :meth:`export_to`.
@@ -175,7 +182,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         await run_offloaded(writer, self, target, **opts)
         return self
 
-    async def _export_paged_async(self, target: Any, format: str, page_size: int, opts: Dict[str, Any]) -> Self:  # noqa: A002
+    async def _export_paged_async(self, target: Any, format: str, page_size: int, opts: dict[str, Any]) -> Self:  # noqa: A002
         """Page through the collection and append records without blocking the loop."""
         from office365.runtime.converters import streamers
         from office365.runtime.converters.records import records_from_items
@@ -193,7 +200,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         start = 0
         closed = False
 
-        def _project(items: List[Any]) -> None:
+        def _project(items: list[ClientObjectT]) -> None:
             stream.write(
                 records_from_items(items, self.query_options.select, self.query_options.expand, rows_from=rows_from)
             )
@@ -225,7 +232,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             await _close()
         return self
 
-    def to_records(self, raw: bool = False, rows_from: Optional[str] = None) -> List[Dict[str, Any]]:
+    def to_records(self, raw: bool = False, rows_from: str | None = None) -> list[Record]:
         """Project loaded items into plain dict records — the neutral export form.
 
         The projection shared by every exporter: ``.select()``/``.expand()``
@@ -241,7 +248,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
         return iter_records(self, raw=raw, rows_from=rows_from)
 
-    def to_csv(self, target: Union[str, PathLike, IO[str]], *, rows_from: Optional[str] = None) -> Self:
+    def to_csv(self, target: str | PathLike | IO[str], *, rows_from: str | None = None) -> Self:
         """Export the items to CSV — a path or an already-open text stream.
 
         Written when a queued read resolves, or immediately when nothing is
@@ -255,11 +262,11 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """
         return self.export_to(target, format="csv", rows_from=rows_from)
 
-    def to_ndjson(self, target: Union[str, PathLike, IO[str]], *, rows_from: Optional[str] = None) -> Self:
+    def to_ndjson(self, target: str | PathLike | IO[str], *, rows_from: str | None = None) -> Self:
         """Export the items as NDJSON — one record per line (path or open stream)."""
         return self.export_to(target, format="ndjson", rows_from=rows_from)
 
-    def to_excel(self, target: Union[str, PathLike], *, rows_from: Optional[str] = None) -> Self:
+    def to_excel(self, target: str | PathLike, *, rows_from: str | None = None) -> Self:
         """Export loaded items to an Excel (.xlsx) worksheet (deferred).
 
         Requires the optional dependency (``pip install
@@ -267,19 +274,19 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """
         return self.export_to(target, format="excel", rows_from=rows_from)
 
-    def to_parquet(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
+    def to_parquet(self, target: Any, *, rows_from: str | None = None) -> Self:
         """Export loaded items to Parquet (deferred; requires the ``[parquet]`` extra)."""
         return self.export_to(target, format="parquet", rows_from=rows_from)
 
-    def to_orc(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
+    def to_orc(self, target: Any, *, rows_from: str | None = None) -> Self:
         """Export loaded items to ORC (deferred; requires the ``[parquet]`` extra)."""
         return self.export_to(target, format="orc", rows_from=rows_from)
 
-    def to_feather(self, target: Any, *, rows_from: Optional[str] = None) -> Self:
+    def to_feather(self, target: Any, *, rows_from: str | None = None) -> Self:
         """Export loaded items to Feather (deferred; requires the ``[parquet]`` extra)."""
         return self.export_to(target, format="feather", rows_from=rows_from)
 
-    def to_sql(self, target: Any, *, table: str, rows_from: Optional[str] = None, **opts: Any) -> Self:
+    def to_sql(self, target: Any, *, table: str, rows_from: str | None = None, **opts: Any) -> Self:
         """Write loaded items to a SQL table (deferred; requires the ``[sql]`` extra)."""
         from office365.runtime.converters.records import iter_records
         from office365.runtime.converters.sql import write_sql
@@ -289,7 +296,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             lambda _: write_sql(iter_records(self, rows_from=rows_from), target, table=table, **opts)
         )
 
-    def to_duckdb(self, target: Any, *, table: str, rows_from: Optional[str] = None, **opts: Any) -> Self:
+    def to_duckdb(self, target: Any, *, table: str, rows_from: str | None = None, **opts: Any) -> Self:
         """Write loaded items to a DuckDB table (deferred; requires the ``[duckdb]`` extra)."""
         from office365.runtime.converters.records import iter_records
         from office365.runtime.converters.sql import write_duckdb
@@ -317,7 +324,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
     def upsert(
         self,
         key: str,
-        value: Union[int, str],
+        value: int | str,
         /,
         *,
         on_conflict: str = "update",
@@ -396,9 +403,9 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
 
     def queue_records(
         self,
-        records: List[dict],
+        records: list[Record],
         progress: "ProgressCallback | None" = None,
-        converters: "Dict[str, ConverterSpec] | None" = None,
+        converters: "dict[str, ConverterSpec] | None" = None,
     ) -> Self:
         """Queue a create per record (deferred, run with ``execute_query()``).
 
@@ -425,7 +432,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         """Queue a create per DataFrame row (deferred, run with ``execute_query()``)."""
         return self.queue_records(registry.reader_for("dataframe")(df), progress=progress)
 
-    def _import_records(self, records: List[dict], progress: "ProgressCallback | None" = None) -> Self:
+    def _import_records(self, records: list[Record], progress: "ProgressCallback | None" = None) -> Self:
         """Queue a create per record, appending the pending entities to this collection."""
         from office365.runtime.operations import query_progress_hook
         from office365.runtime.queries.create_entity import CreateEntityQuery
@@ -457,11 +464,11 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         progress: "ProgressCallback | None" = None,
         prepare: "Callable[[Any], None] | None" = None,
         before_chunk: "Callable[[Any], None] | None" = None,
-        map: "Callable[[list[dict]], list[dict]] | None" = None,  # noqa: A002
-        total: Optional[int] = None,
+        map: "Callable[[list[Record]], list[Record]] | None" = None,  # noqa: A002
+        total: int | None = None,
         dry_run: bool = False,
         dead_letter: "str | PathLike | None" = None,
-        converters: "Dict[str, ConverterSpec] | None" = None,
+        converters: "dict[str, ConverterSpec] | None" = None,
     ) -> "ImportResult":
         """Stream a source into this collection, memory-bounded (the streaming entry).
 
@@ -496,7 +503,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         target = self.upsert_target(key_field=key_field, enforce_unique=enforce_unique) if key_columns else None
         if key_columns and target is None:
             raise ValueError("key= requires an upsert-capable collection (override upsert_target())")
-        existing: Dict[str, Any] = {}
+        existing: dict[str, Any] = {}
         keys_loaded = False
 
         def _prepare(first_chunk: Any) -> None:
@@ -519,7 +526,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
             existing.update(target.load_keys())
             keys_loaded = True
 
-        def _queue(records: list[dict]) -> tuple[int, int]:
+        def _queue(records: list[Record]) -> tuple[int, int]:
             # The user's ``converters`` layer runs here, once, and leaves the shape of
             # the record alone -- column filtering and declared typing stay in
             # ``queue_records``, where a keyed import never passes (its key columns
@@ -640,7 +647,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         key: "str | list[str]",
         format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
-        map: "Callable[[Any], list[dict]] | None" = None,  # noqa: A002
+        map: "Callable[[Any], list[Record]] | None" = None,  # noqa: A002
     ) -> VerificationReport:
         """Reconcile a source's natural keys against this collection (bounded).
 
@@ -683,13 +690,13 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         source: Any,
         format: str,  # noqa: A002
         chunksize: int,
-        reshape: "Callable[[list[dict]], list[dict]] | None",
-    ) -> "tuple[Iterable[Any], Callable[[Any], list[dict]], Optional[int]]":
+        reshape: "Callable[[list[Record]], list[Record]] | None",
+    ) -> "tuple[Iterable[Any], Callable[[Any], list[Record]], int | None]":
         """Resolve ``(chunks, reshape, total)`` for a streaming import.
 
         ``chunks`` stays the format's own unit, because ``prepare``/``before_chunk`` read a
-        chunk's schema (field provisioning). ``reshape`` is always ``list[dict] ->
-        list[dict]``: the format's reader decodes first, so a caller's ``map`` reshapes
+        chunk's schema (field provisioning). ``reshape`` is always ``list[Record] ->
+        list[Record]``: the format's reader decodes first, so a caller's ``map`` reshapes
         records instead of re-implementing the reader (and stops depending on the format).
         """
         then = reshape or (lambda batch: batch)
