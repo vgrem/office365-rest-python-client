@@ -4,7 +4,7 @@ Nothing here is hand-written for the CLI to read. A route is drawn from the gett
 from the stamps on its method, a licence from the type's marker, a format from what the command
 accepts — so a test asserts what the model says, and a command that disagrees is the defect.
 
-The model layer keeps its own small tests (``test_verbs``, ``test_hints``, ``test_render``); this
+The model layer keeps its own small tests (``test_commands``, ``test_render``); this
 file owns the command: the walk, what it prints, what a shell is offered, what a login says, the
 config file, and the two pages ``doctor`` and ``licences`` print.
 """
