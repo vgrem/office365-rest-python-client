@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from typing import IO, Callable, Optional
 
 from requests import Response
@@ -9,6 +8,7 @@ from office365.runtime.client_request import ClientRequest
 from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.queries.client_query import ClientQuery
+from office365.runtime.transfer import stream_size
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 
 
@@ -106,17 +106,10 @@ class UploadSessionRequest(ClientRequest):
 
     @property
     def file_size(self) -> int:
-        """Get the total size of the file being uploaded."""
-        if self._file_size is not None:
-            return self._file_size
-        try:
-            return os.fstat(self._file_object.fileno()).st_size
-        except (AttributeError, OSError):
-            pos = self._file_object.tell()
-            self._file_object.seek(0, os.SEEK_END)
-            size = self._file_object.tell()
-            self._file_object.seek(pos)
-            return size
+        """Get the total size of the file being uploaded, measured once and kept."""
+        if self._file_size is None:
+            self._file_size = stream_size(self._file_object)
+        return self._file_size
 
     @property
     def range_start(self) -> int:

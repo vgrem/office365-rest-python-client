@@ -16,7 +16,7 @@ from office365.outlook.mail.patterned_recurrence import PatternedRecurrence
 from office365.permissions import require_permission
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.queries.create_entity import CreateEntityQuery
-from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT
+from office365.runtime.transfer import INLINE_ATTACHMENT_MAX, UPLOAD_CHUNK_DEFAULT, stream_size
 from office365.runtime.types.collections import StringCollection
 from office365.runtime.types.odata_property import odata
 from office365.todo.attachments.collection import AttachmentBaseCollection
@@ -28,18 +28,6 @@ from office365.todo.tasks.status import TaskStatus
 
 if TYPE_CHECKING:
     from office365.todo.tasks.single_value_extended_property import SingleValueExtendedProperty
-
-
-def _stream_size(stream: IO) -> int:
-    """Byte length of a seekable stream (file or ``io.BytesIO``), preserving position."""
-    try:
-        return os.fstat(stream.fileno()).st_size
-    except (AttributeError, OSError):
-        position = stream.tell()
-        stream.seek(0, os.SEEK_END)
-        size = stream.tell()
-        stream.seek(position)
-        return size
 
 
 class TodoTask(Entity):
@@ -237,7 +225,7 @@ class TodoTask(Entity):
         else:
             stream = source
             content = None
-            size = _stream_size(stream)
+            size = stream_size(stream)
             default_name = os.path.basename(getattr(stream, "name", "") or "")
 
         attachment_name = name or default_name or "attachment"

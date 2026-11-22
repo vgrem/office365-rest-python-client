@@ -11,6 +11,7 @@ from office365.runtime.operations import Progress, ProgressCallback
 from office365.runtime.paths.resource_path import ResourcePath
 from office365.runtime.paths.service_operation import ServiceOperationPath
 from office365.runtime.queries.service_operation import ServiceOperationQuery
+from office365.runtime.transfer import stream_size
 from office365.runtime.transport.offload import get_offload_executor, run_offloaded
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity_collection import EntityCollection
@@ -27,25 +28,6 @@ if TYPE_CHECKING:
     from office365.sharepoint.folders.folder import Folder
 
 _DEFAULT_CHUNK_SIZE = Limits.UPLOAD_SESSION_CHUNK.value  # simple-upload threshold / upload-session chunk
-
-
-def _stream_size(stream: IO) -> int:
-    """Byte length of a seekable stream (file or ``io.BytesIO``), preserving position.
-
-    Raises:
-        ValueError: When the upload source is not seekable.
-    """
-    pos = stream.tell()
-    try:
-        stream.seek(0, io.SEEK_END)
-        return stream.tell()
-    except OSError as e:
-        raise ValueError("Upload source must be a seekable file or stream") from e
-    finally:
-        try:
-            stream.seek(pos)
-        except OSError:
-            pass
 
 
 class FileCollection(EntityCollection[File]):
@@ -125,7 +107,7 @@ class FileCollection(EntityCollection[File]):
             with open(path, "rb") as f:
                 return self._simple_upload(name, f.read(), progress)
         stream = path_or_file
-        size = _stream_size(stream)
+        size = stream_size(stream)
         if not file_name:
             stream_name = getattr(stream, "name", None)
             file_name = os.path.basename(stream_name) if stream_name else None
@@ -274,7 +256,7 @@ class FileCollection(EntityCollection[File]):
         else:
             f = file_or_path
 
-        file_size = _stream_size(f)
+        file_size = stream_size(f)
         if file_name is None:
             stream_name = getattr(f, "name", None)
             file_name = os.path.basename(stream_name) if stream_name else None
@@ -344,7 +326,7 @@ class FileCollection(EntityCollection[File]):
         else:
             f = file_or_path
 
-        file_size = _stream_size(f)
+        file_size = stream_size(f)
         if file_name is None:
             stream_name = getattr(f, "name", None)
             file_name = os.path.basename(stream_name) if stream_name else None

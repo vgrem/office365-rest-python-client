@@ -19,6 +19,9 @@ Source: https://learn.microsoft.com/en-us/graph/api/driveitem-createuploadsessio
 
 from __future__ import annotations
 
+import os
+from typing import IO
+
 UPLOAD_CHUNK_UNIT = 320 * 1024
 """Graph upload-session ranges must be a multiple of 320 KiB."""
 
@@ -49,3 +52,32 @@ def check_chunk_size(chunk_size: int) -> None:
         )
     if chunk_size > UPLOAD_CHUNK_MAX:
         raise ValueError(f"chunk_size must be at most 60 MiB ({UPLOAD_CHUNK_MAX:,} bytes), got {chunk_size:,}")
+
+
+def stream_size(stream: IO) -> int:
+    """Byte length of a stream, leaving its position where it was found.
+
+    A real file answers from its descriptor; anything else -- an ``io.BytesIO``, a wrapper
+    with no ``fileno()`` -- is measured by seeking to the end and back. Every upload path
+    needs the number *before* it starts, because it decides one request or a session, and
+    how far a session has to count, so a stream that cannot say how long it is is refused
+    here instead of failing halfway through a transfer.
+
+    Args:
+        stream: A file or stream object, positioned anywhere.
+
+    Raises:
+        ValueError: When the stream is neither a file nor seekable.
+    """
+    try:
+        return os.fstat(stream.fileno()).st_size
+    except (AttributeError, OSError):
+        pass
+    try:
+        position = stream.tell()
+        stream.seek(0, os.SEEK_END)
+        size = stream.tell()
+        stream.seek(position)
+        return size
+    except OSError as error:
+        raise ValueError("Upload source must be a seekable file or stream") from error
