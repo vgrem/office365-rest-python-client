@@ -19,7 +19,7 @@ import email.utils
 import hashlib
 import re
 from dataclasses import dataclass, field
-from typing import Any, cast
+from typing import cast
 
 from office365.migration.outlook.records import SidecarRecord
 from office365.outlook.mail.messages.message import Message
@@ -205,7 +205,7 @@ class MessageRecord(SidecarRecord):
     )
     options_class = MailImportOptions
 
-    def checksum(self, payload: bytes, options: Any = None) -> str:
+    def checksum(self, payload: bytes, options: object = None) -> str:
         """What a verification compares for a message: what it *says*, not its bytes."""
         return mime_digest(payload)
 

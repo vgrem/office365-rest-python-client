@@ -25,6 +25,12 @@ what lets a family whose items are *fetched* (mail) and families whose items are
 The model inside is hydrated on the library's own credential-less context, and it is never
 handed out: a record is a document, so the only thing it can do with a service is render
 one.
+
+What a record reads *out* of the sidecar is ``Any`` on purpose: the sidecar is JSON, so a
+stamp is a string, a property is whatever the model serialized, and the family that asks
+(``modified``, an attendee list) is the one that knows which. What a record is *handed* --
+the options one family's import honours -- is only ever passed to :func:`withheld`, so it
+says ``object``.
 """
 
 from __future__ import annotations
@@ -33,7 +39,7 @@ import hashlib
 import re
 import unicodedata
 from datetime import datetime
-from typing import Any, ClassVar, Dict, Iterable, Mapping, Sequence, Tuple, Type, TypeVar
+from typing import Any, Callable, ClassVar, Dict, Iterable, Mapping, Sequence, Tuple, Type, TypeVar, cast
 
 from office365.migration.offline import offline_context
 from office365.migration.outlook.restore import withheld
@@ -143,7 +149,7 @@ class SidecarRecord:
     #: Graph properties an export reads, so two exports of one source are comparable.
     columns: ClassVar[Sequence[str]] = ()
     #: The import options this family's artefacts default to.
-    options_class: ClassVar[Type[Any]]
+    options_class: ClassVar[type]
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
@@ -242,7 +248,7 @@ class SidecarRecord:
 
     # -- what a verification compares -------------------------------------------------
 
-    def canonical(self, options: Any = None) -> Dict[str, Any]:
+    def canonical(self, options: object = None) -> Dict[str, Any]:
         """The restorable fields in the form the model says the service treats as equal.
 
         A field the import declines to restore (``restore_attendees``, ``restore_categories``)
@@ -252,7 +258,7 @@ class SidecarRecord:
         options = self.options_class() if options is None else options
         return self._entity.to_json(COMPARABLE.scoped(self.model, only=self.verified or None, without=withheld(options)))
 
-    def digest(self, options: Any = None) -> str:
+    def digest(self, options: object = None) -> str:
         """A digest of the fields an import restores, for verifying that it did.
 
         Not the artefact's bytes: the other side of an import is the service, which
@@ -261,7 +267,7 @@ class SidecarRecord:
         """
         return digest(self.canonical(options))
 
-    def checksum(self, payload: bytes, options: Any = None) -> str:
+    def checksum(self, payload: bytes, options: object = None) -> str:
         """What a verification compares for this item, given the payload it was written to.
 
         A family whose bytes this package renders itself is checkable by them; one whose
@@ -280,10 +286,18 @@ class SidecarRecord:
         return self._first(self.envelope, attrs, key=TypeSchema.of(self.model).name_of)
 
     @staticmethod
-    def _first(source: Any, attrs: Iterable[str], key: Any = None) -> Any:
-        """The first of ``attrs`` whose value ``source`` states — an attribute, or a key."""
+    def _first(source: object, attrs: Iterable[str], key: "Callable[[str], str] | None" = None) -> Any:
+        """The first of ``attrs`` whose value ``source`` states — an attribute, or a key.
+
+        ``source`` is either a model entity (read by attribute) or the sidecar envelope (read
+        by key, through ``key``), and which one it is cannot be told from the annotation: the
+        ``key`` argument is what says so, so the cast says it to the checker.
+        """
         for attr in attrs:
-            value = source.get(key(attr)) if key is not None else getattr(source, attr, None)
+            if key is None:
+                value = getattr(source, attr, None)
+            else:
+                value = cast("Mapping[str, Any]", source).get(key(attr))
             if value:
                 return value
         return None
