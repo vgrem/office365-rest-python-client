@@ -63,6 +63,12 @@ def test_nothing_found_is_a_sentence() -> None:
     assert render([]) == ""
 
 
+def test_a_machine_format_answers_an_empty_document_and_not_the_sentence() -> None:
+    """`o365 … -o json | jq` receives `[]`; English belongs to the formats a person reads."""
+    assert render([], "json", empty="No lists found.") == "[]"
+    assert render([], "csv", empty="No lists found.") == ""
+
+
 def test_a_server_relative_address_is_joined_to_the_origin() -> None:
     assert origin_of("https://contoso.sharepoint.com/sites/x/_api/") == "https://contoso.sharepoint.com"
     assert resolve(LISTS[0], "https://contoso.sharepoint.com") == (

@@ -271,7 +271,10 @@ def render(
             title to shorten - and ``-o wide`` means the same.
     """
     if not payloads:
-        return empty
+        # A machine format answers with its own empty document, because the sentence is for a
+        # reader: `o365 … -o json | jq` has to receive `[]`, not English. csv and tsv answer with
+        # nothing, which is what a spreadsheet calls zero rows.
+        return "[]" if fmt == "json" else "" if fmt in ("csv", "tsv", "url", "name") else empty
     if fmt == "json":
         return json.dumps(list(payloads), indent=2, default=str, ensure_ascii=False)
     if fmt in ("csv", "tsv"):

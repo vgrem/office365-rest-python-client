@@ -1069,7 +1069,13 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
             ("--columns", "the names the table shows"),
             ("--no-headers", "rows without the header line"),
             ("--link", "when a name carries its URL"),
-            ("--yes", "send a destroy action without asking"),
+        ]
+        + (
+            [("--yes", "send a destroy action without asking")]
+            if getattr(found, "verb", None) and found.verb.confirm
+            else []
+        )
+        + [
             ("--dry-run", "print the request and send nothing"),
         ]
         + (
@@ -1135,7 +1141,7 @@ def _completion(argv: "list[str]") -> int:
             return _refuse(str(err))
         print(f"{answered} nouns answered -> {completion.cache_path()}")
         return 0
-    if not words:
+    if not words or words[:1] in (["-h"], ["--help"]):
         print("usage: o365 completion bash|zsh|fish [--warm [product ...]]")
         return 0
     try:
@@ -1174,7 +1180,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     """Run ``<product> <noun> [navigation ...] [action]``: the words are the route, the flags are
     the method's own.
     """
-    from office365.routing import chain, route
+    from office365.routing import route
 
     spoken = " ".join(words)
     try:
@@ -1190,8 +1196,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     method = getattr(target, found.method)
     # The walk reads types only, so the route to the noun is known before a token is: help and
     # a bad flag are answered without a session, and only the request itself needs one.
-    path = chain(_root(_audience(found.entity)), found.entity)
-    walk = path + found.walk if path is not None else None
+    walk = _walk(_root(_audience(found.entity)), found)
     parser = argparse.ArgumentParser(
         prog=f"o365 {product} {spoken}",
         description=f"Walk {' -> '.join(walk)}, then {found.method}() on {target.__name__}"
@@ -1216,14 +1221,15 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
             default=os.environ.get("O365_SITE") or None,
             help="address another site for this command only (default: $O365_SITE)",
         )
-    parser.add_argument("-y", "--yes", action="store_true", help="send a destroy action without asking")
+    if found.verb.confirm:
+        parser.add_argument("-y", "--yes", action="store_true", help="send a destroy action without asking")
     parser.add_argument("-n", "--dry-run", action="store_true", help="print the request and send nothing")
     args = parser.parse_args(argv)
     given = _accepted(args, method)
     # A destroy action is the one that asks, and `confirm` is derived from the effect, so this
     # gate cannot drift from the effect the page printed. It sits before the session is read:
     # "may I?" is answerable with no token, and a refusal costs no request.
-    if found.verb.confirm and not (args.yes or args.dry_run):
+    if found.verb.confirm and not (getattr(args, "yes", False) or args.dry_run):
         # The site is named because "which one" is the mistake a destroy action cannot undo.
         where = _site_of(_audience(found.entity), getattr(args, "site", None))
         return _refuse(
@@ -1249,6 +1255,25 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         found.shows,
         empty=f"No {noun} found.",
     )
+
+
+def _walk(root: type, found: Any) -> "tuple[str, ...] | None":
+    """The attributes to walk from the root to the object that holds the method.
+
+    A ``list`` is ``get()`` on the feed, so it has to reach the feed and not one item of it:
+    ``chain(root, Message)`` is ``None`` while ``chain(root, MessageCollection)`` is
+    ``me.messages``, and taking the entity there asked ``/me`` for a list of users. The item is
+    the target for every other verb, followed by the navigation the route already recorded
+    (``attachments`` for a message's feed, which is the one that cannot be walked to from the
+    root at all - a message has to be addressed by id, and the model does not name one).
+    """
+    from office365.routing import chain
+
+    feed = found.verb.role == "list" and isinstance(found.here, type)
+    path = chain(root, found.here if feed else found.entity)
+    if path is None:
+        return None
+    return path if feed else path + found.walk
 
 
 def _hints(target: Any, method: str) -> "list[str]":
@@ -1567,7 +1592,9 @@ def _rows(result: Any) -> "list[Any]":
         # Only a collection is a feed. An entity iterates its own fields as ``(name, value,
         # stated)`` triples -- that is what a request carries -- so iterating a ``Web`` would
         # print one row per field: `["Title", "SiteU74H3Z9O", false]` under a `VALUE` heading.
-        return [item for item in result] or [result]
+        # An empty feed is no rows, not the feed as one row: the caller's sentence (`No device
+        # found.`) is the answer, and the old fallback printed the envelope -- `value  []`.
+        return list(result)
     if hasattr(result, "to_json"):
         # A result whose own JSON is the table (`Report` over a CSV answer) is already rows.
         payload = result.to_json()

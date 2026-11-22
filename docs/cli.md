@@ -1,0 +1,204 @@
+# The `o365` command line
+
+The package installs a console script named `o365`. It is a front end to the same model the
+library ships: every word it accepts and every URL it sends is read from the types, the declared
+permissions and the index the generator writes — nothing here keeps a list of its own.
+
+```bash
+pip install office365-rest-python-client
+o365
+```
+
+```
+usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]
+       o365 <product> <noun> [navigation ...] [action] [flags]
+       o365 <product> <noun> list [-o table|wide|json|csv|tsv|url|name]
+       o365 <product> <noun> ... delete [--yes] [-n|--dry-run]
+       o365 graph <product> <noun> [navigation ...] [action]
+       o365 login [--tenant <tenant>] [--client-id <id>] [--mode device-flow] [--scopes ...]
+       o365 sharepoint use <site> [--as <name>]   (a site is one ClientContext)
+       o365 sharepoint context [ls|use <name>|inspect]
+       o365 completion bash|zsh|fish [--warm [product ...]]
+       o365 licences [-o table|wide|csv|tsv|json]
+       o365 doctor [<product> <noun> [action]] [-o table|json]
+  a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json
+```
+
+## Log in once
+
+One token serves every command in its audience, so the first thing to do is log in:
+
+```bash
+o365 login                                          # device flow, the default
+o365 login --mode client-secret --client-secret "$SECRET"
+o365 login --mode username-and-password --username me@contoso.com --password "$PW"
+```
+
+`--mode` chooses the credential entry point; every other flag is a parameter that method
+declares, so `o365 login -h` is the API's own signature. The modes are `device-flow`,
+`interactive`, `client-secret`, `certificate` and `username-and-password`. The application id and
+the tenant are read from `--client-id` / `--tenant`, then `O365_CLIENT_ID` / `O365_TENANT`, then
+`~/.o365/config.json` — which the CLI only ever reads, so you can put the tenant there yourself:
+
+```json
+{"tenant": "contoso.onmicrosoft.com", "client_id": "00000000-0000-0000-0000-000000000000"}
+```
+
+Tokens are kept in `~/.o365/sessions.json`, per audience: `o365 whoami` says who you are and
+what the token grants, and `o365 logout` forgets one audience or all of them.
+
+## The grammar
+
+```
+o365 <product> <noun> [navigation ...] [action]
+```
+
+`<product>` is one of the 22 products the index publishes (`o365 directory …`,
+`o365 intune …`, `o365 outlook …`), plus the three audiences that own a token (`graph`,
+`sharepoint`, `exchange`). Because 25 products share the Graph token and no package is called
+`graph`, `o365 graph <product> …` is the explicit spelling of the same thing.
+
+The rest is the route: a noun, then the links that hang off it, then what to do.
+
+```bash
+o365 directory user list
+o365 outlook message list
+o365 intune managed-device list
+o365 onedrive drive get
+```
+
+A route that stops on a noun prints that noun's page: the verbs it answers, grouped by effect,
+and the links it holds. `-h` on any route prints the flags, the permission the call declares and
+the licence it needs; `o365 help <route>` asks the same question by name.
+
+## Reading
+
+`list` reads the feed, `get` reads one object.
+
+```console
+$ o365 directory user list
+DISPLAYNAME         USERPRINCIPALNAME                                 MAIL
+a.dyukov            a.dyukov_hotmail.com#EXT#@mediadev8.onmicrosoft…  a.dyukov@hotmail.com
+```
+
+| `-o` | What it prints |
+| --- | --- |
+| `table` | the type's own columns, values truncated to the terminal (`…` marks the cut) |
+| `wide` | every field the service returned, no truncation |
+| `json` | the payload as it came |
+| `csv`, `tsv` | the same rows for a spreadsheet |
+| `url` | one address per line, from the type's `link` fields |
+| `name` | one name per line |
+
+```bash
+o365 outlook message list -o json | jq '.[].subject'
+o365 directory user list --columns displayName,userPrincipalName -o csv > users.csv
+```
+
+`table`, `csv`, `tsv` and `url` ask the service only for the fields they print (`$select`); `json`
+and `wide` send no `$select` at all, so a caller piping to `jq` gets the service's own payload.
+With `-o csv`, `-o tsv` or `-o json` the one-sentence headline goes to stderr, keeping stdout pure
+data. `--no-headers` drops the header line, and `--link auto|always|never` decides whether a name
+is wrapped in a clickable hyperlink — `auto` means "only when printing to a terminal", so a pipe
+never carries escape codes.
+
+An empty feed is a sentence, not an empty table: `o365 intune managed-device list` in a tenant
+with no devices prints `No managed-device found.` — and `-o json` answers `[]` there, so a pipe to
+`jq` stays valid.
+
+## Writing
+
+A write is the same command with the method's own flags, because the flags *are* its parameters:
+`o365 <route> -h` lists them along with the permission the call declares and the licence it needs.
+
+```console
+$ o365 directory group delete
+o365: `delete` destroys what the service holds; send it again with --yes
+```
+
+`--yes` is added only to a command whose declared effect is `destroy` — the one that asks — so a
+read never shows a flag that would do nothing. `-n` / `--dry-run` works everywhere: it prints the
+request the client would send (`GET https://…`) and sends nothing, using the walk the model
+already knows, so it answers with a stale token too.
+
+## What is not here yet
+
+A command's object has to be reachable from the client root by links the model declares. That is
+what `list` and `get` do today: 98 of the index's 137 `list` routes and 265 of its 2037 `get`
+routes walk from the root, and the rest are refused by name rather than guessed at.
+
+An item *inside* a feed is not addressable from the command line yet. `EntityCollection.__getitem__`
+already takes the key and `Route` already knows the feed that holds the item, but no word on the
+line supplies the key, so a delete of one group answers:
+
+```console
+$ o365 directory group delete --yes
+o365: directory group delete is declared, but nothing walks there from GraphClient: every link on the way needs an argument the model does not name yet
+```
+
+3601 of the index's delete and update routes end that way, and 528 reach a root link — mostly the
+singleton settings objects, which have no key to give. Reads are complete for feeds; addressing
+one item by key is the next gap, and the refusal above is the honest answer until it closes.
+
+## One site at a time (SharePoint)
+
+A SharePoint token covers every site collection, but a command runs against exactly one. The
+session remembers where it is addressed, and the choice outlives the process:
+
+```bash
+o365 sharepoint use https://contoso.sharepoint.com/sites/legal --as legal
+o365 sharepoint context                # where this session is, and the sites it remembers
+o365 sharepoint context ls
+o365 sharepoint context inspect        # the current one on its own lines
+o365 sharepoint lists list -s https://contoso.sharepoint.com/sites/hr   # this command only
+```
+
+`--as` remembers the URL under a name, so `o365 sharepoint use legal` is enough afterwards. `-s`
+/ `--site` (or `O365_SITE`) overrides the sticky choice for one command, and `--dry-run` prints
+the absolute URL, so the site a destroy would touch is visible before it is sent.
+
+## What you have, before you run anything
+
+```bash
+o365 licences      # which licences the commands name, and whether this tenant holds them
+o365 doctor        # the session, the tenant's plans and roles, and each product's word count
+o365 doctor intune managed-device retire   # what one command needs from this session
+```
+
+`licences` joins the markers the library carries to one read of the tenant's subscriptions. Each
+row is a plan, the seat it is asked of (`tenant` or `user`), whether it is held, how many nouns it
+opens and which command families those nouns live in. A plan the tenant did not buy reads `no`; a
+seat the token could not read reads `unknown`, never `no`.
+
+`doctor` answers the environment — the session and its grants, the plans and roles the caller
+holds, and the index's per-product totals, which need no session at all — in four requests. Given
+a route it answers instead for one command, with no request to the service being asked about: the
+delegated and application permissions the method declares, marked against the token's own
+`scp`/`roles`, the licence the type names, and one row per directory role it asks for. `have`,
+`missing` and `unknown` are the same three words as above.
+
+## Completion
+
+```bash
+o365 completion bash >> ~/.bashrc      # zsh and fish work the same way
+o365 completion --warm                 # fill the cache so a TAB never pays an import
+```
+
+The script asks a hidden subcommand, which answers from the index and the model's own metadata —
+the command line's words first (products, session verbs, flags), the model's nouns second. It
+never sends a request, and `--warm` writes the cache once so that a later TAB reads it back.
+
+## Exit codes and environment
+
+| Code | Meaning |
+| --- | --- |
+| `0` | the command ran, or the question was answered |
+| `1` | the service refused the request; its own words are printed |
+| `2` | nothing ran: unknown word, unreadable flag, missing session, or a destroy without `--yes` |
+
+| Variable | Means |
+| --- | --- |
+| `O365_TENANT`, `O365_CLIENT_ID` | the defaults `--tenant` / `--client-id` fall back to |
+| `O365_SITE` | the site a SharePoint command is addressed at |
+| `O365_HOME` | where `sessions.json` and `config.json` live (default `~/.o365`) |
+| `O365_CACHE` | the completion cache (default `~/.cache/o365/completion.json`) |

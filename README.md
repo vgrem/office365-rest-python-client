@@ -69,6 +69,19 @@ Directly from source:
 pip install git+https://github.com/vgrem/office365-rest-python-client.git
 ```
 
+The package also installs a console script, `o365`, that runs the same model from a shell:
+
+```bash
+o365 login                       # once: device flow, or --mode client-secret, --username/--password
+o365 directory user list         # a feed, printed as a table, or -o json/csv/tsv/wide/url/name
+o365 intune managed-device list -o csv > devices.csv
+o365 doctor                      # the session, the tenant's licences and roles, before anything runs
+o365 licences                    # which licences the commands name, and whether this tenant holds them
+```
+
+It suggests its own words (`o365 completion bash`), prints the request a command would send
+(`-n`), and answers `-h` for any route without a session. See [the command line](docs/cli.md).
+
 ## Authentication
 
 Modern flows authenticate through **Microsoft Entra ID** using [MSAL](https://learn.microsoft.com/entra/identity-platform/msal-overview). Both clients support delegated (user) and app-only (application) access.

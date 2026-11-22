@@ -4,6 +4,7 @@ nav:
   - installation.md
   - upgrading.md
   - getting-started.md
+  - cli.md
   - async.md
   - long-running-operations.md
   - data-pipeline.md

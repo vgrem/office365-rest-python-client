@@ -72,6 +72,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **The command line has a page.** `docs/cli.md` describes what `o365` accepts and what it
+  sends: the grammar, the one login and where the tenant and client id come from, the seven
+  output formats and which of them ask for a `$select`, `-n`/`--yes`, one site at a time on
+  SharePoint, `licences`, `doctor` and the completion script. It also says what is *not* there:
+  an item inside a feed cannot be addressed from the line yet.
+
 - **`o365 doctor` says what this session can do before it runs anything.** With no arguments it
   answers the environment — the session and its grants, the tenant's plans and the roles the
   caller holds, then the index's own per-product totals — in four reads and ~2 s, and prints the
@@ -145,6 +151,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   methods name no permission yet, and the ratchet records that count.
 
 ### Fixed
+
+- **`o365 <noun> list` asked the service for the wrong object.** The walk reached the *item*
+  type instead of the feed that holds it, so `o365 directory user list` sent `GET /me` and
+  printed the caller as if it were the user list, while `o365 outlook message list` was refused
+  outright (`Message` has no root link of its own, `MessageCollection` has `me.messages`). A
+  `list` now walks to the feed — 98 of the index's 137 `list` routes reach one. `_walk` holds
+  the choice so that it is answered without a session, and `tests/unit/test_cli_walk.py` pins
+  both halves.
+
+- **An empty feed printed its own envelope.** `_rows` fell back to the feed when it held no
+  items, so `o365 intune managed-device list` in a tenant with no devices printed `value  []`
+  under a `VALUE` heading. A feed is now its items and nothing else, which lets `_send` print
+  the sentence it already built (`No managed-device found.`), and `render` answers a machine
+  format with its own empty document — `-o json` gives `[]`, so `o365 … -o json | jq` stays
+  valid.
 
 - `FileCollection.upload_content` failed on Windows for content larger than `chunk_size`
   with `PermissionError: [Errno 13]` (#1076). The content was staged to a
