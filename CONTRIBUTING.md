@@ -148,102 +148,54 @@ read from the same object: the skip reason (`missing delegated: any of Mail.Read
 `pytest` summary (`N  delegated: any of …`), and the console preflight summary. Add the
 requirement to the test, not to a separate list.
 
-Within a file, a test also has to earn its place: it must execute a line, or make
-an assertion, that no other test in that file makes. Where a richer test already
-walks the same lines and asserts the same facts, the narrower one is deleted rather
-than kept beside it. The suite was halved on that measure — 2,233 collected tests
-became 1,113, while the lines exercised by `office365/` moved from 16,937 to 16,383
-(3.3%): the other 47% of the tests were re-walking covered ground. The measurement
-is reproducible with `coverage run --contexts` over the suite and a set-cover over
-`(test → lines, assertions)`; it is not a matter of taste.
+### What a test is worth
 
-A second pass asked a different question: does `tests/<product>/` already pin this
-fact against a live tenant? Those suites cannot run here without credentials, so
-the answer is argued from the E2E file's subject, paths and verbs — never from a
-run. What a live suite already pins (a request shape, a payload spelling, a tour
-of accessors) is deleted here; what it cannot pin offline stays — error typing,
-the exact bytes emitted, canonical checksums, and the rules the client derives
-before it ever sends a request. That pass took 1,112 tests to 812 and the
-statements `office365/` executes from 53,659 to 52,500 (2.2%).
+Within a file, a test has to earn its place: it must execute a line, or make an
+assertion, that no other test in that file makes. Where a richer test already walks the
+same lines and asserts the same facts, the narrower one is deleted rather than kept
+beside it. The suite was halved on that measure — 2,233 collected tests became 1,113,
+while the lines exercised by `office365/` moved from 16,937 to 16,383 (3.3%): the other
+47% of the tests were re-walking covered ground. The measurement is reproducible with
+`coverage run --contexts` over the suite and a set-cover over `(test → lines,
+assertions)`; it is not a matter of taste.
 
-A third pass took the same criterion to its end. Eight files were about the
-exchange and nothing else — the two transport adapters, the `client-request-id`
-header, the batch envelope, the paging loop, and the streaming and chunked
-transfer loops — and every one of them pinned a shape a product suite already
-walks against a tenant: `tests/sharepoint/test_client.py` submits batches,
-`tests/sharepoint/test_large_list.py` pages a list, `tests/sharepoint/test_file.py`
-streams a large file up and down through the same transport. They are gone:
-77 tests and 2,001 lines. What stayed is what a tenant cannot script — a 429
-with a `Retry-After`, a 202 that polls through seven fractions, an awaitable
-token callback, a tolerant write, an idempotent ensure — because no run against
-a live service can provoke those on demand, and a fake is the only stimulus that
-reaches the branch.
+A live suite pins the request a method sends and the payload it parses, so an offline
+test that re-walks a covered path goes with it. What stays offline is what no run
+against a tenant can provoke or observe: error typing, the exact bytes emitted, a
+canonical checksum, a rule the client derives before it ever sends a request, a 429 with
+`Retry-After`, a 202 that polls, an awaitable token callback, a tolerant write, an
+idempotent ensure, a download that resumes a partial file.
 
-A fourth pass asked who each test is for. A pin that is one assertion long — a getter
-that read a neighbour's wire name, a body that spelled `+00:00` where the service takes
-`Z`, a private `_certificate_der` on its own — was spending twenty lines of docstring,
-imports and a helper on one `assert`. Twenty-seven such files became one
-`tests/unit/test_regressions.py`, grouped by the kind of mistake and commented one line
-each; the near-duplicates they had grown (`test_prefer.py`'s three header variants,
-`test_enum_flags.py`'s four reads of one `parse_enum` call) were merged. A later pass
-deleted that file as well: a pin under a comment naming a closed defect is a changelog in
-code, and it is the one kind of test that never fails for a reason a reader can act on —
-the defect is fixed in the library, and the suite that exercises the fix live was where it
-was found. What went with the pins were tests that graded the harness instead of the
-library: the limits registry's identity bookkeeping, the docs generator's scanner, and the
-self-check that `make_dataclass` rejects an unhashable default on the interpreter running
-the suite. A ratchet's job is to fail on this tree; feeding it a synthetic offender tests
-the interpreter.
+Three kinds of pin are not worth the file they live in. A pin one assertion long — a
+getter that read a neighbour's wire name, a body that spelled `+00:00` where the service
+takes `Z` — costs more in imports and a helper than the bug it prevents: put it in the
+file that owns the subject, or delete it. A pin under a comment naming a closed defect is
+a changelog in code, and never fails for a reason a reader can act on. And a test that
+grades the harness or the interpreter — a ratchet fed a synthetic offender,
+`make_dataclass` rejecting an unhashable default — tests Python, not this library.
 
-A fifth pass asked whether a fake payload for a real endpoint earns its keep.
-`test_comparable_profile.py` spelled out one comparison rule at a time — 25 tests whose
-subject is the digest the migration engine computes, not the service — and it duplicated a
-property two other files already hold: `test_calendar_profile.py` pins the digest of an
-event's canonical form and what gating a field does to it, and the declaration ratchet pins
-that every rule fits its field. `test_content_type_links.py` asserted a request body one
-assertion long. Both are gone, as is a download test whose async terminal re-walked its own
-sync twin (async dispatch has its own file). What stayed is what no run against a tenant
-provokes: a download that resumes a partial file, and a feature activation whose `GetById`
-answers `null` for every feature at site scope — the end-to-end activation test is
-idempotent, so on a tenant where the feature is already active it passes even when the
-client suppresses the write.
+Ask of every file whether its subject is a *decision* or the way the decision is spelled:
+the XML a builder emits, how a debugging aid prints, how a third-party bridge round-trips
+— each is already covered by the suite that walks the same path through the same code.
 
-A sixth pass went after the fakes rather than the assertions. The cost of a
-double-heavy file is the double, not the test: `test_sharepoint_library_target.py` spent
-369 of its 640 lines on stand-ins for `File`, `Folder`, `ListItem` and the web, so the
-tests were asserting against a model of the library instead of the library. It now builds
-a real `ClientContext` over a `RoutingTransport` and scripts only the service's answers —
-404 lines, and one test more than before, because the request path the doubles had
-screened is now visible (`Files/add(overwrite=true,url='a.txt')`, no folder ensure). The
-rule: **a fixture may be a wire envelope; it must never hand-copy a model's shape.** A
-202 with a `Location` header, a `{"d": {"results": []}}` page, a `#microsoft.graph.driveItem`
-body — those are the service speaking, and they belong in `tests/_scripted_transport.py` as
-a payload. A stand-in for `File` that answers `get_property()` is the library speaking to
-itself, and it pins whatever the stand-in does, not what the library does. Mocking a
-`TeamsOperation` to assert the operation's own parse is the limiting case: the payload
-would be asserting itself. Doubles that survive all read client-side state a payload
-cannot carry — a thread's name, two requests in flight at once, a digest handshake.
+#### A fixture is a wire envelope, not a stand-in model
 
-That file also ended 17 copies of the same transport. `tests/_scripted_transport.py` now
-exports `RecordingTransport` (payloads in call order, plus the requests received) beside
-`ScriptedTransport` and `RoutingTransport`; the clones in the product test files were
-byte-for-byte the same eleven lines, 13 of them replaced. If a test needs a transport that
-does something new, the something new belongs in the shared module, where the next test
-finds it instead of writing their own.
+**A fixture may be a wire envelope; it must never hand-copy a model's shape.** A 202 with a
+`Location` header, a `{"d": {"results": []}}` page, a `#microsoft.graph.driveItem` body —
+those are the service speaking, and they belong in `tests/_scripted_transport.py` as a
+payload. A stand-in for `File` that answers `get_property()` is the library speaking to
+itself: it pins whatever the double does, not what the library does, and mocking an
+operation to assert that operation's own parse is the limiting case where the payload
+asserts itself. Build a real `ClientContext` over a transport and script only the service's
+answers: the request path stays visible, which is half of what the test is for. A double
+survives only where it reads client-side state a payload cannot carry — a thread's name,
+two requests in flight at once, a digest handshake.
 
-A seventh pass deleted files rather than tests, and asked one question of each: is the
-subject a *decision*, or the way a decision is spelled? `test_caml_builder.py` (8 tests)
-compared XML strings the builder emits, and `tests/sharepoint/test_large_list.py` and
-`test_list_item.py` already read a real list through the same builder. `test_formats.py`
-(7 tests) round-tripped a file through pyarrow, duckdb and pandas — third-party bridges whose
-subject `test_data_pipeline.py` already walks in its own round trips. `test_repr.py`
-(9 tests) pinned how a debugging aid prints. Three subjects survived the cut and moved into
-the file that already owns the pipeline: a resolved collection exports without a second round
-trip, a paged export writes its header once, and a DataFrame reaches a folder as
-`utf-8-sig`. `tests/unit` went from 404 tests in 33 files to 381 in 30 — 299 lines of imports
-and fixtures for 24 test functions. The notebook renderer (`runtime/display.py`) lost its only
-offline pin, which is what that subject was worth: a mangled `repr` is seen the moment it is
-printed, and no caller branches on it.
+`tests/_scripted_transport.py` holds every transport the suite scripts — `ScriptedTransport`
+and its `RecordingTransport` variant (payloads in call order, plus the requests received),
+`RoutingTransport`, and the async and method-routing ones. A test that needs a transport
+doing something new adds it there, where the next test finds it instead of writing another
+copy.
 
 ### End-to-end tests (maintainers / optional)
 
