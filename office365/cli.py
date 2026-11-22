@@ -10,6 +10,7 @@ Grammar, ``az``-shaped and with the audience first because a token belongs to on
     o365 sharepoint use <site> [--as <name>]  -- address this session at one site collection
     o365 sharepoint context [ls|use <name>|inspect] -- where it is addressed, and what it remembers
     o365 help <any words>               -- the page for them, or ``-h`` at the leaf
+    o365 config [<key>]                 -- what a login reads, and the file to edit
     o365 completion bash|zsh|fish        -- print the shell script that completes the words
     o365 completion --warm [product ...] -- fill the cache, so no TAB pays an import
 
@@ -29,7 +30,8 @@ is renewed rather than asked for again) and the site, which a login can find rat
 
 What it has to be *told*, it asks once and keeps in ``~/.o365/config.json`` -- your file, read
 and never written here: ``client_id``, ``tenant``, ``site``. In that order a flag wins, then
-``O365_CLIENT_ID``/``O365_TENANT``/``O365_SITE``, then the file, then an error that names it.
+``O365_CLIENT_ID``/``O365_TENANT``/``O365_SITE``, then the file, then a block that prints the file
+to write -- and ``o365 config`` says what is answered already and which of the four answered it.
 This library ships no app registration of its own, so a client id has to come from somewhere;
 the difference worth having is being asked once instead of every run. A ``--password`` is a flag
 like any other, which also means it is visible in the process list; a secret store behind
@@ -86,7 +88,7 @@ import types
 from collections.abc import Mapping
 from enum import Enum
 from pathlib import Path
-from typing import Any, Union, get_args, get_origin
+from typing import Any, NamedTuple, Union, get_args, get_origin
 from urllib.parse import urlparse
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
@@ -118,6 +120,39 @@ SITE_MEMORY = 10
 #: The two words that move a session's site boundary, for the audiences that have one.
 SITE_WORDS = ("use", "context")
 
+
+class Setting(NamedTuple):
+    """One fact a login reads from the person rather than from the arguments of one run.
+
+    ``key`` is its name in ``config.json``, ``spoken`` how it reads in a sentence, and the two
+    shortcuts answer it for one shell or one command; the file answers it for every later run.
+    """
+
+    key: str
+    spoken: str
+    env: str
+    flag: str
+
+
+#: What a login has to be told once, in the order a person meets it: which directory, which
+#: application, then which site collection.
+SETTINGS = (
+    Setting("tenant", "tenant", "O365_TENANT", "--tenant"),
+    Setting("client_id", "client id", "O365_CLIENT_ID", "--client-id"),
+    Setting("site", "site", "O365_SITE", "--base-url"),
+)
+
+#: What each setting looks like when the file is written from scratch. Two are examples; the
+#: client id is marked, because it is the one answer this library cannot know or supply.
+EXAMPLES = {
+    "tenant": "contoso.onmicrosoft.com",
+    "client_id": "<application (client) id>",
+    "site": "https://contoso.sharepoint.com/sites/team",
+}
+
+#: What a table prints in place of a value nobody answered yet, as `aws configure list` does.
+NOT_SET = "<not set>"
+
 #: What a licence report prints as: the record formats, and none of the address ones - ``url`` and
 #: ``name`` answer for a noun's records, and a plan is not something a client can address.
 LICENCE_FORMATS = ("table", "wide", "csv", "tsv", "json")
@@ -141,8 +176,10 @@ def main(argv: "list[str] | None" = None) -> int:
         return _complete(words[1:])
     if words[:1] == ["completion"]:
         return _completion(words[1:])
-    # `licences` and `doctor` are the two words that ask the tenant a question about the whole
-    # library rather than about one product, so they are answered before a product is looked for.
+    # `config`, `licences` and `doctor` answer a question about the whole library rather than
+    # about one product, so they are answered before a product is looked for.
+    if words[:1] == ["config"]:
+        return config(words[1:])
     if words[:1] == ["licences"]:
         return licences(words[1:])
     if words[:1] == ["doctor"]:
@@ -206,14 +243,14 @@ def login(audience: str, argv: "list[str]") -> int:
     wanted = set(_signature(root).parameters) | set(_signature(getattr(root, method)).parameters)
     given["client_id"] = given.get("client_id") or os.environ.get("O365_CLIENT_ID") or prefs.get("client_id", "")
     if not given["client_id"]:
-        parser.error('no client id: pass --client-id, set O365_CLIENT_ID, or put "client_id" in ' + str(_config()))
+        return _refuse(_advice(["client_id"]))
     tenant = given.get("tenant") or os.environ.get("O365_TENANT") or prefs.get("tenant", "")
     if tenant and "tenant" in wanted:
         given["tenant"] = tenant
     if "base_url" in wanted and not given.get("base_url"):
         given["base_url"] = _site_for(given.get("tenant", ""), prefs)
         if not given["base_url"]:
-            parser.error('no site: pass --base-url, set O365_SITE, or put "site" in ' + str(_config()))
+            return _refuse(_advice(["site"]))
 
     import msal
 
@@ -978,6 +1015,8 @@ def _following(words: "list[str]", prefix: str) -> "list[tuple[str, str]]":
     """
     if not words:
         return _prefixed(_top(), prefix)
+    if words[0] == "config":
+        return _prefixed([(setting.key, setting.spoken) for setting in SETTINGS], prefix)
     if words[0] == "doctor":
         # The page takes the same route as the command it describes, so it answers with the same
         # words: a product before a noun, then whatever the route reached.
@@ -1029,12 +1068,13 @@ def _after(product: str, path: "list[str]") -> "list[tuple[str, str]]":
 
 
 def _top() -> "list[tuple[str, str]]":
-    """Nothing typed yet: what owns a token, what owns types, and the two words with no noun."""
+    """Nothing typed yet: what owns a token, what owns types, and the words that own neither."""
     return (
         [(name, "audience") for name in AUDIENCES]
         + _products()
         + _sessions()
         + [
+            ("config", "what a login reads, and where"),
             ("completion", "shell script"),
             ("licences", "what this tenant holds"),
             ("doctor", "what this session can do"),
@@ -1751,6 +1791,122 @@ def _prefs() -> "dict[str, str]":
     return {name: str(value) for name, value in kept.items() if isinstance(value, (str, int))}
 
 
+def _setting(name: str) -> Setting:
+    """The setting named ``name``: its key, the word a sentence uses, and its two shortcuts."""
+    return next(setting for setting in SETTINGS if setting.key == name)
+
+
+def _short_path(path: Path) -> str:
+    """The file as a person spells it -- ``~/.o365/config.json`` -- and the full path elsewhere.
+
+    A report that says *where* a value came from is only useful if it names a path you can open,
+    and the home directory is the one prefix a reader already knows.
+    """
+    spelled = str(path)
+    home = str(Path.home())
+    return "~" + spelled[len(home) :] if spelled.startswith(home) else spelled
+
+
+def _resolved(name: str, kept: "Mapping[str, Any]") -> "tuple[str, str]":
+    """One setting's effective value and where it came from.
+
+    The order is the one a login applies -- this shell, then the file, then the tenant's own
+    default -- so ``o365 config tenant`` answers with exactly what a command would use. A flag is
+    the fourth answer and cannot show here: it belongs to the run that carried it.
+    """
+    setting = _setting(name)
+    given = os.environ.get(setting.env, "")
+    if given:
+        return given, "environment"
+    if kept.get(name):
+        return str(kept[name]), _short_path(_config())
+    if name == "site":
+        # The host a `<label>.onmicrosoft.com` tenant gets by default. A login still checks it
+        # with one read before addressing a session at it; this report sends no request at all.
+        derived = _derived_site(os.environ.get("O365_TENANT", "") or str(kept.get("tenant", "")))
+        if derived:
+            return derived, "derived from the tenant"
+    return "", "not set"
+
+
+def _advice(missing: "list[str]") -> str:
+    """How to answer a setting this run needs, as a block a person can paste and be done.
+
+    The snippet is the file *as it would be*, not a template of it: a value already kept is
+    repeated, because ``cat >`` replaces the whole document and answering one question must not
+    cost another. The path is this machine's, so not a word of it needs editing.
+    """
+    kept = _prefs()
+    # Only what is answered, plus what was asked for: an empty key in the snippet would answer
+    # nothing and read as though it had been filled in.
+    document = {setting.key: str(kept[setting.key]) for setting in SETTINGS if kept.get(setting.key)}
+    for name in missing:
+        document[name] = EXAMPLES[name]
+    path = _config()
+    spoken = " or ".join(_setting(name).spoken for name in missing)
+    body = "\n".join("    " + line for line in json.dumps(document, indent=2).splitlines())
+    envs = " ".join(f"{_setting(name).env}=<{_setting(name).spoken.replace(' ', '-')}>" for name in missing)
+    flags = " ".join(f"{_setting(name).flag} <{_setting(name).spoken.replace(' ', '-')}>" for name in missing)
+    return (
+        f"no {spoken} yet\n\n"
+        "  Give it once, so that no command has to repeat it\n"
+        f"  (a file you own: o365 config reads it, and never writes to it):\n\n"
+        f"    mkdir -p {_short_path(path.parent)}\n"
+        f"    cat > {_short_path(path)} <<'EOF'\n"
+        f"{body}\n"
+        "    EOF\n\n"
+        f"  or for this shell:  export {envs}\n"
+        f"  or for one command: {flags}\n"
+        "  o365 config says what is answered already, and where each answer came from"
+    )
+
+
+def config(argv: "list[str]") -> int:
+    """What this machine answers, where each answer came from, and how to answer the rest.
+
+    Read only by design: a preference is not a secret, so it lives in a file the person owns and
+    this command has no business rewriting it. Saying the chain is the useful half -- the shape
+    ``aws configure list`` has -- and ``o365 config <key>`` prints one resolved value, so a script
+    reads what a command would use instead of restating the precedence.
+    """
+    parser = argparse.ArgumentParser(
+        prog="o365 config",
+        description="The settings a login reads once: what is answered, from where, and the file to edit.",
+    )
+    parser.add_argument(
+        "key",
+        nargs="?",
+        choices=[setting.key for setting in SETTINGS],
+        help="print this setting's resolved value, and exit 1 when nothing answers it",
+    )
+    args = parser.parse_args(argv)
+    kept = _prefs()
+    if args.key:
+        value = _resolved(args.key, kept)[0]
+        if not value:
+            print(_advice([args.key]), file=sys.stderr)
+            return 1
+        print(value)
+        return 0
+
+    from office365.runtime.render import render
+
+    rows = []
+    for setting in SETTINGS:
+        value, origin = _resolved(setting.key, kept)
+        rows.append({"setting": setting.key, "value": value or NOT_SET, "from": origin})
+    print(render(rows, "table", columns=("setting", "value", "from")))
+    print()
+    print(f"file         {_short_path(_config())}   (read only: edit it yourself)")
+    print("flags        --tenant, --client-id, --base-url   (one run, and they win)")
+    print("environment  O365_TENANT, O365_CLIENT_ID, O365_SITE")
+    if not _resolved("client_id", kept)[0]:
+        # A login cannot start without one, so this is the one row worth spelling out in full.
+        print()
+        print(_advice(["client_id"]))
+    return 0
+
+
 def _load() -> "dict[str, Any]":
     """Every kept session, or nothing when there is no readable store."""
     try:
@@ -1815,6 +1971,7 @@ def _usage() -> str:
         "       o365 login [--tenant <tenant>] [--client-id <id>] [--mode device-flow] [--scopes ...]\n"
         "       o365 sharepoint use <site> [--as <name>]   (a site is one ClientContext)\n"
         "       o365 sharepoint context [ls|use <name>|inspect]\n"
+        "       o365 config [<key>]                (what is set, and the file to edit)\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]\n"
         "       o365 licences [-o table|wide|csv|tsv|json]\n"
         "       o365 doctor [<product> <noun> [action]] [-o table|json]\n"

@@ -18,6 +18,7 @@ usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]
        o365 login [--tenant <tenant>] [--client-id <id>] [--mode device-flow] [--scopes ...]
        o365 sharepoint use <site> [--as <name>]   (a site is one ClientContext)
        o365 sharepoint context [ls|use <name>|inspect]
+       o365 config [tenant|client_id|site]     (what is answered, and where from)
        o365 completion bash|zsh|fish [--warm [product ...]]
        o365 licences [-o table|wide|csv|tsv|json]
        o365 doctor [<product> <noun> [action]] [-o table|json]
@@ -36,12 +37,55 @@ o365 login --mode username-and-password --username me@contoso.com --password "$P
 
 `--mode` chooses the credential entry point; every other flag is a parameter that method
 declares, so `o365 login -h` is the API's own signature. The modes are `device-flow`,
-`interactive`, `client-secret`, `certificate` and `username-and-password`. The application id and
-the tenant are read from `--client-id` / `--tenant`, then `O365_CLIENT_ID` / `O365_TENANT`, then
-`~/.o365/config.json` — which the CLI only ever reads, so you can put the tenant there yourself:
+`interactive`, `client-secret`, `certificate` and `username-and-password`.
 
-```json
-{"tenant": "contoso.onmicrosoft.com", "client_id": "00000000-0000-0000-0000-000000000000"}
+Two answers are not part of a mode: which application is asking, and which directory it asks.
+They are read from `--client-id` / `--tenant` for one run, then `O365_CLIENT_ID` /
+`O365_TENANT` for one shell, then `~/.o365/config.json` for every run. That file is yours — the
+CLI only ever reads it — so it will not write it for you. Instead it prints the file it wants,
+with this machine's path and the values you have already given:
+
+```console
+$ o365 login
+o365: no client id yet
+
+  Give it once, so that no command has to repeat it
+  (a file you own: o365 config reads it, and never writes to it):
+
+    mkdir -p ~/.o365
+    cat > ~/.o365/config.json <<'EOF'
+    {
+      "tenant": "contoso.onmicrosoft.com",
+      "client_id": "<application (client) id>"
+    }
+    EOF
+
+  or for this shell:  export O365_CLIENT_ID=<client-id>
+  or for one command: --client-id <client-id>
+```
+
+`o365 config` is the same answer as a table, which is what to run when a command behaves
+differently from what you expect:
+
+```console
+$ o365 config
+SETTING    VALUE                             FROM
+tenant     mediadev8.onmicrosoft.com         ~/.o365/config.json
+client_id  <not set>                         not set
+site       https://mediadev8.sharepoint.com  derived from the tenant
+
+file         ~/.o365/config.json   (read only: edit it yourself)
+flags        --tenant, --client-id, --base-url   (one run, and they win)
+environment  O365_TENANT, O365_CLIENT_ID, O365_SITE
+```
+
+`FROM` names the source, not just its kind: the path of the file that answered, `environment`,
+`derived from the tenant` for the SharePoint host a `<label>.onmicrosoft.com` tenant gets by
+default, or `not set`. `o365 config <key>` prints one resolved value and exits `1` when nothing
+answers it, so a script reads what a command would use instead of restating the order:
+
+```bash
+client_id=$(o365 config client_id) || { echo "run o365 config to see what is missing"; exit 1; }
 ```
 
 Tokens are kept in `~/.o365/sessions.json`, per audience: `o365 whoami` says who you are and
@@ -198,7 +242,7 @@ never sends a request, and `--warm` writes the cache once so that a later TAB re
 
 | Variable | Means |
 | --- | --- |
-| `O365_TENANT`, `O365_CLIENT_ID` | the defaults `--tenant` / `--client-id` fall back to |
+| `O365_TENANT`, `O365_CLIENT_ID` | the defaults `--tenant` / `--client-id` fall back to; `o365 config` prints which one answered |
 | `O365_SITE` | the site a SharePoint command is addressed at |
 | `O365_HOME` | where `sessions.json` and `config.json` live (default `~/.o365`) |
 | `O365_CACHE` | the completion cache (default `~/.cache/o365/completion.json`) |

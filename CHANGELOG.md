@@ -72,6 +72,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`o365 config` answers the question a first run asks: which file, which keys.** The CLI has
+  always wanted a client id and a tenant once rather than every run, in a file it reads and never
+  writes (`~/.o365/config.json`), and until now the only place that file was mentioned was a
+  one-line error naming its path. A missing setting now prints the file itself — the path this
+  machine spelled, the keys, and the values already answered, so pasting the block is lossless —
+  and `o365 config` prints the chain as a table: each setting's resolved value, and `FROM` the
+  file that answered it, `environment`, `derived from the tenant`, or `not set`. `o365 config
+  <key>` prints one resolved value and exits `1` when nothing answers it, so a script reads what
+  a command would use instead of restating the precedence. The file stays the person's: neither
+  the error nor the report writes to it.
 - **The command line has a page.** `docs/cli.md` describes what `o365` accepts and what it
   sends: the grammar, the one login and where the tenant and client id come from, the seven
   output formats and which of them ask for a `$select`, `-n`/`--yes`, one site at a time on
