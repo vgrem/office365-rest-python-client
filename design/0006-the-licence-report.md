@@ -176,4 +176,4 @@ client can address.
 | the licence on a noun, format 2 | `generator/tools/index.py` — `_noun`, `_licence_of` |
 | the join, the rows, the sentence | `office365/licensing/report.py` |
 | the verb, the two reads, `-o` | `office365/cli.py` — `licences`, `_assigned` |
-| the tests | `tests/unit/test_licence_report.py` |
+| the tests | `tests/unit/test_cli.py` (the join, the rows, the sentence, the page) |
