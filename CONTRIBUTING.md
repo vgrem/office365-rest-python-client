@@ -90,7 +90,7 @@ The offline tests are split by what they describe:
 | Directory | Subject |
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet |
-| `tests/tooling` | the code generator under `generator/` — CSDL in, source out: an end-to-end run, preservation of hand-written code, the field block's order |
+| `tests/tooling` | the code generator under `generator/` — CSDL in, source out: one end-to-end run, staged |
 | `tests/unit/test_permission_matrix.py` | the harness's declared-permission vocabulary: checking, skipping and reporting |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
@@ -107,15 +107,12 @@ observe; it belongs in `tests/tooling` when it pins how the library is generated
 generator is a development tool — nobody imports it, nobody holds its API — so `tests/tooling`
 keeps only what a wrong change would break silently:
 
-- `test_generator_e2e.py` hands a small CSDL document to the v3 and the v4 reader, runs
-  the pipeline, and parses what it generated. It pins the parse, every kind of type, the
-  properties on them, their bound actions and functions, and that a second run on the same
-  metadata writes nothing.
-- `test_generator_preservation.py` pins the edits the generator makes *to source it did
-  not write*: custom methods, properties and decorator arguments survive an update that
-  adds a new metadata member.
-- `test_generator_field_order.py` pins where that new member lands — required fields
-  first, then defaulted ones, names in wire order — by executing the class it edits.
+`test_generator_e2e.py` hands a small CSDL document to the v3 and the v4 reader and
+follows one run through its steps, a test per step: the document read into the type model
+(keys, members, navigations, bound operations), an EDM type becoming its Python type, the
+model rendered as entity, complex and enum classes, and a second run against changed
+metadata — what was gained is written, what a person wrote stays, what was dropped is
+reported and kept in code. Every generated module is `ast.parse`d.
 
 The builders' individual decisions (how a name is snake-cased, how a type is mapped) are
 not pinned one by one: a regression there shows up in the end-to-end run, and a test of a
