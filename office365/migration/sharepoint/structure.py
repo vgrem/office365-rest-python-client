@@ -77,12 +77,20 @@ from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
+    from office365.runtime.client_object import ClientObject
+    from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.contenttypes.content_type import ContentType
     from office365.sharepoint.contenttypes.fieldlinks.field_link import FieldLink
     from office365.sharepoint.fields.field import Field
     from office365.sharepoint.lists.list import List as SPList
     from office365.sharepoint.views.view import View
     from office365.sharepoint.webs.web import Web
+
+#: A definition or a report as the snapshot file holds it: the names its own ``from_dict`` reads,
+#: and only what ``json`` can write. The mapping is anonymous on purpose -- the reader is the one
+#: place that knows which name is which field, and the dataclass is the shape -- so this names
+#: "a JSON object", not "a bag of anything".
+JsonObject = dict[str, Any]
 
 logger = logging.getLogger(__name__)
 
@@ -179,21 +187,25 @@ _FORMULA_NOISE = re.compile(r"[\s\[\]]")
 _SCHEMA_ATTRIBUTE_NOISE = CONTAINER_ATTRIBUTES | SERVER_ASSIGNED_ATTRIBUTES
 
 
-def comparable_setting(name: str, value: Any) -> Any:
-    """A list setting value in the form its own read-back is expected to take."""
+def comparable_setting(name: str, value: object) -> object:
+    """A list setting value in the form its own read-back is expected to take.
+
+    ``object`` in and ``object`` out: a setting is captured from one list, handed to another and
+    compared for equality, never computed with, so the module declines to name what a setting holds.
+    """
     if name == "ValidationFormula" and value is not None:
         return _FORMULA_NOISE.sub("", str(value))
     return value
 
 
-def _comparable_attribute(name: str, value: str) -> Any:
+def _comparable_attribute(name: str, value: str) -> str:
     """A schema attribute in the form its own read-back is expected to take."""
     if name in {"ValidationFormula", "Formula"}:
         return _FORMULA_NOISE.sub("", value)
     return value
 
 
-def comparable_schema(schema_xml: Optional[str]) -> Dict[str, Any]:
+def comparable_schema(schema_xml: Optional[str]) -> dict[str, str | tuple[str, ...]]:
     """A column's ``SchemaXml`` reduced to the parts a faithful copy reproduces.
 
     Returns the column's attributes and its value-bearing child elements
@@ -210,7 +222,7 @@ def comparable_schema(schema_xml: Optional[str]) -> Dict[str, Any]:
         return {}
     if schema is None:
         return {}
-    comparable: Dict[str, Any] = {
+    comparable: dict[str, str | tuple[str, ...]] = {
         f"attribute {name}": _comparable_attribute(name, value)
         for name, value in sorted(schema.attributes.items())
         if name not in _SCHEMA_ATTRIBUTE_NOISE
@@ -255,11 +267,11 @@ class FieldDefinition:
     custom_formatter: Optional[str] = None
     client_side_component_id: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "FieldDefinition":
+    def from_dict(cls, data: JsonObject) -> "FieldDefinition":
         return cls(
             internal_name=data.get("internal_name", ""),
             title=data.get("title"),
@@ -292,11 +304,11 @@ class ContentTypeDefinition:
     read_only: Optional[bool] = None
     field_internal_names: List[str] = dc_field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ContentTypeDefinition":
+    def from_dict(cls, data: JsonObject) -> "ContentTypeDefinition":
         return cls(
             string_id=data.get("string_id", ""),
             name=data.get("name"),
@@ -324,11 +336,11 @@ class ViewDefinition:
     field_internal_names: List[str] = dc_field(default_factory=list)
     custom_formatter: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ViewDefinition":
+    def from_dict(cls, data: JsonObject) -> "ViewDefinition":
         return cls(
             title=data.get("title", ""),
             view_type=data.get("view_type"),
@@ -352,7 +364,7 @@ class ListStructure:
     base_type: Optional[int] = None
     description: Optional[str] = None
     content_types_enabled: Optional[bool] = None
-    settings: Dict[str, Any] = dc_field(default_factory=dict)
+    settings: Dict[str, object] = dc_field(default_factory=dict)
     fields: List[FieldDefinition] = dc_field(default_factory=list)
     content_types: List[ContentTypeDefinition] = dc_field(default_factory=list)
     views: List[ViewDefinition] = dc_field(default_factory=list)
@@ -362,12 +374,12 @@ class ListStructure:
         """Whether the captured list is a document library, read off its ``BaseType``."""
         return is_document_library(self.base_type)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         """Return a JSON-friendly dict (nested dataclasses are expanded)."""
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ListStructure":
+    def from_dict(cls, data: JsonObject) -> "ListStructure":
         """Rebuild a snapshot from :meth:`to_dict` output (unknown keys ignored)."""
         return cls(
             title=data.get("title"),
@@ -994,7 +1006,7 @@ def _apply_list_settings(sp_list: SPList, structure: ListStructure, warnings: Li
         _write_setting(sp_list, title, name, value, warnings)
 
 
-def _write_settings_together(sp_list: SPList, title: str, settings: Dict[str, Any]) -> bool:
+def _write_settings_together(sp_list: SPList, title: str, settings: Dict[str, object]) -> bool:
     """Try to apply every setting in one ``$batch``; report whether it took.
 
     Returns ``False`` when the server refused something, in which case nothing was
@@ -1014,7 +1026,7 @@ def _write_settings_together(sp_list: SPList, title: str, settings: Dict[str, An
     return not failures
 
 
-def _write_setting(sp_list: SPList, title: str, name: str, value: Any, warnings: List[str]) -> None:
+def _write_setting(sp_list: SPList, title: str, name: str, value: object, warnings: List[str]) -> None:
     """Write one setting through its own list handle, so a rejection stays its own."""
     handle = sp_list.context.web.lists.get_by_title(title)
     handle.set_property(name, value)
@@ -1026,13 +1038,13 @@ def _write_setting(sp_list: SPList, title: str, name: str, value: Any, warnings:
         warnings.append(warning)
 
 
-def _setting_is_expressible(name: str, settings: Dict[str, Any]) -> bool:
+def _setting_is_expressible(name: str, settings: Dict[str, object]) -> bool:
     """Whether a captured setting can be applied given the snapshot's other values."""
     dependency = _SETTING_DEPENDS_ON.get(name)
     return dependency is None or bool(settings.get(dependency))
 
 
-def _current_settings(sp_list: SPList, names: List[str]) -> Dict[str, Any]:
+def _current_settings(sp_list: SPList, names: List[str]) -> Dict[str, object]:
     """The target list's current values for the settings about to be applied."""
     sp_list.ensure_properties(names)
     sp_list.get().execute_query()
@@ -1048,7 +1060,7 @@ def _rejection_reason(exc: Exception) -> str:
 def _ensure_content_types_enabled(sp_list: SPList) -> None:
     """Turn on content types on the list, only when it is currently off."""
 
-    def _enable(_: Any) -> None:
+    def _enable(_: ClientObject) -> None:
         if sp_list.content_types_enabled is not True:
             sp_list.set_property("ContentTypesEnabled", True)
             sp_list.update()
@@ -1061,7 +1073,7 @@ def _content_type_label(content_type: ContentType) -> str:
     return content_type.name or content_type.string_id or "<content type>"
 
 
-def _read_field_links(context: Any, content_types: "List[ContentType]") -> "Dict[int, Optional[List[str]]]":
+def _read_field_links(context: ClientContext, content_types: "List[ContentType]") -> "Dict[int, Optional[List[str]]]":
     """Read the links of several content types in one round-trip.
 
     Returns ``{id(content type): [linked column, ...]}``, or ``None`` for a content
@@ -1217,7 +1229,7 @@ class WebScopeStructure:
         """Whether the target web already carries every web-scope definition."""
         return not self.columns and not self.content_types
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         """A JSON-serializable form."""
         return {"columns": list(self.columns), "content_types": list(self.content_types)}
 
@@ -1349,7 +1361,7 @@ class WebScopeProvisionReport:
             parts.append(f"{len(self.failed)} failed")
         return "web-scope columns: " + ", ".join(parts)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> JsonObject:
         """A JSON-serializable form."""
         return {
             "created": list(self.created),
