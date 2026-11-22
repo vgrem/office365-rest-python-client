@@ -21,6 +21,7 @@ from __future__ import annotations
 from typing import Iterable
 from urllib.parse import urlparse
 
+from office365.migration.sharepoint.site_address import web_url
 from office365.sharepoint.navigation.navigation import Navigation
 from office365.sharepoint.navigation.nodes.collection import NavigationNodeCollection
 from office365.sharepoint.navigation.nodes.creationinformation import (
@@ -36,14 +37,9 @@ def capture_navigation(web) -> Navigation:
     return web.navigation.get_tree().execute_query()
 
 
-def _web_url(web) -> str:
-    """A web's URL, falling back to the context base URL when the read dropped it."""
-    return web.absolute_url or str(getattr(getattr(web, "context", None), "base_url", "") or "")
-
-
 def _prefixes(source_web, target_web) -> tuple[str, str]:
     """The source/target web URL prefixes (absolute and server-relative) to rewrite."""
-    return _web_url(source_web).rstrip("/"), _web_url(target_web).rstrip("/")
+    return web_url(source_web).rstrip("/"), web_url(target_web).rstrip("/")
 
 
 def _rewrite_url(url: str, source: str, target: str) -> str:

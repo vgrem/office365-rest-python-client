@@ -38,6 +38,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Optional
 
+from office365.migration.sharepoint.site_address import web_url
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -141,16 +142,6 @@ class WebSettingsReport:
         return f"site settings: copied {names} onto {self.url}"
 
 
-def _web_url(web: "Web") -> str:
-    """A web's URL, falling back to the site URL of its context.
-
-    A projected read (``select(["Title", "Description"]).get()``) replaces the loaded
-    properties with the ones it asked for, so the web may no longer know its own URL by the
-    time a note needs it — the context still knows which site it belongs to.
-    """
-    return web.absolute_url or str(web.context.base_url or "")
-
-
 @site_access(SiteLevel.WRITE)
 def apply_web_settings(source_web: "Web", target_web: "Web", *, preserve: bool = True) -> WebSettingsReport:
     """Copy the carried web settings from ``source_web`` onto ``target_web``.
@@ -163,7 +154,7 @@ def apply_web_settings(source_web: "Web", target_web: "Web", *, preserve: bool =
         target_web: The target web to write them to.
         preserve: ``False`` leaves the target web untouched.
     """
-    url = _web_url(target_web)
+    url = web_url(target_web)
     if not preserve:
         return WebSettingsReport(url=url)
     changes = WebSettings.capture(source_web).changed(WebSettings.capture(target_web))
@@ -186,7 +177,7 @@ def verify_web_settings(source_web: "Web", target_web: "Web") -> List[str]:
     """
     source = WebSettings.capture(source_web)
     target = WebSettings.capture(target_web)
-    url = _web_url(target_web)
+    url = web_url(target_web)
     notes: List[str] = []
     for name, value in source.values():
         current = dict(target.values())[name]

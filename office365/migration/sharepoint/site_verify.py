@@ -28,6 +28,7 @@ from office365.migration.sharepoint.branding import verify_web_branding
 from office365.migration.sharepoint.navigation import verify_navigation
 from office365.migration.sharepoint.pages import verify_page_copy
 from office365.migration.sharepoint.security import verify_list_security, verify_site_security
+from office365.migration.sharepoint.site_address import web_url
 from office365.migration.sharepoint.site_scope import compare_site_scope, site_scope_note
 from office365.migration.sharepoint.site_settings import verify_web_settings
 from office365.migration.sharepoint.structure import (
@@ -52,20 +53,15 @@ LIST_SECURITY = "list security"
 SITE_SCOPE = "site scope"
 
 
-def _web_url(web: "Web") -> str:
-    """The web's URL, falling back to the context's base URL (a projected read drops it)."""
-    return web.absolute_url or str(web.context.base_url or "")
-
-
 def _site_scope_findings(source_context: "ClientContext", target_context: "ClientContext") -> List[str]:
     """The features/regional settings the target lacks, as notes (empty = nothing missing)."""
-    note = site_scope_note(compare_site_scope(source_context, target_context), _web_url(source_context.web))
+    note = site_scope_note(compare_site_scope(source_context, target_context), web_url(source_context.web))
     return [note] if note else []
 
 
 def _web_scope_findings(source_web: "Web", target_web: "Web") -> List[str]:
     """The web-scope structure the target lacks, as notes (empty = nothing missing)."""
-    note = web_scope_note(compare_web_scope_structure(source_web, target_web), _web_url(source_web))
+    note = web_scope_note(compare_web_scope_structure(source_web, target_web), web_url(source_web))
     return [note] if note else []
 
 
@@ -168,7 +164,7 @@ def verify_site(
     """
     source_web: "Web" = source_context.web
     target_web: "Web" = target_context.web
-    report = SiteVerificationReport(url=_web_url(target_web))
+    report = SiteVerificationReport(url=web_url(target_web))
 
     if lists is not None and structure:
         for source_list, target_list in lists:

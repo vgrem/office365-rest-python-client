@@ -30,6 +30,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Dict, List, Optional
 from urllib.parse import urlsplit
 
+from office365.migration.sharepoint.site_address import web_url
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
@@ -66,16 +67,6 @@ _ASSETS: Dict[str, str] = {
 
 #: Branding properties a copy may clear when the source has none.
 _CLEARABLE = frozenset({_LOGO, _CSS})
-
-
-def _web_url(web: "Web") -> str:
-    """A web's URL, falling back to the site URL of its context.
-
-    A projected read replaces the loaded properties with the ones it asked for, so the web
-    may no longer know its own URL by the time a note needs it -- the context still knows
-    which site it is bound to.
-    """
-    return web.absolute_url or str(web.context.base_url or "")
 
 
 def _rebase(value: Optional[str], source_path: Optional[str], target_path: Optional[str]) -> Optional[str]:
@@ -204,7 +195,7 @@ def apply_web_branding(source_web: "Web", target_web: "Web", *, preserve: bool =
         target_web: The target web to write it to.
         preserve: ``False`` leaves the target web untouched.
     """
-    url = _web_url(target_web)
+    url = web_url(target_web)
     if not preserve:
         return WebBrandingReport(url=url)
     source = WebBranding.capture(source_web)
@@ -252,7 +243,7 @@ def verify_web_branding(source_web: "Web", target_web: "Web") -> List[str]:
     target = WebBranding.capture(target_web)
     wanted = source.rebased(source.web_path, target.web_path)
     current = dict(target.values())
-    url = _web_url(target_web)
+    url = web_url(target_web)
     notes: List[str] = []
     for name, value in wanted.values():
         if (value or "") == (current[name] or ""):

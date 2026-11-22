@@ -42,6 +42,7 @@ from office365.migration.sharepoint.handoff import EXTERNAL_LIST_TEMPLATE, detec
 from office365.migration.sharepoint.navigation import apply_navigation
 from office365.migration.sharepoint.pages import DUPLICATE_RENAME, PageCopyReport, copy_site_pages
 from office365.migration.sharepoint.security import apply_site_security
+from office365.migration.sharepoint.site_address import web_url
 from office365.migration.sharepoint.site_settings import WebSettingsReport, apply_web_settings
 from office365.migration.sharepoint.structure import (
     capture_list_structure,
@@ -286,7 +287,7 @@ def _report_pages(
     try:
         report = copy_site_pages(source_web, target_web, duplicate_behavior=duplicate_behavior, warnings=warnings)
     except Exception as e:  # noqa: BLE001 — page copy is best-effort; never abort resolution
-        warnings.append(f"page copy failed for {_web_url(source_web)}: {e}")
+        warnings.append(f"page copy failed for {web_url(source_web)}: {e}")
         return None
     summary = report.summary()
     if summary:
@@ -305,7 +306,7 @@ def _report_handoff(
     try:
         notes = handoff_notes(detect_handoff(source_web, source_lists), page_report)
     except Exception as e:  # noqa: BLE001 — handoff detection is best-effort; never abort resolution
-        warnings.append(f"handoff detection failed for {_web_url(source_web)}: {e}")
+        warnings.append(f"handoff detection failed for {web_url(source_web)}: {e}")
         return
     warnings.extend(notes)
 
@@ -317,7 +318,7 @@ def _apply_web_settings(
     try:
         report = apply_web_settings(source_web, target_web, preserve=preserve)
     except Exception as e:  # noqa: BLE001 — site settings are best-effort; never abort resolution
-        warnings.append(f"site settings copy failed for {_web_url(target_web)}: {e}")
+        warnings.append(f"site settings copy failed for {web_url(target_web)}: {e}")
         return None
     note = report.summary()
     if note:
@@ -332,7 +333,7 @@ def _apply_web_branding(
     try:
         report = apply_web_branding(source_web, target_web, preserve=preserve)
     except Exception as e:  # noqa: BLE001 — branding is best-effort; never abort resolution
-        warnings.append(f"branding copy failed for {_web_url(target_web)}: {e}")
+        warnings.append(f"branding copy failed for {web_url(target_web)}: {e}")
         return None
     note = report.summary()
     if note:
@@ -353,7 +354,7 @@ def _provision_web_scope_structure(
     try:
         report = provision_web_scope_columns(source_web, target_web, list_id_map=list_id_map)
     except Exception as e:  # noqa: BLE001 — web-scope provisioning is best-effort; never abort resolution
-        warnings.append(f"web-scope column provisioning failed for {_web_url(target_web)}: {e}")
+        warnings.append(f"web-scope column provisioning failed for {web_url(target_web)}: {e}")
         return
     summary = report.summary()
     if summary:
@@ -367,9 +368,9 @@ def _report_web_scope_structure(source_web: Web, target_web: Web, warnings: list
     try:
         missing = compare_web_scope_structure(source_web, target_web)
     except Exception as e:  # noqa: BLE001 — comparison is best-effort; never abort resolution
-        warnings.append(f"web-scope structure comparison failed for {_web_url(target_web)}: {e}")
+        warnings.append(f"web-scope structure comparison failed for {web_url(target_web)}: {e}")
         return
-    note = web_scope_note(missing, _web_url(source_web))
+    note = web_scope_note(missing, web_url(source_web))
     if note:
         logger.debug(note)
         warnings.append(note)
@@ -397,13 +398,13 @@ def _resolve_web(
         try:
             apply_site_security(source_context.web, target_context.web, warnings)
         except Exception as e:  # noqa: BLE001 — site security is best-effort; never abort list resolution
-            warnings.append(f"site security replication failed for {_web_url(source_context.web)}: {e}")
+            warnings.append(f"site security replication failed for {web_url(source_context.web)}: {e}")
     if migrate_navigation:
         _report(progress, 0, None, "navigation")
         try:
             apply_navigation(source_context.web, target_context.web, warnings)
         except Exception as e:  # noqa: BLE001 — navigation is best-effort; never abort list resolution
-            warnings.append(f"navigation replication failed for {_web_url(source_context.web)}: {e}")
+            warnings.append(f"navigation replication failed for {web_url(source_context.web)}: {e}")
     _apply_web_settings(source_context.web, target_context.web, preserve_site_settings, warnings)
     _report(progress, 0, None, "lists")
     source_lists: Iterable[SPList] = source_context.web.lists.select(LIST_SCOPE_SELECT).get().execute_query()
@@ -476,7 +477,7 @@ def _resolve_web(
     for source_child in child_webs:
         target_child, target_child_context = _ensure_target_web(target_context, source_child)
         _resolve_web(
-            _context_for(source_context, _web_url(source_child)),
+            _context_for(source_context, _own_url(source_child)),
             target_child_context,
             include_titles,
             exclude_titles,
@@ -627,25 +628,30 @@ def _ensure_target_web(parent_context: ClientContext, source_web: Web) -> tuple[
     leaf, title, template = _web_identity(source_web)
     for existing in parent_context.web.webs.get().execute_query():
         if _web_leaf(existing) == leaf.casefold():
-            return existing, _context_for(parent_context, _web_url(existing))
+            return existing, _context_for(parent_context, _own_url(existing))
     created = parent_context.web.webs.add(WebCreationInformation(Title=title, Url=leaf, WebTemplate=template))
     created.execute_query()
-    created_url = _web_url(created) or f"{parent_context.base_url.rstrip('/')}/{leaf.strip('/')}"
+    created_url = _own_url(created) or f"{parent_context.base_url.rstrip('/')}/{leaf.strip('/')}"
     return created, _context_for(parent_context, created_url)
+
+
+def _own_url(web: Web) -> str:
+    """The web's own URL, or empty when the read asked for neither spelling of it.
+
+    Not :func:`web_url`: these three callers decide *which site a context is rooted at*
+    and *which leaf a subweb is matched by*, so a URL the web does not carry must stay
+    unknown -- falling back to the site it hangs from would make a subsite the parent.
+    """
+    return web.absolute_url or ""
 
 
 def _web_identity(web: Web) -> tuple[str, str, str]:
     """A web's URL leaf, display title and template (REST-creation inputs)."""
-    raw = _web_url(web)
+    raw = _own_url(web)
     leaf = raw.rstrip("/").rsplit("/", 1)[-1]
     title = web.title or leaf
     template = web.web_template or WebTemplateType.STS_MODERN.value
     return leaf, title, template
-
-
-def _web_url(web: Web) -> str:
-    """A web's URL, or empty when the read asked for neither spelling of it."""
-    return web.absolute_url or ""
 
 
 def _web_leaf(web: Web) -> str:
