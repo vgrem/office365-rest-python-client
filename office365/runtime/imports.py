@@ -57,6 +57,7 @@ from office365.runtime.operations import OperationStats
 from office365.runtime.persistence import atomic_write_json, read_json
 
 if TYPE_CHECKING:
+    from office365.runtime.converters.records import Record
     from office365.runtime.operations import ProgressCallback
     from office365.runtime.verification import VerificationReport
 
@@ -67,7 +68,7 @@ ON_ERROR_MODES = ("raise", "collect")
 class RecordSink(Protocol):
     """Minimal target contract for :class:`ImportResult` (a queueable collection)."""
 
-    def queue_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> "RecordSink":
+    def queue_records(self, records: list["Record"], progress: "ProgressCallback | None" = None) -> "RecordSink":
         """Queue a create per record, and hand the sink back for chaining."""
         ...
 
@@ -236,12 +237,12 @@ class ImportResult(ClientResult[ImportStats]):
         self,
         context,
         collection: "RecordSink",
-        chunks: Iterable[Any],
+        chunks: Iterable[object],
         *,
-        map: Callable[[Any], list[dict]],  # noqa: A002
+        map: Callable[[Any], list["Record"]],  # noqa: A002
         prepare: Optional[Callable[[Any], None]] = None,
         before_chunk: Optional[Callable[[Any], None]] = None,
-        queue: Optional[Callable[[list[dict]], tuple[int, int]]] = None,
+        queue: Optional[Callable[[list["Record"]], tuple[int, int]]] = None,
         total: Optional[int] = None,
         progress: Optional["ProgressCallback"] = None,
         checkpoint: Union["ImportCheckpoint", "CheckpointStore", str, PathLike, None] = None,
@@ -284,7 +285,7 @@ class ImportResult(ClientResult[ImportStats]):
         items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
-        success_callback: Optional[Callable[[Any], None]] = None,
+        success_callback: Optional[Callable[[list[ClientResult]], None]] = None,
     ) -> Self:
         """Import via server-side OData batches (optionally concurrent).
 
@@ -292,7 +293,7 @@ class ImportResult(ClientResult[ImportStats]):
         long chunk advances the ``progress`` hook live as sub-batches land.
         """
 
-        def _on_batch(return_types: Any) -> None:
+        def _on_batch(return_types: list[ClientResult]) -> None:
             self._report(self._done + (len(return_types) if return_types is not None else 0))
             if callable(success_callback):
                 success_callback(return_types)
@@ -313,7 +314,7 @@ class ImportResult(ClientResult[ImportStats]):
         items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
-        success_callback: Optional[Callable[[Any], None]] = None,
+        success_callback: Optional[Callable[[list[ClientResult]], None]] = None,
     ) -> Self:
         """Alias of :meth:`execute_batch` (migration-parity vocabulary)."""
         return self.execute_batch(
@@ -337,7 +338,7 @@ class ImportResult(ClientResult[ImportStats]):
         items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
-        success_callback: Optional[Callable[[Any], None]] = None,
+        success_callback: Optional[Callable[[list[ClientResult]], None]] = None,
     ) -> Self:
         """Import via server-side OData batches, awaited.
 
@@ -345,7 +346,7 @@ class ImportResult(ClientResult[ImportStats]):
         batch exactly as on the synchronous path.
         """
 
-        def _on_batch(return_types: Any) -> None:
+        def _on_batch(return_types: list[ClientResult]) -> None:
             self._report(self._done + (len(return_types) if return_types is not None else 0))
             if callable(success_callback):
                 success_callback(return_types)
@@ -366,7 +367,7 @@ class ImportResult(ClientResult[ImportStats]):
         items_per_batch: int = DEFAULT_BATCH_SIZE,
         max_batch_bytes: Optional[int] = None,
         concurrency: int = 1,
-        success_callback: Optional[Callable[[Any], None]] = None,
+        success_callback: Optional[Callable[[list[ClientResult]], None]] = None,
     ) -> Self:
         """Alias of :meth:`execute_batch_async` (migration-parity vocabulary)."""
         return await self.execute_batch_async(
@@ -383,7 +384,7 @@ class ImportResult(ClientResult[ImportStats]):
         key: "str | list[str]",
         format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
-        map: Optional[Callable[[Any], list[dict]]] = None,  # noqa: A002
+        map: Optional[Callable[[Any], list["Record"]]] = None,  # noqa: A002
     ) -> "VerificationReport":
         """Reconcile ``source`` against the target (delegates to the collection).
 
@@ -436,7 +437,7 @@ class ImportResult(ClientResult[ImportStats]):
 
     # ── Core ─────────────────────────────────────────────────────
 
-    def _run(self, execute: Callable[[], Any]) -> None:
+    def _run(self, execute: Callable[[], object]) -> None:
         """Drive the chunk loop: skip committed records, queue, execute, persist.
 
         With ``on_error="collect"`` **and** a ``dead_letter``, each chunk is
@@ -457,7 +458,7 @@ class ImportResult(ClientResult[ImportStats]):
             self._save_checkpoint()
         self._finish()
 
-    async def _run_async(self, execute: Callable[[], Awaitable[Any]]) -> None:
+    async def _run_async(self, execute: Callable[[], Awaitable[object]]) -> None:
         """Async twin of :meth:`_run`; only the terminal call differs.
 
         ``execute`` is awaited instead of called. Checkpointing, dead-letter,
@@ -476,7 +477,7 @@ class ImportResult(ClientResult[ImportStats]):
             self._save_checkpoint()
         self._finish()
 
-    def _run_chunk(self, records: list[dict], execute: Callable[[], Any]) -> None:
+    def _run_chunk(self, records: list["Record"], execute: Callable[[], object]) -> None:
         """Queue and execute one chunk as a unit (the default path)."""
         queued, _skipped = self._queue(records)
         if self._dry_run:
@@ -493,7 +494,7 @@ class ImportResult(ClientResult[ImportStats]):
         else:
             self._complete_chunk(records, queued)
 
-    async def _run_chunk_async(self, records: list[dict], execute: Callable[[], Awaitable[Any]]) -> None:
+    async def _run_chunk_async(self, records: list["Record"], execute: Callable[[], Awaitable[object]]) -> None:
         """Async twin of :meth:`_run_chunk` (awaits the terminal)."""
         queued, _skipped = self._queue(records)
         if self._dry_run:
@@ -510,19 +511,19 @@ class ImportResult(ClientResult[ImportStats]):
         else:
             self._complete_chunk(records, queued)
 
-    def _complete_chunk(self, records: list[dict], queued: int) -> None:
+    def _complete_chunk(self, records: list["Record"], queued: int) -> None:
         """Bookkeeping after a chunk (or dry-run) committed successfully."""
         self.value.success += queued
         self._advance(records)
         self._collection.clear()
         self._report(self._progress_base + self.value.success)
 
-    def _fail_chunk(self, queued: int, records: list[dict], error: Exception) -> None:
+    def _fail_chunk(self, queued: int, records: list["Record"], error: Exception) -> None:
         """Record a failed chunk and discard its queued entities."""
         self._record_failure(queued, records, error)
         self._collection.clear()
 
-    def _run_per_record(self, records: list[dict], execute: Callable[[], Any]) -> None:
+    def _run_per_record(self, records: list["Record"], execute: Callable[[], object]) -> None:
         """Queue/execute one record at a time, dead-lettering each failing row."""
         start = self._checkpoint.cursor
         for index, record in enumerate(records):
@@ -541,7 +542,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._advance(records)
         self._report(self._progress_base + self.value.success)
 
-    async def _run_per_record_async(self, records: list[dict], execute: Callable[[], Awaitable[Any]]) -> None:
+    async def _run_per_record_async(self, records: list["Record"], execute: Callable[[], Awaitable[object]]) -> None:
         """Async twin of :meth:`_run_per_record` (awaits the terminal)."""
         start = self._checkpoint.cursor
         for index, record in enumerate(records):
@@ -560,7 +561,7 @@ class ImportResult(ClientResult[ImportStats]):
         self._advance(records)
         self._report(self._progress_base + self.value.success)
 
-    def _iter_records(self) -> Iterator[tuple[Any, list[dict]]]:
+    def _iter_records(self) -> Iterator[tuple[object, list["Record"]]]:
         """Yield ``(raw_chunk, records)``, skipping already-committed chunks.
 
         Commits are whole chunks, so resume skips by the checkpoint's ``chunks``
@@ -588,13 +589,13 @@ class ImportResult(ClientResult[ImportStats]):
 
     # ── Bookkeeping ──────────────────────────────────────────────
 
-    def _default_queue(self, records: list[dict]) -> tuple[int, int]:
+    def _default_queue(self, records: list["Record"]) -> tuple[int, int]:
         """Queue every record as a create (no conflict resolution)."""
         if not self._dry_run:
             self._collection.queue_records(records)
         return len(records), 0
 
-    def _queue(self, records: list[dict]) -> tuple[int, int]:
+    def _queue(self, records: list["Record"]) -> tuple[int, int]:
         """Queue a chunk via the conflict-resolution hook; returns (queued, skipped)."""
         queued, skipped = self._queue_fn(records)
         self.value.total += len(records)
@@ -621,12 +622,12 @@ class ImportResult(ClientResult[ImportStats]):
         self._done = done
         self._emit(done)
 
-    def _advance(self, records: list[dict]) -> None:
+    def _advance(self, records: list["Record"]) -> None:
         self.value.chunks += 1
         self._checkpoint.cursor += len(records)
         self._checkpoint.chunks += 1
 
-    def _record_failure(self, count: int, records: list[dict], error: Exception) -> None:
+    def _record_failure(self, count: int, records: list["Record"], error: Exception) -> None:
         """Record a whole-chunk failure (the non-isolated path)."""
         self.value.errors += count
         self._checkpoint.errors += count

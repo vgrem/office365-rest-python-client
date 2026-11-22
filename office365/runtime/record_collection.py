@@ -647,7 +647,7 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         key: "str | list[str]",
         format: str = "dataframe",  # noqa: A002
         key_field: str = "MigrationKey",
-        map: "Callable[[Any], list[Record]] | None" = None,  # noqa: A002
+        map: "Callable[[list[Record]], list[Record]] | None" = None,  # noqa: A002
     ) -> VerificationReport:
         """Reconcile a source's natural keys against this collection (bounded).
 
@@ -698,6 +698,10 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         chunk's schema (field provisioning). ``reshape`` is always ``list[Record] ->
         list[Record]``: the format's reader decodes first, so a caller's ``map`` reshapes
         records instead of re-implementing the reader (and stops depending on the format).
+
+        A chunk is therefore ``Any``: it is a DataFrame, a batch of rows or a record list,
+        and the reader that knows which is the one the format named. ``convert`` takes it
+        for the same reason, and both are handed back exactly as they arrived.
         """
         then = reshape or (lambda batch: batch)
         if format == "csv":  # the one streaming reader: a file is read a batch at a time
