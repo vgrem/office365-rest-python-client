@@ -101,6 +101,7 @@ if TYPE_CHECKING:
     from office365.directory.applications.roles.role import AppRole
     from office365.directory.groups.setting import GroupSetting
     from office365.directory.rolemanagement.templates.collection import DirectoryRoleTemplateCollection
+    from office365.runtime.client_object import ClientObject
     from office365.runtime.client_result import ClientResult
     from office365.runtime.queries.batch import BatchQuery
     from office365.runtime.types.collections import StringCollection
@@ -546,14 +547,14 @@ class GraphClient(ClientRuntimeContext):
         await self._run_batches_async(batches, concurrency, success_callback)
         return self
 
-    def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
+    def _execute_batch(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit on a worker thread (with per-request retry)."""
         batch_request = ODataV4BatchRequest("", V4JsonFormat())
         batch_request.beforeExecute += self.pending_request().authenticate_request
         batch_request.execute_query_with_retry(batch_qry)
         return batch_qry.return_types
 
-    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list[Any]:
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit through the async transport.
 
         Unlike the base implementation (which offloads the whole synchronous

@@ -613,7 +613,7 @@ class ClientContext(ClientRuntimeContext):
             self.pending_request().warm_up()
             batch_request.execute_query_with_retry(batch_qry)
 
-    def _execute_batch(self, batch_qry: "BatchQuery") -> list[Any]:
+    def _execute_batch(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit on a worker thread (with per-request retry)."""
         batch_request = ODataBatchV3Request(
             self._base_url, JsonLightFormat(), transport=self.pending_request().transport
@@ -632,7 +632,7 @@ class ClientContext(ClientRuntimeContext):
             await self.pending_request().warm_up_async()
             await batch_request.execute_query_with_retry_async(batch_qry)
 
-    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list[Any]:
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit through the async transport.
 
         Unlike the base implementation (which offloads the whole synchronous

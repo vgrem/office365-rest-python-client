@@ -291,7 +291,10 @@ class ClientObject:
         Attaches an event handler that runs after query execution.
 
         Args:
-            action: The callback function to execute
+            action: The callback function to execute. It is handed the raw ``Response``
+                when ``include_response`` is set and the entity otherwise, so what it
+                receives depends on that flag: the parameter stays ``Any`` and each
+                caller narrows to the shape it asked for.
             execute_first: Whether this handler should run before others
             include_response: Whether to include the raw response
 

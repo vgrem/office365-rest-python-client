@@ -16,6 +16,7 @@ from office365.runtime.client_result import ClientResult
 from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import Limit
+from office365.runtime.operations import Progress
 from office365.runtime.queries.client_query import ClientQuery
 from office365.runtime.queries.read_entity import ReadEntityQuery
 from office365.runtime.retry import DEFAULT_RETRY_EXCEPTIONS
@@ -25,6 +26,7 @@ from office365.runtime.transport.offload import run_offloaded
 if TYPE_CHECKING:
     from office365.runtime.client_object import ClientObject
     from office365.runtime.http.throttling import RateLimiter
+    from office365.runtime.operations import ProgressCallback
     from office365.runtime.queries.batch import BatchQuery
 
 
@@ -318,7 +320,10 @@ class ClientRuntimeContext(ABC):
         """Attaches post-query execution handler.
 
         Args:
-            action: Callback to execute after query
+            action: Callback to execute after query. It is handed the raw ``Response``
+                when ``include_response`` is set and the query's return type otherwise, so
+                what it receives depends on that flag: the parameter stays ``Any`` and each
+                caller narrows to the shape it asked for.
             execute_first: Whether to prioritize this query
             include_response: Whether to pass raw response
 
@@ -631,7 +636,7 @@ class ClientRuntimeContext(ABC):
     def execute_query_parallel(
         self,
         concurrency: int = 4,
-        progress: Optional[Callable[[Any], None]] = None,
+        progress: Optional[ProgressCallback] = None,
         max_retry: int = 5,
         timeout_secs: int = 5,
         max_delay: Optional[int] = None,
@@ -737,7 +742,7 @@ class ClientRuntimeContext(ABC):
     async def execute_query_parallel_async(
         self,
         concurrency: int = 4,
-        progress: Optional[Callable[[Any], None]] = None,
+        progress: Optional[ProgressCallback] = None,
         max_retry: int = 5,
         timeout_secs: int = 5,
         max_delay: Optional[int] = None,
@@ -854,32 +859,30 @@ class ClientRuntimeContext(ABC):
         prepared: List[Tuple[ClientQuery, RequestOptions]],
         *,
         concurrency: int,
-        progress: Optional[Callable[[Any], None]],
+        progress: Optional[ProgressCallback],
         max_retry: int,
         timeout_secs: int,
         max_delay: Optional[int],
         jitter: bool,
-    ) -> List[Any]:
+    ) -> list[Response | BaseException]:
         """Send ``prepared`` requests concurrently, returning results/errors in input order.
 
-        Each task stores its outcome (a response or the raised exception) at its
-        index so the caller can apply responses in queue order; ``progress``
-        fires live as each task settles.
+        Each task files its outcome (a response or the raised exception) under its own
+        index, so the caller can apply responses in queue order and a slot exists only
+        once it has something to say; ``progress`` fires live as each task settles.
         """
-        from office365.runtime.operations import Progress
-
         semaphore = asyncio.Semaphore(concurrency)
-        results: List[Any] = [None] * len(prepared)
+        outcomes: dict[int, Response | BaseException] = {}
         total = len(prepared)
 
         async def _run(index: int, options: RequestOptions) -> int:
             async with semaphore:
                 try:
-                    results[index] = await self._send_with_retry_async(
+                    outcomes[index] = await self._send_with_retry_async(
                         request, options, max_retry, timeout_secs, max_delay, jitter
                     )
                 except Exception as e:  # noqa: BLE001 — surfaced in order by the caller
-                    results[index] = e
+                    outcomes[index] = e
             return index
 
         tasks = [asyncio.ensure_future(_run(index, options)) for index, (_qry, options) in enumerate(prepared)]
@@ -889,7 +892,7 @@ class ClientRuntimeContext(ABC):
                 index = await coro
                 done += 1
                 if callable(progress):
-                    progress(Progress(done=done, total=total, stage="parallel", items=[results[index]]))
+                    progress(Progress(done=done, total=total, stage="parallel", items=[outcomes[index]]))
         finally:
             # On cancellation/abort, stop the sibling requests still in flight so
             # they cannot outlive the caller (and keep consuming the connection
@@ -898,7 +901,7 @@ class ClientRuntimeContext(ABC):
                 for task in tasks:
                     task.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)
-        return results
+        return [outcomes[index] for index in range(total)]
 
     @staticmethod
     def _send_with_retry(
@@ -1077,7 +1080,7 @@ class ClientRuntimeContext(ABC):
         self,
         batches: list["BatchQuery"],
         concurrency: int,
-        success_callback: Optional[Callable[[List[Any]], None]] = None,
+        success_callback: Optional[Callable[[list["ClientObject | ClientResult"]], None]] = None,
     ) -> None:
         """Execute batch units concurrently on a thread pool.
 
@@ -1096,14 +1099,14 @@ class ClientRuntimeContext(ABC):
 
         errors: list[BaseException] = []
 
-        def _on_progress(snapshot: Any) -> None:
+        def _on_progress(snapshot: Progress[list["ClientObject | ClientResult"]]) -> None:
             if not callable(success_callback):
                 return
             for return_types in snapshot.items or []:
                 if return_types is not None:
                     success_callback(return_types)
 
-        def _on_error(_task: Any, error: BaseException) -> None:
+        def _on_error(_task: "BatchQuery", error: BaseException) -> None:
             errors.append(error)
 
         run_parallel(
@@ -1116,7 +1119,7 @@ class ClientRuntimeContext(ABC):
         if errors:
             raise errors[0]
 
-    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> List[Any]:
+    async def _execute_batch_async(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit without blocking the event loop.
 
         The synchronous batch machinery owns form-digest handling and
@@ -1130,7 +1133,7 @@ class ClientRuntimeContext(ABC):
         self,
         batches: list["BatchQuery"],
         concurrency: int,
-        success_callback: Optional[Callable[[List[Any]], None]] = None,
+        success_callback: Optional[Callable[[list["ClientObject | ClientResult"]], None]] = None,
     ) -> None:
         """Execute batch units without blocking the loop.
 
@@ -1169,6 +1172,6 @@ class ClientRuntimeContext(ABC):
         if errors:
             raise errors[0]
 
-    def _execute_batch(self, batch_qry: "BatchQuery") -> List[Any]:
+    def _execute_batch(self, batch_qry: "BatchQuery") -> list["ClientObject | ClientResult"]:
         """Execute a single batch unit (implemented by concrete contexts)."""
         raise NotImplementedError
