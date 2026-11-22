@@ -193,7 +193,7 @@ nothing) and has been deleted rather than kept beside a tree it no longer change
 What that leaves for a human is one rule: **if you hand-write a getter, declare it**,
 taking the name from the metadata and never from the attribute -- `iCalUId` and
 `icalUid` both survive a snake-case round trip and only one of them is a real column.
-`tests/unit/test_odata_metadata.py` holds the other direction: a declaration must
+`tests/unit/test_schema.py` holds the other direction: a declaration must
 name a wire name its getter actually reads, so a copy-pasted `@odata` cannot silently
 take a column out of `TypeSchema.columns`.
 

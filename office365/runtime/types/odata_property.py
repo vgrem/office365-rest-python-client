@@ -258,7 +258,7 @@ class odata(dict):
     ``system=True`` records where the name comes from: the metadata does not declare it,
     the service does. Everything a list item carries beyond ``Id`` is such a name, so a
     reader who sees one knows the CSDL is silent about it and the wire is not -- and
-    ``tests/unit/test_odata_metadata.py`` keeps the flag equal to that fact.
+    ``tests/unit/test_schema.py`` keeps the flag equal to that fact.
     ``facet=`` names the role a member plays, for a caller that asks by role: the
     author/editor ids an item is restored from are ``facet="authorship"``, its own
     access-control flag is ``facet="permissions"``, its approval state is
