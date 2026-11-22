@@ -71,6 +71,15 @@ class SubscribedSku(Entity):
         """Information about the number and status of prepaid licenses."""
         return self.properties.get("prepaidUnits", LicenseUnitsDetail())
 
+    @property
+    def has_spare_seat(self) -> bool:
+        """Whether a seat was bought that nobody is using.
+
+        ``prepaidUnits.enabled`` is what the tenant pays for and ``consumedUnits`` is what it has
+        assigned; a SKU Graph returned without either count reads as having no seat at all.
+        """
+        return (self.consumed_units or 0) < (self.prepaid_units.enabled or 0)
+
     @odata(name="servicePlans")
     @property
     def service_plans(self) -> ClientValueCollection[ServicePlanInfo]:

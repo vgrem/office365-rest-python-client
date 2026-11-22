@@ -125,7 +125,7 @@ class LicencesReport(ClientValue):
         Empty for :meth:`LicenceManager.get_user`, whose items are assignments and carry no
         seat counts.
         """
-        return tuple(sku for sku in self._tenant_skus() if _has_spare_seat(sku))
+        return tuple(sku for sku in self._tenant_skus() if sku.has_spare_seat)
 
     @property
     def by_id(self) -> Dict[str, SubscribedSku]:
@@ -214,8 +214,3 @@ def _provisioned_plans(sku: LicenseDetails | SubscribedSku) -> Tuple[str, ...]:
     return tuple(
         plan.service_plan_name or "" for plan in sku.service_plans or () if plan.provisioning_status == "Success"
     )
-
-
-def _has_spare_seat(sku: SubscribedSku) -> bool:
-    """Whether the SKU has a seat bought that nobody is using."""
-    return (sku.consumed_units or 0) < (sku.prepaid_units.enabled or 0)
