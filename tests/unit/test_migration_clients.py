@@ -4,7 +4,7 @@ Three decisions live in that one function and nowhere else: a Graph context is s
 priority header while a SharePoint context is not (SharePoint signals load with its health
 score, not with this header), ``priority=None`` leaves the header off, and pacing is installed
 unless the caller declines it. The header's own mechanics — the name, the rejected value — are
-covered by ``test_runtime_retry.py``, so they are not restated here.
+covered by ``test_resilience.py``, so they are not restated here.
 
 A tenant run cannot show any of this: what it shows is that an export completed, which is also
 what it shows when the header is missing.
