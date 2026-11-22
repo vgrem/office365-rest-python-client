@@ -95,3 +95,15 @@ def test_the_script_asks_the_hidden_command_and_no_user_facing_word():
     assert "--prefix" in written
     with pytest.raises(LookupError, match="no completion script for 'tcsh'"):
         completion.script("tcsh")
+
+
+def test_a_command_offers_only_the_formats_it_accepts():
+    """A TAB that answered ``csv`` for ``doctor`` would hand back a word argparse refuses."""
+    from office365.cli import DOCTOR_FORMATS, LICENCE_FORMATS, _following
+
+    doctor = _following(["doctor", "-o"], "")
+    licences = _following(["licences", "-o"], "")
+
+    assert [word for word, _ in doctor] == list(DOCTOR_FORMATS)
+    assert [word for word, _ in licences] == list(LICENCE_FORMATS)
+    assert all(told for _, told in doctor)

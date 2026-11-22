@@ -162,6 +162,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`o365 doctor <product>` answers for every noun under it.** `o365 doctor intune` counts 362
+  nouns and says how many this session can run (36), how many it cannot (93), how many rest on a
+  fact that could not be read (1), and how many carry no marker at all (232) — then groups the
+  missing ninety-three by what they would take, because they come down to fourteen names and
+  granting the first is worth twenty-nine nouns. `unmarked` is a fourth word and deliberately not
+  `have`: nothing was judged on a type nobody stamped. `-o wide` prints the matrix behind the
+  page, one row per noun; `-o json` the same rows for a program. `-o` now offers only the formats
+  the command accepts, which is what a TAB was getting wrong.
 - **`o365 licences` counts the areas a plan opens, and `-o wide` names them.** The table carried
   the families in a cell, so `INTUNE_A` read `intune.devices (119), intune.print (3), intune.audit,
   intune.edition_upgrade…` — four of eleven names and an ellipsis, which is the worst of both. The

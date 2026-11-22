@@ -17,6 +17,7 @@ from typing import Any
 
 import pytest
 from office365 import cli
+from office365.permissions.declaration import TENANT
 
 #: Where a Graph requirement's names are a grant: the audience a token must have been issued for.
 GRAPHS = "https://graph.microsoft.com"
@@ -164,3 +165,57 @@ def test_the_verdict_says_ok_with_the_three_numbers_it_read() -> None:
     assert cli._verdict(sessions, {"why": "", "roles": ("A", "B")}, records) == (
         "doctor: ok — 1 session, 1 of 2 licences, 2 roles"
     )
+
+
+def test_a_product_page_counts_its_nouns_and_names_what_the_missing_ones_take(monkeypatch, tmp_path, capsys) -> None:
+    """Six nouns waiting on one scope are one row: the name to grant, not the wall it unblocks."""
+    _store(
+        monkeypatch,
+        tmp_path,
+        graph={
+            "mode": "device-flow",
+            "constructor": {},
+            "token": {"access_token": _jwt(aud=GRAPHS, scp="User.Read")},
+        },
+    )
+    monkeypatch.setattr(cli, "_live_graph", lambda: pytest.fail("outlook names no licence and no role"))
+
+    assert cli.main(["doctor", "outlook"]) == 0
+
+    printed = capsys.readouterr().out
+    assert "37 nouns" in printed and "RESULT" in printed
+    assert printed.count("Place.Read.All") == 1
+    assert "PERMISSION" not in printed
+
+
+def test_wide_is_one_row_per_noun_with_every_gate_it_declares(monkeypatch, tmp_path, capsys) -> None:
+    """The matrix behind the page: a noun nobody needed to mention is still answerable."""
+    _store(monkeypatch, tmp_path)
+    monkeypatch.setattr(cli, "_live_graph", lambda: pytest.fail("outlook names no licence and no role"))
+
+    assert cli.main(["doctor", "outlook", "-o", "wide"]) == 0
+
+    printed = capsys.readouterr().out
+    assert "NOUN" in printed and "check-in-claim" in printed
+    assert "unmarked" in printed
+
+
+def test_a_noun_nobody_stamped_is_unmarked_and_never_counted_as_held() -> None:
+    """Nothing was judged on a type with no marker; calling that ``have`` would be a claim, not a read."""
+    gates = cli.Gates(claims=None, held=frozenset(), assigned=frozenset(), roles=(), why="")
+
+    row = cli._statement_row(cli.Statement("thing", (), TENANT, (), ()), gates)
+
+    assert row["result"] == cli.UNMARKED
+
+
+def test_an_unread_licence_is_unknown_and_an_absent_one_is_missing() -> None:
+    """The same noun, twice: a tenant that could not be asked is not a tenant that said no."""
+    statement = cli.Statement("managed-device", ("INTUNE_A",), TENANT, (), ())
+
+    unread = cli._statement_row(statement, cli.Gates(None, None, None, (), "could not be read"))
+    absent = cli._statement_row(statement, cli.Gates(None, frozenset(), frozenset(), (), ""))
+
+    assert unread["result"] == "unknown"
+    assert absent["result"] == "missing"
+    assert absent["needs"] == "licence INTUNE_A"

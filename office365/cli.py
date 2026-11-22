@@ -685,16 +685,47 @@ NEEDS_COLUMNS = ("fact", "names", "state")
 #: not the same as a name that is absent.
 HAVE, MISSING = "have", "missing"
 
+#: A fourth word, for the nouns whose type carries no marker at all. It is not ``have``: nothing
+#: has been judged there, and counting hundreds of unstamped nouns as permissions a tenant holds
+#: would be the same lie as reporting an unread fact as a missing one.
+UNMARKED = "unmarked"
+
+#: What a product page prints as: the counts, or the matrix behind them.
+COVERAGE_COLUMNS = ("result", "nouns", "means")
+
+#: The nouns that need something, grouped by what they would take: 93 rows are usually ten
+#: distinct names, and the name is what a person acts on.
+TAKEN_COLUMNS = ("needs", "nouns")
+
+#: One row per noun, for ``-o wide``: the gates the type declares and what they come to. The
+#: ``role`` column is added only when some noun of the product names one.
+PRODUCT_NOUN_COLUMNS = ("noun", "licence", "permission", "role", "result")
+
+#: What each format is for, in the one sentence a TAB shows beside it. One table, because
+#: ``-o`` is answered by three commands and they must offer the same words with the same
+#: reasons.
+FORMAT_WORDS = {
+    "table": "the columns a reader wants",
+    "wide": "every field the payload carried",
+    "json": "the payload as it came",
+    "csv": "for a spreadsheet",
+    "tsv": "for a spreadsheet, tab separated",
+    "url": "one address per line",
+    "name": "one name per line",
+}
+
 
 def doctor(argv: "list[str]") -> int:
     """What is configured, held and missing: this environment, or one command's requirement.
 
-    Two questions behind one word, because both are asked before the first command runs and
-    both are answered from declarations rather than from a call. With no route it answers for
-    the *environment*: the sessions this store keeps, what the tenant bought, the roles the
-    caller holds, and how many of each product's words those plans open. With a route it
-    answers for *one command*: the permission its declaration names, which of those names the
-    token proves, the licence it needs and the roles that bypass it.
+    Three questions behind one word, because all of them are asked before the first command
+    runs and all are answered from declarations rather than from a call. With nothing it
+    answers for the *environment*: the sessions this store keeps, what the tenant bought, the
+    roles the caller holds, and how many of each product's words those plans open. With a
+    product alone it answers for that product's *nouns*: which of its few hundred words this
+    session can run, and which it cannot. With a route it answers for *one command*: the
+    permission its declaration names, which of those names the token proves, the licence it
+    needs and the roles that bypass it.
 
     Nothing here is sent to the service being asked about, which is the point: a refusal says
     *what happened*, this says *why*, and only one of them can be printed before the fact. A
@@ -704,11 +735,18 @@ def doctor(argv: "list[str]") -> int:
     """
     parser = argparse.ArgumentParser(
         prog="o365 doctor",
-        description="What is configured, held and missing; name a route to ask about one command",
+        description="What is configured, held and missing; name a product for its nouns, a route for one command",
     )
-    parser.add_argument("words", nargs="*", metavar="<product> <noun> [action]", help="one command to ask about")
+    parser.add_argument(
+        "words", nargs="*", metavar="<product> [<noun> [action]]", help="a product, or one command to ask about"
+    )
     parser.add_argument("-o", "--output", choices=DOCTOR_FORMATS, default="table", help="what to print")
     args = parser.parse_args(argv)
+    if len(args.words) == 1 and args.words[0] in _published():
+        # A product word alone is a question about that product's nouns, never a route: the
+        # router would only say that a product is not a noun. `graph` is not in the index, so
+        # `o365 doctor graph` stays a route question and is refused as one.
+        return _doctor_product(args.words[0], args.output)
     if args.words:
         return _doctor_route(args.words, args.output)
     return _doctor_environment(args.output)
@@ -881,6 +919,262 @@ def _doctor_route(words: "list[str]", output: str) -> int:
     if missing:
         print(f"needs  a session that holds: {'; '.join(missing)}")
     return 0
+
+
+def _doctor_product(product: str, output: str) -> int:
+    """Every noun of one product, and whether this session has what each of them declares.
+
+    The question a page cannot answer: one product is 362 words, and "which of these can I
+    actually run?" is ``doctor <route>`` asked of every noun at once. The model is read once
+    and the tenant at most once, so 362 rows cost what one route costs -- nothing is sent to
+    the product's own endpoints, and the marks are the same scopes, plans and roles a call
+    would be judged by.
+
+    The page counts; ``-o wide`` prints the matrix and ``-o json`` the rows. A hundred nouns
+    listed one per line is a wall, and the reader's first question is a number.
+    """
+    from office365.routing import nouns
+    from office365.runtime.render import render
+
+    try:
+        index = nouns(product)
+    except LookupError as error:
+        return _refuse(str(error))
+    statements = sorted((_statement(found) for found in index.values()), key=lambda statement: statement.noun)
+    if not statements:
+        print(f"o365 doctor {product} — no noun")
+        return 0
+    audience = _audience(next(iter(index.values())).entity)
+    # A licence or a role is the only thing that has to be asked of the tenant, and a product
+    # that names neither is answered from the store alone.
+    gates = _gates(audience, any(statement.plans or statement.roles for statement in statements))
+    rows = [_statement_row(statement, gates) for statement in statements]
+    if output == "json":
+        print(json.dumps({"product": product, "nouns": rows, "note": gates.why}, indent=2, default=str))
+        return 0
+    if output == "wide":
+        columns = [name for name in PRODUCT_NOUN_COLUMNS if name != "role" or any(row["role"] for row in rows)]
+        print(render(rows, "table", columns=columns, width=None))
+        return 0
+    print(_coverage(product, rows, gates))
+    return 0
+
+
+class Statement(NamedTuple):
+    """One noun's declaration, read off the model: the plans, the roles and the scopes it names."""
+
+    noun: str
+    plans: "tuple[str, ...]"
+    seat: str
+    roles: "tuple[str, ...]"
+    declarations: "tuple[Any, ...]"
+
+
+class Gates(NamedTuple):
+    """What this session proves, read once for a whole product rather than once per noun."""
+
+    claims: Any
+    held: "frozenset[str] | None"
+    assigned: "frozenset[str] | None"
+    roles: "tuple[str, ...] | None"
+    why: str
+
+
+def _gates(audience: str, needed: bool) -> Gates:
+    """This session's scopes, and - only when a noun names one - the tenant's plans and roles.
+
+    ``needed`` is not an optimisation for its own sake: a product that names no licence and no
+    role is answered with no request at all, and four reads to print a page they cannot change
+    would make ``o365 doctor outlook`` slower than the commands it describes.
+    """
+    from office365.permissions.token import TokenClaims
+
+    entry = _load().get(audience) or {}
+    kept = _kept_token(entry) if entry else None
+    claims = TokenClaims.parse(kept[0]) if kept else None
+    if not needed:
+        return Gates(claims, frozenset(), frozenset(), (), "")
+    facts = _tenant_facts()
+    return Gates(claims, facts["held"], facts["assigned"], facts["roles"], facts["why"])
+
+
+def _statement(found: Any) -> Statement:
+    """One noun as the gates a call under it must pass.
+
+    The licence is the type's own stamp as well as any per-call one, because a noun whose verbs
+    were never stamped still names the licence its read needs -- that is the plan ``o365
+    licences`` counts, and the two pages must not disagree about it.
+    """
+    from office365.capabilities import capabilities_of
+    from office365.permissions.declaration import TENANT, licence_of
+
+    capabilities = capabilities_of(found.entity)
+    licence = licence_of(found.entity)
+    declarations = tuple(capabilities.declarations.values())
+    # A role is a closed vocabulary of its own, so `/directoryRoles` answers with display
+    # names: the declaration holds the enum, and the value is what a name is compared to.
+    roles = {getattr(role, "value", role) for declaration in declarations for role in declaration.directory_roles}
+    return Statement(
+        noun=found.noun,
+        plans=tuple(capabilities.licenses),
+        seat=licence.seat if licence is not None else TENANT,
+        roles=tuple(sorted(roles)),
+        declarations=declarations,
+    )
+
+
+def _statement_row(statement: Statement, gates: Gates) -> "dict[str, Any]":
+    """One noun as a matrix row: each gate it declares, and the one word they come to."""
+    permission = _permission(statement, gates)
+    licence = _licence(statement, gates)
+    needs = []
+    if licence == MISSING:
+        needs.append(f"licence {', '.join(statement.plans)}")
+    if permission == MISSING:
+        needs.append(f"permission {_scopes(statement)}")
+    return {
+        "noun": statement.noun,
+        "licence": ", ".join(statement.plans),
+        "permission": permission,
+        "role": ", ".join(statement.roles),
+        "result": _worst((licence, permission)) or UNMARKED,
+        "needs": "; ".join(needs),
+    }
+
+
+def _licence(statement: Statement, gates: Gates) -> str:
+    """Whether a plan this noun names is held, or could not be decided.
+
+    ``answer`` is the licence report's own reading -- any one plan carries the capability -- so
+    a matrix row and the ``o365 licences`` page cannot disagree about a plan name.
+    """
+    from office365.licensing.report import NO, UNKNOWN, YES, answer
+
+    if not statement.plans or gates.held is None:
+        return UNKNOWN if statement.plans else ""
+    said = answer(statement.plans, statement.seat, gates.held, gates.assigned)
+    return HAVE if said == YES else MISSING if said == NO else UNKNOWN
+
+
+def _permission(statement: Statement, gates: Gates) -> str:
+    """Whether this token proves what anything this noun answers asks for.
+
+    Any one declaration satisfied is enough: a matrix row answers "is there something here I
+    can do", not "may I do all of it" -- the per-verb answer is ``doctor <route>``, which
+    prints each name. A role the declaration names is a bypass, so holding it decides the row
+    exactly as the scope would.
+    """
+    from office365.licensing.report import UNKNOWN
+
+    words = [_declared(declaration, gates) for declaration in statement.declarations]
+    if not words:
+        return ""
+    if HAVE in words:
+        return HAVE
+    if any(word == UNKNOWN for word in words):
+        return UNKNOWN
+    return MISSING if any(words) else ""
+
+
+def _declared(declaration: Any, gates: Gates) -> str:
+    """One declaration against this session: ``have``, ``missing``, ``unknown``, or nothing asked.
+
+    A marker that names only a licence or a role asks nothing of the token, and saying
+    ``missing`` there would refuse a call the model never gated on a scope.
+    """
+    from office365.licensing.report import UNKNOWN
+    from office365.permissions.requirement import FLOWS
+
+    if any(role in (gates.roles or ()) for role in declaration.directory_roles):
+        return HAVE
+    flows = [(flow, getattr(declaration, flow)) for flow in FLOWS]
+    if not any(names for _, names in flows):
+        return ""
+    if gates.claims is None:
+        return UNKNOWN
+    proved, silent = False, True
+    for flow, names in flows:
+        if not names:
+            continue
+        proof = gates.claims.proves(declaration.for_flow(flow))
+        if proof is None:
+            continue
+        silent = False
+        if frozenset(proof).intersection(names):
+            proved = True
+    if proved:
+        return HAVE
+    return UNKNOWN if silent else MISSING
+
+
+def _worst(words: "tuple[str, ...]") -> str:
+    """What a row comes to: a missing gate outranks an unread one, which outranks a held one."""
+    from office365.licensing.report import UNKNOWN
+
+    asked = [word for word in words if word]
+    if MISSING in asked:
+        return MISSING
+    if UNKNOWN in asked:
+        return UNKNOWN
+    return HAVE if asked else ""
+
+
+def _scopes(statement: Statement) -> str:
+    """Every scope this noun's declarations name, once, for the one row that says what it lacks."""
+    from office365.permissions.requirement import FLOWS
+
+    names = {name for declaration in statement.declarations for flow in FLOWS for name in getattr(declaration, flow)}
+    return ", ".join(sorted(names))
+
+
+def _coverage(product: str, rows: "list[dict[str, Any]]", gates: Gates) -> str:
+    """The page: how many nouns, what they come to, what the missing ones would take, what next.
+
+    Twenty ``missing`` nouns are grouped and two hundred ``have`` nouns are counted, because a
+    page is read for what is wrong with it and the wrong part is one name repeated: 41 of these
+    93 wait on a single scope. ``-o wide`` is where the whole matrix belongs.
+    """
+    from collections import Counter
+
+    from office365.licensing.report import UNKNOWN
+    from office365.runtime.render import render
+
+    meaning = (
+        (HAVE, "this session proves what they declare"),
+        (MISSING, "this session lacks what they declare"),
+        (UNKNOWN, "a fact could not be read, so these are undecided"),
+        (UNMARKED, "nothing is declared, so nothing here decides them"),
+    )
+    licensed = sum(1 for row in rows if row["licence"])
+    headline = f"o365 doctor {product} — {len(rows)} nouns"
+    headline += f", {licensed} name a licence" if licensed else "; none of them names a licence"
+    counts = []
+    for result, means in meaning:
+        counted = sum(1 for row in rows if row["result"] == result)
+        if counted:
+            counts.append({"result": result, "nouns": counted, "means": means})
+    # A prose column is never cut to a width: `nothing is declared, so nothing here decides th…`
+    # says less than the same sentence in full, which is why this table asks for none.
+    blocks = [headline, render(counts, "table", columns=COVERAGE_COLUMNS, width=None)]
+    taken = Counter(row["needs"] for row in rows if row["result"] == MISSING)
+    if taken:
+        grouped = [{"needs": needs, "nouns": count} for needs, count in sorted(taken.items(), key=_worst_first)]
+        blocks.append("what the missing ones would take\n" + render(grouped, "table", columns=TAKEN_COLUMNS, width=None))
+    if gates.why:
+        # The sentence the environment page prints under its verdict, for the same reason: a
+        # page that says `unknown` without saying why reads as a refusal.
+        blocks.append(gates.why)
+    blocks.append(
+        f"next: o365 doctor {product} -o wide                     every noun, with the gates it declares\n"
+        f"      o365 doctor {product} <noun> <action>             one command, name by name"
+    )
+    return "\n\n".join(blocks)
+
+
+def _worst_first(pair: "tuple[str, int]") -> "tuple[int, str]":
+    """Most nouns first, then alphabetically: the name that unblocks the most is the one to grant."""
+    needs, count = pair
+    return -count, needs
 
 
 def _needs(claims: Any, declaration: Any) -> "list[dict[str, Any]]":
@@ -1096,6 +1390,10 @@ def _following(words: "list[str]", prefix: str) -> "list[tuple[str, str]]":
         return _prefixed(_top(), prefix)
     if words[0] == "config":
         return _prefixed([(setting.key, setting.spoken) for setting in SETTINGS], prefix)
+    if words[0] in ("doctor", "licences") and words[-1:] in (["-o"], ["--output"]):
+        return _prefixed(_format_words(DOCTOR_FORMATS if words[0] == "doctor" else LICENCE_FORMATS), prefix)
+    if words[0] == "licences":
+        return []
     if words[0] == "doctor":
         # The page takes the same route as the command it describes, so it answers with the same
         # words: a product before a noun, then whatever the route reached.
@@ -1210,16 +1508,7 @@ def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[
     if typed[-1] in ("-o", "--output"):
         from office365.runtime.render import FORMATS
 
-        told = {
-            "table": "the columns a reader wants",
-            "wide": "every field the payload carried",
-            "json": "the payload as it came",
-            "csv": "for a spreadsheet",
-            "tsv": "for a spreadsheet, tab separated",
-            "url": "one address per line",
-            "name": "one name per line",
-        }
-        return [(fmt, told.get(fmt, "")) for fmt in FORMATS]
+        return _format_words(FORMATS)
     if typed[-1] in ("-s", "--site") and walk:
         return _known_sites(product)
     if typed[-1] == "--link":
@@ -1234,6 +1523,13 @@ def _values(product: str, walk: "list[str]", typed: "list[str]") -> "list[tuple[
             return []
         return [(name, "") for name in TypeSchema.of(found.entity).columns]
     return []
+
+
+def _format_words(choices: "tuple[str, ...]") -> "list[tuple[str, str]]":
+    """The values ``-o`` takes for one command. A command offers only the formats it accepts:
+    a TAB that answers ``csv`` for ``doctor`` would hand back a word argparse refuses.
+    """
+    return [(choice, FORMAT_WORDS.get(choice, "")) for choice in choices]
 
 
 def _prefixed(pairs: "list[tuple[str, str]]", prefix: str) -> "list[tuple[str, str]]":
@@ -2104,7 +2400,7 @@ def _usage() -> str:
         "       o365 config [<key>]                (what is set, and the file to edit)\n"
         "       o365 completion bash|zsh|fish [--warm [product ...]]\n"
         "       o365 licences [-o table|wide|csv|tsv|json]\n"
-        "       o365 doctor [<product> <noun> [action]] [-o table|json]\n"
+        "       o365 doctor [<product> [<noun> [action]]] [-o table|wide|json]\n"
         "  a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json"
     )
 

@@ -21,7 +21,7 @@ usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]
        o365 config [tenant|client_id|site]     (what is answered, and where from)
        o365 completion bash|zsh|fish [--warm [product ...]]
        o365 licences [-o table|wide|csv|tsv|json]
-       o365 doctor [<product> <noun> [action]] [-o table|wide|json]
+       o365 doctor [<product> [<noun> [action]]] [-o table|wide|json]
   a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json
 ```
 
@@ -293,6 +293,38 @@ Given a route it answers instead for one command, with no request to the service
 about: the delegated and application permissions the method declares, marked against the token's
 own `scp`/`roles`, the licence the type names, and one row per directory role it asks for. `have`,
 `missing` and `unknown` are the same three words as above.
+
+Given a product alone it answers for every noun under it, and the shape of that answer is a
+count, not 362 rows:
+
+```console
+$ o365 doctor intune
+o365 doctor intune — 362 nouns, 129 name a licence
+
+RESULT    NOUNS  MEANS
+have         36  this session proves what they declare
+missing      93  this session lacks what they declare
+unknown       1  a fact could not be read, so these are undecided
+unmarked    232  nothing is declared, so nothing here decides them
+
+what the missing ones would take
+NEEDS                                                                                           NOUNS
+permission DeviceManagementApps.ReadWrite.All, DeviceManagementConfiguration.ReadWrite.All         29
+permission DeviceManagementConfiguration.ReadWrite.All                                             21
+permission DeviceManagementApps.ReadWrite.All                                                      16
+permission DeviceManagementServiceConfig.ReadWrite.All                                              7
+…
+
+next: o365 doctor intune -o wide                     every noun, with the gates it declares
+      o365 doctor intune <noun> <action>             one command, name by name
+```
+
+The ninety-three missing nouns wait on fourteen distinct names, so the page groups them by what
+they would take: granting the first line is worth twenty-nine nouns, and a page that printed the
+same scope twenty-nine times would hide that. `unmarked` is the fourth word and it is not `have`
+— a type nobody stamped was never judged, and counting its nouns as reachable would be a claim
+rather than a read. `-o wide` is the matrix behind the page (one row per noun, with the licence,
+the permission and the role it declares), and `-o json` is the same rows for a program.
 
 ## Completion
 
