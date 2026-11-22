@@ -127,7 +127,7 @@ _MODERATION_STATUS = _LIST_ITEM.name_of("moderation_status")
 _WARNING_SAMPLE = 5
 
 
-def _scalar_mapping(value: Any) -> dict | None:
+def _scalar_mapping(value: object) -> dict | None:
     """A value object as a plain mapping with scalar members, or ``None``.
 
     Only a shallow mapping of scalars is accepted, so a navigation property (a
@@ -151,7 +151,7 @@ def _scalar_mapping(value: Any) -> dict | None:
 _CONTENT_EXCLUDED = frozenset(ListItem._schema.readonly) | frozenset(ListItem._schema.navigations)
 
 
-def _folder_value_columns(fields: list[Any]) -> set[str]:
+def _folder_value_columns(fields: list[Field]) -> set[str]:
     """The columns a folder's own metadata can live in (writable, non-system).
 
     A read of a folder also returns computed and read-only columns (link filenames,
@@ -222,7 +222,7 @@ def _typed_keys(names: Iterable[str]) -> set[str]:
     return {key for name in names for key in (ListItem.value_column(name), ListItem.string_value_column(name))}
 
 
-def _taxonomy_terms(value: Any) -> list[dict[str, str]]:
+def _taxonomy_terms(value: object) -> list[dict[str, str]]:
     """A taxonomy cell as portable ``{"TermGuid": ...}`` terms.
 
     Only ``TermGuid`` is carried: a per-site ``WssId`` is meaningless elsewhere and
@@ -237,12 +237,12 @@ def _taxonomy_terms(value: Any) -> list[dict[str, str]]:
     return terms
 
 
-def _is_taxonomy_value(value: Any) -> bool:
+def _is_taxonomy_value(value: object) -> bool:
     """Whether a projected value is a taxonomy term (single value or a collection)."""
     return bool(_taxonomy_terms(value))
 
 
-def _taxonomy_guids(value: Any) -> list[str]:
+def _taxonomy_guids(value: object) -> list[str]:
     return [term["TermGuid"] for term in _taxonomy_terms(value)]
 
 
@@ -287,7 +287,7 @@ def _report_rejected_fields(result, warnings: list[str], label: str) -> None:
             warnings.append(f"{label}: {value.FieldName} rejected ({value.ErrorMessage})")
 
 
-def _wire_value(value: Any) -> Any:
+def _wire_value(value: object) -> object:
     """A value as the wire spells it: a declared enum is the number it carries."""
     return value.value if isinstance(value, Enum) else value
 
@@ -351,7 +351,7 @@ def _site_assets_scaffolding(folder) -> tuple[str, ...]:
 _MAX_GROUP_OWNER_DEPTH = 4
 
 
-def _principal_kind(member: Any) -> str | None:
+def _principal_kind(member: object) -> str | None:
     """What ``UserGroup.xml`` can express for this role-assignment member: a user by PUID
     (``"user"``) or a site group by title (``"group"``); a distribution or security group
     and an unprojected ``PrincipalType`` are ``None``."""
@@ -450,7 +450,7 @@ def _replay_role_assignments(
         securable.add_role_assignment(principal, role)
 
 
-def _user_login(web, user_id: Any, cache: dict[int, str | None]) -> str | None:
+def _user_login(web: "Web", user_id: object, cache: dict[int, str | None]) -> str | None:
     """Resolve a target user id to its login name, cached."""
     key = parse_int(user_id)
     if key is None:
@@ -459,7 +459,7 @@ def _user_login(web, user_id: Any, cache: dict[int, str | None]) -> str | None:
         return cache[key]
     login: str | None = None
     try:
-        user = web.site_users.get_by_id(key).get().execute_query()
+        user = web.site_users.get_by_id(str(key)).get().execute_query()
         login = user.login_name or None
     except Exception:  # noqa: BLE001 — an unresolvable id yields no login
         login = None
@@ -591,9 +591,9 @@ class _TargetPrincipals:
 
 
 def _resolve_group_ownership(
-    web: Any,
+    web: "Web",
     title: str,
-    resolve: Callable[[Any], "Principal | None"] | None,
+    resolve: "Callable[[object], Principal | None] | None",
 ) -> tuple["Principal | None", list[str]]:
     """A site group's owner chain: a user with a PUID, plus the groups on the way up.
 
@@ -631,8 +631,8 @@ def _resolve_group_ownership(
 
 def _attach_group_owners(
     entries: list[PermissionEntry],
-    web: Any,
-    resolve: Callable[[Any], "Principal | None"] | None,
+    web: "Web",
+    resolve: "Callable[[object], Principal | None] | None",
     cache: dict[str, tuple["Principal | None", list[str]]],
 ) -> None:
     """Fill ``PermissionEntry.owner``/``owner_groups`` for group entries (per title)."""
@@ -647,7 +647,7 @@ def _attach_group_owners(
 
 def _read_role_assignments(
     securable,
-    resolve: Callable[[Any], "Principal | None"] | None = None,
+    resolve: "Callable[[object], Principal | None] | None" = None,
     normalize: Callable[[str], str] | None = None,
 ) -> list[PermissionEntry]:
     """Read a securable object's role assignments into ``PermissionEntry``s.
@@ -1233,7 +1233,7 @@ class SharePointListSource(DataSource):
         _attach_group_owners(entries, self._list.context.web, self._principal_for, self._group_owners)
         return entries
 
-    def _principal_for(self, user_id: Any) -> "Principal | None":
+    def _principal_for(self, user_id: object) -> "Principal | None":
         """Resolve a site-user id to a :class:`Principal` (login + PUID), cached."""
         key = parse_int(user_id)
         if key is None:
@@ -1242,7 +1242,7 @@ class SharePointListSource(DataSource):
             return self._users[key]
         principal: "Principal | None" = None
         try:
-            user = self._list.context.web.site_users.get_by_id(cast("str", key)).get().execute_query()
+            user = self._list.context.web.site_users.get_by_id(str(key)).get().execute_query()
             principal = _principal_of(user, key)
         except Exception as e:  # noqa: BLE001 — a missing user degrades to no authorship
             self.warnings.append(f"user {key} could not be resolved: {e}")
@@ -2506,7 +2506,7 @@ class SharePointLibrarySource(DataSource):
         file = self._files.get(item.dest_path)
         return file.listItemAllFields if file is not None else None
 
-    def _principal_for(self, user_id: Any) -> "Principal | None":
+    def _principal_for(self, user_id: object) -> "Principal | None":
         """Resolve a site-user id to a :class:`Principal` (login + PUID), cached."""
         key = parse_int(user_id)
         if key is None:
@@ -2515,7 +2515,7 @@ class SharePointLibrarySource(DataSource):
             return self._users[key]
         principal: "Principal | None" = None
         try:
-            user = self._folder.context.web.site_users.get_by_id(cast("str", key)).get().execute_query()
+            user = self._folder.context.web.site_users.get_by_id(str(key)).get().execute_query()
             principal = _principal_of(user, key)
             if user.user_id.name_id and principal.system_id is None:
                 # e.g. the app principal, whose ``UserId.NameId`` is not a PUID.
