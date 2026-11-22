@@ -86,11 +86,14 @@ import sys
 import textwrap
 import time
 import types
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
-from typing import Any, NamedTuple, Union, get_args, get_origin
+from typing import TYPE_CHECKING, Any, NamedTuple, Union, get_args, get_origin
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:
+    from office365.licensing.report import LicenceRecord
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -652,7 +655,7 @@ def _next(steps: "list[tuple[str, str]]") -> str:
     return "\n".join(lines)
 
 
-def _licence_table(records: "list[dict[str, Any]]", wide: bool) -> str:
+def _licence_table(records: Sequence[LicenceRecord], wide: bool) -> str:
     """The row a reader scans, and the report a reader consults.
 
     Two facts decide the shape. A plan opens a list of areas, and a list is not a table cell: at
@@ -670,7 +673,7 @@ def _licence_table(records: "list[dict[str, Any]]", wide: bool) -> str:
     return _by_area(records, _changing(records, COLUMNS))
 
 
-def _changing(records: "list[dict[str, Any]]", columns: "tuple[str, ...]") -> "tuple[str, ...]":
+def _changing(records: Sequence[LicenceRecord], columns: "tuple[str, ...]") -> "tuple[str, ...]":
     """``held`` is dropped when every row says ``yes``: the headline above already said *all*.
 
     A column whose value never changes is not information, it is a header over nothing -- the same
@@ -684,25 +687,34 @@ def _changing(records: "list[dict[str, Any]]", columns: "tuple[str, ...]") -> "t
     return columns
 
 
-def _by_area(records: "list[dict[str, Any]]", columns: "tuple[str, ...]") -> str:
+def _by_area(records: Sequence[LicenceRecord], columns: "tuple[str, ...]") -> str:
     """One line per licence, then the areas it opens indented under it, counts right-aligned.
 
     Aligned to the widest name in the whole report rather than per plan: a count column that
     moves between plans cannot be scanned down, and four plans are not worth four widths.
     """
-    areas = [area for record in records for area in record.get("by_area") or ()]
-    name_width = max((len(str(area["area"])) for area in areas), default=0)
+    areas = [area for record in records for area in record["by_area"]]
+    name_width = max((len(area["area"]) for area in areas), default=0)
     count_width = max((len(f"{area['nouns']:,}") for area in areas), default=1)
-    sizes = {name: max((len(str(record.get(name, ""))) for record in records), default=len(name)) for name in columns}
+    sizes = {name: max((len(_cell(record, name)) for record in records), default=len(name)) for name in columns}
     lines = []
     for record in records:
-        head = [str(record.get(name, "")).ljust(sizes[name]) for name in columns[:-1]]
-        nouns = record.get("nouns") or 0
+        head = [_cell(record, name).ljust(sizes[name]) for name in columns[:-1]]
+        nouns = record["nouns"]
         head.append(f"{nouns:,} noun" + ("" if nouns == 1 else "s"))
         lines.append("  ".join(head))
-        for area in record.get("by_area") or ():
-            lines.append(f"  {str(area['area']):<{name_width}}  {area['nouns']:>{count_width},}")
+        for area in record["by_area"]:
+            lines.append(f"  {area['area']:<{name_width}}  {area['nouns']:>{count_width},}")
     return "\n".join(lines)
+
+
+def _cell(record: Mapping[str, object], name: str) -> str:
+    """One cell of a record, read by the column's own name.
+
+    The report's shapes are declared, but a column name arrives as a string from the format table
+    above, so this is the one place the name is spent rather than a declared field.
+    """
+    return str(record.get(name, ""))
 
 
 def _assigned(client: Any) -> "frozenset[str] | None":
@@ -880,7 +892,7 @@ def _doctor_environment(output: str) -> int:
     return 0
 
 
-def _verdict(sessions: "dict[str, Any]", facts: "dict[str, Any]", records: "list[dict[str, Any]]") -> str:
+def _verdict(sessions: "dict[str, Any]", facts: "dict[str, Any]", records: Sequence[Mapping[str, object]]) -> str:
     """The line a reader needs first: is anything wrong, and which command fixes it.
 
     A doctor that makes someone scan three blocks to find the expired token has not done its

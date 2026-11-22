@@ -18,7 +18,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 from office365.permissions.declaration import USER
 
@@ -46,6 +46,37 @@ COUNTED_COLUMNS = ("plan", "seat", "held", "nouns", "areas")
 #: holds is still gated by the permission the call declares, so one number here would claim what
 #: only :func:`rows` - plan by plan, seat by seat - can answer.
 PRODUCT_COLUMNS = ("product", "nouns", "licensed")
+
+
+class Area(TypedDict):
+    """One area's share of a licence: the module family it is called, and how many nouns it opens."""
+
+    area: str
+    nouns: int
+
+
+class LicenceRecord(TypedDict):
+    """One licence as a table prints it: the plan, whose seat holds it, and what it opens.
+
+    ``by_area`` is not a cell. It is what ``-o wide`` prints one line per, and what the table
+    counts instead -- so a renderer reads the cells and :func:`office365.cli._by_area` reads the
+    rows underneath them, both off this one shape.
+    """
+
+    plan: str
+    seat: str
+    held: str
+    nouns: int
+    areas: int
+    by_area: list[Area]
+
+
+class ProductRecord(TypedDict):
+    """One product as a table prints it: how many words it opens, how many name a licence."""
+
+    product: str
+    nouns: int
+    licensed: int
 
 
 @dataclass(frozen=True)
@@ -109,7 +140,7 @@ def area_of(ref: str) -> str:
     return ".".join(module.split(".")[1 : 1 + FAMILY_DEPTH])
 
 
-def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] | None = None) -> list[dict[str, Any]]:
+def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] | None = None) -> list[LicenceRecord]:
     """One record per licence, ready for :func:`office365.runtime.render.render`.
 
     Args:
@@ -119,7 +150,7 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
             a refusal.
     """
     tenant, assigned = frozenset(held), None if mine is None else frozenset(mine)
-    records = [
+    records: list[LicenceRecord] = [
         {
             "plan": licence.name,
             "seat": licence.seat,
@@ -136,7 +167,7 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
     return records
 
 
-def headline(records: Iterable[Mapping[str, Any]], tenant: str = "") -> str:
+def headline(records: Iterable[Mapping[str, object]], tenant: str = "") -> str:
     """One sentence: how much of what a command names this tenant can actually use.
 
     A verdict, not a count: *all* when there is nothing to do, and the plans a reader would have
@@ -180,7 +211,7 @@ def answer(plans: Iterable[str], seat: str, held: Iterable[str], mine: Iterable[
     return NO if frozenset(mine).isdisjoint(plans) else YES
 
 
-def products(document: Mapping[str, Any]) -> list[dict[str, Any]]:
+def products(document: Mapping[str, Any]) -> list[ProductRecord]:
     """One record per product, ready for :func:`office365.runtime.render.render`.
 
     The two numbers are different facts, not a ratio: a product with no licensed word needs
