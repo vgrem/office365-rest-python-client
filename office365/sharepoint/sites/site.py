@@ -2066,3 +2066,20 @@ class Site(Entity):
         qry = FunctionQuery(self, "ValidateHubSiteJoinApprovalToken", [joining_site_id, approval_token], return_type)
         self.context.add_query(qry)
         return return_type
+
+    @odata(name="AV1CompressionEnabled")
+    @property
+    def av1compression_enabled(self) -> Optional[bool]:
+        """Gets the AV1CompressionEnabled property"""
+        return self.properties.get("AV1CompressionEnabled", None)
+
+    def set_av1compression_enabled(self, enabled: bool) -> Self:
+        """SetAV1CompressionEnabled operation.
+
+        Args:
+            enabled (bool):
+                enabled parameter
+        """
+        qry = ServiceOperationQuery(self, "SetAV1CompressionEnabled", None, {"enabled": enabled}, None, None)
+        self.context.add_query(qry)
+        return self

@@ -10,6 +10,7 @@ from office365.sharepoint.tenant.administration.catalog_management_group import 
 class CatalogManagementCategory(ClientValue):
     categoryColumnName: str | None = None
     categoryDisplayName: str | None = None
+    categoryKey: str | None = None
     categoryName: str | None = None
     categoryType: str | None = None
     groups: ClientValueCollection[CatalogManagementGroup] = field(

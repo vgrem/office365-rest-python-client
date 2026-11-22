@@ -8,6 +8,7 @@ from office365.sharepoint.publishing.propertyvalue import PropertyValue
 
 
 class Property(ClientValue):
+    categoryKey: str | None = None
     propertyType: int | None = None
     values: ClientValueCollection[PropertyValue] = field(default_factory=lambda: ClientValueCollection(PropertyValue))
 

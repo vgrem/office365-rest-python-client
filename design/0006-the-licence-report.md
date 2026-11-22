@@ -45,7 +45,7 @@ Rebuilding the index costs one walk of the tree:
 
 ```
 $ python -m generator graph --index
-2037 nouns over 22 products, 349 walkable, 152 licensed -> office365/index.json (1.1 MB)
+2038 nouns over 22 products, 349 walkable, 152 licensed -> office365/index.json (1.1 MB)
 ```
 
 Read back it costs 34 ms — cheaper than the `find_spec` calls it replaces, which is why the report

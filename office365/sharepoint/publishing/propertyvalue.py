@@ -11,6 +11,7 @@ from office365.runtime.types.collections import GuidCollection
 class PropertyValue(ClientValue):
     TermId: Optional[str] = None
     Value: Optional[str] = None
+    groupKey: str | None = None
     id: UUID | None = None
     name: str | None = None
     sites: GuidCollection = field(default_factory=GuidCollection)

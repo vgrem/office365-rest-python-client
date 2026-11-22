@@ -1100,3 +1100,125 @@ class SiteMoveService(Entity):
         )
         self.context.add_query(qry)
         return self
+
+    def get_all_user_data_sparse_column_metadata_json(self) -> ClientResult[str]:
+        """GetAllUserDataSparseColumnMetadataJson operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetAllUserDataSparseColumnMetadataJson", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_checksum_algorithm_version(self, request_type: int) -> ClientResult[int]:
+        """GetChecksumAlgorithmVersion operation.
+
+        Args:
+            request_type (int):
+                requestType parameter
+        """
+        return_type = ClientResult(self.context, int())
+        qry = ServiceOperationQuery(
+            self, "GetChecksumAlgorithmVersion", None, {"requestType": request_type}, None, return_type
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_crawler_cursors_json(self) -> ClientResult[str]:
+        """GetCrawlerCursorsJson operation."""
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(self, "GetCrawlerCursorsJson", None, {}, None, return_type)
+        self.context.add_query(qry)
+        return return_type
+
+    def get_per_column_checksums_with_checksum_version(
+        self, schema_name: str, table_name: str, checksum_algorithm_version: int
+    ) -> ClientResult[str]:
+        """GetPerColumnChecksumsWithChecksumVersion operation.
+
+        Args:
+            schema_name (str):
+                schemaName parameter
+            table_name (str):
+                tableName parameter
+            checksum_algorithm_version (int):
+                checksumAlgorithmVersion parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetPerColumnChecksumsWithChecksumVersion",
+            None,
+            {"schemaName": schema_name, "tableName": table_name, "checksumAlgorithmVersion": checksum_algorithm_version},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_table_data_chunk_iterator_with_checksum_version(
+        self, table_name: str, schema_name: str, checksum_algorithm_version: int
+    ) -> ClientResult[str]:
+        """GetTableDataChunkIteratorWithChecksumVersion operation.
+
+        Args:
+            table_name (str):
+                tableName parameter
+            schema_name (str):
+                schemaName parameter
+            checksum_algorithm_version (int):
+                checksumAlgorithmVersion parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetTableDataChunkIteratorWithChecksumVersion",
+            None,
+            {"tableName": table_name, "schemaName": schema_name, "checksumAlgorithmVersion": checksum_algorithm_version},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_table_data_chunk_iterator_with_checksum_version_stream(
+        self, table_name: str, schema_name: str, checksum_algorithm_version: int
+    ) -> ClientResult[bytes]:
+        """GetTableDataChunkIteratorWithChecksumVersionStream operation.
+
+        Args:
+            table_name (str):
+                tableName parameter
+            schema_name (str):
+                schemaName parameter
+            checksum_algorithm_version (int):
+                checksumAlgorithmVersion parameter
+        """
+        return_type = ClientResult(self.context, bytes())
+        qry = ServiceOperationQuery(
+            self,
+            "GetTableDataChunkIteratorWithChecksumVersionStream",
+            None,
+            {"tableName": table_name, "schemaName": schema_name, "checksumAlgorithmVersion": checksum_algorithm_version},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type
+
+    def get_validation_chunks_with_checksum_version(self, checksum_algorithm_version: int) -> ClientResult[str]:
+        """GetValidationChunksWithChecksumVersion operation.
+
+        Args:
+            checksum_algorithm_version (int):
+                checksumAlgorithmVersion parameter
+        """
+        return_type = ClientResult(self.context, str())
+        qry = ServiceOperationQuery(
+            self,
+            "GetValidationChunksWithChecksumVersion",
+            None,
+            {"checksumAlgorithmVersion": checksum_algorithm_version},
+            None,
+            return_type,
+        )
+        self.context.add_query(qry)
+        return return_type

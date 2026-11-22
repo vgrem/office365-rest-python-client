@@ -5,6 +5,7 @@ from office365.runtime.client_value import ClientValue
 
 class ExtendedAttributeSettings(ClientValue):
     attributeNumber: int | None = None
+    categoryKey: str | None = None
     description: str | None = None
     displayName: str | None = None
     isScanPending: bool | None = None

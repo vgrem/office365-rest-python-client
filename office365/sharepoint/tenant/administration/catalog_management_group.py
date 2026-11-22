@@ -8,6 +8,7 @@ from office365.runtime.client_value import ClientValue
 class CatalogManagementGroup(ClientValue):
     groupDisplayName: str | None = None
     groupId: UUID | None = None
+    groupKey: str | None = None
     groupName: str | None = None
     siteCount: int | None = None
 

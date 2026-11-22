@@ -239,7 +239,11 @@ PENDING: dict[str, int] = {
     "intune": 9,
     "onenote": 2,
     "outlook": 1,
-    "sharepoint": 5,
+    # SharePoint declares no permission marker at all: its operations are gated by site
+    # permissions a scope does not name, so the number moves with every metadata sync and is
+    # recorded rather than declared. Eight new operations came with the site-move checksum and
+    # home-site-next-steps sync.
+    "sharepoint": 13,
 }
 
 #: The service plan names Microsoft publishes for licensing. A marker is a claim about what a

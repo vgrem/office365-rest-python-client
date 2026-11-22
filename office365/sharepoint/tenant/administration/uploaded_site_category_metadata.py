@@ -8,6 +8,7 @@ from office365.sharepoint.tenant.administration.uploaded_site_group_metadata imp
 
 
 class UploadedSiteCategoryMetadata(ClientValue):
+    categoryKey: str | None = None
     description: str | None = None
     displayName: str | None = None
     groups: ClientValueCollection[UploadedSiteGroupMetadata] = field(
