@@ -2,23 +2,30 @@
 
 Keeps the import/export surface of :class:`~office365.runtime.record_collection.RecordCollection`
 data-driven: adding a format is a registration, not a new method. Readers turn a
-source into plain dict records; writers persist a collection's records to a
-target. Both import their (optional) dependency lazily, so registering a format
-never pulls in pandas/openpyxl.
+source into :data:`~office365.runtime.converters.records.Record` rows; writers persist
+a collection's records to a target. Both import their (optional) dependency lazily,
+so registering a format never pulls in pandas/openpyxl.
+
+``source``, ``target`` and ``**opts`` are ``Any`` here for the reason the table exists:
+it is open.  A reader takes a path, a URL, an open file, a DataFrame or a buffer and a
+writer the same, each of which the *format* decides; ``opts`` are that format's own
+keyword arguments, passed through untouched.  A union in this signature would refuse
+the next format someone registers -- which is exactly what registering is for.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, List
+from typing import TYPE_CHECKING, Any, Callable
 
 if TYPE_CHECKING:
     from office365.runtime.client_object_collection import ClientObjectCollection
+    from office365.runtime.converters.records import Record
 
-RecordReader = Callable[..., List[dict]]
+RecordReader = Callable[..., list["Record"]]
 RecordWriter = Callable[..., None]
 
-_READERS: Dict[str, RecordReader] = {}
-_WRITERS: Dict[str, RecordWriter] = {}
+_READERS: dict[str, RecordReader] = {}
+_WRITERS: dict[str, RecordWriter] = {}
 
 
 def register(name: str, *, reader: RecordReader, writer: RecordWriter) -> None:
@@ -43,7 +50,7 @@ def writer_for(name: str) -> RecordWriter:
         raise KeyError(f"Unknown export format {name!r}; known: {sorted(_WRITERS)}") from None
 
 
-def formats() -> List[str]:
+def formats() -> list[str]:
     """The registered format names."""
     return sorted(set(_READERS) | set(_WRITERS))
 
@@ -51,7 +58,19 @@ def formats() -> List[str]:
 # ── Built-in formats (lazy imports) ──────────────────────────────
 
 
-def _read_csv(source: Any, **opts: Any) -> List[dict]:
+def _records(collection: "ClientObjectCollection", rows_from: str | None) -> list["Record"]:
+    """A collection's records, in the shape the format's writer takes.
+
+    One row per item, or one row per child when the caller named ``rows_from`` -- the
+    reading side of the same option.  Every built-in format below asks for its rows this
+    way, so "what is a row" is answered once instead of once per writer.
+    """
+    from office365.runtime.converters.records import iter_records
+
+    return iter_records(collection, rows_from=rows_from)
+
+
+def _read_csv(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.csv_reader import read_csv_records
     from office365.runtime.converters.streams import open_text
 
@@ -61,14 +80,13 @@ def _read_csv(source: Any, **opts: Any) -> List[dict]:
 
 def _write_csv(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.csv_writer import write_records
-    from office365.runtime.converters.records import iter_records
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_records(iter_records(collection, rows_from=opts.get("rows_from")), f, delimiter=opts.get("delimiter", ","))
+        write_records(_records(collection, opts.get("rows_from")), f, delimiter=opts.get("delimiter", ","))
 
 
-def _read_tsv(source: Any, **opts: Any) -> List[dict]:
+def _read_tsv(source: Any, **opts: Any) -> list[Record]:
     return _read_csv(source, delimiter="\t", **opts)
 
 
@@ -76,7 +94,7 @@ def _write_tsv(collection: "ClientObjectCollection", target: Any, **opts: Any) -
     _write_csv(collection, target, delimiter="\t", **opts)
 
 
-def _read_ndjson(source: Any, **opts: Any) -> List[dict]:
+def _read_ndjson(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.ndjson import read_ndjson
     from office365.runtime.converters.streams import open_text
 
@@ -86,14 +104,13 @@ def _read_ndjson(source: Any, **opts: Any) -> List[dict]:
 
 def _write_ndjson(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.ndjson import write_ndjson
-    from office365.runtime.converters.records import iter_records
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_ndjson(iter_records(collection, rows_from=opts.get("rows_from")), f)
+        write_ndjson(_records(collection, opts.get("rows_from")), f)
 
 
-def _read_json_file(source: Any, **opts: Any) -> List[dict]:
+def _read_json_file(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.json_file import read_json
     from office365.runtime.converters.streams import open_text
 
@@ -103,14 +120,13 @@ def _read_json_file(source: Any, **opts: Any) -> List[dict]:
 
 def _write_json_file(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.json_file import write_json
-    from office365.runtime.converters.records import iter_records
     from office365.runtime.converters.streams import open_text
 
     with open_text(target, "w") as f:
-        write_json(iter_records(collection, rows_from=opts.get("rows_from")), f, indent=opts.get("indent"))
+        write_json(_records(collection, opts.get("rows_from")), f, indent=opts.get("indent"))
 
 
-def _read_excel(source: Any, **opts: Any) -> List[dict]:
+def _read_excel(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.excel import read_excel
 
     return read_excel(source)
@@ -118,12 +134,11 @@ def _read_excel(source: Any, **opts: Any) -> List[dict]:
 
 def _write_excel(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.excel import write_excel
-    from office365.runtime.converters.records import iter_records
 
-    write_excel(iter_records(collection, rows_from=opts.get("rows_from")), target)
+    write_excel(_records(collection, opts.get("rows_from")), target)
 
 
-def _read_dataframe(df: Any, **opts: Any) -> List[dict]:
+def _read_dataframe(df: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.dataframe import read_dataframe
 
     return read_dataframe(df)
@@ -135,7 +150,7 @@ def _write_dataframe(collection: "ClientObjectCollection", target: Any, **opts: 
     write_dataframe(collection, target)
 
 
-def _read_parquet(source: Any, **opts: Any) -> List[dict]:
+def _read_parquet(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.parquet import read_parquet
 
     return read_parquet(source)
@@ -143,12 +158,11 @@ def _read_parquet(source: Any, **opts: Any) -> List[dict]:
 
 def _write_parquet(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.parquet import write_parquet
-    from office365.runtime.converters.records import iter_records
 
-    write_parquet(iter_records(collection, rows_from=opts.get("rows_from")), target)
+    write_parquet(_records(collection, opts.get("rows_from")), target)
 
 
-def _read_orc(source: Any, **opts: Any) -> List[dict]:
+def _read_orc(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.parquet import read_orc
 
     return read_orc(source)
@@ -156,12 +170,11 @@ def _read_orc(source: Any, **opts: Any) -> List[dict]:
 
 def _write_orc(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.parquet import write_orc
-    from office365.runtime.converters.records import iter_records
 
-    write_orc(iter_records(collection, rows_from=opts.get("rows_from")), target)
+    write_orc(_records(collection, opts.get("rows_from")), target)
 
 
-def _read_feather(source: Any, **opts: Any) -> List[dict]:
+def _read_feather(source: Any, **opts: Any) -> list[Record]:
     from office365.runtime.converters.parquet import read_feather
 
     return read_feather(source)
@@ -169,9 +182,8 @@ def _read_feather(source: Any, **opts: Any) -> List[dict]:
 
 def _write_feather(collection: "ClientObjectCollection", target: Any, **opts: Any) -> None:
     from office365.runtime.converters.parquet import write_feather
-    from office365.runtime.converters.records import iter_records
 
-    write_feather(iter_records(collection, rows_from=opts.get("rows_from")), target)
+    write_feather(_records(collection, opts.get("rows_from")), target)
 
 
 register("csv", reader=_read_csv, writer=_write_csv)
