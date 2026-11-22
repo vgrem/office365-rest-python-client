@@ -74,7 +74,7 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_access_token(token_callback)
+        self.authentication_context.with_access_token(token_callback)
         return self
 
     def with_certificate(
@@ -104,7 +104,7 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_certificate(
+        self.authentication_context.with_certificate(
             client_id,
             thumbprint,
             private_key,
@@ -125,7 +125,7 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_client_secret(client_id, client_secret)
+        self.authentication_context.with_client_secret(client_id, client_secret)
         return self
 
     def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> GraphRequest:
@@ -141,7 +141,7 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_token_interactive(client_id, username)
+        self.authentication_context.with_token_interactive(client_id, username)
         return self
 
     def with_username_and_password(self, client_id: str, username: str, password: str) -> GraphRequest:
@@ -156,7 +156,7 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_username_and_password(client_id, username, password)
+        self.authentication_context.with_username_and_password(client_id, username, password)
         return self
 
     def with_device_flow(self, client_id: str) -> GraphRequest:
@@ -172,36 +172,8 @@ class GraphRequest(ODataRequest):
         Returns:
             self: Supports fluent method chaining
         """
-        self._auth_context.with_device_flow(client_id)
+        self.authentication_context.with_device_flow(client_id)
         return self
-
-    def authenticate_request(self, request: RequestOptions) -> None:
-        """
-        Authenticate the request by adding a bearer token.
-
-        Args:
-            request: The request to authenticate
-        """
-        if request.authenticated:
-            return  # already authenticated by :meth:`authenticate_request_async`
-        token = self._auth_context.acquire_token()
-        request.set_header("Authorization", token.authorization_header)
-
-    async def authenticate_request_async(self, request: RequestOptions) -> None:
-        """Authenticate the request on the event loop.
-
-        A no-op unless the registered token callback is a coroutine function, in
-        which case the token is awaited (single-flight) and the request is
-        flagged so the offloaded synchronous auth hook skips it.
-
-        Args:
-            request: The request to authenticate
-        """
-        if not self._auth_context.is_async_token_callback:
-            return
-        token = await self._auth_context.acquire_token_async()
-        request.set_header("Authorization", token.authorization_header)
-        request.authenticated = True
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
         if self._licence_guard is not None:
@@ -228,6 +200,11 @@ class GraphRequest(ODataRequest):
         return f"{get_graph_authority(self._environment)}/{self._version.value}"
 
     @property
+    def authentication_context(self) -> AuthenticationContext:
+        """The Entra credentials this request signs with."""
+        return self._auth_context
+
+    @property
     def version(self) -> GraphVersion:
         """Get the current Graph API version."""
         return self._version
@@ -236,7 +213,3 @@ class GraphRequest(ODataRequest):
     def version(self, value: GraphVersion) -> None:
         """Set the Graph API version."""
         self._version = value
-
-    @property
-    def authentication_context(self) -> AuthenticationContext:
-        return self._auth_context

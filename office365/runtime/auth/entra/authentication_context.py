@@ -20,6 +20,7 @@ from office365.runtime.auth.token_response import (
     TokenCallback,
     TokenResponse,
 )
+from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.transport.offload import run_offloaded
 
 if TYPE_CHECKING:
@@ -111,6 +112,19 @@ class AuthenticationContext:
                 return token
         token_resp = await run_offloaded(self._require_token_callback())
         return TokenResponse.from_json(token_resp)
+
+    # ── Signing ──────────────────────────────────────────────────
+
+    def authenticate_request(self, request: RequestOptions) -> None:
+        """Sign ``request`` with the token the next send would carry."""
+        request.set_header("Authorization", self.acquire_token().authorization_header)
+
+    async def authenticate_request_async(self, request: RequestOptions) -> None:
+        """Sign ``request`` on the event loop, awaiting the token when it is async."""
+        if not self.is_async_token_callback:
+            return
+        token = await self.acquire_token_async()
+        request.set_header("Authorization", token.authorization_header)
 
     def _require_token_callback(self) -> TokenCallback:
         """The registered synchronous callback, or a clear error when nothing is set."""

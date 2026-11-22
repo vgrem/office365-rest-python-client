@@ -68,38 +68,23 @@ class SharePointRequest(ODataRequest):
         )
         self._ctx_web_info: ContextWebInformation | None = None
         self._digest_lock = threading.Lock()
-        self.beforeExecute += self._authenticate_request
         self.beforeExecute += self.ensure_form_digest
-        self._async_authenticate = self._authenticate_request_async
 
-    def _authenticate_request(self, request: RequestOptions) -> None:
-        """Authenticate the request, resolving the auth context lazily so it can be
+    def authenticate_request(self, request: RequestOptions) -> None:
+        """Sign the request, resolving the auth context lazily so it can be
         swapped via :meth:`reuse`.
 
         A transport carrying its own handler (``session.auth``, e.g. ``HttpNtlmAuth``)
         signs the request itself. Such a session counts as credentials when no
         provider is configured on the auth context.
         """
-        if request.authenticated:
-            return  # already authenticated by :meth:`_authenticate_request_async`
-        if not self._auth_context.is_configured and self._transport.auth is not None:
+        if not self.authentication_context.is_configured and self._transport.auth is not None:
             return
-        self._auth_context.authenticate_request(request)
-
-    async def _authenticate_request_async(self, request: RequestOptions) -> None:
-        """Authenticate the request on the event loop when the token callback is async.
-
-        Synchronous providers are handled by the offloaded
-        :meth:`_authenticate_request` hook instead.
-        """
-        if not self._auth_context.is_async_token_callback:
-            return
-        await self._auth_context.authenticate_request_async(request)
-        request.authenticated = True
+        super().authenticate_request(request)
 
     def set_base_url(self, url: str) -> Self:
         self._base_url = url
-        self._auth_context.url = url
+        self.authentication_context.url = url
         return self
 
     def reuse(self, other: SharePointRequest) -> Self:
@@ -144,7 +129,7 @@ class SharePointRequest(ODataRequest):
         def _attempt() -> ContextWebInformation:
             client = ODataRequest(self._base_url, JsonLightFormat())
             client._transport = self._transport
-            client.beforeExecute += self._authenticate_request
+            client.beforeExecute += self.authenticate_request
             request = RequestOptions(f"{self.service_root_url}/contextInfo")
             request.method = HttpMethod.Post
             response = client.execute_request_direct(request)
@@ -176,7 +161,7 @@ class SharePointRequest(ODataRequest):
         the access token is acquired first so the (blocking) digest request can
         reuse the cached token through the synchronous auth hook.
         """
-        await self._auth_context.acquire_token_async()
+        await self.authentication_context.acquire_token_async()
         await run_offloaded(self.warm_up)
 
     def invalidate_digest(self) -> None:
@@ -227,7 +212,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_credentials(credentials)
+        self.authentication_context.with_credentials(credentials)
         return self
 
     def with_cookies(self, cookie_source, ttl_seconds: int | None = None):
@@ -237,7 +222,7 @@ class SharePointRequest(ODataRequest):
             cookie_source (object): Callable returning Dict[str, str] or an AuthCookies instance.
             ttl_seconds (object): Optional max age for cached cookies before reloading from source.
         """
-        self._auth_context.with_cookies(cookie_source, ttl_seconds)
+        self.authentication_context.with_cookies(cookie_source, ttl_seconds)
         return self
 
     def with_client_secret(
@@ -254,7 +239,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_client_secret(tenant, client_id, client_secret, scopes)
+        self.authentication_context.with_client_secret(tenant, client_id, client_secret, scopes)
         return self
 
     def with_client_certificate(
@@ -290,7 +275,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_client_certificate(
+        self.authentication_context.with_client_certificate(
             tenant,
             client_id,
             thumbprint,
@@ -315,7 +300,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_device_flow(tenant, client_id, scopes)
+        self.authentication_context.with_device_flow(tenant, client_id, scopes)
         return self
 
     def with_username_and_password(
@@ -338,7 +323,7 @@ class SharePointRequest(ODataRequest):
         if scopes is None:
             resource = get_absolute_url(self.base_url)
             scopes = [f"{resource}/.default"]
-        self._auth_context.with_username_and_password(tenant, client_id, username, password, scopes)
+        self.authentication_context.with_username_and_password(tenant, client_id, username, password, scopes)
         return self
 
     def with_interactive(self, tenant: str, client_id: str, scopes: Optional[List[str]] = None) -> Self:
@@ -353,7 +338,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_interactive(tenant, client_id, scopes)
+        self.authentication_context.with_interactive(tenant, client_id, scopes)
         return self
 
     def with_access_token(self, token_func: Callable[[], TokenResponse]) -> Self:
@@ -366,7 +351,7 @@ class SharePointRequest(ODataRequest):
         Returns:
             Self: Supports method chaining
         """
-        self._auth_context.with_access_token(token_func)
+        self.authentication_context.with_access_token(token_func)
         return self
 
     @property

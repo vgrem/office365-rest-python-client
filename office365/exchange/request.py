@@ -46,11 +46,11 @@ class ExchangeAdminRequest(ClientRequest):
 
     # Credentials: the same flows as GraphRequest, with the Exchange audience.
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> Self:
-        self._auth_context.with_access_token(token_callback)
+        self.authentication_context.with_access_token(token_callback)
         return self
 
     def with_client_secret(self, client_id: str, client_secret: str) -> Self:
-        self._auth_context.with_client_secret(client_id, client_secret)
+        self.authentication_context.with_client_secret(client_id, client_secret)
         return self
 
     def with_certificate(
@@ -63,7 +63,7 @@ class ExchangeAdminRequest(ClientRequest):
         passphrase: Optional[str] = None,
         use_sni: bool = False,
     ) -> Self:
-        self._auth_context.with_certificate(
+        self.authentication_context.with_certificate(
             client_id,
             thumbprint,
             private_key,
@@ -74,32 +74,21 @@ class ExchangeAdminRequest(ClientRequest):
         return self
 
     def with_device_flow(self, client_id: str) -> Self:
-        self._auth_context.with_device_flow(client_id)
+        self.authentication_context.with_device_flow(client_id)
         return self
 
     def with_token_interactive(self, client_id: str, username: Optional[str] = None) -> Self:
-        self._auth_context.with_token_interactive(client_id, username)
+        self.authentication_context.with_token_interactive(client_id, username)
         return self
 
     def with_username_and_password(self, client_id: str, username: str, password: str) -> Self:
-        self._auth_context.with_username_and_password(client_id, username, password)
+        self.authentication_context.with_username_and_password(client_id, username, password)
         return self
 
     @property
     def authentication_context(self) -> AuthenticationContext:
+        """The Entra credentials this request signs with."""
         return self._auth_context
-
-    def authenticate_request(self, request: RequestOptions) -> None:
-        if request.authenticated:
-            return
-        request.set_header("Authorization", self._auth_context.acquire_token().authorization_header)
-
-    async def authenticate_request_async(self, request: RequestOptions) -> None:
-        if not self._auth_context.is_async_token_callback:
-            return
-        token = await self._auth_context.acquire_token_async()
-        request.set_header("Authorization", token.authorization_header)
-        request.authenticated = True
 
     @property
     def service_root_url(self) -> str:

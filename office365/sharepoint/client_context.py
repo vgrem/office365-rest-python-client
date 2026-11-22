@@ -400,7 +400,7 @@ class ClientContext(ClientRuntimeContext):
             batch_request = ODataBatchV3Request(
                 self._base_url, JsonLightFormat(), transport=self.pending_request().transport
             )
-            batch_request.beforeExecute += request._authenticate_request
+            batch_request.beforeExecute += request.authenticate_request
             batch_request.beforeExecute += request.ensure_form_digest
             while self.has_pending_request:
                 queries, barrier = self._take_batch_round()
@@ -618,7 +618,7 @@ class ClientContext(ClientRuntimeContext):
         batch_request = ODataBatchV3Request(
             self._base_url, JsonLightFormat(), transport=self.pending_request().transport
         )
-        batch_request.beforeExecute += self.pending_request()._authenticate_request
+        batch_request.beforeExecute += self.pending_request().authenticate_request
         batch_request.beforeExecute += self.pending_request().ensure_form_digest
         self._run_batch(batch_request, batch_qry)
         return batch_qry.return_types
@@ -641,7 +641,7 @@ class ClientContext(ClientRuntimeContext):
         """
         request = self.pending_request()
         batch_request = ODataBatchV3Request(self._base_url, JsonLightFormat(), transport=request.transport)
-        batch_request.beforeExecute += request._authenticate_request
+        batch_request.beforeExecute += request.authenticate_request
         batch_request.beforeExecute += request.ensure_form_digest
         batch_request._async_authenticate = request._async_authenticate
         if request.has_async_transport:

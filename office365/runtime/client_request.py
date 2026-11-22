@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import uuid
 from abc import ABC, abstractmethod
-from typing import Any, Awaitable, Callable, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, Tuple, Type
 
 import requests
 from requests import HTTPError, Response
@@ -23,6 +23,9 @@ from office365.runtime.transport.requests_transport import (
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
 
+if TYPE_CHECKING:
+    from office365.runtime.auth.authenticator import RequestAuthenticator
+
 
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):
@@ -35,9 +38,10 @@ class ClientRequest(ABC):
         # owns resilience settings, next to the rate limiter, and so clones that
         # reuse this request inherit the policy.
         self._retry_policy: dict[str, Any] | None = None
-        #: Optional awaitable auth hook (see ``before_execute_async``), used by
-        #: requests whose credentials are supplied as an async token callback.
-        self._async_authenticate: Optional[Callable[[RequestOptions], Awaitable[None]]] = None
+        #: Awaitable auth hook (see ``before_execute_async``); a request without a
+        #: context answers it by doing nothing, a batch request is handed another
+        #: request's hook by the client that dispatches it.
+        self._async_authenticate: Optional[Callable[[RequestOptions], Awaitable[None]]] = self.authenticate_request_async
         # Set by an ``on_error`` wrapper when its condition matches, so
         # ``execute_query`` can tell a handled failure from a stale handler that
         # merely happened to be registered (see :meth:`on_error`).
@@ -45,6 +49,38 @@ class ClientRequest(ABC):
         self.beforeExecute: EventHandler[[RequestOptions]] = EventHandler()
         self.afterExecute: EventHandler[[Response]] = EventHandler()
         self.onError: EventHandler[[ClientRequestException]] = EventHandler()
+        self.beforeExecute += self.authenticate_request
+
+    # ── Signing ──────────────────────────────────────────────────
+
+    @property
+    def authentication_context(self) -> "RequestAuthenticator | None":
+        """The credentials this request signs with.
+
+        ``None`` is an answer, not a defect: a request that carries no credentials
+        - one built to spell a payload offline, or a batch request handed another
+        request's hook - executes unsigned rather than refusing.
+        """
+        return None
+
+    def authenticate_request(self, request: RequestOptions) -> None:
+        """Sign ``request``, unless a hook that ran earlier already did.
+
+        The async twin runs before this one (see :meth:`before_execute_async`) and
+        flags the request, so the two never sign the same send twice.
+        """
+        context = self.authentication_context
+        if request.authenticated or context is None:
+            return
+        context.authenticate_request(request)
+
+    async def authenticate_request_async(self, request: RequestOptions) -> None:
+        """Sign ``request`` on the event loop, when the next token is async."""
+        context = self.authentication_context
+        if context is None or not context.is_async_token_callback:
+            return
+        await context.authenticate_request_async(request)
+        request.authenticated = True
 
     @property
     def transport(self) -> BaseTransport:
