@@ -267,45 +267,86 @@ token could not read reads `unknown`, never `no`.
 $ o365 licences
 mediadev8.onmicrosoft.com: holds all 4 licences a command names
 
-PLAN            SEAT    HELD  NOUNS  AREAS
-INTUNE_A        tenant  yes     131     11
-AAD_PREMIUM_P2  tenant  yes      16      4
-AAD_PREMIUM_P2  user    yes       3      1
-AAD_PREMIUM     tenant  yes       2      2
+PLAN            SEAT    NOUNS  AREAS
+INTUNE_A        tenant    131     11
+AAD_PREMIUM_P2  tenant     16      4
+AAD_PREMIUM_P2  user        3      1
+AAD_PREMIUM     tenant      2      2
 
 next: o365 licences -o wide   the areas each plan opens, by name
       o365 doctor             this session, this tenant, and what they allow
 ```
 
+`HELD` is missing on purpose: the headline above already says *all 4*, and a column that says
+`yes` on every row is a header over nothing. One row reading `no`, `unknown`, or a tenant that
+could not be read, and the column comes back — as it does in `-o csv`, `-o tsv` and `-o json`,
+where every field is kept because a machine has no headline to read.
+
 A list is not a table cell: `INTUNE_A` opens eleven modules, and at 48 columns that cell reads
 `intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade…` — four names and
-an ellipsis. So the row counts the areas by default (`AREAS 11`), and `-o wide` prints them whole
-(`intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade_configuration, …`
-to the last one). `-o csv` and `-o json` carry the names too, because a machine does its own
-column fitting.
+an ellipsis. So the row counts the areas by default (`AREAS 11`), and `-o wide` is the report
+behind that count: the plan once, then one line per area under it, the counts right-aligned. A
+plan printed once and its eleven areas as eleven lines is a page a reader can scan; the same
+eleven names back inside one cell would be a paragraph the terminal wraps into soup.
+
+```console
+$ o365 licences -o wide
+mediadev8.onmicrosoft.com: holds all 4 licences a command names
+
+INTUNE_A        tenant  131 nouns
+  intune.devices                           119
+  intune.print                               3
+  intune.audit                               1
+  intune.edition_upgrade_configuration       1
+  intune.microsoft_store_for_business_app    1
+  intune.policies                            1
+  intune.servicecommunications               1
+  intune.shared_pc_configuration             1
+  intune.windows_driver_update_profile       1
+  intune.windows_feature_update_profile      1
+  intune.windows_quality_update_profile      1
+AAD_PREMIUM_P2  tenant  16 nouns
+  directory.identitygovernance               8
+  directory.rolemanagement                   5
+  directory.protection                       2
+  directory.custom_data_provided_resource    1
+AAD_PREMIUM_P2  user    3 nouns
+  directory.identitygovernance               3
+AAD_PREMIUM     tenant  2 nouns
+  directory.policies                         1
+  directory.what_if_analysis_result          1
+
+next: o365 doctor   this session, this tenant, and what they allow
+```
+
+The footer is the command *after* this one, which is why `-o wide` no longer offers `-o wide`.
 
 `doctor` answers the environment — the session and its grants, the plans and roles the caller
 holds, and the index's per-product totals, which need no session at all — in four requests:
 
 ```console
 $ o365 doctor
-doctor: ok — 1 session, 4 of 4 licences, 12 roles
+doctor: attention — the sharepoint session expired; run o365 sharepoint login
 
-graph: mdoe@mediadev8.onmicrosoft.com (tenant af6a80a4-8b4b-4879-88af-42ff8a545211, mode username-and-password, 55 min left)
+graph: vadimadm@mediadev8.onmicrosoft.com (tenant af6a80a4-8b4b-4879-88af-42ff8a545211, mode device-flow, 51 min left)
   grants: 55 scopes
 
+sharepoint: vadimadm@mediadev8.onmicrosoft.com (tenant af6a80a4-8b4b-4879-88af-42ff8a545211, mode device-flow, expired 6 d ago)
+  grants: 49 scopes
+  at mediadev8.sharepoint.com
+
 mediadev8.onmicrosoft.com: holds all 4 licences a command names
-  roles: 12 held — Application Administrator, Compliance Administrator, Exchange Administrator,
-         Global Reader, Groups Administrator, Intune Administrator, Search Administrator, Security
-         Administrator, SharePoint Administrator, SharePoint Embedded Administrator, Teams
-         Administrator, User Administrator
+  roles: 9 held — Exchange Administrator, Global Administrator, Global Reader, Helpdesk
+         Administrator, Service Support Administrator, SharePoint Administrator, Teams
+         Administrator, User Administrator, User Experience Success Manager
 
-PLAN            SEAT    HELD  NOUNS
-INTUNE_A        tenant  yes     131
-AAD_PREMIUM_P2  tenant  yes      16
-AAD_PREMIUM_P2  user    yes       3
-AAD_PREMIUM     tenant  yes       2
+PLAN            SEAT    NOUNS  AREAS
+INTUNE_A        tenant    131     11
+AAD_PREMIUM_P2  tenant     16      4
+AAD_PREMIUM_P2  user        3      1
+AAD_PREMIUM     tenant      2      2
 
+which products name a licence
 PRODUCT    NOUNS  LICENSED
 directory    423        21
 intune       362       131
@@ -315,6 +356,12 @@ next: o365 licences -o wide              every licence, and the areas it opens
       o365 doctor <product> <noun> ...   what one command needs from this session
 ```
 
+The sharepoint block says *expired 6 d ago* and leaves the command to the verdict, which is the
+line a reader is looking for: the same advice three lines apart reads as two faults. Every block
+has a one-line title or a headline of its own — `which products name a licence` answers a
+different question from the table above it, and without the title the two tables read as one
+broken one.
+
 The page opens with the answer, because that is why it was opened: `attention` when a command
 would refuse right now (no session, or one that expired — with the command that renews it),
 `unread` when a fact could not be read (which is not an accusation), and `ok` with the three
@@ -323,9 +370,9 @@ the verdict makes a reader scan everything to find it.
 
 After the verdict, three blocks in the order a reader needs them: are my sessions alive, does
 this tenant hold what the commands ask, and which products name a licence at all. `-o wide`
-prints the row that a table would have to shorten — the families each plan opens (`intune.devices
-(119), intune.print (3), …`) — and the products that name no licence; both belong to the report,
-not to the moment before a first command.
+prints the report behind the page — the areas each plan opens as lines under the plan, and the
+products that name no licence — because both belong to the report, not to the moment before a
+first command.
 
 Given a route it answers instead for one command, with no request to the service being asked
 about: the delegated and application permissions the method declares, marked against the token's

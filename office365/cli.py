@@ -598,7 +598,7 @@ def licences(argv: "list[str]") -> int:
     the vocabulary here is the declaration's rather than a list kept beside it - a stamp added to
     a type shows up in this table once the index is re-rendered, and nothing else changes.
     """
-    from office365.licensing.report import COLUMNS, headline, of, rows
+    from office365.licensing.report import COUNTED_COLUMNS, headline, of, rows
     from office365.runtime.client_request_exception import ClientRequestException
     from office365.runtime.render import render
 
@@ -627,32 +627,82 @@ def licences(argv: "list[str]") -> int:
         return 0
     if args.output in PIPED_FORMATS:
         print(sentence, file=sys.stderr)
-        print(render(records, args.output, columns=COLUMNS))
+        print(render(records, args.output, columns=COUNTED_COLUMNS))
         return 0
     print(sentence)
     print()
     print(_licence_table(records, args.output == "wide"))
     print()
-    print("next: o365 licences -o wide   the areas each plan opens, by name")
-    print("      o365 doctor             this session, this tenant, and what they allow")
+    steps = [] if args.output == "wide" else [("o365 licences -o wide", "the areas each plan opens, by name")]
+    print(_next([*steps, ("o365 doctor", "this session, this tenant, and what they allow")]))
     return 0
 
 
-def _licence_table(records: "list[dict[str, Any]]", wide: bool) -> str:
-    """The row a reader scans, and the row a report would print.
+def _next(steps: "list[tuple[str, str]]") -> str:
+    """The footer: the command to type next, and what it answers, aligned to the longest one.
 
-    A plan opens a list of areas, and a list is not a table cell: at 48 columns ``INTUNE_A``
-    shows ``intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade…``,
+    ``next:`` says where a reader goes from here, so it must not offer the page they are already
+    looking at -- ``-o wide`` printing ``next: o365 licences -o wide`` is a page telling its
+    reader to read it again. The columns are measured rather than typed, because a description
+    padded by hand in a string literal is one edit away from being wrong in a way no test sees.
+    """
+    width = max(len(command) for command, _ in steps)
+    lines = [f"next: {steps[0][0].ljust(width)}   {steps[0][1]}"]
+    lines += [f"      {command.ljust(width)}   {says}" for command, says in steps[1:]]
+    return "\n".join(lines)
+
+
+def _licence_table(records: "list[dict[str, Any]]", wide: bool) -> str:
+    """The row a reader scans, and the report a reader consults.
+
+    Two facts decide the shape. A plan opens a list of areas, and a list is not a table cell: at
+    48 columns ``INTUNE_A`` shows ``intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade…``,
     which names four of eleven and marks the rest with an ellipsis. The default counts them
-    instead -- ``11`` fits every plan in this library -- and ``-o wide`` prints the names whole,
-    with no width at all, the same way an identifier survives.
+    instead -- ``11`` fits every plan in this library. And ``-o wide`` must not undo that by
+    putting the eleven names back into one cell, which is a paragraph the terminal wraps into
+    soup: the report prints the plan once, then one line per area underneath.
     """
     from office365.licensing.report import COLUMNS, COUNTED_COLUMNS
     from office365.runtime.render import COLUMN_WIDTH, render
 
-    if wide:
-        return render(records, "table", columns=COLUMNS, width=None)
-    return render(records, "table", columns=COUNTED_COLUMNS, width=COLUMN_WIDTH)
+    if not wide:
+        return render(records, "table", columns=_changing(records, COUNTED_COLUMNS), width=COLUMN_WIDTH)
+    return _by_area(records, _changing(records, COLUMNS))
+
+
+def _changing(records: "list[dict[str, Any]]", columns: "tuple[str, ...]") -> "tuple[str, ...]":
+    """``held`` is dropped when every row says ``yes``: the headline above already said *all*.
+
+    A column whose value never changes is not information, it is a header over nothing -- the same
+    reason the product block leaves out the twenty products that name no licence. A piped format
+    keeps every field, because ``jq`` reads one record at a time and has no headline to consult.
+    """
+    from office365.licensing.report import YES
+
+    if "held" in columns and {record.get("held") for record in records} == {YES}:
+        return tuple(name for name in columns if name != "held")
+    return columns
+
+
+def _by_area(records: "list[dict[str, Any]]", columns: "tuple[str, ...]") -> str:
+    """One line per licence, then the areas it opens indented under it, counts right-aligned.
+
+    Aligned to the widest name in the whole report rather than per plan: a count column that
+    moves between plans cannot be scanned down, and four plans are not worth four widths.
+    """
+    areas = [area for record in records for area in record.get("by_area") or ()]
+    name_width = max((len(str(area["area"])) for area in areas), default=0)
+    count_width = max((len(f"{area['nouns']:,}") for area in areas), default=1)
+    sizes = {name: max((len(str(record.get(name, ""))) for record in records), default=len(name)) for name in columns}
+    lines = []
+    for record in records:
+        head = [str(record.get(name, "")).ljust(sizes[name]) for name in columns[:-1]]
+        nouns = record.get("nouns") or 0
+        head.append(f"{nouns:,} noun" + ("" if nouns == 1 else "s"))
+        lines.append("  ".join(head))
+        for area in record.get("by_area") or ():
+            lines.append(f"  {str(area['area']):<{name_width}}  {area['nouns']:>{count_width},}")
+    return "\n".join(lines)
 
 
 def _assigned(client: Any) -> "frozenset[str] | None":
@@ -759,8 +809,8 @@ def _doctor_environment(output: str) -> int:
     machine with no session still learns how many words each product opens and how many of them
     name a licence at all.
     """
-    from office365.licensing.report import COLUMNS, PRODUCT_COLUMNS, headline, of, products, rows
-    from office365.runtime.render import COLUMN_WIDTH, render
+    from office365.licensing.report import PRODUCT_COLUMNS, headline, of, products, rows
+    from office365.runtime.render import render
 
     wide = output == "wide"
     document = json.loads(INDEX.read_text("utf-8"))
@@ -795,22 +845,23 @@ def _doctor_environment(output: str) -> int:
     if not facts["why"]:
         # The verdict already said what could not be read; a page that repeats it reads as two
         # problems, so only the blocks that need a tenant are printed here.
-        # Default: what a reader acts on. The areas each licence opens are names in a cell, and
-        # a name cut to fit a column is worse than absent -- `-o wide` prints them whole.
-        shown = COLUMNS if wide else tuple(name for name in COLUMNS if name != "families")
+        # The areas each licence opens are names, and a name cut to fit a column is worse than
+        # absent -- so the page counts them and `-o wide` prints them under the plan they belong to.
         blocks.append(
             "\n".join(
                 (
                     headline(named, tenant),
                     _wrapped("roles", _roles_sentence(roles)),
                     "",
-                    render(named, "table", columns=shown, width=None if wide else COLUMN_WIDTH),
+                    _licence_table(named, wide),
                 )
             )
         )
     licensed = [row for row in opened if row["licensed"]]
     rest = [row for row in opened if not row["licensed"]]
-    coverage = [render(opened if wide else licensed, "table", columns=PRODUCT_COLUMNS)]
+    # Titled, because it answers a different question from the table above it: not what this
+    # tenant holds, but which products name a licence at all -- read from the index, no session.
+    coverage = ["which products name a licence", render(opened if wide else licensed, "table", columns=PRODUCT_COLUMNS)]
     if rest and not wide:
         words = sum(row["nouns"] for row in rest)
         coverage.append(
@@ -818,8 +869,12 @@ def _doctor_environment(output: str) -> int:
         )
     blocks.append("\n".join(coverage))
     blocks.append(
-        "next: o365 licences -o wide              every licence, and the areas it opens\n"
-        "      o365 doctor <product> <noun> ...   what one command needs from this session"
+        _next(
+            [
+                ("o365 licences -o wide", "every licence, and the areas it opens"),
+                ("o365 doctor <product> <noun> ...", "what one command needs from this session"),
+            ]
+        )
     )
     print("\n\n".join(block for block in blocks if block))
     return 0
@@ -2402,8 +2457,11 @@ def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
     claims = entry.get("claims") or {}
     grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
     expires = int(claims.get("exp") or 0)
-    expired = bool(expires) and expires < time.time()
-    left = "" if not expires else f"{max(0, expires - int(time.time())) // 60} min left"
+    now = int(time.time())
+    expired = bool(expires) and expires < now
+    state = ""
+    if expires:
+        state = f"expired {_span(now - expires)} ago" if expired else f"{_span(expires - now)} left"
     site = _current(audience, entry)
     remembered = next(
         (held.get("title", "") for held in entry.get("contexts", []) if held.get("url", "").rstrip("/") == site), ""
@@ -2414,11 +2472,30 @@ def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
         "mode": entry["mode"],
         "grants": grants,
         "count": 0 if grants == "-" else len(grants.split()),
-        "state": (f"expired; run o365 {audience} login" if expired else left),
+        # The fact, not the fix: an expired token is said as *how long ago*, the way the live one
+        # is said as *how long left*. The command that renews it belongs to the doctor's verdict,
+        # which is the one line a reader looks for, so repeating it in a block is the same advice
+        # twice three lines apart.
+        "state": state,
         "expired": expired,
         "site": site,
         "remembered": remembered,
     }
+
+
+def _span(seconds: int) -> str:
+    """A duration as a person says it: ``59 min``, ``2 h``, ``3 d``.
+
+    A token lives an hour, so minutes are the unit a reader is looking at; a session left alone
+    for a week is not ``10080 min``.
+    """
+    hour, day = 60, 60 * 24
+    minutes = max(0, seconds) // 60
+    if minutes < hour:
+        return f"{minutes} min"
+    if minutes < day:
+        return f"{minutes // hour} h"
+    return f"{minutes // day} d"
 
 
 def _wrapped(label: str, text: str) -> str:

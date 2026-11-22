@@ -31,9 +31,10 @@ FAMILY_DEPTH = 2
 #: and it is never turned into a refusal (an unread answer is not a "no").
 YES, NO, UNKNOWN = "yes", "no", "unknown"
 
-#: The cells a table shows, in order: what it is called, whose seat holds it, whether this tenant
-#: has it, how much of the tree it opens, and the areas those words live in.
-COLUMNS = ("plan", "seat", "held", "nouns", "families")
+#: The cells a wide report's summary line shows, in order: what it is called, whose seat holds
+#: it, whether this tenant has it, and how much of the tree it opens. The areas are not a cell:
+#: ``by_area`` carries them, and a report prints one line per area under the plan it belongs to.
+COLUMNS = ("plan", "seat", "held", "nouns")
 
 #: What a table can show by default: the same row with the areas *counted*, because a list of
 #: eleven module names is not a table cell -- cut to ``intune.…`` it says less than ``11``, and a
@@ -125,7 +126,7 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
             "held": answer(licence.plans, licence.seat, tenant, assigned),
             "nouns": licence.nouns,
             "areas": len(licence.families),
-            "families": _where(licence.families),
+            "by_area": [{"area": family.name, "nouns": family.nouns} for family in licence.families],
         }
         for licence in licences
     ]
@@ -197,8 +198,3 @@ def products(document: Mapping[str, Any]) -> list[dict[str, Any]]:
         }
         for product, nouns in sorted(document["products"].items())
     ]
-
-
-def _where(families: Iterable[Family]) -> str:
-    """The areas one licence opens, widest first, with a count only where it says something."""
-    return ", ".join(f"{family.name} ({family.nouns})" if family.nouns > 1 else family.name for family in families)

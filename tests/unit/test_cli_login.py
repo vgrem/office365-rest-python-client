@@ -36,7 +36,7 @@ def test_a_report_names_the_grants_because_that_is_the_question_it_answers():
     summary = cli._summary("graph", _entry())
 
     assert "grants: Mail.Read Write User.Read" in summary
-    assert "mode device-flow, " in summary and "min left" in summary
+    assert "mode device-flow, 1 h left" in summary
 
 
 def test_a_token_with_no_scope_says_so_rather_than_counting_zero():
@@ -45,7 +45,17 @@ def test_a_token_with_no_scope_says_so_rather_than_counting_zero():
     assert "no permissions" in welcome
 
 
-def test_an_expired_token_names_the_command_that_renews_it():
+def test_an_expired_token_says_how_long_ago_and_leaves_the_fix_to_the_doctor():
+    """The fact belongs to the row, the command to the verdict: said twice it reads as two faults."""
     expired = _entry(exp=int(time.time()) - 60)
 
-    assert "expired; run o365 graph login" in cli._welcome("graph", expired)
+    summary = cli._summary("graph", expired)
+
+    assert "expired 1 min ago" in summary
+    assert "fetching" not in summary and "run o365" not in summary
+
+
+def test_a_session_left_alone_for_days_is_not_counted_in_minutes():
+    stale = _entry(exp=int(time.time()) - 3 * 24 * 3600 - 60)
+
+    assert "expired 3 d ago" in cli._summary("graph", stale)

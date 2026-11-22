@@ -175,6 +175,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`-o wide` is a report, not a wider cell.** The licence table's last column was a comma-joined
+  list, and widening only removed the ellipsis: `INTUNE_A` then printed eleven module names inside
+  one cell, which the terminal wrapped into a paragraph. `-o wide` now prints the plan once and one
+  line per area underneath, counts right-aligned, aligned to the widest name in the report rather
+  than per plan — the shape `kubectl get -o wide` keeps, one row per object, never a paragraph.
+  Three smaller defects went with it, all of them the page saying something twice or leaving a
+  seam: under a headline that says *holds all 4*, `HELD` was a column whose every value was `yes`
+  (it returns the moment one row is `no` or `unknown`, and a piped format always keeps it); the
+  footer offered `-o wide` under the `-o wide` output, and is now measured rather than padded by
+  hand; the product table, which answers a different question from the table above it, now has the
+  title `which products name a licence`; and an expired session says its fact — `expired 6 d ago`,
+  the same unit the live session's `51 min left` uses — while the command that renews it stays on
+  the verdict, where a reader looks for it.
 - **`o365 doctor <product>` answers for every noun under it.** `o365 doctor intune` counts 362
   nouns and says how many this session can run (36), how many it cannot (93), how many rest on a
   fact that could not be read (1), and how many carry no marker at all (232) — then groups the

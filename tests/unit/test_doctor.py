@@ -126,15 +126,15 @@ def test_the_page_names_only_the_products_that_name_a_licence(monkeypatch, tmp_p
     assert "roles: 1 held — Global Administrator" in printed
 
 
-def test_wide_restores_the_row_a_table_would_have_to_shorten(monkeypatch, tmp_path, capsys) -> None:
-    """The families a plan opens, and every product: the report behind the page."""
+def test_wide_prints_the_areas_under_the_plan_they_belong_to(monkeypatch, tmp_path, capsys) -> None:
+    """The report behind the page: the plan once, its areas as lines, every product listed."""
     _store(monkeypatch, tmp_path)
     monkeypatch.setattr(cli, "_tenant_facts", _facts)
 
     assert cli.main(["doctor", "-o", "wide"]) == 0
 
     printed = capsys.readouterr().out
-    assert "FAMILIES" in printed and "intune.devices" in printed
+    assert "\n  intune.devices" in printed
     assert "booking" in printed
     assert "no licence is named under" not in printed
 

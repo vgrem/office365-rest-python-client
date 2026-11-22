@@ -125,10 +125,26 @@ class TableTest(unittest.TestCase):
         self.assertEqual([record["areas"] for record in records], [2, 1])
         self.assertNotIn("\u2026", printed)
 
-    def test_wide_names_every_area_whole(self):
+    def test_wide_prints_each_area_on_the_line_it_belongs_to(self):
+        """`intune.devices (2), intune.policies` in a cell is the paragraph wide must not print."""
         records = rows(of(DOCUMENT), frozenset({"INTUNE_A"}), frozenset())
 
         printed = cli._licence_table(records, wide=True)
 
-        self.assertIn("intune.devices (2), intune.policies", printed)
+        lines = printed.splitlines()
+
+        self.assertEqual(printed.count("INTUNE_A"), 1)
+        self.assertEqual(lines[0].split()[0], "INTUNE_A")
+        self.assertTrue(any(line.startswith("  intune.devices") for line in lines))
+        self.assertTrue(any(line.startswith("  intune.policies") for line in lines))
+        self.assertNotIn("(2)", printed)
         self.assertNotIn("\u2026", printed)
+
+    def test_a_column_that_says_yes_on_every_row_is_not_printed(self):
+        """Under *holds all 4*, HELD is a header over nothing; the page keeps the fact once."""
+        records = rows(of(DOCUMENT), frozenset({"INTUNE_A", "AAD_PREMIUM_P2"}), frozenset({"AAD_PREMIUM_P2"}))
+
+        printed = cli._licence_table(records, wide=False)
+
+        self.assertNotIn("HELD", printed)
+        self.assertIn("AREAS", printed)

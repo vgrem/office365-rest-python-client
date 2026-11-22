@@ -27,8 +27,8 @@ neither is about a product. Which of the two forms was asked is the only branch 
 | `  grants: 55 scopes` | the kept token's `scp`/`roles` | 0 |
 | `mediadev8.onmicrosoft.com: holds 4 of the 4 licences a command names` | `subscribedSkus`, then `/me/licenseDetails` if a plan is asked of the caller | 1–2 |
 | `roles: Intune Administrator, …` | `/directoryRoles` + `/me/memberOf` | 2 |
-| the `PLAN / SEAT / HELD / NOUNS / FAMILIES` table | the index joined to the subscriptions | 0 |
-| the `PRODUCT / NOUNS / LICENSED` table | the index | 0 |
+| the `PLAN / SEAT / NOUNS / AREAS` table | the index joined to the subscriptions | 0 |
+| `which products name a licence` — the `PRODUCT / NOUNS / LICENSED` table | the index | 0 |
 
 Measured: `time o365 doctor` → **2.0 s** against `mediadev8.onmicrosoft.com`, in **four**
 requests — the two the licence report makes and the two the role read makes — essentially all of

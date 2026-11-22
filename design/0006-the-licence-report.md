@@ -69,16 +69,32 @@ capability needs the tenant to have bought it and another needs it assigned to t
 rows, not one row that means two things:
 
 ```
-PLAN            SEAT    HELD  NOUNS  FAMILIES
-INTUNE_A        tenant  yes     131  intune.devices (119), intune.print (3), intune.…
-AAD_PREMIUM_P2  tenant  yes      16  directory.identitygovernance (8), directory.rol…
-AAD_PREMIUM_P2  user    yes       3  directory.identitygovernance (3)
-AAD_PREMIUM     tenant  yes       2  directory.policies, directory.what_if_analysis_…
+PLAN            SEAT    NOUNS  AREAS
+INTUNE_A        tenant    131     11
+AAD_PREMIUM_P2  tenant     16      4
+AAD_PREMIUM_P2  user        3      1
+AAD_PREMIUM     tenant      2      2
 ```
 
 `NOUNS` sums to the index's own `licensed` count — 131 + 16 + 3 + 2 = 152 — which is the check
-that the join neither invents nor drops a noun. `FAMILIES` is widest area first and marks a count
-only when it exceeds one, so a single-noun family is a name rather than `(1)`.
+that the join neither invents nor drops a noun.
+
+The areas are not a cell. A first draft printed them as one — `intune.devices (119),
+intune.print (3), …` — which shortened four of eleven names and marked the rest with an ellipsis,
+and `-o wide` printed the same comma-joined paragraph without a width, which the terminal wrapped
+into soup. The record therefore carries `by_area` as a list, `areas` is `len(licence.families)`
+derived from it, and `-o wide` prints one line per area under the plan it belongs to:
+
+```
+INTUNE_A        tenant  131 nouns
+  intune.devices                           119
+  intune.print                               3
+  …
+```
+
+`HELD` is printed only when some row does not say `yes`: under a headline that already says *all
+4*, a column whose every value is `yes` is a header over nothing. A piped format keeps it — and
+keeps `areas`, the count — because a machine has no headline to read.
 
 ## 4. The two reads, and the word for a read that failed
 
@@ -125,8 +141,8 @@ PLAN            SEAT    HELD  NOUNS  FAMILIES
 real    0m1.86s
 ```
 
-1.86 s is two live reads; the join and the render are microseconds on top. `-o wide` lifts the
-column width so every area is named, `-o csv` / `-o tsv` write the same records for a spreadsheet,
+1.86 s is two live reads; the join and the render are microseconds on top. `-o wide` prints the
+areas as lines under each plan, `-o csv` / `-o tsv` write the counted records for a spreadsheet,
 and `-o json` sends them plus the tenant and the plan names they were measured against. The three
 piped formats put the sentence on **stderr** and leave stdout to the data, so a redirect keeps the
 file clean:
