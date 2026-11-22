@@ -416,7 +416,7 @@ def pair(tmp_path):
     return FileSystemSource(tmp_path / "from"), FileSystemTarget(tmp_path / "to")
 
 
-# --- the probe ---------------------------------------------------------------------
+# what the pair's own hooks answer
 
 
 def test_the_reference_pair_answers_for_every_dimension_without_asking_the_tenant(pair) -> None:
@@ -466,7 +466,7 @@ def test_the_report_survives_json_and_says_itself_in_one_line(pair) -> None:
     assert report.summary() == "not requested: timestamps, permissions, authorship, versions"
 
 
-# --- a table the product declares ---------------------------------------------------
+# a table the product declares
 
 
 def test_a_product_that_names_its_own_dimensions_is_not_probed(tmp_path) -> None:
