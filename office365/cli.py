@@ -729,32 +729,75 @@ def _doctor_environment(output: str) -> int:
             )
         )
         return 0
-    for name in sorted(sessions):
-        print(_summary(name, sessions[name], brief=True))
-    if not sessions:
-        print("no session: run o365 login to see what this tenant holds")
-    if facts["why"]:
-        print(facts["why"])
-    else:
-        print()
-        print(headline(named, tenant))
-        print(_wrapped("roles", _roles_sentence(roles)))
-        print()
+    # One block per question, and exactly one blank line between them: a page assembled from
+    # blocks cannot produce the double gap that printing them one at a time does.
+    blocks = [_verdict(sessions, facts, named)]
+    if sessions:
+        blocks.append("\n\n".join(_summary(name, sessions[name], brief=True) for name in sorted(sessions)))
+    if not facts["why"]:
+        # The verdict already said what could not be read; a page that repeats it reads as two
+        # problems, so only the blocks that need a tenant are printed here.
         # Default: what a reader acts on. The areas each licence opens are names in a cell, and
         # a name cut to fit a column is worse than absent -- `-o wide` prints them whole.
         shown = COLUMNS if wide else tuple(name for name in COLUMNS if name != "families")
-        print(render(named, "table", columns=shown, width=None if wide else COLUMN_WIDTH))
+        blocks.append(
+            "\n".join(
+                (
+                    headline(named, tenant),
+                    _wrapped("roles", _roles_sentence(roles)),
+                    "",
+                    render(named, "table", columns=shown, width=None if wide else COLUMN_WIDTH),
+                )
+            )
+        )
     licensed = [row for row in opened if row["licensed"]]
     rest = [row for row in opened if not row["licensed"]]
-    print()
-    print(render(opened if wide else licensed, "table", columns=PRODUCT_COLUMNS))
+    coverage = [render(opened if wide else licensed, "table", columns=PRODUCT_COLUMNS)]
     if rest and not wide:
         words = sum(row["nouns"] for row in rest)
-        print(f"no licence is named under the other {len(rest)} products ({words:,} words); -o wide lists them")
-    print()
-    print("next: o365 licences                      every licence, and the areas it opens")
-    print("      o365 doctor <product> <noun> ...   what one command needs from this session")
+        coverage.append(
+            f"no licence is named under the other {len(rest)} products ({words:,} words); -o wide lists them"
+        )
+    blocks.append("\n".join(coverage))
+    blocks.append(
+        "next: o365 licences                      every licence, and the areas it opens\n"
+        "      o365 doctor <product> <noun> ...   what one command needs from this session"
+    )
+    print("\n\n".join(block for block in blocks if block))
     return 0
+
+
+def _verdict(sessions: "dict[str, Any]", facts: "dict[str, Any]", records: "list[dict[str, Any]]") -> str:
+    """The line a reader needs first: is anything wrong, and which command fixes it.
+
+    A doctor that makes someone scan three blocks to find the expired token has not done its
+    first job, and ``gh auth status`` and ``flutter doctor`` both lead with the answer rather
+    than ending with it. Three states, and nothing else is allowed to be one: ``attention`` when
+    a command would refuse right now, ``unread`` when a fact could not be read (which is not an
+    accusation), and ``ok``.
+
+    No session is ``attention`` too, because every command needs one -- but it is printed from
+    the same three facts the page prints, so the line and the blocks can never disagree.
+    """
+    from office365.licensing.report import UNKNOWN, YES
+
+    expired = [name for name in sorted(sessions) if _identity(name, sessions[name])["expired"]]
+    if not sessions:
+        return "doctor: attention — no session; run o365 login"
+    if expired:
+        which = " and ".join(expired) + (" sessions" if len(expired) > 1 else " session")
+        fixes = ", ".join(f"o365 {name} login" for name in expired)
+        return f"doctor: attention — the {which} expired; run {fixes}"
+    if facts["why"]:
+        return f"doctor: unread — {facts['why']}"
+    answers = [row["held"] for row in records]
+    answered = f"{answers.count(YES)} of {len(answers)} licences" if answers else "no licence named"
+    unread = answers.count(UNKNOWN)
+    roles = facts["roles"]
+    held = "roles unread" if roles is None else f"{len(roles)} role" + ("" if len(roles) == 1 else "s")
+    sessions_said = f"{len(sessions)} session" + ("" if len(sessions) == 1 else "s")
+    unread_said = f", {unread} unread" if unread else ""
+    return f"doctor: ok — {sessions_said}, {answered}{unread_said}, {held}"
 
 
 def _roles_sentence(roles: "tuple[str, ...] | None") -> str:
@@ -1960,6 +2003,7 @@ def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
     claims = entry.get("claims") or {}
     grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
     expires = int(claims.get("exp") or 0)
+    expired = bool(expires) and expires < time.time()
     left = "" if not expires else f"{max(0, expires - int(time.time())) // 60} min left"
     site = _current(audience, entry)
     remembered = next(
@@ -1971,7 +2015,8 @@ def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
         "mode": entry["mode"],
         "grants": grants,
         "count": 0 if grants == "-" else len(grants.split()),
-        "state": (f"expired; run o365 {audience} login" if expires and expires < time.time() else left),
+        "state": (f"expired; run o365 {audience} login" if expired else left),
+        "expired": expired,
         "site": site,
         "remembered": remembered,
     }

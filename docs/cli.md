@@ -230,6 +230,8 @@ holds, and the index's per-product totals, which need no session at all — in f
 
 ```console
 $ o365 doctor
+doctor: ok — 1 session, 4 of 4 licences, 12 roles
+
 graph: mdoe@mediadev8.onmicrosoft.com (tenant af6a80a4-8b4b-4879-88af-42ff8a545211, mode username-and-password, 55 min left)
   grants: 55 scopes
 
@@ -254,8 +256,14 @@ next: o365 licences                      every licence, and the areas it opens
       o365 doctor <product> <noun> ...   what one command needs from this session
 ```
 
-The page is a verdict and three blocks, in the order a reader needs them: are my sessions alive,
-does this tenant hold what the commands ask, and which products name a licence at all. `-o wide`
+The page opens with the answer, because that is why it was opened: `attention` when a command
+would refuse right now (no session, or one that expired — with the command that renews it),
+`unread` when a fact could not be read (which is not an accusation), and `ok` with the three
+numbers it read. `gh auth status` and `flutter doctor` lead the same way; a page that ends with
+the verdict makes a reader scan everything to find it.
+
+After the verdict, three blocks in the order a reader needs them: are my sessions alive, does
+this tenant hold what the commands ask, and which products name a licence at all. `-o wide`
 prints the row that a table would have to shorten — the families each plan opens (`intune.devices
 (119), intune.print (3), …`) — and the products that name no licence; both belong to the report,
 not to the moment before a first command.

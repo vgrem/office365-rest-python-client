@@ -162,6 +162,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`o365 doctor` leads with the verdict.** The page ended with the answer: an expired token sat on
+  line three, below the fold of a glance, and a reader had to assemble "is anything wrong" from
+  three blocks. It now opens with one line — `attention` when a command would refuse right now
+  (no session, or one that expired, with the command that renews it: `the sharepoint session
+  expired; run o365 sharepoint login`), `unread` when a fact could not be read, `ok` with the
+  three numbers it read. The page is assembled as blocks, so the double blank line that printing
+  them one at a time produced is gone too.
 - **`o365 doctor` reads as a verdict, not a catalogue.** Four things a reader could not use went
   with one pass over a real page: the families cell was cut to fit (`intune.…` — a name shortened
   is worse than a name absent), the product block printed twenty-two rows of which twenty were

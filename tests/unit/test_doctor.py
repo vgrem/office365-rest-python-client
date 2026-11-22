@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import base64
 import json
+import time
 from typing import Any
 
 import pytest
@@ -44,7 +45,7 @@ def test_the_page_ignores_a_route_it_cannot_mark_and_says_why(monkeypatch, tmp_p
     assert cli.main(["doctor"]) == 0
 
     printed = capsys.readouterr().out
-    assert "the tenant could not be read" in printed
+    assert printed.startswith("doctor: attention — no session; run o365 login")
     assert "PRODUCT" in printed
     assert "intune" in printed
 
@@ -135,3 +136,31 @@ def test_wide_restores_the_row_a_table_would_have_to_shorten(monkeypatch, tmp_pa
     assert "FAMILIES" in printed and "intune.devices" in printed
     assert "booking" in printed
     assert "no licence is named under" not in printed
+
+
+def test_the_verdict_says_attention_and_names_the_command_that_fixes_an_expired_token() -> None:
+    """The first line, because the expired token is the reason a reader opened the page."""
+    sessions = {"sharepoint": {"mode": "device-flow", "claims": {"exp": int(time.time()) - 60}}}
+
+    line = cli._verdict(sessions, {"why": "", "roles": ("Global Administrator",)}, [])
+
+    assert line == "doctor: attention — the sharepoint session expired; run o365 sharepoint login"
+
+
+def test_the_verdict_counts_what_it_can_and_calls_a_failed_read_unread() -> None:
+    """``unknown`` is not ``no``: a licence that could not be read is not a licence the tenant lacks."""
+    sessions = {"graph": {"mode": "device-flow", "claims": {"exp": int(time.time()) + 600}}}
+    facts = {"why": "the tenant's subscriptions could not be read: is Licence.Read.All granted?", "roles": None}
+
+    assert cli._verdict(sessions, facts, []) == (
+        "doctor: unread — the tenant's subscriptions could not be read: is Licence.Read.All granted?"
+    )
+
+
+def test_the_verdict_says_ok_with_the_three_numbers_it_read() -> None:
+    sessions = {"graph": {"mode": "device-flow", "claims": {"exp": int(time.time()) + 600}}}
+    records = [{"held": "yes"}, {"held": "no"}]
+
+    assert cli._verdict(sessions, {"why": "", "roles": ("A", "B")}, records) == (
+        "doctor: ok — 1 session, 1 of 2 licences, 2 roles"
+    )
