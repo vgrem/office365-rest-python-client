@@ -95,9 +95,11 @@ from urllib.parse import urlparse
 if TYPE_CHECKING:
     from office365.graph_client import GraphClient
     from office365.licensing.report import LicenceRecord
+    from office365.permissions.declaration import PermissionRequirement
     from office365.permissions.token import TokenClaims
     from office365.routing import Route
     from office365.runtime.client_runtime_context import ClientRuntimeContext
+    from office365.runtime.verbs import VerbMeta
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -1235,7 +1237,7 @@ def _permission(statement: Statement, gates: Gates) -> str:
     return MISSING if any(words) else ""
 
 
-def _declared(declaration: Any, gates: Gates) -> str:
+def _declared(declaration: "PermissionRequirement", gates: Gates) -> str:
     """One declaration against this session: ``have``, ``missing``, ``unknown``, or nothing asked.
 
     A marker that names only a licence or a role asks nothing of the token, and saying
@@ -1346,7 +1348,7 @@ def _worst_first(pair: "tuple[str, int]") -> "tuple[int, str]":
     return -count, needs
 
 
-def _needs(claims: Any, declaration: Any) -> "list[dict[str, Any]]":
+def _needs(claims: "TokenClaims | None", declaration: "PermissionRequirement") -> "list[dict[str, Any]]":
     """One record per requirement ``declaration`` states, and what this session proves of it.
 
     A declaration is two alternative flows and a licence, so a command that can run as a user or
@@ -1384,7 +1386,7 @@ def _mark(proved: "frozenset[str] | tuple[str, ...] | None", names: "tuple[str, 
     return _word(proved, bool(proved) and bool(frozenset(proved).intersection(names)))
 
 
-def _word(asked: Any, proved: bool) -> str:
+def _word(asked: "frozenset[str] | tuple[str, ...] | None", proved: bool) -> str:
     """The row's answer: ``unknown`` when nothing was read at all, else ``have`` or ``missing``."""
     from office365.licensing.report import UNKNOWN
 
@@ -1847,7 +1849,7 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     return _send(client, method, given, args, found.shows, empty=f"No {noun} found.")
 
 
-def _keyed(found: Route, method: Callable[..., Any]) -> bool:
+def _keyed(found: Route, method: "Callable[..., object]") -> bool:
     """Whether ``--id`` names the item this command acts on.
 
     ``list`` reads a feed that hangs off an item (a message's attachments) and every other verb
@@ -1929,7 +1931,7 @@ def _walk(root: type, found: Route) -> "tuple[str, ...] | None":
     return None if path is None else path + found.walk
 
 
-def _hints(target: Any, method: str) -> "list[str]":
+def _hints(target: type, method: str) -> "list[str]":
     """What to know before sending this command: its permission, its licence, its beta root.
 
     The five facts are already declared and are joined by :func:`office365.capabilities.hints_of`;
@@ -2037,7 +2039,7 @@ def _page(product: str, spoken: str, found: Route) -> str:
     return "\n".join(lines)
 
 
-def _sentence(half: type, method: str, meta: Any) -> str:
+def _sentence(half: type, method: str, meta: "VerbMeta") -> str:
     """The one line that says what an action does: the service's summary, or the role's sentence."""
     if meta.role != "action":
         return _ROLE_SENTENCE.get(meta.role, "")
@@ -2278,6 +2280,13 @@ def _client(audience: str, live: bool = True, site: "str | None" = None) -> Any:
     A command does not log in: it either finds a live token in the store or says to run
     ``login`` again. Re-running the mode would need the credentials a session must not
     keep - the second half of ``username-and-password`` was missing on the first live run.
+
+    ``Any`` is the honest return: ``audience`` is a word read at run time, and the class it
+    names is one of three roots (``GraphClient``, ``ClientContext``, ``ExchangeAdminClient``)
+    that share :class:`ClientRuntimeContext`. A union here would be a claim the audience
+    cannot make, and every reader would have to narrow what the caller already knows; the
+    docstring is where the choice is written down instead. ``_send``, ``_preview`` and
+    ``render_origin`` take the base class, which is all a page needs from a session.
     """
     entry = _load().get(audience)
     if entry is None:
@@ -2341,7 +2350,7 @@ def _root(audience: str) -> type:
     return min(roots, key=lambda root: root.__module__.count("."))
 
 
-def _flags(parser: argparse.ArgumentParser, fn: Any, seen: "set[str]") -> None:
+def _flags(parser: argparse.ArgumentParser, fn: "Callable[..., object]", seen: "set[str]") -> None:
     """Declare one flag per parameter ``fn`` takes, except the supplied ones."""
     for name, parameter in _signature(fn).parameters.items():
         if name in seen or name in SUPPLIED or parameter.kind in (parameter.VAR_POSITIONAL, parameter.VAR_KEYWORD):
@@ -2358,7 +2367,7 @@ def _flags(parser: argparse.ArgumentParser, fn: Any, seen: "set[str]") -> None:
         parser.add_argument("--" + name.replace("_", "-"), **kwargs)
 
 
-def _accepted(args: argparse.Namespace, fn: Any) -> "dict[str, Any]":
+def _accepted(args: argparse.Namespace, fn: "Callable[..., object]") -> "dict[str, Any]":
     """The arguments ``fn`` declares, converted back to what it asks for."""
     parameters = _signature(fn).parameters
     accepted: "dict[str, Any]" = {}
@@ -2370,7 +2379,7 @@ def _accepted(args: argparse.Namespace, fn: Any) -> "dict[str, Any]":
     return accepted
 
 
-def _signature(fn: Any) -> inspect.Signature:
+def _signature(fn: "Callable[..., object]") -> inspect.Signature:
     """``fn``'s signature with annotations evaluated, or as written if a name is unimportable."""
     try:
         return inspect.signature(fn, eval_str=True)
@@ -2378,7 +2387,7 @@ def _signature(fn: Any) -> inspect.Signature:
         return inspect.signature(fn)
 
 
-def _unoptional(annotation: Any) -> Any:
+def _unoptional(annotation: object) -> object:
     """``Optional[str]`` -> ``str``: a flag cannot mean two types."""
     if get_origin(annotation) in (Union, types.UnionType):
         rest = [argument for argument in get_args(annotation) if argument is not type(None)]
