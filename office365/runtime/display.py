@@ -17,7 +17,7 @@ from collections.abc import Mapping
 from datetime import date, datetime
 from enum import Enum
 from itertools import islice
-from typing import Any, Iterator, Sequence, Tuple
+from typing import Iterator, Sequence
 
 #: Maximum number of top-level fields rendered for a single object.
 MAX_FIELDS = 6
@@ -42,7 +42,7 @@ def _shorten(text: str) -> str:
     return text[: MAX_STRING - 1] + "…"
 
 
-def _is_unset(value: Any) -> bool:
+def _is_unset(value: object) -> bool:
     """Whether a property/field should be omitted from a rendering."""
     if value is None:
         return True
@@ -50,7 +50,7 @@ def _is_unset(value: Any) -> bool:
     return isinstance(value, datetime) and value == datetime.min
 
 
-def _format_scalar(value: Any) -> str:
+def _format_scalar(value: object) -> str:
     """Render a primitive/leaf value."""
     if isinstance(value, str):
         return _shorten(value)
@@ -63,7 +63,7 @@ def _format_scalar(value: Any) -> str:
     return _shorten(str(value))
 
 
-def format_value(value: Any, depth: int = 0, max_items: int = MAX_ITEMS) -> str:
+def format_value(value: object, depth: int = 0, max_items: int = MAX_ITEMS) -> str:
     """Render a single property/field value, bounded and recursion-safe."""
     from office365.runtime.client_object import ClientObject
     from office365.runtime.client_value import ClientValue
@@ -85,7 +85,7 @@ def format_value(value: Any, depth: int = 0, max_items: int = MAX_ITEMS) -> str:
     return _format_scalar(value)
 
 
-def _fields(obj: Any) -> Iterator[Tuple[str, Any]]:
+def _fields(obj: object) -> Iterator[tuple[str, object]]:
     """Iterate ``(name, value)`` pairs for a client object or value."""
     from office365.runtime.client_object import ClientObject
 
@@ -94,7 +94,7 @@ def _fields(obj: Any) -> Iterator[Tuple[str, Any]]:
     return iter(vars(obj).items())
 
 
-def describe(obj: Any, depth: int = 0) -> str:
+def describe(obj: object, depth: int = 0) -> str:
     """Return a compact ``ClassName(field=value, …)`` rendering of ``obj``."""
     fields = [(name, value) for name, value in _fields(obj) if not _is_unset(value)]
     rendered = [f"{name}={format_value(value, depth)}" for name, value in fields[:MAX_FIELDS]]
@@ -104,7 +104,7 @@ def describe(obj: Any, depth: int = 0) -> str:
     return f"{type(obj).__name__}({body})"
 
 
-def _record_fields(item: Any) -> dict[str, Any] | None:
+def _record_fields(item: object) -> dict[str, object] | None:
     """Return the displayable fields of a collection item, or ``None`` for scalars."""
     from office365.runtime.client_object import ClientObject
     from office365.runtime.client_value import ClientValue
@@ -122,14 +122,14 @@ def _record_fields(item: Any) -> dict[str, Any] | None:
 
 
 def _columns_and_rows(
-    items: Sequence[Any], columns: Sequence[str] | None = None
-) -> tuple[list[str] | None, list[dict[str, Any]] | None]:
+    items: Sequence[object], columns: Sequence[str] | None = None
+) -> tuple[list[str] | None, list[dict[str, object]] | None]:
     """Build the column set and per-item field maps.
 
     Without ``columns`` the set is the first-seen union of the items' own fields, bounded by
     :data:`MAX_COLUMNS`; with them the caller has already decided what a reader came for.
     """
-    records: list[dict[str, Any]] = []
+    records: list[dict[str, object]] = []
     for item in items:
         fields = _record_fields(item)
         if fields is None:
@@ -145,13 +145,13 @@ def _columns_and_rows(
     return columns[:MAX_COLUMNS], records
 
 
-def _cell(value: Any) -> str:
+def _cell(value: object) -> str:
     """Render a single table cell value onto one line."""
     return format_value(value).replace("\n", " ")
 
 
 def _render_table(
-    columns: list[str], records: list[dict[str, Any]], max_column_width: int | None = MAX_COLUMN_WIDTH
+    columns: list[str], records: list[dict[str, object]], max_column_width: int | None = MAX_COLUMN_WIDTH
 ) -> str:
     """Render an aligned table; columns are width-bounded unless ``max_column_width`` is ``None``."""
     rows = [[_cell(record.get(column, "")) for column in columns] for record in records]
@@ -166,7 +166,7 @@ def _render_table(
 
 
 def describe_collection(
-    items: Any,
+    items: Sequence[object],
     name: str | None = None,
     *,
     max_items: int | None = MAX_ITEMS,
@@ -219,7 +219,7 @@ def describe_collection(
     return "\n".join(lines)
 
 
-def collection_html(items: Any, name: str, *, more: bool = False) -> str:
+def collection_html(items: Sequence[object], name: str, *, more: bool = False) -> str:
     """Render an already-loaded collection as an HTML table for Jupyter.
 
     Args:
