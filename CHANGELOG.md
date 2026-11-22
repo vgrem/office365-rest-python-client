@@ -72,6 +72,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **`--id` names the item a command acts on.** A command's object had to be reachable from the
+  client root by links alone, so `o365 directory user delete` deleted `/me`, and 444 routes that
+  act on one item of a feed had no way to say which one — `o365 outlook message attachments list`
+  was refused outright. `--id <key>` supplies the feed's key (an id, or the alternate key the
+  service takes in its place: a UPN, a site path) and the walk is otherwise unchanged, so the key
+  indexes `users[<id>]` and the words after the noun stay what they were: `message attachments
+  list --id <id>` reads that message's attachments. The flag is declared — and offered by `TAB` —
+  exactly where the model names a feed: never on a `create`, which has no item yet, and never on
+  a noun that states no feed at all, where `--id` would address whichever feed the walk reached
+  first. A route a key would complete says so (`; --id names it`) instead of leaving the reader
+  to guess. `scripts/walks.py` counts the reach: of the 8606 methods the products stamp with a
+  verb, 1269 walk from the root by links, 444 more by naming one key, and 6893 end on a type the
+  model constructs nowhere.
 - **`o365 config` answers the question a first run asks: which file, which keys.** The CLI has
   always wanted a client id and a tenant once rather than every run, in a file it reads and never
   writes (`~/.o365/config.json`), and until now the only place that file was mentioned was a
@@ -86,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   sends: the grammar, the one login and where the tenant and client id come from, the seven
   output formats and which of them ask for a `$select`, `-n`/`--yes`, one site at a time on
   SharePoint, `licences`, `doctor` and the completion script. It also says what is *not* there:
-  an item inside a feed cannot be addressed from the line yet.
+  a type the model constructs nowhere is refused by name, not guessed at.
 
 - **`o365 doctor` says what this session can do before it runs anything.** With no arguments it
   answers the environment — the session and its grants, the tenant's plans and the roles the

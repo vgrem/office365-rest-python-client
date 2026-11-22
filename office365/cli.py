@@ -1490,6 +1490,7 @@ def _flag_words(found: Any) -> "list[tuple[str, str]]":
         answer.append(("--" + name.replace("_", "-"), getattr(_unoptional(parameter.annotation), "__name__", "")))
     return (
         answer
+        + ([("--id", "the key of the item this command acts on")] if _keyed(found, method) else [])
         + [
             ("-o", "the format to print"),
             ("--output", "the format to print"),
@@ -1621,25 +1622,34 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
     method = getattr(target, found.method)
     # The walk reads types only, so the route to the noun is known before a token is: help and
     # a bad flag are answered without a session, and only the request itself needs one.
-    walk = _walk(_root(_audience(found.entity)), found)
+    root = _root(_audience(found.entity))
+    walk = _walk(root, found)
+    keyed = _keyed(found, method)
+    address = _feed(root, found, product) if keyed else None
+    tail = found.walk if found.verb.role == "list" else ()
     parser = argparse.ArgumentParser(
         prog=f"o365 {product} {spoken}",
-        description=f"Walk {' -> '.join(walk)}, then {found.method}() on {target.__name__}"
-        if walk
-        else f"{found.method}() on {target.__name__}",
+        description=_reaches(found, target, walk, address, tail),
         epilog="\n".join(_hints(target, found.method)),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     from office365.runtime.render import FORMATS
 
-    _flags(parser, method, set())
+    _flags(parser, method, {"id"} if keyed else set())
+    if keyed:
+        parser.add_argument(
+            "--id",
+            default=None,
+            metavar="<key>",
+            help="address the item this key names, by id or by its alternate key",
+        )
     parser.add_argument("-o", "--output", choices=FORMATS, default="table", help="what to print")
     parser.add_argument("--columns", default=None, help="comma separated names the table shows")
     parser.add_argument("--no-headers", action="store_true", help="print rows without the header line")
     parser.add_argument(
         "--link", choices=("auto", "always", "never"), default="auto", help="when a name carries its URL"
     )
-    if "base_url" in _signature(_root(_audience(found.entity))).parameters:
+    if "base_url" in _signature(root).parameters:
         parser.add_argument(
             "-s",
             "--site",
@@ -1666,20 +1676,83 @@ def command(product: str, words: "list[str]", argv: "list[str]") -> int:
         client = _client(_audience(found.entity), live=not args.dry_run, site=getattr(args, "site", None))
     except LookupError as err:
         return _refuse(str(err))
-    if walk is None:
+    noun = found.walk[-1] if found.walk else found.noun
+    if getattr(args, "id", None):
+        # A key is what the walk could not invent: 3601 routes end on an item whose feed is an
+        # argument to the getter, so `--id` supplies it and the rest of the walk is unchanged.
+        if address is None:
+            return _refuse(f"{product} {spoken} names no feed for --id to address")
+        feed = functools.reduce(getattr, address, client)
+        method = getattr(functools.reduce(getattr, tail, feed[args.id]), found.method)
+    elif walk is None:
+        # The hint is offered only where it would work: a route whose noun states no feed has no
+        # key to take, and pointing it at `--id` would be the refusal promising a flag it lacks.
         return _refuse(
             f"{product} {spoken} is declared, but nothing walks there from {type(client).__name__}:"
             " every link on the way needs an argument the model does not name yet"
+            + ("; --id names it" if address is not None else "")
         )
-    noun = found.walk[-1] if found.walk else found.noun
-    return _send(
-        client,
-        getattr(functools.reduce(getattr, walk, client), found.method),
-        given,
-        args,
-        found.shows,
-        empty=f"No {noun} found.",
-    )
+    else:
+        method = getattr(functools.reduce(getattr, walk, client), found.method)
+    return _send(client, method, given, args, found.shows, empty=f"No {noun} found.")
+
+
+def _keyed(found: Any, method: Any) -> bool:
+    """Whether ``--id`` names the item this command acts on.
+
+    ``list`` reads a feed that hangs off an item (a message's attachments) and every other verb
+    acts on the item itself, so both are addressed by the key of that item. A verb declared on
+    the feed -- ``create`` -- has no item to name, a noun that states no feed has nowhere to put
+    one, and a method that already takes an ``id`` is addressed by its own flag rather than by a
+    second spelling of it.
+    """
+    from office365.runtime.client_object_collection import ClientObjectCollection
+
+    if found.collection is None or "id" in _signature(method).parameters:
+        return False
+    if found.verb.role == "list":
+        return bool(found.walk)
+    here = found.here or found.entity
+    return isinstance(here, type) and not issubclass(here, ClientObjectCollection)
+
+
+def _feed(root: type, found: Any, product: str) -> "tuple[str, ...] | None":
+    """The attributes to walk to the feed whose item ``--id`` names.
+
+    A listing's item is the one the noun names -- ``message attachments list`` addresses a
+    message, then reads its attachments -- while every other verb lands on the item the words
+    reached, so the feed is the one that holds *that* type (``web lists delete`` addresses a
+    list). Both are read off the model: the noun's own route for the first, the last step for
+    the second.
+    """
+    from office365.entity_collection import EntityCollection
+    from office365.routing import chain, route
+    from office365.runtime.client_object_collection import ClientObjectCollection
+
+    held = route(product, found.noun).collection if found.verb.role == "list" else found.collection
+    if held is None or held in (ClientObjectCollection, EntityCollection):
+        # A link typed `EntityCollection[X]` holds the base class at run time, so walking to it
+        # would index whichever feed the walk reached first. A URL nobody asked for is worse
+        # than no URL, and the noun's own feed names the type or says nothing.
+        return None
+    return chain(root, held)
+
+
+def _reaches(
+    found: Any, target: type, walk: "tuple[str, ...] | None", address: "tuple[str, ...] | None", tail: "tuple[str, ...]"
+) -> str:
+    """What ``-h`` says the command reaches, in the order it gets there.
+
+    A route ``--id`` completes walks to the feed and indexes it, so the key is shown where it is
+    used -- ``users[<id>]`` -- instead of the item the model happens to reach first (``me``).
+    """
+    if address:
+        walked = " -> ".join([*address[:-1], f"{address[-1]}[<id>]", *tail])
+    elif walk:
+        walked = " -> ".join(walk)
+    else:
+        return f"{found.method}() on {target.__name__}"
+    return f"Walk {walked}, then {found.method}() on {target.__name__}"
 
 
 def _walk(root: type, found: Any) -> "tuple[str, ...] | None":

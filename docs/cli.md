@@ -123,7 +123,8 @@ o365 onedrive drive get
 ```
 
 A route that stops on a noun prints that noun's page: the verbs it answers, grouped by effect,
-and the links it holds. `-h` on any route prints the flags, the permission the call declares and
+and the links it holds. A verb that acts on one item rather than on the feed takes `--id <key>` to
+say which item ([Naming one item](#naming-one-item)). `-h` on any route prints the flags, the permission the call declares and
 the licence it needs; `o365 help <route>` asks the same question by name.
 
 ## Reading
@@ -176,24 +177,61 @@ read never shows a flag that would do nothing. `-n` / `--dry-run` works everywhe
 request the client would send (`GET https://…`) and sends nothing, using the walk the model
 already knows, so it answers with a stale token too.
 
-## What is not here yet
+## Naming one item
 
-A command's object has to be reachable from the client root by links the model declares. That is
-what `list` and `get` do today: 98 of the index's 137 `list` routes and 265 of its 2037 `get`
-routes walk from the root, and the rest are refused by name rather than guessed at.
-
-An item *inside* a feed is not addressable from the command line yet. `EntityCollection.__getitem__`
-already takes the key and `Route` already knows the feed that holds the item, but no word on the
-line supplies the key, so a delete of one group answers:
+A feed answers `list`; one item of it answers everything else, and `--id` supplies the key — the
+entity's own id, or the alternate key the service takes in its place (a UPN, a site path):
 
 ```console
-$ o365 directory group delete --yes
-o365: directory group delete is declared, but nothing walks there from GraphClient: every link on the way needs an argument the model does not name yet
+$ o365 directory user get --id f4747983-db6f-4c22-a837-034f17d9e650
+@odata.context     https://graph.microsoft.com/v1.0/$metadata#users(displayName,userPrincipalName,mail)/$entity
+displayName        a.dyukov
+userPrincipalName  a.dyukov_hotmail.com#EXT#@mediadev8.onmicrosoft.com
+mail               a.dyukov@hotmail.com
+
+$ o365 directory user delete --id a.dyukov@hotmail.com -n
+DELETE https://graph.microsoft.com/v1.0/users/a.dyukov@hotmail.com
 ```
 
-3601 of the index's delete and update routes end that way, and 528 reach a root link — mostly the
-singleton settings objects, which have no key to give. Reads are complete for feeds; addressing
-one item by key is the next gap, and the refusal above is the honest answer until it closes.
+The key is placed where the model says the feed is, so a feed that hangs off one item takes that
+item's key and the words after it stay what they were:
+
+```console
+$ o365 outlook message attachments list -h | sed -n '7p'
+Walk me -> messages[<id>] -> attachments, then get() on AttachmentCollection
+
+$ ID=$(o365 outlook message list --columns id -o json | jq -r '.[0].id')
+$ o365 outlook message attachments list --id "$ID"
+No attachments found.
+```
+
+`--id` is declared exactly when the model names a feed to index — `-h` shows it or does not — and
+`scripts/walks.py` counts what a line of words can reach at all:
+
+```console
+$ python scripts/walks.py
+role         walk   --id   none
+action        202    144    598
+create          6      0     75
+delete        264     82   1682
+get           265     82   1691
+list           98      0     39
+update        434    136   2808
+total        1269    444   6893
+```
+
+1269 routes build a URL from the root by links alone, 444 more by naming one key, and 6893 end on
+a type the model constructs nowhere: `administrative-unit` is one of the 403 `directory` nouns
+that states no feed, so no line addresses it and `--id` is absent rather than wrong. A route the
+walk cannot build is refused by name instead of guessed at, and says whether a key would help:
+
+```console
+$ o365 outlook message attachments list
+o365: outlook message attachments list is declared, but nothing walks there from GraphClient: every link on the way needs an argument the model does not name yet; --id names it
+
+$ o365 directory administrative-unit get
+o365: directory administrative-unit get is declared, but nothing walks there from GraphClient: every link on the way needs an argument the model does not name yet
+```
 
 ## One site at a time (SharePoint)
 
