@@ -46,8 +46,8 @@ class _UpdatableEntity(Protocol):
     a runtime base, so the upsert verb reconciles through this structural type.
     """
 
-    def update(self) -> Any:
-        """Queue an update of the changed properties."""
+    def update(self) -> "_UpdatableEntity":
+        """Queue an update of the changed properties, and hand the entity back."""
         ...
 
 
@@ -80,6 +80,10 @@ class RecordCollection(ClientObjectCollection[ClientObjectT]):
         **opts: Any,
     ) -> Self:
         """Deferred export of the loaded items to ``target`` in ``format``.
+
+        ``target`` is typed ``Any`` because the format decides what it is: a path or
+        writable file object for CSV/TSV/NDJSON/JSON, a database connection for
+        ``to_sql``/``to_duckdb``, a path or buffer for the columnar writers.
 
         The writer is resolved from the format registry, so formats are pluggable.
         A queued read is written when it resolves; an already-loaded collection

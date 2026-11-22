@@ -67,12 +67,12 @@ ON_ERROR_MODES = ("raise", "collect")
 class RecordSink(Protocol):
     """Minimal target contract for :class:`ImportResult` (a queueable collection)."""
 
-    def queue_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> Any:
-        """Queue a create per record."""
+    def queue_records(self, records: list[dict], progress: "ProgressCallback | None" = None) -> "RecordSink":
+        """Queue a create per record, and hand the sink back for chaining."""
         ...
 
-    def clear(self) -> Any:
-        """Discard queued/loaded entities (keeps memory bounded)."""
+    def clear(self) -> "RecordSink":
+        """Discard queued/loaded entities (keeps memory bounded), and hand the sink back."""
         ...
 
 
