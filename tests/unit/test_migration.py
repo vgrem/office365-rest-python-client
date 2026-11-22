@@ -1,38 +1,61 @@
-"""The bundle format: what a portable export is, and what re-reading it gives back.
+"""A migration run: what it writes, what it is told to spend, what it can carry, and what
+survives the process being killed.
 
-A bundle is not a copy of a tree with a sidecar beside it — it is content-addressed
-payloads plus one ledger, and it has to answer for itself: which destinations it
-holds, which bytes each one is, and whether it is the whole export. These tests pin
-that on both sides of the pair, an export and an import, without a tenant.
+Four questions about one run, which is why they are one file. A bundle is what the run leaves
+on disk -- content-addressed payloads plus one ledger, able to answer for itself which
+destinations it holds and whether it is the whole export. An assessment scan is what the run
+read before it started, so a column the projection did not ask for is a blind spot rather than
+a copy. A client is the policy the run borrows: Graph work is sent as background, SharePoint is
+paced instead, because SharePoint signals load with its health score and not with the header.
+And a checkpoint is what lets a second process pick up where the first one died -- which is
+only true if the file is never seen truncated.
 
-Deliberately not covered here: versions, permissions, authorship and the list
-structure sidecar — none of them are in the format yet, and a job asked to preserve
-one refuses at ``plan()`` rather than importing nothing quietly."""
+The fidelity report sits between them: it answers, before anything is written, what the
+source/target pair can actually carry, and a job asked to preserve a dimension the pair does
+not have refuses at ``plan()`` rather than importing nothing quietly.
+
+Deliberately not covered: versions, permissions, authorship and the list-structure sidecar are
+not in the bundle format yet; the refusal above is the honest answer until they are.
+"""
 
 from __future__ import annotations
 
 import ast
 import json
 import pathlib
+from typing import Optional
 
 import pytest
-from office365.migration import ConflictResolution, MigrationJob, MigrationOptions
+from office365.graph_client import GraphClient
+from office365.migration import ConflictResolution, MigrationJob, MigrationOptions, migration_client
 from office365.migration.adapters.bundle import CONTENT_DIR, INDEX_NAME, LEDGER_NAME, BundleSource, BundleTarget
 from office365.migration.adapters.filesystem import FileSystemSource, FileSystemTarget
 from office365.migration.assessment.containers import ScanContainer
 from office365.migration.assessment.report import AssessmentReport
 from office365.migration.assessment.scanners import ScanTarget
-from office365.migration.base import MigrationItem
+from office365.migration.base import MigrationItem, MigrationPhase
+from office365.migration.checkpoint import Checkpoint
+from office365.migration.fidelity import FidelityStatus, describe_fidelity
+from office365.migration.manifest import Manifest
 from office365.migration.offline import offline_context
+from office365.migration.outlook.calendar_adapters import IcsExportTarget
+from office365.migration.outlook.fidelity import CALENDAR_EXPORT_DIMENSIONS
 from office365.migration.sharepoint import SharePointAssessmentOptions
 from office365.migration.sharepoint.assessor import _ITEM_SCAN_SELECT, _UNIQUE_ITEM_SCAN_SELECT
 from office365.migration.sharepoint.scanners import fields as field_scan
 from office365.migration.sharepoint.scanners import lookup as lookup_scan
+from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.converters.json_file import record_to_json
+from office365.runtime.http.request_options import RequestOptions
+from office365.runtime.imports import ImportCheckpoint
 from office365.runtime.limits import Limit
+from office365.runtime.persistence import atomic_write_json, read_json
 from office365.runtime.schema import TypeSchema
+from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.fields.field import Field
 from office365.sharepoint.listitems.listitem import ListItem
+
+# --- what a portable export is --------------------------------------------------------
 
 
 def _index(bundle) -> dict:
@@ -221,7 +244,7 @@ def test_the_index_is_derived_from_the_ledger(tmp_path, source):
     assert _index(bundle)["rollup"] == sealed["rollup"]
 
 
-# What the assessment scans read, and where they read it from.
+# --- what an assessment scan reads ----------------------------------------------------
 _DERIVED = {"is_file": "file_system_object_type", "is_folder": "file_system_object_type"}
 
 
@@ -324,3 +347,205 @@ def test_a_read_only_column_is_flagged_from_the_column_not_from_its_schema():
 
     flagged = [issue.location.rsplit("/", 1)[-1] for issue in report.issues if "ReadOnly" in issue.message]
     assert flagged == ["ZzLocked"]
+
+
+# --- what a client is told about the work it is doing ---------------------------------
+
+
+PRIORITY_HEADER = "x-ms-throttle-priority"
+
+
+def _header(client: ClientRuntimeContext) -> Optional[str]:
+    """Read one header off the request this client would send, without sending it."""
+    request = RequestOptions(url="https://contoso.example/v1.0/me")
+    client.pending_request().beforeExecute(request)
+    return request.headers.get(PRIORITY_HEADER)
+
+
+def _unauthenticated(client: ClientRuntimeContext) -> ClientRuntimeContext:
+    """Drop the hooks that would authenticate a request that is never sent."""
+    client.pending_request().beforeExecute.clear()
+    return client
+
+
+def test_the_priority_is_the_callers_choice_and_defaults_to_background():
+    assert _header(migration_client(_unauthenticated(GraphClient()))) == "low"
+    assert _header(migration_client(_unauthenticated(GraphClient()), priority="high")) == "high"
+    assert _header(migration_client(_unauthenticated(GraphClient()), priority=None)) is None
+
+
+def test_a_sharepoint_context_is_paced_but_carries_no_graph_header():
+    ctx = migration_client(_unauthenticated(ClientContext("https://contoso.sharepoint.com")))
+
+    assert ctx.rate_limiter is not None
+    assert _header(ctx) is None
+
+
+def test_pacing_is_installed_unless_declined_and_the_client_comes_back():
+    client = _unauthenticated(GraphClient())
+
+    assert migration_client(client) is client, "the policy is applied to the caller's own client"
+    assert client.rate_limiter is not None
+    assert migration_client(_unauthenticated(GraphClient()), pace=False).rate_limiter is None
+
+
+# --- what the pair can carry ----------------------------------------------------------
+
+
+PROBE_DIMENSIONS = {
+    "content",
+    "versions",
+    "timestamps",
+    "authorship",
+    "permissions",
+    "attachments",
+    "structure",
+    "content_types",
+    "typed_values",
+    "item_state",
+    "views",
+    "navigation",
+    "site_settings",
+    "sharing_links",
+}
+
+
+@pytest.fixture
+def pair(tmp_path):
+    """The reference pair: one directory to another, every optional hook absent."""
+    return FileSystemSource(tmp_path / "from"), FileSystemTarget(tmp_path / "to")
+
+
+# --- the probe ---------------------------------------------------------------------
+
+
+def test_the_reference_pair_answers_for_every_dimension_without_asking_the_tenant(pair) -> None:
+    source, target = pair
+    report = describe_fidelity(source, target, MigrationOptions())
+
+    # A dimension nobody models is the one that gets silently dropped, so the set is exact.
+    assert set(report.dimensions) == PROBE_DIMENSIONS
+    assert report.dimensions["content"] == FidelityStatus.DELIVERED.value
+    # A tree copy carries neither history nor state; shipping and sharing are not adapter work.
+    for name in ("versions", "timestamps", "authorship", "permissions", "typed_values", "item_state", "views"):
+        assert report.dimensions[name] == FidelityStatus.UNSUPPORTED.value
+    # These are reachable by another verb, so the pair is honest rather than empty.
+    for name in ("navigation", "site_settings"):
+        assert report.dimensions[name] == FidelityStatus.BEST_EFFORT.value
+
+
+def test_a_reason_is_kept_for_what_is_not_delivered_and_only_for_that(pair) -> None:
+    source, target = pair
+    report = describe_fidelity(source, target, MigrationOptions())
+
+    assert set(report.dimension_notes) == {
+        name for name, status in report.dimensions.items() if status != FidelityStatus.DELIVERED.value
+    }
+    assert "content" not in report.dimension_notes
+
+
+def test_a_requested_flag_the_pair_cannot_carry_is_the_run_refusing_it(pair) -> None:
+    source, target = pair
+    report = describe_fidelity(
+        source, target, MigrationOptions(preserve_versions=True, preserve_permissions=True, preserve_timestamps=True)
+    )
+
+    assert not report.ok
+    assert report.unsupported == ["timestamps", "permissions", "versions"]
+    assert len(report.notes) == len(report.unsupported)  # each one says what it would need
+    assert "apply_timestamps" in report.notes[0]
+    assert report.not_requested == ["authorship"]  # asked for nothing, so said to be off
+
+
+def test_the_report_survives_json_and_says_itself_in_one_line(pair) -> None:
+    source, target = pair
+    report = describe_fidelity(source, target, MigrationOptions())
+
+    assert json.loads(json.dumps(report.to_dict()))["dimensions"] == report.dimensions
+    assert f"content={FidelityStatus.DELIVERED.value}" in report.matrix_summary()
+    assert report.summary() == "not requested: timestamps, permissions, authorship, versions"
+
+
+# --- a table the product declares ---------------------------------------------------
+
+
+def test_a_product_that_names_its_own_dimensions_is_not_probed(tmp_path) -> None:
+    """A mailbox has no views and no sharing links, so the SharePoint probe would say both.
+
+    The export target carries the calendar's table, and the engine reads it instead of
+    answering fourteen questions about a product this pair has nothing to do with.
+    """
+    report = describe_fidelity(FileSystemSource(tmp_path), IcsExportTarget(tmp_path), MigrationOptions())
+
+    assert report.dimensions == {name: status.value for name, (status, _) in CALENDAR_EXPORT_DIMENSIONS.items()}
+    assert "views" not in report.dimensions
+    # The declared table keeps a reason where it is not delivered: that is the sentence a caller reads.
+    assert set(report.dimension_notes) <= set(CALENDAR_EXPORT_DIMENSIONS)
+    assert all(
+        name in report.dimension_notes
+        for name, (status, reason) in CALENDAR_EXPORT_DIMENSIONS.items()
+        if status is not FidelityStatus.DELIVERED and reason
+    )
+
+
+# --- what survives a process that dies ------------------------------------------------
+
+
+def _tmp_files(directory) -> list[str]:
+    return [p.name for p in directory.iterdir() if p.name.endswith(".tmp")]
+
+
+def test_a_save_creates_the_directories_it_needs_and_leaves_no_temp_file(tmp_path):
+    target = tmp_path / "state" / "nested" / "checkpoint.json"
+    atomic_write_json(target, {"ok": True})
+    assert read_json(target) == {"ok": True}
+    assert _tmp_files(target.parent) == []
+
+    path = tmp_path / "manifests" / "01-docs.manifest.json"
+    Manifest([MigrationItem(source_path="/a/b.txt", dest_path="b.txt", item_type="file")]).save(path)
+
+    assert Manifest.load(path).by_dest()["b.txt"].source_path == "/a/b.txt"
+    assert _tmp_files(path.parent) == []
+
+
+def test_import_checkpoint_round_trip_is_atomic(tmp_path):
+    path = tmp_path / "import.json"
+    checkpoint = ImportCheckpoint(cursor=10, chunks=2, errors=1, signature={"format": "csv"})
+    checkpoint.save(path)
+    assert _tmp_files(tmp_path) == []
+
+    restored = ImportCheckpoint.load(path)
+    assert restored.cursor == 10  # noqa: PLR2004
+    assert restored.chunks == 2  # noqa: PLR2004
+    assert restored.signature == {"format": "csv"}
+    assert restored.updated_at  # stamped on save
+
+
+def test_migration_checkpoint_round_trip_is_atomic(tmp_path):
+    path = tmp_path / "migration.json"
+    checkpoint = Checkpoint.create(run_id="run-1")
+    checkpoint.phase = MigrationPhase.RUNNING
+    checkpoint.source_watermark = "2026-01-01T00:00:00Z"
+    checkpoint.items["/sites/a/file.txt"] = "done"
+    checkpoint.save(path)
+
+    assert _tmp_files(tmp_path) == []
+    restored = Checkpoint.load(path)
+    assert restored.run_id == "run-1"
+    assert restored.phase == MigrationPhase.RUNNING
+    assert restored.source_watermark == "2026-01-01T00:00:00Z"
+    assert restored.items == {"/sites/a/file.txt": "done"}
+
+
+def test_migration_checkpoint_save_keeps_previous_on_failure(tmp_path):
+    path = tmp_path / "migration.json"
+    Checkpoint.create(run_id="old").save(path)
+
+    checkpoint = Checkpoint.create(run_id="new")
+    checkpoint.items = {"bad": object()}  # type: ignore[dict-item]  # not JSON-serializable
+
+    with pytest.raises(TypeError):
+        checkpoint.save(path)
+
+    assert Checkpoint.load(path).run_id == "old"
+    assert _tmp_files(tmp_path) == []

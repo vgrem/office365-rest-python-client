@@ -15,7 +15,7 @@ sidecar while the import cannot set `receivedDateTime` at all — so a single ta
 would have to be vague about both.
 
 Nothing here probes an adapter: a declared matrix is a claim, and
-``tests/unit/test_migration_fidelity.py`` holds it to what the adapters do.
+``tests/unit/test_migration.py`` holds it to what the adapters do.
 """
 
 from __future__ import annotations
