@@ -93,9 +93,11 @@ from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict, Union, get_args, g
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
+    from office365.graph_client import GraphClient
     from office365.licensing.report import LicenceRecord
     from office365.permissions.token import TokenClaims
     from office365.routing import Route
+    from office365.runtime.client_runtime_context import ClientRuntimeContext
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -760,7 +762,7 @@ def _cell(record: Mapping[str, object], name: str) -> str:
     return str(record.get(name, ""))
 
 
-def _assigned(client: Any) -> "frozenset[str] | None":
+def _assigned(client: "GraphClient") -> "frozenset[str] | None":
     """The plans assigned to the calling identity, or ``None`` when that read was not made.
 
     A seat is a fact about the person making the call, so it costs a second read; a token
@@ -1409,7 +1411,7 @@ def _tenant_facts() -> TenantFacts:
     return TenantFacts(client.tenant_name or "", held, _assigned(client), _roles(client), "")
 
 
-def _live_graph() -> Any:
+def _live_graph() -> "GraphClient | None":
     """The graph client this store can still produce, or ``None`` when it cannot."""
     try:
         return _client("graph")
@@ -1417,7 +1419,7 @@ def _live_graph() -> Any:
         return None
 
 
-def _held_plans(client: Any) -> "frozenset[str] | None":
+def _held_plans(client: "GraphClient | None") -> "frozenset[str] | None":
     """The plans this tenant's subscriptions provision, or ``None`` when the read did not happen.
 
     The tenant's answer, not the caller's: which of these are assigned to a person is
@@ -1433,7 +1435,7 @@ def _held_plans(client: Any) -> "frozenset[str] | None":
         return None
 
 
-def _roles(client: Any) -> "tuple[str, ...] | None":
+def _roles(client: "GraphClient") -> "tuple[str, ...] | None":
     """The directory roles the calling identity holds, or ``None`` when that read cannot be made.
 
     ``GraphClient.require_role`` asks the same question and exits; here the answer is a row,
@@ -2086,8 +2088,8 @@ def _feeds(product: str, spoken: str, links: "list[str]", wanted: int) -> "list[
 
 
 def _send(
-    client: Any,
-    method: Any,
+    client: "ClientRuntimeContext",
+    method: Callable[..., Any],
     given: "Mapping[str, Any]",
     args: argparse.Namespace,
     entity: type,
@@ -2140,7 +2142,7 @@ def _send(
     return 0
 
 
-def _preview(client: Any) -> str:
+def _preview(client: "ClientRuntimeContext") -> str:
     """The requests the method queued, as they would be sent: method, URL, and any body.
 
     Built by the request class the session already uses, so the preview cannot describe a
@@ -2181,7 +2183,7 @@ def _asked_for(args: argparse.Namespace, entity: type) -> "list[str]":
     return list(dict.fromkeys([*named, *schema.links]))
 
 
-def _can_select(result: Any) -> bool:
+def _can_select(result: object) -> bool:
     """Whether this answer is a feed that has not been narrowed yet.
 
     A feed that declares it refuses ``$select`` is left alone: the table then prints what the
@@ -2199,25 +2201,26 @@ def _can_select(result: Any) -> bool:
     return capability is None or capability.supports("$select")
 
 
-def render_origin(client: Any) -> str:
+def render_origin(client: "ClientRuntimeContext") -> str:
     """``scheme://host`` for the server-relative links a SharePoint payload carries."""
     from office365.runtime.render import origin_of
 
     return origin_of(getattr(client, "service_root_url", None))
 
 
-def _addresses(rows: "list[Any]") -> "list[str | None]":
+def _addresses(rows: Sequence[object]) -> "list[str | None]":
     """Each row's own REST address -- one per row, so it lines up with the record it belongs to."""
     return [None if isinstance(row, Mapping) else getattr(row, "resource_url", None) for row in rows]
 
 
-def _payload(row: Any) -> "Mapping[str, Any]":
+def _payload(row: object) -> "Mapping[str, Any]":
     """One row as what a table reads: the object's own JSON, or a value under ``value``."""
-    payload = row.to_json() if hasattr(row, "to_json") else row
+    to_json = getattr(row, "to_json", None)
+    payload = to_json() if callable(to_json) else row
     return payload if isinstance(payload, Mapping) else {"value": payload}
 
 
-def _columns(records: "list[Any]", chosen: "str | None", entity: type) -> "list[str] | None":
+def _columns(records: Sequence["Mapping[str, Any]"], chosen: "str | None", entity: type) -> "list[str] | None":
     """The columns a table shows: the ones asked for, or the ones the type says a reader wants."""
     if chosen:
         return [name.strip() for name in chosen.split(",") if name.strip()]
@@ -2228,25 +2231,29 @@ def _columns(records: "list[Any]", chosen: "str | None", entity: type) -> "list[
     return [spelled[name.lower()] for name in wanted if name.lower() in spelled] or None
 
 
-def _rows(result: Any) -> "list[Any]":
+def _rows(result: object) -> "list[object]":
     """What a command prints, one entry per row: a collection's items, or the one object.
 
     The items and not their JSON, because a row needs both halves: the payload the table
     reads and the REST address the row links to. ``to_json()`` on a collection has only the
     first, which is how a table of 146 lists came out with no addresses.
     """
+    from office365.runtime.client_object import ClientObject
+    from office365.runtime.client_object_collection import ClientObjectCollection
+    from office365.runtime.client_value import ClientValue
+
     if isinstance(result, (list, tuple)):
         return list(result)
     if isinstance(result, Mapping):
         return [result]
-    if hasattr(result, "item_type") and hasattr(result, "to_json"):
+    if isinstance(result, ClientObjectCollection):
         # Only a collection is a feed. An entity iterates its own fields as ``(name, value,
         # stated)`` triples -- that is what a request carries -- so iterating a ``Web`` would
         # print one row per field: `["Title", "SiteU74H3Z9O", false]` under a `VALUE` heading.
         # An empty feed is no rows, not the feed as one row: the caller's sentence (`No device
         # found.`) is the answer, and the old fallback printed the envelope -- `value  []`.
         return list(result)
-    if hasattr(result, "to_json"):
+    if isinstance(result, (ClientObject, ClientValue)):
         # A result whose own JSON is the table (`Report` over a CSV answer) is already rows.
         payload = result.to_json()
         return list(payload) if isinstance(payload, list) else [result]
@@ -2420,7 +2427,7 @@ def _short_path(path: Path) -> str:
     return "~" + spelled[len(home) :] if spelled.startswith(home) else spelled
 
 
-def _resolved(name: str, kept: "Mapping[str, Any]") -> "tuple[str, str]":
+def _resolved(name: str, kept: "Mapping[str, str]") -> "tuple[str, str]":
     """One setting's effective value and where it came from.
 
     The order is the one a login applies -- this shell, then the file, then the tenant's own
@@ -2660,7 +2667,7 @@ def _usage() -> str:
     )
 
 
-def _plain(value: Any) -> Any:
+def _plain(value: object) -> object:
     """A constructor argument as JSON can keep it."""
     if isinstance(value, Enum):
         return value.value
