@@ -37,6 +37,7 @@ from office365.runtime.types.odata_property import CompositeKeyNotSupported, key
 from office365.sharepoint.client_context import ClientContext
 from office365.sharepoint.entity import Entity as SharePointEntity
 from office365.sharepoint.webs.web import Web
+
 from tests import test_site_url
 
 # --- the path a request is addressed at -----------------------------------------------

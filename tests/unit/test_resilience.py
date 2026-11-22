@@ -81,6 +81,7 @@ from office365.subscriptions.collection import SubscriptionCollection
 from office365.subscriptions.subscription import Subscription
 from office365.teams.chats.messages.message import ChatMessage
 from requests import Response
+
 from tests import test_site_url
 
 LIST_VIEW = Limits.LIST_VIEW

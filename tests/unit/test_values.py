@@ -79,6 +79,7 @@ from office365.sharepoint.fields.type import FieldType
 from office365.sharepoint.search.query.sort.sort import Sort
 from office365.sharepoint.sitedesigns.metadata import SiteDesignMetadata
 from requests import Response
+
 from tests import test_site_url
 
 # --- a scalar the wire sends ---------------------------------------------------------
