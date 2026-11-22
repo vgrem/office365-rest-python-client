@@ -160,6 +160,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   payloads. What the tenant grants them is a permission question, not a model one: the
   methods name no permission yet, and the ratchet records that count.
 
+### Changed
+
+- **A login is a greeting again.** `o365 login` printed the session line and then every grant the
+  token carried — forty-nine scope names for the tenant this was written on — which pushed the
+  three facts worth reading (which audience, who, how long) into a wall of text at the moment a
+  person is trying to start work. It now counts them and points at the two words that answer the
+  rest: `logged in: graph as you@contoso.com (device-flow, 55 permissions, 24 min left)`, then
+  `o365 whoami names the grants; o365 doctor says what this tenant allows`. `whoami` keeps the
+  listing — that is its question — and wraps it to the terminal instead of running one line off
+  the screen.
+
 ### Fixed
 
 - **`o365 <noun> list` asked the service for the wrong object.** The walk reached the *item*

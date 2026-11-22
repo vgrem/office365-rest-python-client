@@ -81,6 +81,7 @@ import importlib.util
 import inspect
 import json
 import os
+import shutil
 import sys
 import textwrap
 import time
@@ -287,7 +288,7 @@ def login(audience: str, argv: "list[str]") -> int:
         "cache": cache.serialize() if cache is not None else "",
     }
     _save(sessions)
-    print(_summary(audience, sessions[audience]))
+    print(_welcome(audience, sessions[audience]))
     return 0
 
 
@@ -1934,6 +1935,44 @@ def _claims(access_token: str) -> "dict[str, Any]":
     return {name: data[name] for name in names if name in data}
 
 
+def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
+    """What a kept session says about itself, decoded from the token it holds.
+
+    One decode for the three answers built on it: ``whoami`` names the grants, a login counts
+    them, and ``doctor`` counts them from one row. Nothing here sends a request -- a claim is
+    already in the file the session was saved to.
+    """
+    claims = entry.get("claims") or {}
+    grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
+    expires = int(claims.get("exp") or 0)
+    left = "" if not expires else f"{max(0, expires - int(time.time())) // 60} min left"
+    site = _current(audience, entry)
+    remembered = next(
+        (held.get("title", "") for held in entry.get("contexts", []) if held.get("url", "").rstrip("/") == site), ""
+    )
+    return {
+        "who": claims.get("preferred_username") or claims.get("upn") or claims.get("appid") or "<unknown>",
+        "tenant": claims.get("tid", "-"),
+        "mode": entry["mode"],
+        "grants": grants,
+        "count": 0 if grants == "-" else len(grants.split()),
+        "state": (f"expired; run o365 {audience} login" if expires and expires < time.time() else left),
+        "site": site,
+        "remembered": remembered,
+    }
+
+
+def _wrapped(label: str, text: str) -> str:
+    """``label: text`` wrapped to the terminal, hanging under the first word after the label.
+
+    Fifty-five scope names are one unreadable line; wrapped, the same list is scannable, and the
+    wrap is the terminal's own width rather than a number this file guesses at.
+    """
+    width = min(100, max(40, shutil.get_terminal_size((100, 24)).columns))
+    indent = " " * (len(label) + 2)
+    return textwrap.fill(text, width=width, initial_indent=f"  {label}: ", subsequent_indent=indent + "  ")
+
+
 def _summary(audience: str, entry: "dict[str, Any]", brief: bool = False) -> str:
     """One line of who the session is, and whether it still holds.
 
@@ -1941,22 +1980,33 @@ def _summary(audience: str, entry: "dict[str, Any]", brief: bool = False) -> str
     tenant has, and seventy scope names would push that off the screen. ``whoami`` is the word
     that lists them.
     """
-    claims = entry.get("claims") or {}
-    who = claims.get("preferred_username") or claims.get("upn") or claims.get("appid") or "<unknown>"
-    grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
-    if brief and grants != "-":
-        counted = len(grants.split())
-        grants = f"{counted} scope" + ("s" if counted != 1 else "")
-    expires = int(claims.get("exp") or 0)
-    left = "" if not expires else f", {max(0, expires - int(time.time())) // 60} min left"
-    state = f" (expired; run o365 {audience} login)" if expires and expires < time.time() else left
-    line = f"{audience}: {who} (tenant {claims.get('tid', '-')}, mode {entry['mode']}{state})\n  grants: {grants}"
-    site = _current(audience, entry)
-    if site:
-        remembered = next(
-            (held.get("title", "") for held in entry.get("contexts", []) if held.get("url", "").rstrip("/") == site), ""
-        )
-        line += f"\n  at {_short(site)}" + (f" — {remembered}" if remembered else "")
+    facts = _identity(audience, entry)
+    grants = facts["grants"]
+    if brief and facts["count"]:
+        grants = f"{facts['count']} scope" + ("s" if facts["count"] != 1 else "")
+    aside = f", {facts['state']}" if facts["state"] else ""
+    where = f"(tenant {facts['tenant']}, mode {facts['mode']}{aside})"
+    line = f"{audience}: {facts['who']} {where}\n{_wrapped('grants', grants)}"
+    if facts["site"]:
+        line += f"\n  at {_short(facts['site'])}" + (f" — {facts['remembered']}" if facts["remembered"] else "")
+    return line
+
+
+def _welcome(audience: str, entry: "dict[str, Any]") -> str:
+    """What a login says: that you are in, for how long, and the two words that answer the rest.
+
+    A login is a greeting, not a report. Seventeen lines of scope names are unreadable at the
+    moment a person is trying to start work, and printing them buried the only three facts that
+    matter here -- which audience, who, how long. The grants are the answer to a question nobody
+    has asked yet: ``o365 whoami`` names them, and ``o365 doctor`` says what the tenant allows.
+    """
+    facts = _identity(audience, entry)
+    held = f"{facts['count']} permission" + ("" if facts["count"] == 1 else "s") if facts["count"] else "no permissions"
+    facts_line = ", ".join(part for part in (facts["mode"], held, facts["state"]) if part)
+    line = f"logged in: {audience} as {facts['who']} ({facts_line})"
+    if facts["site"]:
+        line += f"\n  at {_short(facts['site'])}" + (f" — {facts['remembered']}" if facts["remembered"] else "")
+    line += "\n  o365 whoami names the grants; o365 doctor says what this tenant allows"
     return line
 
 

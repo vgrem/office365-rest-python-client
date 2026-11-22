@@ -88,8 +88,19 @@ answers it, so a script reads what a command would use instead of restating the 
 client_id=$(o365 config client_id) || { echo "run o365 config to see what is missing"; exit 1; }
 ```
 
+A login is a greeting, not a report — the grants are the answer to a question nobody has asked
+yet, and forty-nine scope names bury the three facts worth reading at that moment:
+
+```console
+$ o365 login
+To sign in, use a web browser to open the page https://login.microsoft.com/device and enter the code ABC1234 to authenticate.
+logged in: graph as vadimadm@mediadev8.onmicrosoft.com (device-flow, 60 permissions, 65 min left)
+  o365 whoami names the grants; o365 doctor says what this tenant allows
+```
+
 Tokens are kept in `~/.o365/sessions.json`, per audience: `o365 whoami` says who you are and
-what the token grants, and `o365 logout` forgets one audience or all of them.
+lists what the token grants (wrapped to the terminal), `o365 doctor` says what the tenant holds
+and what a route needs, and `o365 logout` forgets one audience or all of them.
 
 ## The grammar
 
