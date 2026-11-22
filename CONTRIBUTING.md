@@ -89,7 +89,7 @@ The offline tests are split by what they describe:
 
 | Directory | Subject |
 | --- | --- |
-| `tests/unit` | the shipped library — one file per feature of `office365`, plus the declaration ratchet; the command line is one file, `tests/unit/test_cli.py` |
+| `tests/unit` | the shipped library — one file per feature of `office365`, plus the whole-tree coherence walks; the command line is one file, `tests/unit/test_cli.py` |
 | `tests/tooling` | the code generator under `generator/` — CSDL in, source out: one end-to-end run, staged |
 | `tests/unit/test_permission_matrix.py` | the harness's declared-permission vocabulary: checking, skipping and reporting |
 
