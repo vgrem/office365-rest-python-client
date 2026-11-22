@@ -5,7 +5,7 @@ import inspect
 import sys
 import threading
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, List, Optional, cast
 
 from typing_extensions import Self
 
@@ -15,8 +15,15 @@ from office365.azure_env import (
     get_login_authority,
 )
 from office365.runtime.auth.certificate import CertificateData, build_client_credential
-from office365.runtime.auth.token_response import TokenResponse
+from office365.runtime.auth.token_response import (
+    AsyncTokenCallback,
+    TokenCallback,
+    TokenResponse,
+)
 from office365.runtime.transport.offload import run_offloaded
+
+if TYPE_CHECKING:
+    import msal
 
 #: Fallback lifetime for an async-acquired token whose response carries no
 #: ``expiresIn``. It only needs to outlive the batch payload build that reuses it.
@@ -30,7 +37,7 @@ class AuthenticationContext:
         self,
         tenant: str | None = None,
         scopes: List[str] | None = None,
-        token_cache: Any = None,
+        token_cache: "msal.SerializableTokenCache | None" = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
         authority: str | None = None,
     ):
@@ -46,14 +53,14 @@ class AuthenticationContext:
             scopes = [f"{get_graph_authority(environment)}/.default"]
         self._scopes = scopes
         self._token_cache = token_cache
-        self._token_callback: Any = None
+        self._token_callback: TokenCallback | None = None
+        self._async_token_callback: AsyncTokenCallback | None = None
         self._environment = environment
         self._client_id: str | None = None
         self._authority = authority
         self._lock = threading.Lock()
-        self._token_callback_is_async = False
         self._async_lock: Optional[asyncio.Lock] = None
-        self._async_lock_loop: Any = None
+        self._async_lock_loop: asyncio.AbstractEventLoop | None = None
         self._cached_token: Optional[TokenResponse] = None
         self._token_expires = datetime.now(timezone.utc)
 
@@ -65,9 +72,7 @@ class AuthenticationContext:
         token cached by :meth:`acquire_token_async` while it is still valid (so
         synchronous batch payload building can reuse it) and otherwise raises.
         """
-        if not self._token_callback:
-            raise ValueError("Token callback is not set.")
-        if self._token_callback_is_async:
+        if self._async_token_callback is not None:
             cached = self._get_cached_token()
             if cached is not None:
                 return cached
@@ -76,7 +81,7 @@ class AuthenticationContext:
                 "execute_query_async() / execute_batch_async() instead."
             )
         with self._lock:
-            token_resp = self._token_callback()
+            token_resp = self._require_token_callback()()
         token = TokenResponse.from_json(token_resp)
         self._store_cached_token(token)
         return token
@@ -93,9 +98,7 @@ class AuthenticationContext:
         batch payload can reuse it. A synchronous callback is offloaded to the
         worker pool.
         """
-        if self._token_callback is None:
-            raise ValueError("Token callback is not set.")
-        if self._token_callback_is_async:
+        if self._async_token_callback is not None:
             cached = self._get_cached_token()
             if cached is not None:
                 return cached
@@ -103,11 +106,17 @@ class AuthenticationContext:
                 cached = self._get_cached_token()
                 if cached is not None:
                     return cached
-                token = TokenResponse.from_json(await self._token_callback())
+                token = TokenResponse.from_json(await self._async_token_callback())
                 self._store_cached_token(token)
                 return token
-        token_resp = await run_offloaded(self._token_callback)
+        token_resp = await run_offloaded(self._require_token_callback())
         return TokenResponse.from_json(token_resp)
+
+    def _require_token_callback(self) -> TokenCallback:
+        """The registered synchronous callback, or a clear error when nothing is set."""
+        if self._token_callback is None:
+            raise ValueError("Token callback is not set.")
+        return self._token_callback
 
     def _get_cached_token(self) -> Optional[TokenResponse]:
         if self._cached_token is not None and datetime.now(timezone.utc) <= self._token_expires:
@@ -116,7 +125,7 @@ class AuthenticationContext:
 
     def _store_cached_token(self, token: TokenResponse) -> None:
         self._cached_token = token
-        expires_in = getattr(token, "expiresIn", None)
+        expires_in = token.expiresIn
         ttl = int(expires_in) if expires_in is not None else _DEFAULT_TOKEN_TTL
         self._token_expires = datetime.now(timezone.utc) + timedelta(seconds=ttl)
 
@@ -129,13 +138,13 @@ class AuthenticationContext:
         for what it *proves* - the audience it was issued for, the permissions it carries - and
         an expiry changes none of that. It is never validated.
         """
-        if self._cached_token is None and self._token_callback is not None:
+        if self._cached_token is None and (self._token_callback is not None or self._async_token_callback is not None):
             try:
                 self.acquire_token()
             except RuntimeError:  # an async callback is only usable from the async API
                 return None
         token = self._cached_token
-        return None if token is None else getattr(token, "accessToken", None)
+        return None if token is None else token.accessToken
 
     def _get_async_lock(self) -> asyncio.Lock:
         """Return a lock for the running loop, recreating it when the loop changes.
@@ -154,9 +163,9 @@ class AuthenticationContext:
     @property
     def is_async_token_callback(self) -> bool:
         """Whether the registered token callback is a coroutine function."""
-        return self._token_callback_is_async
+        return self._async_token_callback is not None
 
-    def with_access_token(self, token_callback: Callable[[], Optional[Dict[str, Any]]]) -> Self:
+    def with_access_token(self, token_callback: TokenCallback) -> Self:
         """Register a token callback.
 
         The callback may be a regular function (offloaded by the async engine) or
@@ -164,8 +173,12 @@ class AuthenticationContext:
         (see :meth:`acquire_token_async`). Async callbacks are only supported on
         the async API; a synchronous request with one raises a clear error.
         """
-        self._token_callback = token_callback
-        self._token_callback_is_async = inspect.iscoroutinefunction(token_callback)
+        # The two shapes cannot be told apart by annotation, only by the object, so the
+        # context keeps the one it was handed and the branch is where the cast is due.
+        if inspect.iscoroutinefunction(token_callback):
+            self._async_token_callback = cast(AsyncTokenCallback, token_callback)
+        else:
+            self._token_callback = token_callback
         self._cached_token = None
         self._token_expires = datetime.now(timezone.utc)
         return self

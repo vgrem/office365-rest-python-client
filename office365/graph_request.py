@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
+from office365.runtime.auth.token_response import TokenCallback
 from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.prefer import prefer_upsert
 from office365.runtime.http.request_options import RequestOptions
@@ -17,6 +18,8 @@ from office365.runtime.queries.update_entity import UpdateEntityQuery
 from office365.runtime.queries.upsert_entity import UpsertEntityQuery
 
 if TYPE_CHECKING:
+    import msal
+
     from office365.licensing.guard import LicenceGuard
 
 
@@ -30,7 +33,7 @@ class GraphRequest(ODataRequest):
         environment: AzureEnvironment = AzureEnvironment.Global,
         authority: Optional[str] = None,
         scopes: Optional[List[str]] = None,
-        token_cache: Any = None,
+        token_cache: "msal.SerializableTokenCache | None" = None,
         licence_guard: Optional[LicenceGuard] = None,
     ):
         """
@@ -61,7 +64,7 @@ class GraphRequest(ODataRequest):
         self._async_authenticate = self.authenticate_request_async
         self._licence_guard = licence_guard
 
-    def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> GraphRequest:
+    def with_access_token(self, token_callback: TokenCallback) -> GraphRequest:
         """
         Initialize with a token callback function.
 
@@ -182,7 +185,7 @@ class GraphRequest(ODataRequest):
         if request.authenticated:
             return  # already authenticated by :meth:`authenticate_request_async`
         token = self._auth_context.acquire_token()
-        request.set_header("Authorization", f"Bearer {token.accessToken}")
+        request.set_header("Authorization", token.authorization_header)
 
     async def authenticate_request_async(self, request: RequestOptions) -> None:
         """Authenticate the request on the event loop.
@@ -197,7 +200,7 @@ class GraphRequest(ODataRequest):
         if not self._auth_context.is_async_token_callback:
             return
         token = await self._auth_context.acquire_token_async()
-        request.set_header("Authorization", f"Bearer {token.accessToken}")
+        request.set_header("Authorization", token.authorization_header)
         request.authenticated = True
 
     def build_request(self, query: ClientQuery) -> RequestOptions:

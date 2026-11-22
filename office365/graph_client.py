@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, List, Optional
 
 from typing_extensions import Self
 
@@ -71,6 +71,7 @@ from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
+from office365.runtime.auth.token_response import TokenCallback
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import limit
@@ -93,6 +94,7 @@ from office365.teams.viva.employee_experience import EmployeeExperience
 from office365.teams.work import Teamwork
 
 if TYPE_CHECKING:
+    import msal
     from requests import Session
 
     from office365.directory.applications.roles.collection import AppRoleCollection
@@ -109,10 +111,10 @@ class GraphClient(ClientRuntimeContext):
 
     def __init__(
         self,
-        token_callback: Optional[Callable[[], Dict[str, str]]] = None,
+        token_callback: Optional[TokenCallback] = None,
         tenant: Optional[str] = None,
         scopes: Optional[List[str]] = None,
-        token_cache: Any = None,
+        token_cache: "msal.SerializableTokenCache | None" = None,
         environment: AzureEnvironment = AzureEnvironment.Global,
         authority: Optional[str] = None,
         version: GraphVersion = GraphVersion.default(),

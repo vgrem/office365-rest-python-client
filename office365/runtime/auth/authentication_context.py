@@ -6,25 +6,29 @@ import json
 import sys
 import threading
 from datetime import datetime, timedelta, timezone
-from typing import Any, Callable, Dict, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union, cast
 
 from typing_extensions import Self
 
 from office365.azure_env import AzureEnvironment, get_login_authority
 from office365.runtime.auth.certificate import CertificateData, build_client_credential
 from office365.runtime.auth.client_credential import ClientCredential
+from office365.runtime.auth.cookies import AuthCookies
 from office365.runtime.auth.providers.acs_token_provider import ACSTokenProvider
 from office365.runtime.auth.providers.cookie_provider import CookieAuthProvider
 from office365.runtime.auth.providers.saml_token_provider import SamlTokenProvider
-from office365.runtime.auth.token_response import TokenResponse
+from office365.runtime.auth.token_response import (
+    AsyncTokenCallback,
+    TokenCallback,
+    TokenResponse,
+)
 from office365.runtime.auth.user_credential import UserCredential
 from office365.runtime.deprecated import deprecated
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import get_absolute_url
 
-
-def _get_authorization_header(token: Any) -> str:
-    return f"{token.tokenType} {token.accessToken}"
+if TYPE_CHECKING:
+    import msal
 
 
 class AuthenticationContext:
@@ -50,7 +54,7 @@ class AuthenticationContext:
                 https://<tenant>.ciamlogin.com
         """
         self.url = url.rstrip("/")
-        self._authenticate = None
+        self._authenticate: Callable[[RequestOptions], None] | None = None
         self._cached_token = None
         self._environment = environment
         self._lock = threading.RLock()
@@ -58,10 +62,10 @@ class AuthenticationContext:
         self._browser_mode = browser_mode
         self._token_expires = datetime.max.replace(tzinfo=timezone.utc)
         self._authority = authority
-        self._token_func: Any = None
-        self._token_func_is_async = False
+        self._token_func: TokenCallback | None = None
+        self._async_token_func: AsyncTokenCallback | None = None
         self._async_lock: asyncio.Lock | None = None
-        self._async_lock_loop: Any = None
+        self._async_lock_loop: asyncio.AbstractEventLoop | None = None
 
     def _get_authority_url(self, tenant: str) -> str:
         """MSAL authority URL, overridable for Entra External ID (CIAM) tenants."""
@@ -216,7 +220,7 @@ class AuthenticationContext:
         tenant: str,
         client_id: str,
         scopes: List[str] | None = None,
-        token_cache: Any = None,
+        token_cache: "msal.SerializableTokenCache | None" = None,
     ) -> Self:
         """
         Authenticate using device flow
@@ -265,7 +269,7 @@ class AuthenticationContext:
         self.with_access_token(_acquire_token)
         return self
 
-    def with_access_token(self, token_func: Callable[[], TokenResponse | Dict[str, Any] | None]) -> Self:
+    def with_access_token(self, token_func: TokenCallback) -> Self:
         """
         Initialize with token callback function
 
@@ -277,42 +281,53 @@ class AuthenticationContext:
         Returns:
             Self: Supports method chaining
         """
-        self._token_func = token_func
-        self._token_func_is_async = inspect.iscoroutinefunction(token_func)
+        # The two shapes cannot be told apart by annotation, only by the object, so the
+        # context keeps the one it was handed and the branch is where the cast is due.
+        if inspect.iscoroutinefunction(token_func):
+            self._async_token_func = cast(AsyncTokenCallback, token_func)
+        else:
+            self._token_func = token_func
 
         def _authenticate(request: RequestOptions) -> None:
-            request_time = datetime.now(timezone.utc)
-
-            if self._cached_token is None or request_time > self._token_expires:
-                if self._token_func_is_async:
-                    raise RuntimeError(
-                        "An async token callback requires the async API; await "
-                        "execute_query_async() / execute_batch_async() instead."
-                    )
-                with self._lock:
-                    if self._cached_token is None or request_time > self._token_expires:
-                        self._apply_token_response(token_func(), request_time)
-            request.set_header("Authorization", _get_authorization_header(self._cached_token))
+            token = self._current_token(datetime.now(timezone.utc))
+            request.set_header("Authorization", token.authorization_header)
 
         self._authenticate = _authenticate
-        setattr(_authenticate, "_is_async_token", self._token_func_is_async)  # noqa: B010
         return self
 
-    def _apply_token_response(self, token_res: TokenResponse | Dict[str, Any] | None, request_time: datetime) -> None:
-        """Cache a freshly acquired token and update its expiry."""
-        if isinstance(token_res, TokenResponse):
-            self._cached_token = token_res
-        else:
-            self._cached_token = TokenResponse.from_json(token_res)
+    def _current_token(self, request_time: datetime) -> TokenResponse:
+        """The token to authenticate with: the cached one, renewed at most once if due.
 
-        if hasattr(self._cached_token, "expiresIn"):  # type: ignore[reportAttributeAccessIssue]
-            expires_in = self._cached_token.expiresIn  # type: ignore[reportAttributeAccessIssue]
-            self._token_expires = request_time + timedelta(seconds=int(expires_in))
+        The lock is taken only when a renewal is due, and the expiry is re-checked inside
+        it because two threads can arrive holding the same expired token.
+        """
+        if self._cached_token is not None and request_time <= self._token_expires:
+            return self._cached_token
+        if self._token_func is None:
+            raise RuntimeError(
+                "An async token callback requires the async API; await "
+                "execute_query_async() / execute_batch_async() instead."
+            )
+        with self._lock:
+            if self._cached_token is None or request_time > self._token_expires:
+                return self._apply_token_response(self._token_func(), request_time)
+            return self._cached_token
+
+    def _apply_token_response(
+        self, token_res: TokenResponse | Dict[str, Any] | None, request_time: datetime
+    ) -> TokenResponse:
+        """Cache a freshly acquired token, update its expiry, and hand it back."""
+        token = TokenResponse.from_json(token_res)
+        self._cached_token = token
+
+        if token.expiresIn is not None:
+            self._token_expires = request_time + timedelta(seconds=int(token.expiresIn))
+        return token
 
     @property
     def is_async_token_callback(self) -> bool:
         """Whether the currently configured auth hook is an async token callback."""
-        return bool(getattr(self._authenticate, "_is_async_token", False))
+        return self._async_token_func is not None
 
     @property
     def access_token(self) -> str | None:
@@ -324,7 +339,7 @@ class AuthenticationContext:
         an expiry changes none of that. It is never validated. A cookie-authenticated context
         has no bearer token to show, and answers ``None``.
         """
-        if self._cached_token is None and self._token_func is not None and not self._token_func_is_async:
+        if self._cached_token is None and self._token_func is not None:
             with self._lock:
                 if self._cached_token is None:
                     self._apply_token_response(self._token_func(), datetime.now(timezone.utc))
@@ -352,24 +367,24 @@ class AuthenticationContext:
         other provider this is a no-op returning ``self._cached_token``. Concurrent
         awaiters share one refresh under an :class:`asyncio.Lock`.
         """
-        if not self.is_async_token_callback or self._token_func is None:
+        if self._async_token_func is None:
             return self._cached_token
         request_time = datetime.now(timezone.utc)
         if self._cached_token is None or request_time > self._token_expires:
             async with self._get_async_lock():
                 if self._cached_token is None or request_time > self._token_expires:
-                    self._apply_token_response(await self._token_func(), request_time)
+                    self._apply_token_response(await self._async_token_func(), request_time)
         return self._cached_token
 
     async def authenticate_request_async(self, request: RequestOptions) -> None:
         """Authenticate ``request`` on the event loop via the async token callback."""
         token = await self.acquire_token_async()
         if token is not None:
-            request.set_header("Authorization", _get_authorization_header(token))
+            request.set_header("Authorization", token.authorization_header)
 
     def with_cookies(
         self,
-        cookie_source: Callable[[], Dict[str, str]] | Any,
+        cookie_source: Callable[[], Dict[str, str]] | AuthCookies,
         ttl_seconds: int | None = None,
     ) -> Self:
         """Initializes authentication using browser-session cookies.
@@ -379,7 +394,7 @@ class AuthenticationContext:
             ttl_seconds: Optional max age for cached cookies before reloading from source.
         """
         provider = CookieAuthProvider(cookie_source, ttl_seconds)
-        self._authenticate = provider.authenticate_request
+        self._install(provider.authenticate_request)
         return self
 
     def with_username_and_password(
@@ -456,7 +471,7 @@ class AuthenticationContext:
         else:
             raise ValueError("Unknown credential type")
 
-        self._authenticate = provider.authenticate_request
+        self._install(provider.authenticate_request)
         return self
 
     @deprecated(
@@ -471,7 +486,7 @@ class AuthenticationContext:
             username (str): Typically a UPN in the form of an email address
         """
         provider = SamlTokenProvider(self.url, UserCredential(username, password), self._browser_mode)
-        self._authenticate = provider.authenticate_request
+        self._install(provider.authenticate_request)
         return self
 
     def acquire_token_for_app(self, client_id: str, client_secret: str) -> Self:
@@ -482,8 +497,19 @@ class AuthenticationContext:
             client_secret (str): Secret string that the application uses to prove its identity when requesting a token
         """
         provider = ACSTokenProvider(self.url, ClientCredential(client_id, client_secret))
-        self._authenticate = provider.authenticate_request
+        self._install(provider.authenticate_request)
         return self
+
+    def _install(self, authenticate: Callable[[RequestOptions], None]) -> None:
+        """Make ``authenticate`` the one hook every request passes through.
+
+        A context has one way in at a time: a provider installed after a token callback
+        replaces it, so the callback is forgotten here - otherwise
+        :attr:`is_async_token_callback` would describe a callback nothing calls.
+        """
+        self._authenticate = authenticate
+        self._token_func = None
+        self._async_token_func = None
 
     @property
     def is_configured(self) -> bool:

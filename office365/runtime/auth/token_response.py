@@ -1,4 +1,6 @@
-from typing import Any, Dict, Optional
+from __future__ import annotations
+
+from typing import Any, Awaitable, Callable, Dict, Optional
 
 
 class TokenResponse:
@@ -9,6 +11,13 @@ class TokenResponse:
     - Token types
     - Additional token metadata
     """
+
+    #: The claims this class reads. Declared here because :meth:`from_json` also
+    #: carries the rest of the response through ``**kwargs``: a reader of one of
+    #: these three is typed, and anything else stays whatever the provider sent.
+    accessToken: Optional[str] = None
+    tokenType: Optional[str] = None
+    expiresIn: Optional[int | str] = None
 
     def __init__(self, access_token: Optional[str] = None, token_type: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize a token response.
@@ -33,20 +42,24 @@ class TokenResponse:
         return self.accessToken is not None and self.tokenType == "Bearer"
 
     @property
-    def authorization_header(self):
+    def authorization_header(self) -> str:
         """Generate an HTTP Authorization header value.
 
-        Returns:
-            Formatted "Bearer {token}" string
+        The scheme is the one the provider reported, which is ``Bearer`` for every
+        Microsoft identity platform response and the legacy ``BPOSIDCRL`` for a
+        SharePoint app-only one. Returns:
+            Formatted "{scheme} {token}" string
         """
-        return f"Bearer {self.accessToken}"
+        return f"{self.tokenType or 'Bearer'} {self.accessToken}"
 
     @staticmethod
-    def from_json(value: Optional[Dict[str, Any]]) -> "TokenResponse":
+    def from_json(value: "TokenResponse | Dict[str, Any] | None") -> "TokenResponse":
         """Create a TokenResponse from JSON data.
 
         Args:
-            value: Dictionary containing token response data
+            value: Dictionary containing token response data, or a response that
+                was already parsed (returned as it is, so a caller does not have
+                to know which a token callback produced)
 
         Returns:
             New TokenResponse instance
@@ -56,6 +69,8 @@ class TokenResponse:
         """
         if value is None:
             return TokenResponse()
+        if isinstance(value, TokenResponse):
+            return value
         error = value.get("error", None)
         if error:
             raise ValueError(value)
@@ -70,3 +85,9 @@ class TokenResponse:
 
         json = {_normalize_key(k): v for k, v in value.items()}
         return TokenResponse(**json)
+
+
+#: What a token callback hands back: the response itself, the JSON it was parsed from, or
+#: nothing. A callback may also be a coroutine function, which is the second shape.
+TokenCallback = Callable[[], TokenResponse | Dict[str, Any] | None]
+AsyncTokenCallback = Callable[[], Awaitable[TokenResponse | Dict[str, Any] | None]]
