@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Self
 
-from office365.directory.permissions.identity_set import IdentitySet
 from office365.entity import Entity
 from office365.entity_collection import EntityCollection
 from office365.onedrive.analytics.item_activity_stat import ItemActivityStat
@@ -36,20 +35,6 @@ from office365.runtime.types.public_error import PublicError
 if TYPE_CHECKING:
     from office365.directory.applications.application import Application
     from office365.directory.serviceprincipals.service_principal import ServicePrincipal
-
-
-def _permission_identity_ids(permission: Permission) -> set[str]:
-    """The object IDs of every principal a site permission was granted to."""
-    identity_sets: list[IdentitySet] = [permission.granted_to_v2, permission.granted_to]
-    identity_sets += list(permission.granted_to_identities_v2)
-    identity_sets += list(permission.granted_to_identities)
-    ids: set[str] = set()
-    for identity_set in identity_sets:
-        for _field, identity, _ in identity_set:
-            principal_id = getattr(identity, "id", None)
-            if principal_id:
-                ids.add(principal_id)
-    return ids
 
 
 class Site(BaseItem):
@@ -223,7 +208,7 @@ class Site(BaseItem):
         def _revoke(permissions: PermissionCollection) -> None:
             identity_id = identity.id if isinstance(identity, Entity) else identity
             for permission in permissions:
-                if identity_id in _permission_identity_ids(permission):
+                if identity_id in permission.granted_identity_ids:
                     permission.delete_object()
 
         def _load_permissions() -> None:

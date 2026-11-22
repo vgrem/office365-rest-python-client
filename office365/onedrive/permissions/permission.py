@@ -82,6 +82,28 @@ class Permission(Entity):
         """For link type permissions, the details of the users to whom permission was granted."""
         return self.properties.get("grantedToIdentitiesV2", ClientValueCollection(SharePointIdentitySet))
 
+    @property
+    def granted_identity_ids(self) -> frozenset[str]:
+        """The object IDs of every principal this permission was granted to.
+
+        A permission names its grantees four ways: ``grantedTo``/``grantedToV2`` for the one
+        principal a direct grant names, and ``grantedToIdentities``/``grantedToIdentitiesV2``
+        for the several a link was shared with. "Was this identity granted?" therefore has to
+        read all four; an identity carrying no ``id`` cannot be compared and is left out.
+        """
+        identity_sets = [
+            self.granted_to_v2,
+            self.granted_to,
+            *self.granted_to_identities_v2,
+            *self.granted_to_identities,
+        ]
+        return frozenset(
+            principal_id
+            for identities in identity_sets
+            for _name, identity, _stated in identities
+            if (principal_id := getattr(identity, "id", None))
+        )
+
     @odata(name="link")
     @property
     def link(self) -> SharingLink:
