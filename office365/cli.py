@@ -89,11 +89,12 @@ import types
 from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, NamedTuple, Union, get_args, get_origin
+from typing import TYPE_CHECKING, Any, NamedTuple, TypedDict, Union, get_args, get_origin
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
     from office365.licensing.report import LicenceRecord
+    from office365.permissions.token import TokenClaims
 
 #: An audience is one token, not one product: ``outlook``, ``teams``, ``intune`` and 24
 #: more all answer to ``graph``. The module is named because two of the three packages do
@@ -169,6 +170,45 @@ PIPED_FORMATS = ("csv", "tsv", "json")
 #: ``generator graph --index``, never edited). Reading it costs 4 ms; computing the same answers
 #: by importing the tree costs 5.2 s, which is what the levels below cannot afford.
 INDEX = Path(__file__).with_name("index.json")
+
+
+class Site(TypedDict, total=False):
+    """One site collection a session remembers: the address, its name, and the title it answers to."""
+
+    url: str
+    name: str
+    title: str
+
+
+class KeptToken(TypedDict, total=False):
+    """The access token a session keeps, and when it stops being one."""
+
+    access_token: str
+    expires_on: int
+
+
+class Session(TypedDict, total=False):
+    """One audience's session, as ``sessions.json`` keeps it.
+
+    Every field is optional because the store is written by whichever login ran, and because it
+    outlives the version that wrote it: an entry from before sites were remembered has no
+    ``contexts``, and one whose root has no cache has no ``cache``. A reader treats an absent
+    field as an answer, never as a missing key -- so ``_kept_session`` is the empty one.
+    """
+
+    mode: str
+    constructor: dict[str, object]
+    method: str
+    client_id: str
+    contexts: list[Site]
+    current: str
+    claims: dict[str, Any]  # a decoded token payload: the claims' own shape, not ours
+    token: KeptToken
+    cache: str
+
+
+#: The whole store, keyed by audience: one token each, so one session each.
+Sessions = dict[str, Session]
 
 
 def main(argv: "list[str] | None" = None) -> int:
@@ -261,13 +301,14 @@ def login(audience: str, argv: "list[str]") -> int:
     # The session file *is* the cache, and it is read back: a cache that is only ever written
     # renews nothing, so every login would show a device code for a token MSAL could have
     # renewed from the refresh token the store already held.
-    kept = _load().get(audience) or {}
+    kept = _kept_session(audience)
     wants_cache = any("token_cache" in _signature(fn).parameters for fn in (root, getattr(root, method)))
     cache = None
     if wants_cache:
         cache = msal.SerializableTokenCache()
-        if kept.get("cache"):
-            cache.deserialize(kept["cache"])
+        stored = kept.get("cache") or ""
+        if stored:
+            cache.deserialize(stored)
         given["token_cache"] = cache
 
     constructor = {name: value for name, value in given.items() if name in _signature(root).parameters}
@@ -278,18 +319,19 @@ def login(audience: str, argv: "list[str]") -> int:
     claims = _claims(token)
 
     sessions = _load()
-    kept = _remember(sessions.get(audience) or {}, str(constructor.get("base_url") or ""), "")
-    sessions[audience] = kept | {
-        "mode": args.mode,
-        "method": method,
-        "client_id": given["client_id"],
-        "constructor": {name: _plain(value) for name, value in constructor.items() if name != "token_cache"},
-        "claims": claims,
+    kept = _remember(kept, str(constructor.get("base_url") or ""), "")
+    kept.update(
+        mode=args.mode,
+        method=method,
+        client_id=given["client_id"],
+        constructor={name: _plain(value) for name, value in constructor.items() if name != "token_cache"},
+        claims=claims,
         # The token itself, so an audience whose root has no cache to hold is still kept;
         # the cache beside it is what MSAL refreshes from when the root can.
-        "token": {"access_token": token, "expires_on": int(claims.get("exp", 0))},
-        "cache": cache.serialize() if cache is not None else "",
-    }
+        token=KeptToken(access_token=token, expires_on=int(claims.get("exp", 0))),
+        cache=cache.serialize() if cache is not None else "",
+    )
+    sessions[audience] = kept
     _save(sessions)
     print(_welcome(audience, sessions[audience]))
     return 0
@@ -392,7 +434,7 @@ def context(audience: str, argv: "list[str] | None" = None) -> int:
     )
     parser.add_argument("word", nargs="?", choices=("ls", "inspect"), default="")
     args = parser.parse_args(spoken)
-    current = _current(audience, entry)
+    current = _current(entry)
     if args.word == "inspect":
         print(_inspect(audience, entry, current))
         return 0
@@ -400,28 +442,24 @@ def context(audience: str, argv: "list[str] | None" = None) -> int:
         print(_sites(entry, current, audience))
         return 0
     print(_summary(audience, entry))
-    others = [site for site in entry.get("contexts", []) if str(site.get("url", "")).rstrip("/") != current]
+    others = [site for site in entry.get("contexts", []) if _url_of(site) != current]
     if others:
-        print("  also: " + ", ".join(_site_name(str(site.get("url", ""))) for site in others))
+        print("  also: " + ", ".join(_site_name(_url_of(site)) for site in others))
     else:
         print(f"  another site: o365 {audience} use <url>")
     return 0
 
 
-def _sites(entry: "Mapping[str, Any]", current: str, audience: str) -> str:
+def _sites(entry: Session, current: str, audience: str) -> str:
     """The sites a session remembers, the current one marked: what ``docker context ls`` prints.
 
     The name is what a ``use`` accepts, so it is the first column; the URL follows because two
     sites of different tenants can share a name.
     """
-    rows = [
-        (str(site.get("url", "")).rstrip("/"), str(site.get("name") or ""), str(site.get("title") or ""))
-        for site in entry.get("contexts", [])
-        if site.get("url")
-    ]
+    remembered = [site for site in entry.get("contexts", []) if _url_of(site)]
+    rows = [(_url_of(site), site.get("name", ""), site.get("title", "")) for site in remembered]
     if not rows and not current:
         return f"no sites remembered; o365 {audience} use <url>"
-    if not rows:
         # A store written before sites were listed still knows where it is, so say that rather
         # than claim nothing is remembered.
         rows = [(current, _site_name(current), "")]
@@ -434,26 +472,28 @@ def _sites(entry: "Mapping[str, Any]", current: str, audience: str) -> str:
     return "\n".join(lines)
 
 
-def _inspect(audience: str, entry: "Mapping[str, Any]", current: str) -> str:
+def _url_of(site: Site) -> str:
+    """A remembered site's address, without the trailing slash a person may have typed."""
+    return site.get("url", "").rstrip("/")
+
+
+def _inspect(audience: str, entry: Session, current: str) -> str:
     """The current site, one fact per line: the address as it is sent, and the name it answers to."""
     if not current:
         return f"no site: o365 {audience} use <url>"
-    held = next(
-        (site for site in entry.get("contexts", []) if str(site.get("url", "")).rstrip("/") == current),
-        {},
-    )
+    held: Site = next((site for site in entry.get("contexts", []) if _url_of(site) == current), Site())
     lines = [f"site:  {current}", f"name:  {held.get('name') or _site_name(current)}"]
     if held.get("title"):
         lines.append(f"title: {held.get('title')}")
     return "\n".join(lines)
 
 
-def _current(audience: str, entry: "Mapping[str, Any]") -> str:
+def _current(entry: Session) -> str:
     """The site a session is addressed at: the one `use` set, else what login was given."""
-    return str(entry.get("current") or (entry.get("constructor") or {}).get("base_url") or "").rstrip("/")
+    return str(entry.get("current") or entry.get("constructor", {}).get("base_url") or "").rstrip("/")
 
 
-def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
+def _address(audience: str, entry: Session, wanted: str) -> str:
     """A site URL from what was typed, without asking the service what sites exist.
 
     A remembered site answers by its title or its name, a full URL is taken as given, and a
@@ -461,24 +501,24 @@ def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
     a person switching sites types ``finance``, not the tenant's hostname again.
     """
     for known in entry.get("contexts", []):
-        url = str(known.get("url", "")).rstrip("/")
+        url = _url_of(known)
         if not url:
             continue
         # A site answers to the name it was given, the one its URL spells, and its title: the
         # three things a person can remember having typed or read.
         answers = {
-            str(known.get("name") or "").lower(),
+            known.get("name", "").lower(),
             _site_name(url).lower(),
             # The host as well as the URL, so the root site answers to ``use contoso.sharepoint.com``.
             url.split("://", 1)[-1].lower(),
-            str(known.get("title", "")).lower(),
+            known.get("title", "").lower(),
             url.lower(),
         }
         if wanted.lower() in answers:
             return url
     if "://" in wanted:
         return wanted.rstrip("/")
-    host = urlparse(_current(audience, entry)).netloc
+    host = urlparse(_current(entry)).netloc
     if not host:
         raise LookupError(f"no site to resolve {wanted!r} against; pass a full URL")
     if "/" in wanted:
@@ -486,7 +526,7 @@ def _address(audience: str, entry: "Mapping[str, Any]", wanted: str) -> str:
     return f"https://{host}/sites/{wanted}"
 
 
-def _remember(entry: "Mapping[str, Any]", url: str, title: str, name: str = "") -> "dict[str, Any]":
+def _remember(entry: Session, url: str, title: str, name: str = "") -> Session:
     """The session with ``url`` current, and first among the sites it remembers.
 
     The site that was current before is remembered too, even when a login wrote it and no
@@ -495,18 +535,20 @@ def _remember(entry: "Mapping[str, Any]", url: str, title: str, name: str = "") 
     """
     url = url.rstrip("/")
     held = list(entry.get("contexts", []))
-    previous = str(entry.get("current") or (entry.get("constructor") or {}).get("base_url") or "").rstrip("/")
-    if previous and all(str(site.get("url", "")).rstrip("/") != previous for site in held):
-        held.insert(0, {"url": previous, "title": ""})
-    kept = [site for site in held if str(site.get("url", "")).rstrip("/") != url]
-    was = next((site for site in held if str(site.get("url", "")).rstrip("/") == url), {})
+    previous = _current(entry)
+    if previous and all(_url_of(site) != previous for site in held):
+        held.insert(0, Site(url=previous, title=""))
+    kept = [site for site in held if _url_of(site) != url]
+    was = next((site for site in held if _url_of(site) == url), Site())
     # A name is kept only when it was said: the URL's last segment already answers otherwise,
     # and writing it down would make a rename look like a different site.
-    chosen = name or str(was.get("name") or "")
-    here: "dict[str, Any]" = {"url": url, "title": title or str(was.get("title") or "")}
+    chosen = name or was.get("name", "")
+    here = Site(url=url, title=title or was.get("title", ""))
     if chosen:
         here["name"] = chosen
-    return {**entry, "current": url, "contexts": [here, *kept][:SITE_MEMORY]}
+    entry["current"] = url
+    entry["contexts"] = [here, *kept][:SITE_MEMORY]
+    return entry
 
 
 def _site_name(url: str) -> str:
@@ -533,8 +575,8 @@ def _graph_site(tenant: str) -> str:
     one request and no prompt because it reuses the token the store keeps. It is only trusted
     for the tenant that session belongs to, so a second tenant never inherits the first's host.
     """
-    entry = _load().get("graph") or {}
-    known = str((entry.get("constructor") or {}).get("tenant") or (entry.get("claims") or {}).get("tid") or "")
+    entry = _kept_session("graph")
+    known = str(entry.get("constructor", {}).get("tenant") or entry.get("claims", {}).get("tid") or "")
     if not known or (tenant and tenant.lower() != known.lower()):
         return ""
     try:
@@ -565,18 +607,18 @@ def _short(url: str) -> str:
 
 def _site_of(audience: str, wanted: "str | None" = None) -> str:
     """The site a command would reach, short, for a sentence that has to name it."""
-    entry = _load().get(audience) or {}
+    entry = _kept_session(audience)
     if wanted:
         try:
             return _short(_address(audience, entry, wanted))
         except LookupError:
             return wanted
-    return _short(_current(audience, entry))
+    return _short(_current(entry))
 
 
 def _known_sites(audience: str) -> "list[tuple[str, str]]":
     """The sites this session remembers, under the short name a ``use`` accepts."""
-    entry = _load().get(audience) or {}
+    entry = _kept_session(audience)
     answer = []
     for site in entry.get("contexts", []):
         url = str(site.get("url", "")).rstrip("/")
@@ -829,7 +871,7 @@ def _doctor_environment(output: str) -> int:
     declared = of(document)
     sessions = _load()
     facts = _tenant_facts()
-    tenant, held, assigned, roles = facts["tenant"], facts["held"], facts["assigned"], facts["roles"]
+    tenant, held, assigned, roles = facts.tenant, facts.held, facts.assigned, facts.roles
     named = rows(declared, held or (), assigned) if held is not None else []
     opened = products(document)
     if output == "json":
@@ -842,7 +884,7 @@ def _doctor_environment(output: str) -> int:
                     "roles": list(roles or ()),
                     "licences": named,
                     "products": opened,
-                    "note": facts["why"],
+                    "note": facts.why,
                 },
                 indent=2,
                 default=str,
@@ -854,7 +896,7 @@ def _doctor_environment(output: str) -> int:
     blocks = [_verdict(sessions, facts, named)]
     if sessions:
         blocks.append("\n\n".join(_summary(name, sessions[name], brief=True) for name in sorted(sessions)))
-    if not facts["why"]:
+    if not facts.why:
         # The verdict already said what could not be read; a page that repeats it reads as two
         # problems, so only the blocks that need a tenant are printed here.
         # The areas each licence opens are names, and a name cut to fit a column is worse than
@@ -892,7 +934,7 @@ def _doctor_environment(output: str) -> int:
     return 0
 
 
-def _verdict(sessions: "dict[str, Any]", facts: "dict[str, Any]", records: Sequence[Mapping[str, object]]) -> str:
+def _verdict(sessions: Sessions, facts: TenantFacts, records: Sequence[Mapping[str, object]]) -> str:
     """The line a reader needs first: is anything wrong, and which command fixes it.
 
     A doctor that makes someone scan three blocks to find the expired token has not done its
@@ -906,19 +948,19 @@ def _verdict(sessions: "dict[str, Any]", facts: "dict[str, Any]", records: Seque
     """
     from office365.licensing.report import UNKNOWN, YES
 
-    expired = [name for name in sorted(sessions) if _identity(name, sessions[name])["expired"]]
+    expired = [name for name in sorted(sessions) if _identity(name, sessions[name]).expired]
     if not sessions:
         return "doctor: attention — no session; run o365 login"
     if expired:
         which = " and ".join(expired) + (" sessions" if len(expired) > 1 else " session")
         fixes = ", ".join(f"o365 {name} login" for name in expired)
         return f"doctor: attention — the {which} expired; run {fixes}"
-    if facts["why"]:
-        return f"doctor: unread — {facts['why']}"
+    if facts.why:
+        return f"doctor: unread — {facts.why}"
     answers = [row["held"] for row in records]
     answered = f"{answers.count(YES)} of {len(answers)} licences" if answers else "no licence named"
     unread = answers.count(UNKNOWN)
-    roles = facts["roles"]
+    roles = facts.roles
     held = "roles unread" if roles is None else f"{len(roles)} role" + ("" if len(roles) == 1 else "s")
     sessions_said = f"{len(sessions)} session" + ("" if len(sessions) == 1 else "s")
     unread_said = f", {unread} unread" if unread else ""
@@ -965,8 +1007,8 @@ def _doctor_route(words: "list[str]", output: str) -> int:
         # Saying so is the honest answer, and an exit code would turn a gap into an error.
         print(f"o365 {speaker} declares no permission: nothing about this session decides it")
         return 0
-    entry = _load().get(_audience(found.entity)) or {}
-    kept = _kept_token(entry) if entry else None
+    entry = _kept_session(_audience(found.entity))
+    kept = _kept_token(entry)
     records = _needs(TokenClaims.parse(kept[0]) if kept else None, declaration)
     note = _note(kept, records)
     if output == "json":
@@ -1040,7 +1082,54 @@ class Statement(NamedTuple):
 class Gates(NamedTuple):
     """What this session proves, read once for a whole product rather than once per noun."""
 
-    claims: Any
+    claims: "TokenClaims | None"
+    held: "frozenset[str] | None"
+    assigned: "frozenset[str] | None"
+    roles: "tuple[str, ...] | None"
+    why: str
+
+
+class Identity(NamedTuple):
+    """What a session says about itself: who holds the token, at which site, and until when.
+
+    Everything a greeting or a report prints is a field; the two sentences built on ``expires``
+    are properties, so *how long left* and *expired how long ago* cannot disagree with the
+    moment they were read from.
+    """
+
+    who: str
+    tenant: str
+    mode: str
+    grants: str
+    scopes: int
+    expires: int
+    site: str
+    title: str
+
+    @property
+    def expired(self) -> bool:
+        """Whether the token ran out: a claim with no ``exp`` is not a token that expired."""
+        return bool(self.expires) and self.expires < int(time.time())
+
+    @property
+    def state(self) -> str:
+        """How long the token has left, or how long since it ran out -- never the fix.
+
+        The fact, not the fix: an expired token is said as *how long ago*, the way the live one
+        is said as *how long left*. The command that renews it belongs to the doctor's verdict,
+        which is the one line a reader looks for, so repeating it in a block is the same advice
+        twice three lines apart.
+        """
+        if not self.expires:
+            return ""
+        now = int(time.time())
+        return f"expired {_span(now - self.expires)} ago" if self.expired else f"{_span(self.expires - now)} left"
+
+
+class TenantFacts(NamedTuple):
+    """What the tenant says about itself, and the sentence for what it could not say."""
+
+    tenant: str
     held: "frozenset[str] | None"
     assigned: "frozenset[str] | None"
     roles: "tuple[str, ...] | None"
@@ -1056,13 +1145,13 @@ def _gates(audience: str, needed: bool) -> Gates:
     """
     from office365.permissions.token import TokenClaims
 
-    entry = _load().get(audience) or {}
-    kept = _kept_token(entry) if entry else None
+    entry = _kept_session(audience)
+    kept = _kept_token(entry)
     claims = TokenClaims.parse(kept[0]) if kept else None
     if not needed:
         return Gates(claims, frozenset(), frozenset(), (), "")
     facts = _tenant_facts()
-    return Gates(claims, facts["held"], facts["assigned"], facts["roles"], facts["why"])
+    return Gates(claims, facts.held, facts.assigned, facts.roles, facts.why)
 
 
 def _statement(found: Any) -> Statement:
@@ -1301,27 +1390,22 @@ def _word(asked: Any, proved: bool) -> str:
     return HAVE if proved else MISSING
 
 
-def _tenant_facts() -> "dict[str, Any]":
+def _tenant_facts() -> TenantFacts:
     """What the tenant says about itself, and the sentence for what it could not say.
 
     One read each: the subscriptions, the caller's own assignments, and the directory roles.
     Every failure is a sentence and an ``unknown`` rather than an exit, because a doctor that
     stopped at the first refusal would report nothing about the rest.
     """
-    facts: dict[str, Any] = {"tenant": "", "held": None, "assigned": None, "roles": None, "why": ""}
     try:
         client = _client("graph")
     except LookupError as error:
-        facts["why"] = f"the tenant could not be read: {error}"
-        return facts
-    facts["tenant"] = client.tenant_name or ""
-    facts["held"] = _held_plans(client)
-    if facts["held"] is None:
-        facts["why"] = "the tenant's subscriptions could not be read: is Licence.Read.All granted?"
-        return facts
-    facts["assigned"] = _assigned(client)
-    facts["roles"] = _roles(client)
-    return facts
+        return TenantFacts("", None, None, None, f"the tenant could not be read: {error}")
+    held = _held_plans(client)
+    if held is None:
+        unread = "the tenant's subscriptions could not be read: is Licence.Read.All granted?"
+        return TenantFacts(client.tenant_name or "", None, None, None, unread)
+    return TenantFacts(client.tenant_name or "", held, _assigned(client), _roles(client), "")
 
 
 def _live_graph() -> Any:
@@ -1366,7 +1450,7 @@ def _roles(client: Any) -> "tuple[str, ...] | None":
     return tuple(sorted(role.display_name for role in found if role.display_name))
 
 
-def _note(kept: "tuple[str, int] | None", records: "list[dict[str, Any]]") -> str:
+def _note(kept: "tuple[str, int] | None", records: Sequence[Mapping[str, object]]) -> str:
     """The sentence under a requirement table: what the marks could not be read from."""
     from office365.licensing.report import UNKNOWN
 
@@ -1377,7 +1461,7 @@ def _note(kept: "tuple[str, int] | None", records: "list[dict[str, Any]]") -> st
     return ""
 
 
-def _shown(entry: "Mapping[str, Any]") -> "dict[str, Any]":
+def _shown(entry: Session) -> "dict[str, object]":
     """A session as a report may print it: everything but the two fields that hold secrets."""
     return {name: value for name, value in entry.items() if name not in ("token", "cache")}
 
@@ -2190,11 +2274,11 @@ def _client(audience: str, live: bool = True, site: "str | None" = None) -> Any:
     if entry is None:
         ran = "o365 login" if audience == "graph" else f"o365 {audience} login"
         raise LookupError(f"no session for {audience}; run {ran}")
-    constructor = dict(entry["constructor"])
+    constructor: dict[str, object] = dict(entry.get("constructor") or {})
     if "base_url" in constructor:
         # The site is the boundary: this command addresses one site collection, and `use` or
         # `--site` says which. What login was given is the answer until one is chosen.
-        wanted = site or _current(audience, entry)
+        wanted = site or _current(entry)
         if wanted:
             constructor["base_url"] = _address(audience, entry, wanted)
     client = _root(audience)(**constructor)
@@ -2208,26 +2292,28 @@ def _client(audience: str, live: bool = True, site: "str | None" = None) -> Any:
     return client
 
 
-def _token(entry: "Mapping[str, Any]") -> str:
+def _token(entry: Session) -> str:
     """The access token the session still holds; nothing here refreshes it."""
     kept = _kept_token(entry)
     if kept is None or kept[1] <= time.time():
-        raise LookupError(f"the {entry['mode']} session has no live token here; run login again")
+        raise LookupError(f"the {entry.get('mode', '')} session has no live token here; run login again")
     return kept[0]
 
 
-def _kept_token(entry: "Mapping[str, Any]") -> "tuple[str, int] | None":
+def _kept_token(entry: Session) -> "tuple[str, int] | None":
     """The freshest token the session kept - expired or not - and when it expires.
 
     ``_token`` refuses an expired one because a request would fail; a report does not, it says
     how old its facts are. Two questions about one store, so one place reads it: the token
-    itself, and MSAL's cache beside it, which is where a renewed one lands.
+    itself, and MSAL's cache beside it, which is where a renewed one lands. That cache is MSAL's
+    own document, so its shape is read as ``Any`` and answered as the pair this returns.
     """
     kept = entry.get("token") or {}
-    candidates = []
+    candidates: "list[tuple[str, int]]" = []
     if kept.get("access_token"):
-        candidates.append((str(kept["access_token"]), int(kept.get("expires_on", 0))))
-    for token in json.loads(entry.get("cache") or "{}").get("AccessToken", {}).values():
+        candidates.append((str(kept.get("access_token")), kept.get("expires_on", 0)))
+    cache: dict[str, Any] = json.loads(entry.get("cache") or "{}")
+    for token in cache.get("AccessToken", {}).values():
         if token.get("secret"):
             candidates.append((str(token["secret"]), int(token.get("expires_on", 0))))
     return max(candidates, key=lambda held: held[1]) if candidates else None
@@ -2432,7 +2518,7 @@ def config(argv: "list[str]") -> int:
     return 0
 
 
-def _load() -> "dict[str, Any]":
+def _load() -> Sessions:
     """Every kept session, or nothing when there is no readable store."""
     try:
         return json.loads(_store().read_text("utf-8"))
@@ -2440,7 +2526,12 @@ def _load() -> "dict[str, Any]":
         return {}
 
 
-def _save(sessions: "dict[str, Any]") -> None:
+def _kept_session(audience: str) -> Session:
+    """The session this audience keeps, or an empty one when nothing is stored."""
+    return _load().get(audience) or Session()
+
+
+def _save(sessions: Sessions) -> None:
     """Write the store readable only by its owner."""
     path = _store()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -2459,40 +2550,30 @@ def _claims(access_token: str) -> "dict[str, Any]":
     return {name: data[name] for name in names if name in data}
 
 
-def _identity(audience: str, entry: "dict[str, Any]") -> "dict[str, Any]":
+def _identity(audience: str, entry: Session) -> Identity:
     """What a kept session says about itself, decoded from the token it holds.
 
     One decode for the three answers built on it: ``whoami`` names the grants, a login counts
     them, and ``doctor`` counts them from one row. Nothing here sends a request -- a claim is
     already in the file the session was saved to.
+
+    The claims are a decoded JWT, so the payload's shape is the token's and not this library's:
+    each is read once, here, and answered as text, which is what makes the rest of this file
+    typed. ``exp`` is the one that has to stay a number.
     """
-    claims = entry.get("claims") or {}
-    grants = claims.get("scp") or " ".join(claims.get("roles") or []) or "-"
-    expires = int(claims.get("exp") or 0)
-    now = int(time.time())
-    expired = bool(expires) and expires < now
-    state = ""
-    if expires:
-        state = f"expired {_span(now - expires)} ago" if expired else f"{_span(expires - now)} left"
-    site = _current(audience, entry)
-    remembered = next(
-        (held.get("title", "") for held in entry.get("contexts", []) if held.get("url", "").rstrip("/") == site), ""
+    claims: dict[str, Any] = entry.get("claims") or {}
+    grants = str(claims.get("scp") or " ".join(claims.get("roles") or []) or "-")
+    site = _current(entry)
+    return Identity(
+        who=str(claims.get("preferred_username") or claims.get("upn") or claims.get("appid") or "<unknown>"),
+        tenant=str(claims.get("tid") or "-"),
+        mode=entry.get("mode", ""),
+        grants=grants,
+        scopes=0 if grants == "-" else len(grants.split()),
+        expires=int(claims.get("exp") or 0),
+        site=site,
+        title=next((held.get("title", "") for held in entry.get("contexts", []) if _url_of(held) == site), ""),
     )
-    return {
-        "who": claims.get("preferred_username") or claims.get("upn") or claims.get("appid") or "<unknown>",
-        "tenant": claims.get("tid", "-"),
-        "mode": entry["mode"],
-        "grants": grants,
-        "count": 0 if grants == "-" else len(grants.split()),
-        # The fact, not the fix: an expired token is said as *how long ago*, the way the live one
-        # is said as *how long left*. The command that renews it belongs to the doctor's verdict,
-        # which is the one line a reader looks for, so repeating it in a block is the same advice
-        # twice three lines apart.
-        "state": state,
-        "expired": expired,
-        "site": site,
-        "remembered": remembered,
-    }
 
 
 def _span(seconds: int) -> str:
@@ -2521,7 +2602,7 @@ def _wrapped(label: str, text: str) -> str:
     return textwrap.fill(text, width=width, initial_indent=f"  {label}: ", subsequent_indent=indent + "  ")
 
 
-def _summary(audience: str, entry: "dict[str, Any]", brief: bool = False) -> str:
+def _summary(audience: str, entry: Session, brief: bool = False) -> str:
     """One line of who the session is, and whether it still holds.
 
     ``brief`` counts the token's grants instead of naming them: a doctor page asks what the
@@ -2529,18 +2610,18 @@ def _summary(audience: str, entry: "dict[str, Any]", brief: bool = False) -> str
     that lists them.
     """
     facts = _identity(audience, entry)
-    grants = facts["grants"]
-    if brief and facts["count"]:
-        grants = f"{facts['count']} scope" + ("s" if facts["count"] != 1 else "")
-    aside = f", {facts['state']}" if facts["state"] else ""
-    where = f"(tenant {facts['tenant']}, mode {facts['mode']}{aside})"
-    line = f"{audience}: {facts['who']} {where}\n{_wrapped('grants', grants)}"
-    if facts["site"]:
-        line += f"\n  at {_short(facts['site'])}" + (f" — {facts['remembered']}" if facts["remembered"] else "")
+    grants = facts.grants
+    if brief and facts.scopes:
+        grants = f"{facts.scopes} scope" + ("s" if facts.scopes != 1 else "")
+    aside = f", {facts.state}" if facts.state else ""
+    where = f"(tenant {facts.tenant}, mode {facts.mode}{aside})"
+    line = f"{audience}: {facts.who} {where}\n{_wrapped('grants', grants)}"
+    if facts.site:
+        line += f"\n  at {_short(facts.site)}" + (f" — {facts.title}" if facts.title else "")
     return line
 
 
-def _welcome(audience: str, entry: "dict[str, Any]") -> str:
+def _welcome(audience: str, entry: Session) -> str:
     """What a login says: that you are in, for how long, and the two words that answer the rest.
 
     A login is a greeting, not a report. Seventeen lines of scope names are unreadable at the
@@ -2549,11 +2630,11 @@ def _welcome(audience: str, entry: "dict[str, Any]") -> str:
     has asked yet: ``o365 whoami`` names them, and ``o365 doctor`` says what the tenant allows.
     """
     facts = _identity(audience, entry)
-    held = f"{facts['count']} permission" + ("" if facts["count"] == 1 else "s") if facts["count"] else "no permissions"
-    facts_line = ", ".join(part for part in (facts["mode"], held, facts["state"]) if part)
-    line = f"logged in: {audience} as {facts['who']} ({facts_line})"
-    if facts["site"]:
-        line += f"\n  at {_short(facts['site'])}" + (f" — {facts['remembered']}" if facts["remembered"] else "")
+    held = f"{facts.scopes} permission" + ("" if facts.scopes == 1 else "s") if facts.scopes else "no permissions"
+    facts_line = ", ".join(part for part in (facts.mode, held, facts.state) if part)
+    line = f"logged in: {audience} as {facts.who} ({facts_line})"
+    if facts.site:
+        line += f"\n  at {_short(facts.site)}" + (f" — {facts.title}" if facts.title else "")
     line += "\n  o365 whoami names the grants; o365 doctor says what this tenant allows"
     return line
 

@@ -482,16 +482,16 @@ def _store(monkeypatch: pytest.MonkeyPatch, tmp_path: Any, **sessions: Any) -> N
     (tmp_path / "sessions.json").write_text(json.dumps(sessions), "utf-8")
 
 
-def _facts(**changed: Any) -> "dict[str, Any]":
+def _facts(**changed: Any) -> cli.TenantFacts:
     """What the two tenant reads answer, so a test about the page sends none of them."""
-    return {
-        "tenant": "contoso.onmicrosoft.com",
-        "held": frozenset({"INTUNE_A"}),
-        "assigned": frozenset(),
-        "roles": ("Global Administrator",),
-        "why": "",
-        **changed,
-    }
+    facts = cli.TenantFacts(
+        tenant="contoso.onmicrosoft.com",
+        held=frozenset({"INTUNE_A"}),
+        assigned=frozenset(),
+        roles=("Global Administrator",),
+        why="",
+    )
+    return facts._replace(**changed)
 
 
 def test_a_page_with_no_markable_route_is_a_sentence_not_an_exit(monkeypatch, tmp_path, capsys) -> None:
@@ -560,21 +560,21 @@ def test_the_page_lists_only_products_that_name_a_licence_and_wide_lists_all(mon
 
 def test_the_verdict_says_only_one_of_three_things() -> None:
     expired = {"sharepoint": {"mode": "device-flow", "claims": {"exp": int(time.time()) - 60}}}
-    assert cli._verdict(expired, {"why": "", "roles": ("Global Administrator",)}, []) == (
+    assert cli._verdict(expired, _facts(), []) == (
         "doctor: attention — the sharepoint session expired; run o365 sharepoint login"
     )
 
     # ``unknown`` is not ``no``: a licence that could not be read is not one the tenant lacks.
     live = {"graph": {"mode": "device-flow", "claims": {"exp": int(time.time()) + 600}}}
-    unread = {"why": "the tenant's subscriptions could not be read: is Licence.Read.All granted?", "roles": None}
+    unread = _facts(
+        held=None, roles=None, why="the tenant's subscriptions could not be read: is Licence.Read.All granted?"
+    )
     assert cli._verdict(live, unread, []) == (
         "doctor: unread — the tenant's subscriptions could not be read: is Licence.Read.All granted?"
     )
 
     records = [{"held": "yes"}, {"held": "no"}]
-    assert cli._verdict(live, {"why": "", "roles": ("A", "B")}, records) == (
-        "doctor: ok — 1 session, 1 of 2 licences, 2 roles"
-    )
+    assert cli._verdict(live, _facts(roles=("A", "B")), records) == ("doctor: ok — 1 session, 1 of 2 licences, 2 roles")
 
 
 def test_a_product_page_counts_its_nouns_and_names_what_the_missing_ones_take(monkeypatch, tmp_path, capsys) -> None:
