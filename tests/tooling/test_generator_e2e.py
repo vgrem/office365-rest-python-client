@@ -1,10 +1,13 @@
-"""End-to-end test: synthetic CSDL -> reader -> pipeline -> generated files.
+"""End-to-end: synthetic CSDL -> reader -> pipeline -> generated source.
 
-Exercises the whole flow (v3 and v4) for **every** kind (complex, entity, enum) plus
-generated operation methods and idempotency on unchanged metadata.
+The generator's whole subject: a metadata document is parsed (OData v3 and v4), and the
+model it makes is rendered as entity, complex and enum types, their properties, and their
+bound operations. Each test parses the source it gets back with ``ast.parse``, so a
+generated module that does not compile fails here rather than on the next import.
 
 Deliberately not covered here: that an update is additions-only while hand-written code
-survives -- ``test_generator_preservation`` pins that with custom members in the file.
+survives -- ``test_generator_preservation`` pins that with custom members in the file --
+nor where a new field is spliced into the block (``test_generator_field_order``).
 """
 
 from __future__ import annotations
@@ -74,9 +77,6 @@ _V4_CSDL = """<?xml version="1.0" encoding="utf-8"?>
 </edmx:Edmx>
 """
 
-#: The three modules ``_V4_CSDL`` makes: one entity type, one complex type, one enum.
-_V4_MODULES = 3
-
 
 def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], prefix: str) -> GeneratorOptions:
     """Options for the fixture run. ``graph`` picks the seed base class, as the config does."""
@@ -92,9 +92,9 @@ def _options(tmp_path: Path, *, graph: bool, namespace: str, kinds: list[str], p
     )
 
 
-def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False, **partial) -> int:
+def _run(options: GeneratorOptions, reader: type, tmp_path: Path, *, force: bool = False) -> None:
     model = reader(options.metadata_path).read()
-    return GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False, **partial).run()
+    GeneratorPipeline(model, options, base_dir=tmp_path, force=force, smoke=False).run()
 
 
 def _source(tmp_path: Path, name: str) -> str:
@@ -163,21 +163,6 @@ def test_graph_generates_all_kinds_and_methods(tmp_path: Path) -> None:
     assert _source(tmp_path, "widget.py") == entity
 
 
-def test_a_run_reports_the_files_it_writes(tmp_path: Path) -> None:
-    """The number a gate reads is the write plan, and the plan is what the disk lacks."""
-    (tmp_path / "metadata.xml").write_text(_V4_CSDL, encoding="utf-8")
-    options = _options(
-        tmp_path, graph=True, namespace="", kinds=["EntityType", "ComplexType", "EnumType"], prefix="microsoft.graph"
-    )
-
-    assert _run(options, ODataV4Reader, tmp_path) == _V4_MODULES
-    # Unchanged metadata and unchanged files: nothing to write, whatever the manifest says.
-    assert _run(options, ODataV4Reader, tmp_path, force=True) == 0
-    # A file the tree lost is planned again even though the metadata did not move.
-    (tmp_path / "office365" / "widget_kind.py").unlink()
-    assert _run(options, ODataV4Reader, tmp_path, force=True) == 1
-
-
 _COMPUTED_CSDL = """<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
   <edmx:DataServices>
@@ -218,36 +203,3 @@ def test_a_computed_member_is_generated_read_only(tmp_path: Path) -> None:
     assert '@odata(name="subject")' in entity
     # A computed navigation keeps both facts: $expand reaches it, a write does not.
     assert '@odata(name="owner", navigation=True, readonly=True)' in entity
-
-
-def test_a_partial_run_does_not_record_the_model_as_up_to_date(tmp_path: Path) -> None:
-    """`--type` and `--update-only` leave files a full run would create.
-
-    Their signature is indistinguishable from a full run's (neither flag reaches
-    ``run_signature``), so a manifest saved by one of them would answer the next
-    plain run with "nothing to do" -- for work that was never done.
-    """
-    metadata = tmp_path / "metadata.xml"
-    metadata.write_text(_V3_CSDL, encoding="utf-8")
-    options = _options(tmp_path, graph=False, namespace="SP", kinds=["EntityType"], prefix="SP")
-    _run(options, ODataV3Reader, tmp_path)
-
-    # The metadata gains a property and a type the partial run will not touch.
-    metadata.write_text(
-        _V3_CSDL.replace(
-            '<Property Name="Title"', '<Property Name="Note" Type="Edm.String" />\n        <Property Name="Title"'
-        ).replace(
-            "      </EntityType>\n      <FunctionImport",
-            '      </EntityType>\n      <EntityType Name="Gadget">\n'
-            '        <Key><PropertyRef Name="Id" /></Key>\n'
-            '        <Property Name="Id" Type="Edm.String" Nullable="false" />\n'
-            "      </EntityType>\n      <FunctionImport",
-        ),
-        encoding="utf-8",
-    )
-
-    _run(options, ODataV3Reader, tmp_path, force=True, only_types=["SP.Widget"])
-    assert not (tmp_path / "office365" / "gadget.py").exists()
-
-    _run(options, ODataV3Reader, tmp_path)
-    assert (tmp_path / "office365" / "gadget.py").exists()

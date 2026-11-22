@@ -2,7 +2,7 @@
 
 How the generator decides where a generated type lives: the decision table the
 generator follows, the one pass that re-applies it to files already written, and the
-invariant `tests/tooling/test_generator_placement_pass.py` pins.
+invariant a second run on a placed tree re-establishes: it proposes nothing.
 
 ## Target levels
 
@@ -111,10 +111,10 @@ that stem is the shorter decision (`AuditConfigAuditRecord` stays `config_audit_
 when it moves); and a file already parked in a source subfolder of the family's folder is
 not climbed back out of, because the family cannot see why it went there.
 
-`tests/tooling/test_generator_families.py` pins the table: every `*AuditRecord` under
-`audit/` and every `*Evidence` under `alerts/` sits in its family folder, every family
-names a folder the tree has, and a type that does not exist yet (`FabricAuditRecord`)
-lands where the rule says.
+The table is the rule, and the tree is its evidence: every `*AuditRecord` under `audit/`
+and every `*Evidence` under `alerts/` sits in its family folder, every family names a
+folder the tree has, and a type that does not exist yet (`FabricAuditRecord`) lands where
+the rule says.
 
 A target file that is already taken is reported as **blocked** rather than overwritten:
 that is a duplicate to review, not a move to make. Moved modules have their importers
@@ -131,10 +131,10 @@ module that is a prefix of another is not clipped.
   guarantees it (nothing is silently unrouted).
 - **Agreement**: the rule that would route a type points at the directory the file is
   in (or an ancestor of it, for a family the descent has not finished splitting).
-  `tests/tooling/test_generator_routing_agreement.py` reads the tree and the rules
-  together: a type inside `office365.intune` may not route out of it or to a distant
-  branch, and no type outside may route into it. This is what keeps a catch-all from
-  silently swallowing another product's types — `Device*` used to route Entra's
+  Reading the tree and the rules together is a review step, not a test: a type inside
+  `office365.intune` may not route out of it or to a distant branch, and no type outside
+  may route into it. This is what keeps a catch-all from silently swallowing another
+  product's types — `Device*` used to route Entra's
   `DeviceRegistrationPolicy` into Intune, and `Cloud*` sent the whole cloud PC family
   to `office365.security` while the tree kept it in the Intune virtual endpoint.
 

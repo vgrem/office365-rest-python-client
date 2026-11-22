@@ -13,9 +13,8 @@ Four rules, because a derived index is a claim that it still agrees with the mod
   value is :mod:`office365.routing`'s own answer - the function a command calls when it does
   import - so the file and the router cannot drift into two vocabularies.
 * **A re-render is byte-identical.** Products, nouns and every list inside a record are sorted,
-  so a filesystem that walks its files in another order writes the same file;
-  ``tests/tooling/test_generator_index.py`` compares the shipped file with a fresh build
-  instead of trusting the commit.
+  so a filesystem that walks its files in another order writes the same file. The shipped
+  file is compared with a fresh build rather than trusted from the commit.
 * **Discovery only.** The index says what exists and where a walk lands. A command that sends
   still reads the type: a flag is a parameter, a column is what ``TypeSchema`` says ``$select``
   takes, and the URL comes from the annotations.

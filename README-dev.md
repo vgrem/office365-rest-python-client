@@ -109,9 +109,8 @@ uv run python -m generator graph --place office365/intune --apply-place # move, 
 
 It reads the tree rather than the metadata, so it answers in a second; `--apply-place`
 moves the files and rewrites every module that imported them. Running it on a placed tree
-proposes nothing, which is the invariant
-`tests/tooling/test_generator_placement_pass.py` pins for Intune -- so a new beta type
-that lands flat is caught by re-running it, not by a reviewer noticing.
+proposes nothing, and that is the invariant to re-run after a refresh -- so a new beta type
+that lands flat is caught by the command, not by a reviewer noticing.
 See `generator/PLACEMENT.md` for the rules it enforces and for why it will not lengthen a
 stem.
 
