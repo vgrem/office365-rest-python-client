@@ -154,7 +154,7 @@ class TestSPTaxonomy(SPTestCase):
         value with or without its type marker (measured: dropping ``entity_type_name``
         and re-running this test leaves it green), so what is pinned here is the round
         trip, not the marker — that one is pinned offline in
-        ``tests/unit/test_converters.py``.
+        ``tests/unit/test_values.py``.
         """
         target_list = TestSPTaxonomy.target_list
         single_field = TestSPTaxonomy.single_field
