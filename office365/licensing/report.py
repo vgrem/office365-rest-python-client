@@ -130,11 +130,28 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
 
 
 def headline(records: Iterable[Mapping[str, Any]], tenant: str = "") -> str:
-    """One sentence: how much of what a command names this tenant can actually use."""
+    """One sentence: how much of what a command names this tenant can actually use.
+
+    A verdict, not a count: *all* when there is nothing to do, and the plans a reader would have
+    to buy or ask for when there is. A row that could not be read is said to be unread rather
+    than counted against the tenant, because silence is not a refusal.
+    """
     answers = [row["held"] for row in records]
-    total, held = len(answers), answers.count(YES)
-    licence = "licence" if total == 1 else "licences"
-    return f"{tenant + ': ' if tenant else ''}holds {held} of the {total} {licence} a command names"
+    total, held, unread = len(answers), answers.count(YES), answers.count(UNKNOWN)
+    who = f"{tenant}: " if tenant else ""
+    if not total:
+        return f"{who}no command names a licence"
+    if held == total:
+        return f"{who}holds all {total} licences a command names"
+    if not held and not unread:
+        return f"{who}holds none of the {total} licences a command names"
+    said = f"{who}holds {held} of {total} licences a command names"
+    missing = [str(row["plan"]) for row in records if row["held"] == NO]
+    if missing:
+        said += f"; missing {', '.join(missing)}"
+    if unread:
+        said += f"; {unread} could not be read"
+    return said
 
 
 def answer(plans: Iterable[str], seat: str, held: Iterable[str], mine: Iterable[str] | None = None) -> str:

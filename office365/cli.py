@@ -653,7 +653,7 @@ def _assigned(client: Any) -> "frozenset[str] | None":
 
 #: What ``o365 doctor`` prints as: the page, or the whole page as one object. Not the record
 #: formats, because four different shapes would have to flatten into one header row.
-DOCTOR_FORMATS = ("table", "json")
+DOCTOR_FORMATS = ("table", "wide", "json")
 
 #: The cells a requirement table shows: which kind of fact it is, the names it names, and what
 #: this session proves of them - the licence report's own three words, so ``no`` never means
@@ -702,8 +702,9 @@ def _doctor_environment(output: str) -> int:
     name a licence at all.
     """
     from office365.licensing.report import COLUMNS, PRODUCT_COLUMNS, headline, of, products, rows
-    from office365.runtime.render import render
+    from office365.runtime.render import COLUMN_WIDTH, render
 
+    wide = output == "wide"
     document = json.loads(INDEX.read_text("utf-8"))
     declared = of(document)
     sessions = _load()
@@ -737,11 +738,19 @@ def _doctor_environment(output: str) -> int:
     else:
         print()
         print(headline(named, tenant))
-        print(_roles_sentence(roles))
+        print(_wrapped("roles", _roles_sentence(roles)))
         print()
-        print(render(named, "table", columns=COLUMNS))
+        # Default: what a reader acts on. The areas each licence opens are names in a cell, and
+        # a name cut to fit a column is worse than absent -- `-o wide` prints them whole.
+        shown = COLUMNS if wide else tuple(name for name in COLUMNS if name != "families")
+        print(render(named, "table", columns=shown, width=None if wide else COLUMN_WIDTH))
+    licensed = [row for row in opened if row["licensed"]]
+    rest = [row for row in opened if not row["licensed"]]
     print()
-    print(render(opened, "table", columns=PRODUCT_COLUMNS))
+    print(render(opened if wide else licensed, "table", columns=PRODUCT_COLUMNS))
+    if rest and not wide:
+        words = sum(row["nouns"] for row in rest)
+        print(f"no licence is named under the other {len(rest)} products ({words:,} words); -o wide lists them")
     print()
     print("next: o365 licences                      every licence, and the areas it opens")
     print("      o365 doctor <product> <noun> ...   what one command needs from this session")
@@ -749,10 +758,16 @@ def _doctor_environment(output: str) -> int:
 
 
 def _roles_sentence(roles: "tuple[str, ...] | None") -> str:
-    """The directory roles as one line: the names, ``none``, or why it is unknown."""
+    """The directory roles as one line: how many, then their names, or why it is unknown.
+
+    Eight names on a line with no count read as an unordered shrug; counted, the same names say
+    what the tenant gave this identity, and the wrap keeps them on the screen.
+    """
     if roles is None:
-        return "roles: unknown - the directory roles could not be read"
-    return f"roles: {', '.join(roles) or 'none'}"
+        return "unknown - the directory roles could not be read"
+    if not roles:
+        return "none held"
+    return f"{len(roles)} held — " + ", ".join(roles)
 
 
 def _doctor_route(words: "list[str]", output: str) -> int:

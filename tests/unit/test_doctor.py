@@ -97,3 +97,41 @@ def test_a_word_that_names_no_route_is_refused_with_the_close_matches(monkeypatc
     assert cli.main(["doctor", "intune", "managed-devicez"]) == REFUSED
 
     assert "did you mean managed-device" in capsys.readouterr().err
+
+
+def _facts(**changed: Any) -> "dict[str, Any]":
+    """What the two tenant reads answer, so a test about the page sends none of them."""
+    return {
+        "tenant": "contoso.onmicrosoft.com",
+        "held": frozenset({"INTUNE_A"}),
+        "assigned": frozenset(),
+        "roles": ("Global Administrator",),
+        "why": "",
+        **changed,
+    }
+
+
+def test_the_page_names_only_the_products_that_name_a_licence(monkeypatch, tmp_path, capsys) -> None:
+    """Twenty products stamp no licence: one sentence, because twenty rows of zeroes say it worse."""
+    _store(monkeypatch, tmp_path)
+    monkeypatch.setattr(cli, "_tenant_facts", _facts)
+
+    assert cli.main(["doctor"]) == 0
+
+    printed = capsys.readouterr().out
+    assert "LICENSED" in printed and "booking" not in printed
+    assert "no licence is named under the other" in printed
+    assert "roles: 1 held — Global Administrator" in printed
+
+
+def test_wide_restores_the_row_a_table_would_have_to_shorten(monkeypatch, tmp_path, capsys) -> None:
+    """The families a plan opens, and every product: the report behind the page."""
+    _store(monkeypatch, tmp_path)
+    monkeypatch.setattr(cli, "_tenant_facts", _facts)
+
+    assert cli.main(["doctor", "-o", "wide"]) == 0
+
+    printed = capsys.readouterr().out
+    assert "FAMILIES" in printed and "intune.devices" in printed
+    assert "booking" in printed
+    assert "no licence is named under" not in printed

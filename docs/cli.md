@@ -21,7 +21,7 @@ usage: o365 [graph|sharepoint|exchange] login|whoami|logout [flags]
        o365 config [tenant|client_id|site]     (what is answered, and where from)
        o365 completion bash|zsh|fish [--warm [product ...]]
        o365 licences [-o table|wide|csv|tsv|json]
-       o365 doctor [<product> <noun> [action]] [-o table|json]
+       o365 doctor [<product> <noun> [action]] [-o table|wide|json]
   a flag falls back to O365_CLIENT_ID/O365_TENANT/O365_SITE, then to ~/.o365/config.json
 ```
 
@@ -216,7 +216,7 @@ the absolute URL, so the site a destroy would touch is visible before it is sent
 
 ```bash
 o365 licences      # which licences the commands name, and whether this tenant holds them
-o365 doctor        # the session, the tenant's plans and roles, and each product's word count
+o365 doctor        # the session, the tenant's plans and roles, and what those plans open
 o365 doctor intune managed-device retire   # what one command needs from this session
 ```
 
@@ -226,10 +226,43 @@ opens and which command families those nouns live in. A plan the tenant did not 
 seat the token could not read reads `unknown`, never `no`.
 
 `doctor` answers the environment — the session and its grants, the plans and roles the caller
-holds, and the index's per-product totals, which need no session at all — in four requests. Given
-a route it answers instead for one command, with no request to the service being asked about: the
-delegated and application permissions the method declares, marked against the token's own
-`scp`/`roles`, the licence the type names, and one row per directory role it asks for. `have`,
+holds, and the index's per-product totals, which need no session at all — in four requests:
+
+```console
+$ o365 doctor
+graph: mdoe@mediadev8.onmicrosoft.com (tenant af6a80a4-8b4b-4879-88af-42ff8a545211, mode username-and-password, 55 min left)
+  grants: 55 scopes
+
+mediadev8.onmicrosoft.com: holds all 4 licences a command names
+  roles: 12 held — Application Administrator, Compliance Administrator, Exchange Administrator,
+         Global Reader, Groups Administrator, Intune Administrator, Search Administrator, Security
+         Administrator, SharePoint Administrator, SharePoint Embedded Administrator, Teams
+         Administrator, User Administrator
+
+PLAN            SEAT    HELD  NOUNS
+INTUNE_A        tenant  yes     131
+AAD_PREMIUM_P2  tenant  yes      16
+AAD_PREMIUM_P2  user    yes       3
+AAD_PREMIUM     tenant  yes       2
+
+PRODUCT    NOUNS  LICENSED
+directory    423        21
+intune       362       131
+no licence is named under the other 20 products (1,252 words); -o wide lists them
+
+next: o365 licences                      every licence, and the areas it opens
+      o365 doctor <product> <noun> ...   what one command needs from this session
+```
+
+The page is a verdict and three blocks, in the order a reader needs them: are my sessions alive,
+does this tenant hold what the commands ask, and which products name a licence at all. `-o wide`
+prints the row that a table would have to shorten — the families each plan opens (`intune.devices
+(119), intune.print (3), …`) — and the products that name no licence; both belong to the report,
+not to the moment before a first command.
+
+Given a route it answers instead for one command, with no request to the service being asked
+about: the delegated and application permissions the method declares, marked against the token's
+own `scp`/`roles`, the licence the type names, and one row per directory role it asks for. `have`,
 `missing` and `unknown` are the same three words as above.
 
 ## Completion

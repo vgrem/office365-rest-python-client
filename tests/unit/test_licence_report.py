@@ -101,9 +101,13 @@ class HeadlineTest(unittest.TestCase):
         found = rows(of(DOCUMENT), held=["INTUNE_A"], mine=None)
         self.assertEqual(
             headline(found, "contoso.onmicrosoft.com"),
-            "contoso.onmicrosoft.com: holds 1 of the 2 licences a command names",
+            "contoso.onmicrosoft.com: holds 1 of 2 licences a command names; 1 could not be read",
         )
 
     def test_without_a_tenant_it_still_answers(self):
         found = rows(of(DOCUMENT), held=["INTUNE_A", "AAD_PREMIUM_P2"], mine=["AAD_PREMIUM_P2"])
-        self.assertEqual(headline(found), "holds 2 of the 2 licences a command names")
+        self.assertEqual(headline(found), "holds all 2 licences a command names")
+
+    def test_a_missing_plan_is_named_because_naming_it_is_the_whole_answer(self):
+        found = rows(of(DOCUMENT), held=["INTUNE_A"], mine=[])
+        self.assertEqual(headline(found), "holds 1 of 2 licences a command names; missing AAD_PREMIUM_P2")

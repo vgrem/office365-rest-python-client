@@ -162,6 +162,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`o365 doctor` reads as a verdict, not a catalogue.** Four things a reader could not use went
+  with one pass over a real page: the families cell was cut to fit (`intune.…` — a name shortened
+  is worse than a name absent), the product block printed twenty-two rows of which twenty were
+  zeroes and one said `LICENSED 0` where a reader hears "no SharePoint here" instead of "the
+  library stamps no licence under it", the headline said "4 of the 4 licences a command names",
+  and eight roles ran off the line with no count. The page now holds only what a tenant can
+  change — the plan table keeps `plan/seat/held/nouns`, the unlicensed products are one sentence,
+  the headline says *all 4* or names the missing plan, and roles are counted and wrapped.
+  `-o wide` restores the areas per plan and the full product list for whoever wants the report.
 - **A login is a greeting again.** `o365 login` printed the session line and then every grant the
   token carried — forty-nine scope names for the tenant this was written on — which pushed the
   three facts worth reading (which audience, who, how long) into a wall of text at the moment a
