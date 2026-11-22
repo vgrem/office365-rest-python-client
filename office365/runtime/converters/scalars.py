@@ -3,6 +3,15 @@
 Each function converts a raw value (string, JSON scalar) into its typed form —
 the deserialization half of the pipeline. ``serialize_value``/``deserialize_value``
 in ``value.py`` build on these for object-level conversion.
+
+Two annotations carry the boundary, and they are not the same word twice.  A value
+that is only inspected -- parsed when it *is* a datetime, a string, a number -- takes
+``object``: the function promises not to assume a type, and the checker holds it to
+that.  ``parse_bool``/``parse_duration``/``try_int``/``try_float`` answer *parsed, or
+the value as it arrived*, because dropping what the service sent would write ``None``
+over a setting the service reported; the value they could not read has no type this
+module can name, so their return is ``Any`` -- the one place it is the answer rather
+than a shrug.
 """
 
 from __future__ import annotations
@@ -12,7 +21,7 @@ import uuid
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 from uuid import UUID
 
 _TRUE_VALUES = {"true", "1", "yes", "y"}
@@ -79,7 +88,7 @@ def deserialize_enum(enum_type: type[Enum], value: Any) -> Any:
     return parsed
 
 
-def _member_spelled_like(enum_type: type[Enum], name: str) -> Optional[Enum]:
+def _member_spelled_like(enum_type: type[Enum], name: str) -> Enum | None:
     """The member whose name differs from ``name`` only in case, when one does.
 
     An exact match has already been tried and wins, so the two enums that spell one
@@ -93,7 +102,7 @@ def _member_spelled_like(enum_type: type[Enum], name: str) -> Optional[Enum]:
     return None
 
 
-def _parse_flags(enum_type: type[Enum], value: Any) -> Optional[str]:
+def _parse_flags(enum_type: type[Enum], value: object) -> str | None:
     """The wire value of a ``IsFlags`` enum, or ``None`` when it names no combination.
 
     A flags member set travels as the member names joined by commas
@@ -112,7 +121,7 @@ def _parse_flags(enum_type: type[Enum], value: Any) -> Optional[str]:
     return value
 
 
-def parse_bool(value: Any) -> Any:
+def parse_bool(value: object) -> Any:
     """Convert a value to a boolean, falling back to the raw value when unrecognized.
 
     Args:
@@ -131,7 +140,7 @@ def parse_bool(value: Any) -> Any:
     return value
 
 
-def parse_duration(value: Any) -> Any:
+def parse_duration(value: object) -> Any:
     """Convert an ISO 8601 duration to ``timedelta``, falling back to the raw value.
 
     ``Edm.Duration`` travels as text (``PT30M``), and a column declared
@@ -160,7 +169,7 @@ def parse_duration(value: Any) -> Any:
     return -duration if match.group("sign") == "-" else duration
 
 
-def parse_int(value: Any) -> Optional[int]:
+def parse_int(value: Any) -> int | None:
     """Convert a value to an int, returning ``None`` when absent/invalid."""
     try:
         return int(value) if value is not None else None
@@ -184,7 +193,7 @@ def try_float(value: Any) -> Any:
         return value
 
 
-def parse_decimal(value: Any) -> Optional[Decimal]:
+def parse_decimal(value: object) -> Decimal | None:
     """Parse an exact decimal amount, or ``None`` when the value is not one.
 
     ``Decimal`` is the right type for money and quantities: a float cannot hold
@@ -200,7 +209,7 @@ def parse_decimal(value: Any) -> Optional[Decimal]:
         return None
 
 
-def parse_uuid(value: Any) -> Optional[UUID]:
+def parse_uuid(value: object) -> UUID | None:
     """Parse a GUID into ``uuid.UUID``, or ``None`` when the value is not one."""
     if value is None or isinstance(value, UUID):
         return value
@@ -210,7 +219,7 @@ def parse_uuid(value: Any) -> Optional[UUID]:
         return None
 
 
-def normalize_guid(value: Any) -> Optional[str]:
+def normalize_guid(value: object) -> str | None:
     """A GUID in its canonical lower-case form, or ``None`` when the value is not one.
 
     One identifier is spelled several ways across SharePoint: bare in a JSON payload,
@@ -232,7 +241,7 @@ def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def ensure_aware_utc(value: Optional[datetime]) -> Optional[datetime]:
+def ensure_aware_utc(value: datetime | None) -> datetime | None:
     """Return ``value`` as a timezone-aware UTC datetime.
 
     Values created locally (for example when adding a credential) may carry no
@@ -244,14 +253,14 @@ def ensure_aware_utc(value: Optional[datetime]) -> Optional[datetime]:
     return value
 
 
-def iso(value: Any) -> str:
+def iso(value: datetime | None) -> str:
     """ISO-8601 string for a datetime (second precision); ``""`` for ``None``."""
     if value is None:
         return ""
     return value.isoformat(timespec="seconds")
 
 
-def iso_or_none(value: Any) -> Optional[str]:
+def iso_or_none(value: datetime | str | None) -> str | None:
     """ISO-8601 string for a datetime, or ``None`` when unset/absent.
 
     Treats ``datetime.min`` (the "not loaded" sentinel used by some SharePoint
@@ -259,10 +268,12 @@ def iso_or_none(value: Any) -> Optional[str]:
     """
     if value is None or value == datetime.min:
         return None
-    return value.isoformat(timespec="seconds") if hasattr(value, "isoformat") else (str(value) or None)
+    if isinstance(value, datetime):
+        return value.isoformat(timespec="seconds")
+    return str(value) or None
 
 
-def iso_z(value: Any) -> Optional[str]:
+def iso_z(value: datetime | str | None) -> str | None:
     """UTC ISO-8601 string with a ``Z`` suffix (second precision); ``None`` when unset.
 
     SharePoint and Microsoft Graph parse date-time strings on the wire as UTC
@@ -305,7 +316,7 @@ def _normalize_datetime_string(value: str) -> str:
     return f"{before}.{frac}{after[fraction_end:]}"
 
 
-def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
+def parse_datetime(value: str | datetime | None) -> datetime | None:
     """
     Converts string representations of Edm.DateTime/Edm.DateTimeOffset to datetime.
 
@@ -372,7 +383,7 @@ def parse_datetime(value: Union[str, datetime, None]) -> Optional[datetime]:
     return None
 
 
-def parse_date(value: Any) -> Optional[date]:
+def parse_date(value: datetime | date | str | None) -> date | None:
     """Parse a calendar date, dropping any time component, or ``None``.
 
     ``Edm.Date`` (a birthday, a due date) names a day, not a moment: keeping the
@@ -389,7 +400,7 @@ def parse_date(value: Any) -> Optional[date]:
     return parsed.date() if parsed is not None else None
 
 
-def wall_clock(value: Any) -> Optional[datetime]:
+def wall_clock(value: object) -> datetime | None:
     """A Graph date-time as a naive *wall clock*, or ``None``.
 
     A Graph ``dateTime`` is paired with its zone in a separate ``timeZone`` property, so the
@@ -409,7 +420,7 @@ def wall_clock(value: Any) -> Optional[datetime]:
     return parsed.replace(tzinfo=None) if parsed else None
 
 
-def wall_clock_text(value: Any) -> Optional[str]:
+def wall_clock_text(value: object) -> str | None:
     """A naive ``YYYY-MM-DD HH:MM:SS`` literal for a date, or for text a service returned.
 
     This is the form a SharePoint *document* item accepts: it ignores ``datesInUTC``
