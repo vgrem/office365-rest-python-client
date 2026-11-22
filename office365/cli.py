@@ -1158,8 +1158,18 @@ def _coverage(product: str, rows: "list[dict[str, Any]]", gates: Gates) -> str:
     blocks = [headline, render(counts, "table", columns=COVERAGE_COLUMNS, width=None)]
     taken = Counter(row["needs"] for row in rows if row["result"] == MISSING)
     if taken:
-        grouped = [{"needs": needs, "nouns": count} for needs, count in sorted(taken.items(), key=_worst_first)]
-        blocks.append("what the missing ones would take\n" + render(grouped, "table", columns=TAKEN_COLUMNS, width=None))
+        # A name that unblocks one noun is the answer to a one-noun question, and a page of
+        # eighteen of them is the wall this table exists to avoid: what is worth granting is a
+        # name that unblocks several, so those are printed and the rest are counted.
+        grouped = sorted(taken.items(), key=_worst_first)
+        worth = [{"needs": needs, "nouns": count} for needs, count in grouped if count > 1]
+        alone = len(grouped) - len(worth)
+        block = "what the missing ones would take"
+        if worth:
+            block += "\n" + render(worth, "table", columns=TAKEN_COLUMNS, width=None)
+        if alone:
+            block += f"\nand {alone} more name{'' if alone > 1 else 's'} one noun each; -o wide says which"
+        blocks.append(block)
     if gates.why:
         # The sentence the environment page prints under its verdict, for the same reason: a
         # page that says `unknown` without saying why reads as a refusal.

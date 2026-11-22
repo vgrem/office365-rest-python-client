@@ -219,3 +219,17 @@ def test_an_unread_licence_is_unknown_and_an_absent_one_is_missing() -> None:
     assert unread["result"] == "unknown"
     assert absent["result"] == "missing"
     assert absent["needs"] == "licence INTUNE_A"
+
+
+def test_a_name_that_unblocks_one_noun_is_counted_rather_than_listed():
+    """The matrix names what is worth granting: a page of one-noun answers is the wall it avoids."""
+    row = {"licence": "", "result": cli.MISSING, "permission": ""}
+    rows = [
+        {**row, "noun": "policy", "needs": "EntitlementManagement.ReadWrite.All"},
+        {**row, "noun": "catalog", "needs": "EntitlementManagement.ReadWrite.All"},
+        {**row, "noun": "stage", "needs": "AccessReview.ReadWrite.All"},
+    ]
+    printed = cli._coverage("directory", rows, cli.Gates((), frozenset(), frozenset(), (), ""))
+    assert "EntitlementManagement.ReadWrite.All" in printed
+    assert "AccessReview.ReadWrite.All" not in printed
+    assert "and 1 more names one noun each; -o wide says which" in printed
