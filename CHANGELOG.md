@@ -162,6 +162,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **`o365 licences` counts the areas a plan opens, and `-o wide` names them.** The table carried
+  the families in a cell, so `INTUNE_A` read `intune.devices (119), intune.print (3), intune.audit,
+  intune.edition_upgrade…` — four of eleven names and an ellipsis, which is the worst of both. The
+  row now shows `AREAS 11`, which fits every plan in this library, and `-o wide` prints the names
+  whole with no width at all; `-o csv`/`-o json` keep them, because a machine does its own column
+  fitting. `o365 doctor`'s pointer says `-o wide` for the same reason.
 - **`o365 doctor` leads with the verdict.** The page ended with the answer: an expired token sat on
   line three, below the fold of a glance, and a reader had to assemble "is anything wrong" from
   three blocks. It now opens with one line — `attention` when a command would refuse right now

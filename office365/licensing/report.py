@@ -32,8 +32,13 @@ FAMILY_DEPTH = 2
 YES, NO, UNKNOWN = "yes", "no", "unknown"
 
 #: The cells a table shows, in order: what it is called, whose seat holds it, whether this tenant
-#: has it, and how much of the tree it opens.
+#: has it, how much of the tree it opens, and the areas those words live in.
 COLUMNS = ("plan", "seat", "held", "nouns", "families")
+
+#: What a table can show by default: the same row with the areas *counted*, because a list of
+#: eleven module names is not a table cell -- cut to ``intune.…`` it says less than ``11``, and a
+#: name shortened to fit is worse than a name absent. ``-o wide`` prints ``COLUMNS`` whole.
+COUNTED_COLUMNS = ("plan", "seat", "held", "nouns", "areas")
 
 #: The cells a product line shows: what it is, how many words it opens, and how many of those
 #: words name a licence at all. There is no "usable" cell: a licensed word whose plan this tenant
@@ -119,6 +124,7 @@ def rows(licences: Iterable[Licence], held: Iterable[str], mine: Iterable[str] |
             "seat": licence.seat,
             "held": answer(licence.plans, licence.seat, tenant, assigned),
             "nouns": licence.nouns,
+            "areas": len(licence.families),
             "families": _where(licence.families),
         }
         for licence in licences

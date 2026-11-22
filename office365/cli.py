@@ -631,8 +631,28 @@ def licences(argv: "list[str]") -> int:
         return 0
     print(sentence)
     print()
-    print(render(records, args.output, columns=COLUMNS))
+    print(_licence_table(records, args.output == "wide"))
+    print()
+    print("next: o365 licences -o wide   the areas each plan opens, by name")
+    print("      o365 doctor             this session, this tenant, and what they allow")
     return 0
+
+
+def _licence_table(records: "list[dict[str, Any]]", wide: bool) -> str:
+    """The row a reader scans, and the row a report would print.
+
+    A plan opens a list of areas, and a list is not a table cell: at 48 columns ``INTUNE_A``
+    shows ``intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade…``,
+    which names four of eleven and marks the rest with an ellipsis. The default counts them
+    instead -- ``11`` fits every plan in this library -- and ``-o wide`` prints the names whole,
+    with no width at all, the same way an identifier survives.
+    """
+    from office365.licensing.report import COLUMNS, COUNTED_COLUMNS
+    from office365.runtime.render import COLUMN_WIDTH, render
+
+    if wide:
+        return render(records, "table", columns=COLUMNS, width=None)
+    return render(records, "table", columns=COUNTED_COLUMNS, width=COLUMN_WIDTH)
 
 
 def _assigned(client: Any) -> "frozenset[str] | None":
@@ -760,7 +780,7 @@ def _doctor_environment(output: str) -> int:
         )
     blocks.append("\n".join(coverage))
     blocks.append(
-        "next: o365 licences                      every licence, and the areas it opens\n"
+        "next: o365 licences -o wide              every licence, and the areas it opens\n"
         "      o365 doctor <product> <noun> ...   what one command needs from this session"
     )
     print("\n\n".join(block for block in blocks if block))

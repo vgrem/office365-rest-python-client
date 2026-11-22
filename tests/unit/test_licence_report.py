@@ -8,6 +8,7 @@ markers are (``tests/unit/test_permission_vocabulary.py``) rather than restated 
 
 import unittest
 
+from office365 import cli
 from office365.licensing.report import NO, UNKNOWN, YES, area_of, headline, of, products, rows
 from office365.permissions.declaration import TENANT, USER
 
@@ -111,3 +112,23 @@ class HeadlineTest(unittest.TestCase):
     def test_a_missing_plan_is_named_because_naming_it_is_the_whole_answer(self):
         found = rows(of(DOCUMENT), held=["INTUNE_A"], mine=[])
         self.assertEqual(headline(found), "holds 1 of 2 licences a command names; missing AAD_PREMIUM_P2")
+
+
+class TableTest(unittest.TestCase):
+    def test_a_default_table_counts_the_areas_a_plan_opens(self):
+        """Eleven module names in a 48-column cell come out as `intune.…`; `11` says more."""
+        records = rows(of(DOCUMENT), frozenset({"INTUNE_A"}), frozenset())
+
+        printed = cli._licence_table(records, wide=False)
+
+        self.assertIn("AREAS", printed)
+        self.assertEqual([record["areas"] for record in records], [2, 1])
+        self.assertNotIn("\u2026", printed)
+
+    def test_wide_names_every_area_whole(self):
+        records = rows(of(DOCUMENT), frozenset({"INTUNE_A"}), frozenset())
+
+        printed = cli._licence_table(records, wide=True)
+
+        self.assertIn("intune.devices (2), intune.policies", printed)
+        self.assertNotIn("\u2026", printed)

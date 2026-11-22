@@ -222,8 +222,29 @@ o365 doctor intune managed-device retire   # what one command needs from this se
 
 `licences` joins the markers the library carries to one read of the tenant's subscriptions. Each
 row is a plan, the seat it is asked of (`tenant` or `user`), whether it is held, how many nouns it
-opens and which command families those nouns live in. A plan the tenant did not buy reads `no`; a
-seat the token could not read reads `unknown`, never `no`.
+opens and how many areas those nouns live in. A plan the tenant did not buy reads `no`; a seat the
+token could not read reads `unknown`, never `no`.
+
+```console
+$ o365 licences
+mediadev8.onmicrosoft.com: holds all 4 licences a command names
+
+PLAN            SEAT    HELD  NOUNS  AREAS
+INTUNE_A        tenant  yes     131     11
+AAD_PREMIUM_P2  tenant  yes      16      4
+AAD_PREMIUM_P2  user    yes       3      1
+AAD_PREMIUM     tenant  yes       2      2
+
+next: o365 licences -o wide   the areas each plan opens, by name
+      o365 doctor             this session, this tenant, and what they allow
+```
+
+A list is not a table cell: `INTUNE_A` opens eleven modules, and at 48 columns that cell reads
+`intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade…` — four names and
+an ellipsis. So the row counts the areas by default (`AREAS 11`), and `-o wide` prints them whole
+(`intune.devices (119), intune.print (3), intune.audit, intune.edition_upgrade_configuration, …`
+to the last one). `-o csv` and `-o json` carry the names too, because a machine does its own
+column fitting.
 
 `doctor` answers the environment — the session and its grants, the plans and roles the caller
 holds, and the index's per-product totals, which need no session at all — in four requests:
@@ -252,7 +273,7 @@ directory    423        21
 intune       362       131
 no licence is named under the other 20 products (1,252 words); -o wide lists them
 
-next: o365 licences                      every licence, and the areas it opens
+next: o365 licences -o wide              every licence, and the areas it opens
       o365 doctor <product> <noun> ...   what one command needs from this session
 ```
 
