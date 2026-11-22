@@ -299,7 +299,7 @@ says so.
 ### Adding a model method
 
 A method that queues a request (`add_query`, `execute_query`, `execute_batch`) says which
-permission it needs, or `tests/unit/test_permission_vocabulary.py` fails: `PENDING` there
+permission it needs, or `tests/unit/test_permissions.py` fails: `PENDING` there
 counts the undeclared builders per service package, and both directions are ratcheted — a
 new undeclared builder raises the count, and so does a declaration that disappears. Declaring
 is one line beside the request:

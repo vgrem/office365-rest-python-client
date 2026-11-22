@@ -165,7 +165,7 @@ Both read the tree with `ast`, so a marker in a class nobody imports is still ch
 name built from a variable is refused instead of passing unread:
 
 ```
-$ .venv/bin/python -m pytest tests/unit/test_permission_vocabulary.py -q
+$ .venv/bin/python -m pytest tests/unit/test_permissions.py -q
 5 passed
 ```
 

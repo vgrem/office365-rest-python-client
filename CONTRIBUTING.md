@@ -91,7 +91,7 @@ The offline tests are split by what they describe:
 | --- | --- |
 | `tests/unit` | the shipped library — one file per feature of `office365`, plus the whole-tree coherence walks; the command line is one file, `tests/unit/test_cli.py` |
 | `tests/tooling` | the code generator under `generator/` — CSDL in, source out: one end-to-end run, staged |
-| `tests/unit/test_permission_matrix.py` | the harness's declared-permission vocabulary: checking, skipping and reporting |
+| `tests/unit/test_permissions.py` | the declared-permission vocabulary: what the tree declares, and what a test does with it |
 
 The bootstrap itself has one module per job, and nothing else: `tests/settings.py`
 resolves configuration (`Settings`, the `.env` file, readiness), `tests/doctor.py`
