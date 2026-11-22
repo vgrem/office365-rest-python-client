@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Iterable
 
 from office365.directory.permissions.guard import (
     _cached_app_permissions,
@@ -33,6 +33,9 @@ from office365.directory.permissions.guard import (
 from office365.graph_client import GraphClient
 from office365.permissions import Catalog, Requirement, TokenClaims
 from office365.runtime.client_request_exception import ClientRequestException
+
+if TYPE_CHECKING:
+    from office365.sharepoint.client_context import ClientContext
 
 
 @lru_cache(maxsize=1)
@@ -82,7 +85,7 @@ class TenantState:
     published: Catalog | None = None
 
     @classmethod
-    def of(cls, client: GraphClient, client_id: str, requirement: Requirement) -> TenantState:
+    def of(cls, client: GraphClient | ClientContext, client_id: str, requirement: Requirement) -> TenantState:
         """Read exactly the facts ``requirement`` names, or say why they could not be read.
 
         The client's own token is read first, because it answers the question a skip decision
@@ -99,7 +102,8 @@ class TenantState:
         Roles and SKUs are read last, and failing to read them only spoils the answer when the
         requirement *holds* one: a bypass role is an alternative the names can stand without.
         """
-        proven = _proven_by_token(client, requirement)
+        claims = TokenClaims.parse(client.authentication_context.access_token)
+        proven = None if claims is None else claims.proves(requirement)
         delegated: frozenset[str] = proven if proven and requirement.delegated else frozenset()
         application: frozenset[str] = proven if proven and requirement.application else frozenset()
         try:
@@ -157,27 +161,6 @@ def _read_grants(client: GraphClient, client_id: str, requirement: Requirement) 
         else frozenset()
     )
     return delegated, application
-
-
-def held_token(holder: Any) -> str | None:
-    """The access token the object's own request context holds, if it has one yet.
-
-    Both a ``GraphClient`` and a SharePoint ``ClientContext`` answer this: the token is kept by
-    the request context, and the SharePoint one is the only credential a SharePoint-only suite
-    has - which is why a permission check must not require a Graph client to work.
-    """
-    pending_request = getattr(holder, "pending_request", None)
-    if pending_request is None:
-        return None
-    context = getattr(pending_request(), "authentication_context", None)
-    token: str | None = getattr(context, "access_token", None)
-    return token
-
-
-def _proven_by_token(client: GraphClient, requirement: Requirement) -> frozenset[str] | None:
-    """The names the client's own token proves for ``requirement``, ``None`` if it cannot say."""
-    claims = TokenClaims.parse(held_token(client))
-    return None if claims is None else claims.proves(requirement)
 
 
 @dataclass

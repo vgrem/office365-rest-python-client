@@ -70,6 +70,7 @@ from office365.permissions.resource import ResourceName
 from office365.planner.planner import Planner
 from office365.reports.root import ReportRoot
 from office365.runtime.auth.certificate import CertificateData
+from office365.runtime.auth.entra.authentication_context import AuthenticationContext
 from office365.runtime.client_runtime_context import ClientRuntimeContext
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.limits import limit
@@ -587,6 +588,18 @@ class GraphClient(ClientRuntimeContext):
             if callable(self._token_callback):
                 self._pending_request.with_access_token(self._token_callback)
         return self._pending_request  # type: ignore[return-value]
+
+    @property
+    def authentication_context(self) -> AuthenticationContext:
+        """The context the next request will authenticate with.
+
+        The same property SharePoint's ``ClientContext`` states, so a caller holding either
+        client reads the token the same way and needs to know neither class's internals. It is
+        read from the pending request rather than kept here, because a token installed with
+        ``with_access_token`` belongs to the request: the answer is what the next send will
+        carry, not what the client happened to be constructed with.
+        """
+        return self.pending_request().authentication_context
 
     @property
     def admin(self) -> Admin:

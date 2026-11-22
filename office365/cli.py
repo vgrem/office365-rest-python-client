@@ -270,8 +270,8 @@ def login(audience: str, argv: "list[str]") -> int:
     constructor = {name: value for name, value in given.items() if name in _signature(root).parameters}
     client = root(**constructor)
     getattr(client, method)(**{name: value for name, value in given.items() if name not in constructor})
-    # Both providers state the same property: acquired on first read, cached, never validated.
-    token = client.pending_request().authentication_context.access_token or ""
+    # The property both client roots state: acquired on first read, cached, never validated.
+    token = client.authentication_context.access_token or ""
     claims = _claims(token)
 
     sessions = _load()

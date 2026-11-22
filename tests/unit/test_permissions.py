@@ -38,10 +38,12 @@ from unittest import TestCase, mock
 import office365
 from office365.capabilities import capabilities_of
 from office365.communications.callrecords.collection import CallRecordCollection
+from office365.graph_client import GraphClient
 from office365.outlook.mail.messages.message import Message
 from office365.permissions import Catalog, ResourceName, index, require_permission
 from office365.permissions.declaration import licence_of
 from office365.runtime.client_request_exception import ClientRequestException
+
 from tests.capabilities import Needs, Requirement, TenantState, declared_calls
 from tests.decorators import requires_call, requires_delegated
 from tests.graph_case import GraphApplicationTestCase, GraphDelegatedTestCase
@@ -94,7 +96,7 @@ class TestRequirement(TestCase):
 
     def test_a_refused_lookup_becomes_unverifiable_rather_than_empty(self):
         with mock.patch("tests.capabilities._cached_directory_roles", side_effect=_refused()):
-            state = TenantState.of(object(), "client-id", Requirement(roles=("Global Reader",)))
+            state = TenantState.of(GraphClient(), "client-id", Requirement(roles=("Global Reader",)))
         self.assertIn("permission lookup needs a scope", state.unverifiable)
         self.assertEqual(state.roles, frozenset())
 
