@@ -41,8 +41,6 @@ class ExchangeAdminRequest(ClientRequest):
             environment=environment,
             authority=authority,
         )
-        self.beforeExecute += self.authenticate_request
-        self._async_authenticate = self.authenticate_request_async
 
     # Credentials: the same flows as GraphRequest, with the Exchange audience.
     def with_access_token(self, token_callback: Callable[[], Dict[str, str]]) -> Self:

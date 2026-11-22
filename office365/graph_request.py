@@ -60,8 +60,6 @@ class GraphRequest(ODataRequest):
             token_cache=token_cache,
             authority=authority,
         )
-        self.beforeExecute += self.authenticate_request
-        self._async_authenticate = self.authenticate_request_async
         self._licence_guard = licence_guard
 
     def with_access_token(self, token_callback: TokenCallback) -> GraphRequest:
