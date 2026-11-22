@@ -40,12 +40,15 @@ import textwrap
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Optional, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
 from office365.permissions.requirement import FLOWS, Requirement
 from office365.permissions.resource import ResourceName
+
+if TYPE_CHECKING:
+    from office365.runtime.queries.client_query import ClientQuery
 
 P = ParamSpec("P")
 F = TypeVar("F", bound=Callable[..., Any])
@@ -189,7 +192,7 @@ class PermissionRequirement:
         return "\n".join(lines)
 
 
-def declared(func: Callable[..., Any], flow: str | None = None) -> PermissionRequirement:
+def declared(func: Callable[..., object], flow: str | None = None) -> PermissionRequirement:
     """The declaration stamped on ``func``, or a loud failure naming it.
 
     This is the only way to read a declaration, and it refuses two kinds of silence: a method
@@ -302,7 +305,7 @@ def requires_license(*plans: str, seat: str = TENANT) -> Callable[[F], F]:
     return decorate
 
 
-def licence_of(target: Any) -> Optional[Licence]:
+def licence_of(target: object) -> Optional[Licence]:
     """The licence a type declares - the plans and the seat - or ``None`` when it declares none.
 
     Answers for a class, and for a member whose qualified name places it in that class, exactly
@@ -317,7 +320,7 @@ def licence_of(target: Any) -> Optional[Licence]:
     return named if isinstance(named, Licence) else None
 
 
-def licenses_of(target: Any) -> tuple[str, ...]:
+def licenses_of(target: object) -> tuple[str, ...]:
     """The service plans that carry what ``target`` does, or ``()`` when it names none.
 
     Answers for a class, and for a member whose qualified name places it in that class - the
@@ -368,7 +371,7 @@ def with_licences(declaration: PermissionRequirement, licence: Optional[Licence]
     )
 
 
-def _owner_type(func: Any) -> Any:
+def _owner_type(func: object) -> "type | None":
     """The class a plain function was defined in, resolved from its qualified name.
 
     A function does not point back at its class, but ``__qualname__`` spells the walk to it
@@ -385,13 +388,13 @@ def _owner_type(func: Any) -> Any:
     if len(parts) < _QUALIFIED_MEMBER or "<locals>" in parts:
         return None
     holder = sys.modules.get(str(getattr(func, "__module__", "")))
-    owner = getattr(holder, parts[0], None)
+    owner: object = getattr(holder, parts[0], None)
     for part in parts[1:-1]:
         owner = getattr(owner, part, None)
     return owner if isinstance(owner, type) else None
 
 
-def derived_from(callee: Callable[..., Any]) -> Callable[[F], F]:
+def derived_from(callee: Callable[..., object]) -> Callable[[F], F]:
     """Declare the decorated method as needing exactly what ``callee`` needs.
 
     For a wrapper whose request is a call to another declared method: the requirement is read
@@ -430,7 +433,7 @@ def _tag_query(func: F, declaration: PermissionRequirement) -> F:
     """
 
     @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> object:
         owner = args[0] if args else None
         previous = _last_query(owner)
         result: Any = func(*args, **kwargs)
@@ -459,23 +462,25 @@ def _document(func: F, declaration: PermissionRequirement, header: str = "Requir
     return func
 
 
-def _last_query(owner: Any) -> Any:
+def _last_query(owner: object) -> "ClientQuery | None":
     """The query the owner's context holds now, or ``None`` if the owner has no context."""
     context = getattr(owner, "context", None)
     return getattr(context, "last_query", None) if context is not None else None
 
 
-def _tag(owner: Any, previous: Any, declaration: PermissionRequirement) -> None:
+def _tag(owner: object, previous: "ClientQuery | None", declaration: PermissionRequirement) -> None:
     """Remember the declaration on the query this call queued, if it queued one."""
     query = _last_query(owner)
     if query is not None and query is not previous:
         query.permission_requirement = declaration
 
 
-def _awaited(result: Any, owner: Any, previous: Any, declaration: PermissionRequirement) -> Any:
+def _awaited(
+    result: "Awaitable[object]", owner: object, previous: "ClientQuery | None", declaration: PermissionRequirement
+) -> "Awaitable[object]":
     """Await an async method's result, then tag the query it queued - on failure too."""
 
-    async def run() -> Any:
+    async def run() -> object:
         try:
             return await result
         finally:
@@ -484,6 +489,6 @@ def _awaited(result: Any, owner: Any, previous: Any, declaration: PermissionRequ
     return run()
 
 
-def _name(func: Callable[..., Any]) -> str:
+def _name(func: Callable[..., object]) -> str:
     """How a call is named in an error: its qualified name, or its ``repr`` if it has none."""
     return str(getattr(func, "__qualname__", func))
