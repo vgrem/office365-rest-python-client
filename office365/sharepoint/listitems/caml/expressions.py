@@ -23,7 +23,8 @@ cannot be used (they are keywords) and are rejected at runtime via ``__bool__``.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable, Optional, TypeVar
+from datetime import date
+from typing import Any, Callable, Iterable, Optional, Union
 
 from office365.sharepoint.listitems.caml.fields import FieldRef
 from office365.sharepoint.listitems.caml.values import Value, ValueType, list_property
@@ -32,7 +33,14 @@ from office365.sharepoint.listitems.caml.values import now as _now
 from office365.sharepoint.listitems.caml.values import today as _today
 from office365.sharepoint.listitems.caml.values import user_id as _user_id
 
-_T = TypeVar("_T")
+#: What a comparison takes on either side of it: a literal whose CAML ``Type`` can be
+#: inferred (``str`` -> Text, ``int`` -> Integer, ``float`` -> Number, ``bool`` ->
+#: Boolean, ``date`` -> DateTime), an already-built :class:`Value` such as
+#: ``Caml.now()``, or ``None`` for an empty ``<Value/>``.
+CamlValue = Union[str, int, float, bool, "date", Value, None]
+
+#: What names a field: its name, a :class:`FieldRef`, or a typed :class:`Field`.
+CamlField = Union[str, FieldRef, "Field"]
 
 
 class CamlExpr(ABC):
@@ -198,18 +206,18 @@ class Not(CamlExpr):
         return f"<Not>{self.child.to_xml()}</Not>"
 
 
-def _fold(op: Callable[[CamlExpr, CamlExpr], _T], exprs: Iterable[CamlExpr]) -> _T:
+def _fold(op: Callable[[CamlExpr, CamlExpr], CamlExpr], exprs: Iterable[CamlExpr]) -> CamlExpr:
     """Left-fold conditions into binary-nested nodes (``And(And(A,B),C)``)."""
     items = list(exprs)
     if not items:
         raise ValueError("at least one condition is required")
-    result: Any = items[0]
+    result = items[0]
     for item in items[1:]:
         result = op(result, item)
-    return result  # type: ignore[no-any-return]
+    return result
 
 
-def _as_field_ref(field: Any) -> FieldRef:
+def _as_field_ref(field: CamlField) -> FieldRef:
     if isinstance(field, FieldRef):
         return field
     if isinstance(field, Field):
@@ -217,7 +225,7 @@ def _as_field_ref(field: Any) -> FieldRef:
     return FieldRef(str(field))
 
 
-def _as_value(value: Any, value_type: Optional[ValueType] = None, **value_opts: Any) -> Value:
+def _as_value(value: CamlValue, value_type: Optional[ValueType] = None, **value_opts: Any) -> Value:
     if isinstance(value, Value):
         return value
     return Value(value, type=value_type, **value_opts)
@@ -244,40 +252,40 @@ class Field:
         """Treat this field as a lookup id (``LookupId="TRUE"``, ``Integer``)."""
         return Field(self.name, ValueType.Integer, lookup_id=True)
 
-    def _compare(self, op: str, value: Any, **value_opts: Any) -> Comparison:
+    def _compare(self, op: str, value: CamlValue, **value_opts: Any) -> Comparison:
         return Comparison(op, self.field_ref, _as_value(value, self.value_type, **value_opts))
 
-    def eq(self, value: Any, **value_opts: Any) -> Comparison:
+    def eq(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Eq", value, **value_opts)
 
-    def neq(self, value: Any, **value_opts: Any) -> Comparison:
+    def neq(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Neq", value, **value_opts)
 
-    def gt(self, value: Any, **value_opts: Any) -> Comparison:
+    def gt(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Gt", value, **value_opts)
 
-    def geq(self, value: Any, **value_opts: Any) -> Comparison:
+    def geq(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Geq", value, **value_opts)
 
-    def lt(self, value: Any, **value_opts: Any) -> Comparison:
+    def lt(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Lt", value, **value_opts)
 
-    def leq(self, value: Any, **value_opts: Any) -> Comparison:
+    def leq(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Leq", value, **value_opts)
 
-    def begins_with(self, value: Any, **value_opts: Any) -> Comparison:
+    def begins_with(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("BeginsWith", value, **value_opts)
 
-    def contains(self, value: Any, **value_opts: Any) -> Comparison:
+    def contains(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Contains", value, **value_opts)
 
-    def not_contains(self, value: Any, **value_opts: Any) -> Comparison:
+    def not_contains(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("NotContains", value, **value_opts)
 
-    def includes(self, value: Any, **value_opts: Any) -> Comparison:
+    def includes(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("Includes", value, **value_opts)
 
-    def not_includes(self, value: Any, **value_opts: Any) -> Comparison:
+    def not_includes(self, value: CamlValue, **value_opts: Any) -> Comparison:
         return self._compare("NotIncludes", value, **value_opts)
 
     def is_null(self) -> IsNull:
@@ -286,7 +294,7 @@ class Field:
     def is_not_null(self) -> IsNull:
         return IsNull(self.field_ref, negate=True)
 
-    def in_(self, values: Iterable[Any]) -> In:
+    def in_(self, values: Iterable[CamlValue]) -> In:
         return In(self.field_ref, [_as_value(value, self.value_type) for value in values])
 
     def eq_current_user(self) -> Comparison:
@@ -343,71 +351,71 @@ class Caml:
 
     # ── Comparisons (by field name, Field or FieldRef) ───────────
     @staticmethod
-    def _compare(op: str, field: Any, value: Any, value_type: Optional[ValueType] = None) -> Comparison:
+    def _compare(op: str, field: CamlField, value: CamlValue, value_type: Optional[ValueType] = None) -> Comparison:
         return Comparison(op, _as_field_ref(field), _as_value(value, value_type))
 
     @staticmethod
-    def eq(field: Any, value: Any) -> Comparison:
+    def eq(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Eq", field, value)
 
     @staticmethod
-    def neq(field: Any, value: Any) -> Comparison:
+    def neq(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Neq", field, value)
 
     @staticmethod
-    def gt(field: Any, value: Any) -> Comparison:
+    def gt(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Gt", field, value)
 
     @staticmethod
-    def geq(field: Any, value: Any) -> Comparison:
+    def geq(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Geq", field, value)
 
     @staticmethod
-    def lt(field: Any, value: Any) -> Comparison:
+    def lt(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Lt", field, value)
 
     @staticmethod
-    def leq(field: Any, value: Any) -> Comparison:
+    def leq(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Leq", field, value)
 
     @staticmethod
-    def begins_with(field: Any, value: Any) -> Comparison:
+    def begins_with(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("BeginsWith", field, value)
 
     @staticmethod
-    def contains(field: Any, value: Any) -> Comparison:
+    def contains(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Contains", field, value)
 
     @staticmethod
-    def not_contains(field: Any, value: Any) -> Comparison:
+    def not_contains(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("NotContains", field, value)
 
     @staticmethod
-    def includes(field: Any, value: Any) -> Comparison:
+    def includes(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("Includes", field, value)
 
     @staticmethod
-    def not_includes(field: Any, value: Any) -> Comparison:
+    def not_includes(field: CamlField, value: CamlValue) -> Comparison:
         return Caml._compare("NotIncludes", field, value)
 
     @staticmethod
-    def is_null(field: Any) -> IsNull:
+    def is_null(field: CamlField) -> IsNull:
         return IsNull(_as_field_ref(field))
 
     @staticmethod
-    def is_not_null(field: Any) -> IsNull:
+    def is_not_null(field: CamlField) -> IsNull:
         return IsNull(_as_field_ref(field), negate=True)
 
     @staticmethod
-    def in_(field: Any, values: Iterable[Any], value_type: Optional[ValueType] = None) -> In:
+    def in_(field: CamlField, values: Iterable[CamlValue], value_type: Optional[ValueType] = None) -> In:
         return In(_as_field_ref(field), [_as_value(value, value_type) for value in values])
 
     @staticmethod
-    def membership(field: Any, type: str = "CurrentUserGroups") -> Membership:  # noqa: A002
+    def membership(field: CamlField, type: str = "CurrentUserGroups") -> Membership:  # noqa: A002
         return Membership(_as_field_ref(field), type)
 
     @staticmethod
-    def date_ranges_overlap(field: Any, value: Any) -> DateRangesOverlap:
+    def date_ranges_overlap(field: CamlField, value: CamlValue) -> DateRangesOverlap:
         return DateRangesOverlap(_as_field_ref(field), _as_value(value))
 
     # ── Logical joins ────────────────────────────────────────────
