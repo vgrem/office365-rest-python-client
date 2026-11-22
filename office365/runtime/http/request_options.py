@@ -20,6 +20,7 @@ class RequestOptions:
         stream: Streaming response flag
         proxies: Proxy configuration; ``None`` (default) defers to the
             transport/session value.
+        authenticated: Whether the request already carries its ``Authorization`` header.
     """
 
     url: str
@@ -35,6 +36,10 @@ class RequestOptions:
     # ``RateLimiter(per_scope=True)`` can pace the request against its own scope
     # bucket instead of the global gate.
     throttle_scope: Optional[str] = None
+    #: Whether an ``Authorization`` header is already set. The async auth hook sets it, so the
+    #: synchronous hook - still run, offloaded, as a ``beforeExecute`` handler - leaves the
+    #: request alone instead of acquiring a second token.
+    authenticated: bool = False
 
     def __str__(self) -> str:
         return f"{self.method} {self.url}"

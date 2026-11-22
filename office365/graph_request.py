@@ -6,7 +6,6 @@ from office365.azure_env import AzureEnvironment, get_graph_authority
 from office365.graph_version import GraphVersion
 from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.entra.authentication_context import AuthenticationContext
-from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
 from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.prefer import prefer_upsert
 from office365.runtime.http.request_options import RequestOptions
@@ -180,7 +179,7 @@ class GraphRequest(ODataRequest):
         Args:
             request: The request to authenticate
         """
-        if getattr(request, ASYNC_AUTHENTICATED_FLAG, False):
+        if request.authenticated:
             return  # already authenticated by :meth:`authenticate_request_async`
         token = self._auth_context.acquire_token()
         request.set_header("Authorization", f"Bearer {token.accessToken}")
@@ -199,7 +198,7 @@ class GraphRequest(ODataRequest):
             return
         token = await self._auth_context.acquire_token_async()
         request.set_header("Authorization", f"Bearer {token.accessToken}")
-        setattr(request, ASYNC_AUTHENTICATED_FLAG, True)
+        request.authenticated = True
 
     def build_request(self, query: ClientQuery) -> RequestOptions:
         if self._licence_guard is not None:

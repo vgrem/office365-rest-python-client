@@ -23,12 +23,6 @@ from office365.runtime.transport.requests_transport import (
 from office365.runtime.transport.throttled_transport import ThrottledTransport
 from office365.runtime.types.event_handler import EventHandler
 
-#: Private :class:`~office365.runtime.http.request_options.RequestOptions`
-#: attribute marking a request already authenticated by the async path, so the
-#: synchronous auth hook (still run as an offloaded ``beforeExecute`` handler)
-#: does not acquire a second token.
-ASYNC_AUTHENTICATED_FLAG = "_office365_async_authenticated"
-
 
 class ClientRequest(ABC):
     def __init__(self, transport: BaseTransport | None = None):

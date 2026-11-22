@@ -12,7 +12,6 @@ from office365.runtime.auth.certificate import CertificateData
 from office365.runtime.auth.client_credential import ClientCredential
 from office365.runtime.auth.token_response import TokenResponse
 from office365.runtime.auth.user_credential import UserCredential
-from office365.runtime.client_request import ASYNC_AUTHENTICATED_FLAG
 from office365.runtime.http.method import HttpMethod
 from office365.runtime.http.request_options import RequestOptions
 from office365.runtime.http.url import get_absolute_url
@@ -81,7 +80,7 @@ class SharePointRequest(ODataRequest):
         signs the request itself. Such a session counts as credentials when no
         provider is configured on the auth context.
         """
-        if getattr(request, ASYNC_AUTHENTICATED_FLAG, False):
+        if request.authenticated:
             return  # already authenticated by :meth:`_authenticate_request_async`
         if not self._auth_context.is_configured and self._transport.auth is not None:
             return
@@ -96,7 +95,7 @@ class SharePointRequest(ODataRequest):
         if not self._auth_context.is_async_token_callback:
             return
         await self._auth_context.authenticate_request_async(request)
-        setattr(request, ASYNC_AUTHENTICATED_FLAG, True)
+        request.authenticated = True
 
     def set_base_url(self, url: str) -> Self:
         self._base_url = url
