@@ -189,9 +189,13 @@ class AuthenticationContext:
         """
         # The two shapes cannot be told apart by annotation, only by the object, so the
         # context keeps the one it was handed and the branch is where the cast is due.
+        # It keeps one: the callback handed in now replaces the callback installed
+        # before, so ``is_async_token_callback`` answers for the one that will run.
         if inspect.iscoroutinefunction(token_callback):
+            self._token_callback = None
             self._async_token_callback = cast(AsyncTokenCallback, token_callback)
         else:
+            self._async_token_callback = None
             self._token_callback = token_callback
         self._cached_token = None
         self._token_expires = datetime.now(timezone.utc)

@@ -283,9 +283,13 @@ class AuthenticationContext:
         """
         # The two shapes cannot be told apart by annotation, only by the object, so the
         # context keeps the one it was handed and the branch is where the cast is due.
+        # It keeps one: the callback handed in now replaces the callback installed
+        # before, so ``is_async_token_callback`` answers for the one that will run.
         if inspect.iscoroutinefunction(token_func):
+            self._token_func = None
             self._async_token_func = cast(AsyncTokenCallback, token_func)
         else:
+            self._async_token_func = None
             self._token_func = token_func
 
         def _authenticate(request: RequestOptions) -> None:
@@ -293,6 +297,9 @@ class AuthenticationContext:
             request.set_header("Authorization", token.authorization_header)
 
         self._authenticate = _authenticate
+        # A superseded provider's token is not this provider's token.
+        self._cached_token = None
+        self._token_expires = datetime.now(timezone.utc)
         return self
 
     def _current_token(self, request_time: datetime) -> TokenResponse:
