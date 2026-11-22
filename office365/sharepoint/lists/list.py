@@ -881,6 +881,23 @@ class List(SecurableObject):
             return_type._next_page = _next_page
         return return_type
 
+    def ensure_content_types_enabled(self) -> Self:
+        """Turn content types on, unless the list already has them on.
+
+        Enabling a list that already has them is a new version and a change nobody asked
+        for, so the flag is read first. Deferred with the rest of the queue -- the check
+        and the write happen in one ``execute_query()``:
+
+            >>> lst.ensure_content_types_enabled().execute_query()
+        """
+
+        def _enable(_: object) -> None:
+            if self.content_types_enabled is not True:
+                self.set_property("ContentTypesEnabled", True)
+                self.update()
+
+        return self.ensure_property("ContentTypesEnabled").after_execute(_enable)
+
     def ensure_field(
         self,
         name: "str | FieldCreationInformation",

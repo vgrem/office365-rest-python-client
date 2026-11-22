@@ -77,7 +77,6 @@ from office365.sharepoint.lists.base_type import is_document_library
 from office365.sharepoint.permissions import SiteLevel, site_access
 
 if TYPE_CHECKING:
-    from office365.runtime.client_object import ClientObject
     from office365.sharepoint.client_context import ClientContext
     from office365.sharepoint.contenttypes.content_type import ContentType
     from office365.sharepoint.contenttypes.fieldlinks.field_link import FieldLink
@@ -773,7 +772,7 @@ def provision_list_structure(
     _apply_list_settings(sp_list, structure, warnings, validation=False)
 
     if structure.content_types_enabled:
-        _ensure_content_types_enabled(sp_list)
+        sp_list.ensure_content_types_enabled()
 
     taxonomy_definitions: List[FieldDefinition] = []
     for definition in structure.fields:
@@ -1055,17 +1054,6 @@ def _rejection_reason(exc: Exception) -> str:
     """The server's own wording for a rejected write, trimmed for a warning."""
     message = getattr(exc, "message", None) or str(exc)
     return message.strip()[:200]
-
-
-def _ensure_content_types_enabled(sp_list: SPList) -> None:
-    """Turn on content types on the list, only when it is currently off."""
-
-    def _enable(_: ClientObject) -> None:
-        if sp_list.content_types_enabled is not True:
-            sp_list.set_property("ContentTypesEnabled", True)
-            sp_list.update()
-
-    sp_list.ensure_property("ContentTypesEnabled").after_execute(_enable)
 
 
 def _content_type_label(content_type: ContentType) -> str:
